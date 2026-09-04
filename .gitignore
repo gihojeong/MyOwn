@@ -1,0 +1,7 @@
+.env
+*.bak
+token.json
+.kospi-mcp/
+__pycache__/
+*.py[cod]
+.venv/

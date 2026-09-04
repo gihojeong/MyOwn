@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "kiwoom-kospi": {
+      "command": "/usr/bin/python3",
+      "args": ["/절대경로로/바꾸세요/MyOwn/kospi_mcp_server.py"],
+      "env": {
+        "KIWOOM_APP_KEY": "발급받은-앱키",
+        "KIWOOM_APP_SECRET": "발급받은-시크릿키",
+        "KIWOOM_ENV": "real",
+        "KIWOOM_INDEX_SCALE": "auto"
+      }
+    }
+  }
+}
