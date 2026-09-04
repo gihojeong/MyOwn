@@ -33,12 +33,39 @@ TLS 터널 자체가 정책으로 거부된다.
 
 ### 필요한 조치 (환경 소유자만 가능)
 
-1. **네트워크 허용** — 환경의 네트워크 정책에 `api.kiwoom.com`, `mockapi.kiwoom.com` 추가.
-   실시간 시세 WebSocket까지 쓰려면 `:10000` 포트도 함께.
-2. **자격증명 주입** — 예약작업이 뜨는 컨테이너에는 로컬 PC의 `.claude.json`이 없다.
-   환경 변수로 `APP_KEY`, `APP_SECRET`, `KIWOOM_MODE`를 설정해야 한다.
+claude.ai/code 메시지 입력창 위쪽 줄의 **클라우드 아이콘**(현재 환경 이름이 적혀 있다)을
+눌러 환경 선택기를 열고, 해당 환경에 마우스를 올렸을 때 나타나는 **설정 아이콘**을 누른다.
+환경 설정에는 전용 URL이 없다.
 
-환경 설정은 https://code.claude.com/docs/en/claude-code-on-the-web 참조.
+1. **네트워크 허용** — **Network access**를 `Custom`으로 바꾸고 **Allowed domains**에
+   한 줄에 하나씩 적는다.
+
+   ```text
+   api.kiwoom.com
+   mockapi.kiwoom.com
+   ```
+
+   **Also include default list of common package managers**를 반드시 체크한다.
+   체크하지 않으면 적은 도메인만 허용되어 기존 예약작업이 쓰는 AlphaSquare·언론사
+   페치가 전부 끊긴다. GitHub 트래픽은 별도 프록시를 타므로 이 목록과 무관하다.
+
+2. **자격증명 주입** — 예약작업이 뜨는 컨테이너에는 로컬 PC의 `.claude.json`이 없다.
+   같은 대화상자의 **Environment variables**에 `.env` 형식으로 적는다.
+
+   ```text
+   APP_KEY=발급받은_앱키
+   APP_SECRET=발급받은_시크릿
+   KIWOOM_MODE=demo
+   ```
+
+   Pro·Max 플랜의 **API credentials** 기능은 이 용도에 쓸 수 없다. 그쪽은 키를
+   요청 **헤더**에 붙여주는 방식인데, 키움 `/oauth2/token`은 `appkey`/`secretkey`를
+   요청 **body**로 받기 때문이다.
+
+두 설정 모두 **세션 시작 시점에 한 번 읽힌다.** 이미 돌고 있는 세션에는 반영되지 않으므로,
+변경 후에는 새 세션에서 검증해야 한다.
+
+참조: https://code.claude.com/docs/en/cloud-environments
 
 ## 수집기
 
