@@ -10,9 +10,8 @@
 건드리지도, 출력하지도 마라.
 
 ```bash
-BR=claude/kiwoom-rest-api-setup-28gawa
 curl -fsSL -o kiwoom_collect.py \
-  "https://raw.githubusercontent.com/gihojeong/MyOwn/$BR/scripts/kiwoom_collect.py"
+  https://raw.githubusercontent.com/gihojeong/MyOwn/master/scripts/kiwoom_collect.py
 
 # 마감 리포트(47건) / 개장 전 브리핑(37건) / 주간 리뷰(26건)
 python3 kiwoom_collect.py --preset close     --date <오늘YYYYMMDD>       --pause 0.3 --out kiwoom.json
