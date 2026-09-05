@@ -58,6 +58,20 @@ BASE_URLS = {
 
 TOKEN_PATH = "/oauth2/token"
 
+# urllib이 기본으로 보내는 "Python-urllib/3.x"는 키움 WAF가 400 Request Blocked로
+# 막는다(2026-09-05 실측). 평범한 User-Agent를 명시하면 통과한다.
+USER_AGENT = "kiwoom-collect/1.0"
+
+# 유량 초과(1700)는 API별로 창이 좁아 연속조회에서 자주 걸린다. 짧게 기다렸다 재시도한다.
+RATE_LIMIT_RETRIES = 3
+RATE_LIMIT_BACKOFF = 1.0
+
+# 토큰 발급(au10001)에는 유량 제한이 있어 연속 호출하면 1700으로 거절된다.
+# 발급 토큰은 24시간짜리이므로 만료 전까지 재사용한다.
+TOKEN_CACHE_DIR = os.path.join(
+    os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"), "kiwoom-collect"
+)
+
 PATHS = {
     "sect": "/api/dostk/sect",
     "mrkcond": "/api/dostk/mrkcond",
@@ -80,6 +94,8 @@ WATCHLIST = {
 }
 
 # ka10063 투자자별 코드. 기관 세부주체까지 분해해야 수급 해부가 채워진다.
+# 이 API에는 금융투자와 사모펀드 코드가 없다 — 그 둘은 ka10066 응답의
+# fnnc_invt / samo_fund 필드를 종목 단위로 합산해서 얻는다.
 INVESTORS = {
     "6": "외국인",
     "7": "기관계",
@@ -87,6 +103,7 @@ INVESTORS = {
     "3": "연기금",
     "0": "보험",
     "2": "은행",
+    "4": "국가",
     "5": "기타법인",
 }
 
@@ -96,6 +113,10 @@ EXCHANGE_ALL = "3"
 
 class KiwoomError(RuntimeError):
     pass
+
+
+class KiwoomRateLimited(KiwoomError):
+    """유량 초과(HTTP 429 / return_code 1700). 잠시 기다렸다 다시 부르면 된다."""
 
 
 def _mode() -> str:
@@ -116,54 +137,149 @@ def _credentials() -> tuple[str, str]:
     return key, secret
 
 
-def _post(url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int) -> dict[str, Any]:
+def _post(
+    url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int
+) -> tuple[dict[str, Any], dict[str, str]]:
+    """응답 body와 헤더를 함께 돌려준다. 연속조회 키가 헤더로 오기 때문이다."""
     data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     request = urllib.request.Request(url, data=data, headers=headers, method="POST")
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             body = response.read().decode("utf-8", errors="replace")
+            response_headers = {k.lower(): v for k, v in response.headers.items()}
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")[:500]
+        if exc.code == 429:
+            raise KiwoomRateLimited(f"HTTP 429: {detail}") from exc
         raise KiwoomError(f"HTTP {exc.code}: {detail}") from exc
     except urllib.error.URLError as exc:
         # 프록시 정책 차단(CONNECT 403)도 여기로 떨어진다.
         raise KiwoomError(f"연결 실패: {exc.reason}") from exc
     try:
-        return json.loads(body)
+        return json.loads(body), response_headers
     except ValueError as exc:
         raise KiwoomError(f"JSON이 아닌 응답: {body[:200]}") from exc
 
 
-def issue_token(timeout: int = 20) -> str:
-    """접근토큰을 발급한다 (au10001). 응답의 토큰 필드명은 'token'이다."""
+def _token_cache_path() -> str:
+    return os.path.join(TOKEN_CACHE_DIR, f"token_{_mode()}.json")
+
+
+def _cached_token() -> str | None:
+    """만료 5분 전까지만 재사용한다. expires_dt는 KST YYYYMMDDHHMMSS."""
+    try:
+        with open(_token_cache_path(), encoding="utf-8") as handle:
+            cache = json.load(handle)
+    except (OSError, ValueError):
+        return None
+    try:
+        expires = datetime.strptime(cache["expires_dt"], "%Y%m%d%H%M%S").replace(tzinfo=KST)
+    except (KeyError, ValueError):
+        return None
+    if expires - timedelta(minutes=5) <= datetime.now(KST):
+        return None
+    return cache.get("token")
+
+
+def _save_token(token: str, expires_dt: str) -> None:
+    """캐시 파일은 토큰을 담으므로 소유자만 읽을 수 있게 만든다."""
+    try:
+        os.makedirs(TOKEN_CACHE_DIR, mode=0o700, exist_ok=True)
+        path = _token_cache_path()
+        with open(path, "w", encoding="utf-8") as handle:
+            json.dump({"token": token, "expires_dt": expires_dt}, handle)
+        os.chmod(path, 0o600)
+    except OSError:
+        pass  # 캐시는 최적화일 뿐이라 실패해도 수집은 계속한다
+
+
+def issue_token(timeout: int = 20, use_cache: bool = True) -> str:
+    """접근토큰을 얻는다 (au10001). 응답의 토큰 필드명은 'token'이다.
+
+    발급에 유량 제한이 있어(초과 시 return_code 1700) 캐시된 토큰을 우선 쓴다.
+    """
+    if use_cache:
+        cached = _cached_token()
+        if cached:
+            return cached
     key, secret = _credentials()
     payload = {"grant_type": "client_credentials", "appkey": key, "secretkey": secret}
-    headers = {"Content-Type": "application/json;charset=UTF-8"}
-    data = _post(BASE_URLS[_mode()] + TOKEN_PATH, payload, headers, timeout)
+    headers = {"Content-Type": "application/json;charset=UTF-8", "User-Agent": USER_AGENT}
+    data, _ = _post(BASE_URLS[_mode()] + TOKEN_PATH, payload, headers, timeout)
     if data.get("return_code") not in (None, 0):
         raise KiwoomError(f"토큰 발급 실패 [{data.get('return_code')}]: {data.get('return_msg')}")
     token = data.get("token")
     if not token:
         raise KiwoomError("토큰 응답에 token 필드가 없습니다.")
+    if data.get("expires_dt"):
+        _save_token(token, str(data["expires_dt"]))
     return token
 
 
-def call(api_id: str, path: str, body: dict[str, Any], token: str, timeout: int = 30) -> dict[str, Any]:
-    """조회 API 한 건을 호출한다. return_code가 0이 아니면 KiwoomError."""
-    headers = {
-        "Content-Type": "application/json;charset=UTF-8",
-        "authorization": f"Bearer {token}",
-        "api-id": api_id,
+def call(
+    api_id: str,
+    path: str,
+    body: dict[str, Any],
+    token: str,
+    timeout: int = 30,
+    max_pages: int = 1,
+) -> dict[str, Any]:
+    """조회 API 한 건을 호출한다. return_code가 0이 아니면 KiwoomError.
+
+    응답 헤더의 cont-yn이 Y면 next-key로 이어 받는다. 목록형 응답은 한 페이지가
+    100행 안팎이라(ka10066 실측), 시장 전체 수급을 다루려면 이어받아야 한다.
+    페이지를 합칠 때는 리스트 필드만 이어붙이고 스칼라 필드는 첫 페이지 값을 남긴다.
+    """
+    url = BASE_URLS[_mode()] + path
+    merged: dict[str, Any] = {}
+    cont_yn = ""
+    next_key = ""
+    for page in range(max_pages):
+        headers = {
+            "Content-Type": "application/json;charset=UTF-8",
+            "User-Agent": USER_AGENT,
+            "authorization": f"Bearer {token}",
+            "api-id": api_id,
+        }
+        if cont_yn == "Y" and next_key:
+            headers["cont-yn"] = cont_yn
+            headers["next-key"] = next_key
+        # 유량 제한은 API마다 다르고 ka10066은 1회로 좁다. 초당 한도라 짧은 대기로 풀린다.
+        for attempt in range(RATE_LIMIT_RETRIES + 1):
+            try:
+                data, response_headers = _post(url, body, headers, timeout)
+                break
+            except KiwoomRateLimited:
+                if attempt == RATE_LIMIT_RETRIES:
+                    raise
+                time.sleep(RATE_LIMIT_BACKOFF * (2**attempt))
+        code = data.get("return_code")
+        if code not in (None, 0):
+            raise KiwoomError(f"{api_id} 실패 [{code}]: {data.get('return_msg')}")
+        if not merged:
+            merged = data
+        else:
+            for key, value in data.items():
+                if isinstance(value, list) and isinstance(merged.get(key), list):
+                    merged[key].extend(value)
+        merged["_pages_fetched"] = page + 1
+        cont_yn = response_headers.get("cont-yn", "")
+        next_key = response_headers.get("next-key", "")
+        if cont_yn != "Y" or not next_key:
+            break
+    return merged
+
+
+def _job(
+    name: str, api_id: str, path_key: str, body: dict[str, Any], max_pages: int = 1
+) -> dict[str, Any]:
+    return {
+        "name": name,
+        "api_id": api_id,
+        "path": PATHS[path_key],
+        "body": body,
+        "max_pages": max_pages,
     }
-    data = _post(BASE_URLS[_mode()] + path, body, headers, timeout)
-    code = data.get("return_code")
-    if code not in (None, 0):
-        raise KiwoomError(f"{api_id} 실패 [{code}]: {data.get('return_msg')}")
-    return data
-
-
-def _job(name: str, api_id: str, path_key: str, body: dict[str, Any]) -> dict[str, Any]:
-    return {"name": name, "api_id": api_id, "path": PATHS[path_key], "body": body}
 
 
 # --- 재사용 블록 -------------------------------------------------------------
@@ -194,6 +310,7 @@ def _investor_flows(date: str) -> list[dict[str, Any]]:
                 "smtm_netprps_tp": "0",
                 "stex_tp": EXCHANGE_ALL,
             },
+            max_pages=6,
         )
         for code, label in INVESTORS.items()
     ]
@@ -204,6 +321,7 @@ def _investor_flows(date: str) -> list[dict[str, Any]]:
             "ka10066",
             "mrkcond",
             {"mrkt_tp": "001", "amt_qty_tp": "1", "trde_tp": "0", "stex_tp": EXCHANGE_ALL},
+            max_pages=12,
         )
     )
     jobs.append(
@@ -311,7 +429,14 @@ def _per_stock(date: str, weekly: bool = False) -> list[dict[str, Any]]:
     api_id = "ka10082" if weekly else "ka10081"
     kind = "weekly" if weekly else "daily"
     jobs = [
-        _job(f"candle_{kind}_{name}", api_id, "chart", {"stk_cd": code, "base_dt": date})
+        # upd_stkpc_tp는 kiwoom_help에 optional로 적혀 있으나 서버는 필수로 요구한다
+        # (2026-09-05 실측: 생략 시 1511 "필수 입력 값에 값이 존재하지 않습니다"). 1=수정주가.
+        _job(
+            f"candle_{kind}_{name}",
+            api_id,
+            "chart",
+            {"stk_cd": code, "base_dt": date, "upd_stkpc_tp": "1"},
+        )
         for code, name in WATCHLIST.items()
     ]
     if not weekly:
@@ -371,7 +496,9 @@ def run_jobs(jobs: list[dict[str, Any]], token: str, timeout: int, pause: float)
             results[job["name"]] = {
                 "api_id": job["api_id"],
                 "request": job["body"],
-                "data": call(job["api_id"], job["path"], job["body"], token, timeout),
+                "data": call(
+                    job["api_id"], job["path"], job["body"], token, timeout, job.get("max_pages", 1)
+                ),
             }
         except KiwoomError as exc:
             results[job["name"]] = {"api_id": job["api_id"], "request": job["body"], "error": str(exc)}
@@ -387,6 +514,7 @@ def main() -> int:
     parser.add_argument("--path", help="--call과 함께 쓰는 URL 경로 (예: /api/dostk/sect)")
     parser.add_argument("--body", default="{}", help="--call과 함께 쓰는 요청 body (JSON 문자열)")
     parser.add_argument("--check", action="store_true", help="토큰 발급까지만 수행해 자격증명·도달성 확인")
+    parser.add_argument("--no-token-cache", action="store_true", help="캐시된 토큰을 무시하고 새로 발급")
     parser.add_argument("--date", help="기준일자 YYYYMMDD (기본: 오늘 KST)")
     parser.add_argument("--codes", help="관심종목을 code:name 쌍의 쉼표 목록으로 덮어쓰기")
     parser.add_argument("--out", help="결과 JSON을 저장할 경로 (미지정 시 stdout)")
@@ -408,7 +536,7 @@ def main() -> int:
 
     try:
         mode = _mode()
-        token = issue_token(args.timeout)
+        token = issue_token(args.timeout, use_cache=not args.no_token_cache)
     except KiwoomError as exc:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1
