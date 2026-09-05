@@ -102,6 +102,19 @@ WATCHLIST = {
     "005380": "현대차",
 }
 
+# 지수 바스켓 대용 ETF·해외 상장 한국물. 관심종목(WATCHLIST)과 달리 수급·공매도는 받지 않고
+# 시세만 받는다. KODEX MSCI Korea(무캡)와 KOSPI는 반도체 비중이 달라(65.74% vs 51.44%)
+# 두 지수를 연립하면 당일 반도체 S와 나머지 R을 분리할 수 있다 — 리포트 [G] ①-b가 요구하는 계산이다.
+BASKETS = {"156080": "kodex_msci_korea"}
+
+# 미국 상장 한국물. EWY는 25/50 캡 바스켓이라 KODEX(무캡)와 다르고, 한국 마감 이후 세션에서
+# 거래되므로 KODEX·KOSPI로 만든 이론가와의 차이가 곧 미 세션 재평가분(= 갭 신호)이다.
+US_KOREA = [
+    ("EWY", "NY", "ewy_korea_etf"),
+    ("SKM", "NY", "adr_sk_telecom"),
+    ("KB", "NY", "adr_kb_financial"),
+]
+
 # ka10063 투자자별 코드. 기관 세부주체까지 분해해야 수급 해부가 채워진다.
 # 이 API에는 금융투자와 사모펀드 코드가 없다 — 그 둘은 ka10066 응답의
 # fnnc_invt / samo_fund 필드를 종목 단위로 합산해서 얻는다.
@@ -622,8 +635,24 @@ def _overseas(date: str) -> list[dict[str, Any]]:
             "us_mrkcond",
             {"stex_tp": exchange, "stk_cd": symbol, "base_dt": date},
         )
-        for symbol, exchange, label in US_WATCHLIST
+        for symbol, exchange, label in US_WATCHLIST + US_KOREA
     ]
+
+
+def _baskets(date: str) -> list[dict[str, Any]]:
+    """지수 바스켓 대용 ETF. 국내 상장이므로 관심종목과 같은 API로 받는다."""
+    jobs: list[dict[str, Any]] = []
+    for code, label in BASKETS.items():
+        jobs.append(_job(f"basket_{label}", "ka10001", "stkinfo", {"stk_cd": code}))
+        jobs.append(
+            _job(
+                f"basket_{label}_daily",
+                "ka10081",
+                "chart",
+                {"stk_cd": code, "base_dt": date, "upd_stkpc_tp": "1"},
+            )
+        )
+    return jobs
 
 
 def _macro(date: str) -> list[dict[str, Any]]:
@@ -656,6 +685,7 @@ def preset_close(date: str) -> list[dict[str, Any]]:
         + _per_stock(date)
         + _stock_profile()
         + _short_selling(date)
+        + _baskets(date)
         + _overseas(date)
         + _macro(date)
     )
@@ -672,6 +702,7 @@ def preset_premarket(date: str) -> list[dict[str, Any]]:
         + _per_stock(date)
         + _stock_profile()
         + _short_selling(date)
+        + _baskets(date)
         + _overseas(date)
         + _macro(date)
     )
@@ -688,6 +719,7 @@ def preset_weekly(date: str) -> list[dict[str, Any]]:
         + _per_stock(date, weekly=True)
         + _stock_profile()
         + _short_selling(date)
+        + _baskets(date)
         + _overseas(date)
         + _macro(date)
     )
