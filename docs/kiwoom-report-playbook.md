@@ -23,6 +23,20 @@ python3 kiwoom_collect.py --preset weekly    --date <지난주금요일YYYYMMDD>
 순차 호출이라 6~10분 걸린다. **백그라운드로 던지고 그동안 Drive 읽기와 요인 분석용 웹
 검색을 병렬로 진행하라.**
 
+★결과 JSON은 3MB가 넘는다(2026-09-04 close 실측 3.24MB). **Read 도구로 통째로 읽지 마라 —
+컨텍스트가 날아간다.** 반드시 python으로 필요한 키만 꺼내 써라. 용량 상위는 `investor_after_close`
+406KB · `investor_intraday_외국인` 315KB · `candle_daily_*` 각 130KB다. 일봉은 600행이 오지만
+리포트에 쓰는 것은 앞 2~25행뿐이다.
+
+```python
+import json
+d = json.load(open("kiwoom.json"))
+r = d["results"]
+print(d["summary"])                                  # 먼저 이것부터
+kospi = r["index_kospi"]["data"]                     # 스칼라 필드만 골라 쓴다
+close = r["candle_daily_삼성전자"]["data"]["stk_dt_pole_chart_qry"][0]["cur_prc"]
+```
+
 `summary.failed`가 빈 배열이면 전량 성공이다. 실패 항목이 있으면 **그 항목만** 웹 경로로
 보완한다. 성공한 항목을 웹에서 다시 찾지 마라 — 시간 낭비이고, 웹 수치가 API 확정치와
 어긋나면 **API가 옳다**(차이는 각주로 남겨라). 수집기가 아예 안 돌면(토큰 실패·네트워크)
