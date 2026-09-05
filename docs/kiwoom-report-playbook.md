@@ -7,19 +7,20 @@
 
 예약작업 세션에는 저장소가 붙지 않으므로(`folders: []`) 스크립트를 URL로 받는다.
 앱키는 환경변수(`APP_KEY` / `APP_SECRET` / `KIWOOM_MODE`)로 이미 주입돼 있다.
-건드리지도, 출력하지도 마라.
+건드리지도, 출력하지도 마라. `ECOS_API_KEY`(한국은행)는 선택이며, 없으면 공개 sample
+키로 자동 동작한다.
 
 ```bash
 curl -fsSL -o kiwoom_collect.py \
   https://raw.githubusercontent.com/gihojeong/MyOwn/master/scripts/kiwoom_collect.py
 
-# 마감 리포트(47건) / 개장 전 브리핑(37건) / 주간 리뷰(26건)
+# 마감 리포트(81건) / 개장 전 브리핑(71건) / 주간 리뷰(61건)
 python3 kiwoom_collect.py --preset close     --date <오늘YYYYMMDD>       --pause 0.3 --out kiwoom.json
 python3 kiwoom_collect.py --preset premarket --date <직전거래일YYYYMMDD> --pause 0.3 --out kiwoom.json
 python3 kiwoom_collect.py --preset weekly    --date <지난주금요일YYYYMMDD> --pause 0.3 --out kiwoom.json
 ```
 
-순차 호출이라 3~6분 걸린다. **백그라운드로 던지고 그동안 Drive 읽기와 요인 분석용 웹
+순차 호출이라 6~10분 걸린다. **백그라운드로 던지고 그동안 Drive 읽기와 요인 분석용 웹
 검색을 병렬로 진행하라.**
 
 `summary.failed`가 빈 배열이면 전량 성공이다. 실패 항목이 있으면 **그 항목만** 웹 경로로
@@ -46,6 +47,11 @@ python3 kiwoom_collect.py --preset weekly    --date <지난주금요일YYYYMMDD>
 | [D] 관심종목 | `candle_daily_<종목명>` (주간은 `candle_weekly_`) | 일봉 600행 — 종가·시가·고저·거래량·거래대금 |
 | [D] 종목 수급 | `investor_by_stock_<종목명>` | 종목별 투자자·기관 매매 |
 | [D-2] 순위 | `amount_top` `change_rate_top_rise` `change_rate_top_fall` | 거래대금 상위, 등락률 상·하위 |
+| [D-2] 시총·상장주식수 | `profile_<종목명>` | `mac` 시가총액(억원) · `flo_stk` 상장주식수(천주) · `per` · `pbr` · `oyr_hgst`/`oyr_lwst` 52주 고저. **웹에서 시총을 찾을 이유가 없어졌다** |
+| [B] 공매도 | `short_selling_<종목명>` | 최근 10여 거래일 일자별 `shrts_qty`(공매도량) · `trde_wght`(비중 %) · `ovr_shrts_qty`(잔고) · `shrts_avg_pric`(평균가) |
+| [E] 해외 증시·원자재 | `us_sp500_spy` `us_nasdaq100_qqq` `us_dow_dia` `us_semis_soxx` `us_gold_gld` `us_wti_uso` `us_ustreasury20y_tlt` `us_dollar_uup` | `result_list[0]`이 기준일 확정 종가. `flu_rt`가 등락률 |
+| [E] 해외 개별주 | `us_nvidia` `us_tsmc` `us_micron` `us_broadcom` | 반도체 사이클 판단용. 한국 반도체주와 직결 |
+| [E] 환율·금리 | `ecos_fx_usdkrw` `ecos_ktb_3y` `ecos_ktb_10y` `ecos_ktb_30y` `ecos_cd_91d` `ecos_corp_bond_aa3y` | `value`(최신) · `prev_value` · `change`(전일대비)를 한국은행 확정치로 준다 |
 
 ## 과거 사고가 구조적으로 막히는 지점
 
@@ -64,10 +70,24 @@ python3 kiwoom_collect.py --preset weekly    --date <지난주금요일YYYYMMDD>
 `ka10063`(=`investor_intraday_*`)에는 **금융투자와 사모펀드 코드가 없다.** 그 둘은
 `investor_after_close`의 종목별 `fnnc_invt` / `samo_fund` 필드를 합산해서 구하라.
 
+## 해외 지수는 ETF 대용이다 — 표기에 주의
+
+`us_sp500_spy` 등은 지수 자체가 아니라 **추종 ETF의 종가**다. 키움 해외주식 API에
+지수 시세가 없어서 쓰는 대용치이며, 배당락과 추적오차 때문에 지수 등락률과 소수점
+단위로 어긋난다. 방향과 등락폭을 읽는 데는 충분하지만, 리포트에 **"S&P500 -0.39%"라고
+단정해 쓰지 말고 "SPY -0.39%" 또는 "S&P500(SPY 기준) -0.39%"로 적어라.** 지수의 정확한
+종가가 필요하면 그것만 웹으로 확인한다.
+
+`us_gold_gld`·`us_wti_uso`·`us_ustreasury20y_tlt`·`us_dollar_uup`도 마찬가지로 각각
+금·WTI·미 장기국채·달러인덱스의 **대용 ETF**다. 등락률은 쓰되 절대 수치(온스당 달러,
+배럴당 달러, 금리 %)를 이 값에서 만들어내지 마라.
+
 ## 수집기에 없는 것 — 웹 경로 그대로 조사
 
-KOSPI200 선물·베이시스·미결제, 원/달러, 국고채 금리, 공매도, **시가총액·상장주식수**,
-해외 증시·지표.
+- **KOSPI200 선물·베이시스·미결제약정** — 키움 REST OpenAPI에는 파생 시세가 아예 없다
+  (국내주식·미국주식뿐). ECOS에도 없다. 이것만은 기존 웹 경로를 유지하라.
+- 지수의 정확한 종가(S&P500·나스닥종합 포인트), 금·WTI의 절대 가격 — 위 ETF 항목 참고.
+- 개별 뉴스·수급 해석·업종 코멘트 등 수치가 아닌 것 전부.
 
-[D-2] 시총 비중 계산의 시총·상장주식수는 stockdigging.com 등 기존 경로로 확보하되,
-**등락률만은 반드시 키움 값을 써라.**
+**반대로, 이제 웹에서 찾지 말아야 할 것**: 시가총액·상장주식수(`profile_*`),
+공매도(`short_selling_*`), 원/달러·국고채 금리(`ecos_*`), 미국 증시 등락률(`us_*`).
