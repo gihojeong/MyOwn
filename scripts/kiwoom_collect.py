@@ -368,6 +368,27 @@ def _investor_streak(days: str = "5") -> list[dict[str, Any]]:
     ]
 
 
+def _program_trades(date: str) -> list[dict[str, Any]]:
+    """ka90010 프로그램매매 추이. mrkt_tp("프로그램 시장코드")는 스펙에 값이 열거돼
+    있지 않아 실측으로 확인했다(2026-09-05): P00101=코스피, P10102=코스닥.
+    001/000/101 같은 일반 시장구분 코드를 넣으면 에러 없이 0행이 돌아온다."""
+    return [
+        _job(
+            f"program_trades_{label}",
+            "ka90010",
+            "mrkcond",
+            {
+                "date": date,
+                "amt_qty_tp": "1",
+                "mrkt_tp": code,
+                "min_tic_tp": "0",
+                "stex_tp": EXCHANGE_ALL,
+            },
+        )
+        for code, label in (("P00101", "kospi"), ("P10102", "kosdaq"))
+    ]
+
+
 def _rankings() -> list[dict[str, Any]]:
     jobs = [
         _job(
@@ -463,12 +484,22 @@ def _per_stock(date: str, weekly: bool = False) -> list[dict[str, Any]]:
 
 def preset_close(date: str) -> list[dict[str, Any]]:
     """마감 리포트 (평일 18:05). 당일 확정 종가·수급·시간외까지."""
-    return _indices() + _investor_flows(date) + _investor_streak() + _rankings() + _after_hours() + _per_stock(date)
+    return (
+        _indices()
+        + _investor_flows(date)
+        + _investor_streak()
+        + _program_trades(date)
+        + _rankings()
+        + _after_hours()
+        + _per_stock(date)
+    )
 
 
 def preset_premarket(date: str) -> list[dict[str, Any]]:
     """개장 전 브리핑 (평일 06:00). --date에 직전 거래일을 넘긴다."""
-    return _indices() + _investor_flows(date) + _investor_streak() + _rankings() + _per_stock(date)
+    return (
+        _indices() + _investor_flows(date) + _investor_streak() + _program_trades(date) + _rankings() + _per_stock(date)
+    )
 
 
 def preset_weekly(date: str) -> list[dict[str, Any]]:
@@ -478,6 +509,7 @@ def preset_weekly(date: str) -> list[dict[str, Any]]:
         + _investor_flows(date)
         + _investor_streak("5")
         + _investor_streak("20")
+        + _program_trades(date)
         + _per_stock(date, weekly=True)
     )
 
