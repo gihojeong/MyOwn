@@ -77,7 +77,7 @@
 ★조사를 시작하기 전에 아래 지침 문서를 읽고 그대로 따르라.★ 수집 명령, 결과 JSON의 키와
 리포트 항목 대응표, 웹으로 보완해야 하는 항목이 전부 거기 있다. 이 프롬프트보다 그 문서가 최신이다.
 
-  curl -fsSL https://raw.githubusercontent.com/gihojeong/MyOwn/claude/kiwoom-rest-api-setup-28gawa/docs/kiwoom-report-playbook.md
+  curl -fsSL https://raw.githubusercontent.com/gihojeong/MyOwn/master/docs/kiwoom-report-playbook.md
 
 요약: 수집기를 ★백그라운드로 먼저 띄우고★(--preset weekly --date <지난주 금요일 YYYYMMDD>, 3~6분)
 그동안 Drive 읽기와 [C] 요인용 웹 검색을 병렬로 진행한다. 결과 JSON의 summary.failed에

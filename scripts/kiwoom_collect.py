@@ -11,6 +11,8 @@ SSL_CERT_FILE을 자동으로 따르므로 프록시 환경에서 추가 설정�
   APP_KEY       발급받은 앱키
   APP_SECRET    발급받은 시크릿
   KIWOOM_MODE   demo(모의투자, 기본) | real(실전투자)
+  ECOS_API_KEY  한국은행 ECOS 키(선택). 원/달러·국고채 금리 수집에만 쓰인다.
+                없으면 공개 sample 키로 동작한다. 무료 발급: https://ecos.bok.or.kr/api
 
 사용 예:
 
@@ -35,6 +37,11 @@ SSL_CERT_FILE을 자동으로 따르므로 프록시 환경에서 추가 설정�
 
 요청 파라미터는 모두 kiwoom-spec MCP(spec_show / kiwoom_help)로 확인한 값이다.
 추측으로 채운 항목은 없다.
+
+키움이 주지 않는 것은 두 곳에서 메운다. 미국 증시·금·유가·달러·미 국채는 키움
+해외주식 API로 추종 ETF를 조회하고(추가 키 불필요), 원/달러와 국고채 금리는
+한국은행 ECOS에서 받는다. KOSPI200 선물·베이시스·미결제는 어느 쪽에도 없어
+여전히 웹 조사가 필요하다.
 """
 
 from __future__ import annotations
@@ -79,6 +86,8 @@ PATHS = {
     "chart": "/api/dostk/chart",
     "rkinfo": "/api/dostk/rkinfo",
     "frgnistt": "/api/dostk/frgnistt",
+    "shsa": "/api/dostk/shsa",
+    "us_mrkcond": "/api/us/mrkcond",
 }
 
 # 리포트가 종목 단위로 추적하는 관심종목. --codes로 덮어쓸 수 있다.
@@ -109,6 +118,47 @@ INVESTORS = {
 
 # 거래소구분: 1=KRX, 2=NXT, 3=통합. 지수 산출 기준과 맞추려면 통합을 쓴다.
 EXCHANGE_ALL = "3"
+
+# 미국 상장 종목·ETF. 키움 해외주식 API(usa20590)로 조회하며 별도 API 키가 필요 없다.
+# 지수 자체(S&P500·나스닥종합)는 키움에 없어서 추종 ETF로 대신한다. 배당과 추적오차
+# 때문에 지수 등락률과 소수점 단위로 어긋나므로, 리포트에는 ETF 기준임을 밝혀야 한다.
+# GLD·USO·TLT·UUP은 금·WTI·미 장기국채·달러인덱스의 방향과 등락폭을 대신 읽기 위한 것이다.
+# stex_tp는 NY:NYSE(Arca 포함), ND:NASDAQ, NA:AMEX. 심볼별 거래소는 2026-09-05에
+# 실측으로 확정했다 — 틀리면 1903 "종목 정보가 없습니다"로 떨어진다.
+US_WATCHLIST = [
+    ("SPY", "NY", "sp500_spy"),
+    ("QQQ", "ND", "nasdaq100_qqq"),
+    ("DIA", "NY", "dow_dia"),
+    ("SOXX", "ND", "semis_soxx"),
+    ("GLD", "NY", "gold_gld"),
+    ("USO", "NY", "wti_uso"),
+    ("TLT", "ND", "ustreasury20y_tlt"),
+    ("UUP", "NY", "dollar_uup"),
+    ("NVDA", "ND", "nvidia"),
+    ("TSM", "NY", "tsmc"),
+    ("MU", "ND", "micron"),
+    ("AVGO", "ND", "broadcom"),
+]
+
+# 한국은행 ECOS OpenAPI. 원/달러와 국고채 금리는 키움에 없다 — 키움 환율 조회(ust31301)는
+# 모의투자에서 거절되고(2026-09-05 실측 RC9000), 실전에서도 "환전 적용 고시환율"이라
+# 시장 종가와 다르다. ECOS 키는 무료이며 https://ecos.bok.or.kr/api 에서 즉시 발급된다.
+# 키가 없으면 공개 "sample" 키로 동작하지만 1회 10행 제한이 있다(항목별로 나눠 부르므로
+# 이 수집기의 질의는 제한에 걸리지 않는다).
+ECOS_BASE = "https://ecos.bok.or.kr/api/StatisticSearch"
+# 통계표·항목 코드와 값은 2026-09-04자로 실측 확인했다.
+ECOS_SERIES = [
+    ("fx_usdkrw", "731Y001", "0000001", "원/달러 매매기준율"),
+    ("ktb_3y", "817Y002", "010200000", "국고채 3년"),
+    ("ktb_10y", "817Y002", "010210000", "국고채 10년"),
+    ("ktb_30y", "817Y002", "010230000", "국고채 30년"),
+    ("cd_91d", "817Y002", "010502000", "CD 91일"),
+    ("corp_bond_aa3y", "817Y002", "010300000", "회사채 3년 AA-"),
+]
+# ECOS는 당일치가 늦게 올라올 수 있다. 범위로 받아 가장 최근 값을 쓰면 공휴일·지연에 견딘다.
+# 다만 ECOS는 오래된 행부터 잘라 주므로, sample 키의 10행 제한 안에 기준일이 들어오도록
+# 창을 좁게 잡아야 한다(2026-09-05 실측: 14일 창 + sample이면 기준일 하루 전이 최신으로 잡힘).
+ECOS_LOOKBACK_DAYS = 10
 
 
 class KiwoomError(RuntimeError):
@@ -159,6 +209,59 @@ def _post(
         return json.loads(body), response_headers
     except ValueError as exc:
         raise KiwoomError(f"JSON이 아닌 응답: {body[:200]}") from exc
+
+
+def _get_json(url: str, timeout: int) -> Any:
+    """ECOS는 GET + URL 경로 파라미터를 쓴다. 키움과 인증 체계가 달라 따로 둔다."""
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT}, method="GET")
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            body = response.read().decode("utf-8", errors="replace")
+    except urllib.error.HTTPError as exc:
+        raise KiwoomError(f"HTTP {exc.code}: {exc.read().decode('utf-8', 'replace')[:300]}") from exc
+    except urllib.error.URLError as exc:
+        raise KiwoomError(f"연결 실패: {exc.reason}") from exc
+    try:
+        return json.loads(body)
+    except ValueError as exc:
+        raise KiwoomError(f"JSON이 아닌 응답: {body[:200]}") from exc
+
+
+def fetch_ecos(stat_code: str, item_code: str, date: str, timeout: int = 30) -> dict[str, Any]:
+    """ECOS 일별 시계열 한 건. 최근 값과 직전 값을 함께 돌려줘 전일대비를 바로 계산한다."""
+    key = os.environ.get("ECOS_API_KEY", "").strip() or "sample"
+    rows_max = 10 if key == "sample" else 100  # sample 키는 11행 이상 요청하면 ERROR-301
+    end = datetime.strptime(date, "%Y%m%d")
+    start = end - timedelta(days=ECOS_LOOKBACK_DAYS)
+    url = (
+        f"{ECOS_BASE}/{key}/json/kr/1/{rows_max}/{stat_code}/D/"
+        f"{start.strftime('%Y%m%d')}/{end.strftime('%Y%m%d')}/{item_code}"
+    )
+    data = _get_json(url, timeout)
+    if "RESULT" in data:  # ECOS는 오류도 HTTP 200으로 준다
+        result = data["RESULT"]
+        raise KiwoomError(f"ECOS {result.get('CODE')}: {result.get('MESSAGE', '')[:200]}")
+    rows = data.get("StatisticSearch", {}).get("row", [])
+    if not rows:
+        raise KiwoomError("ECOS 응답에 데이터가 없습니다.")
+    rows.sort(key=lambda r: r["TIME"])
+    latest = rows[-1]
+    previous = rows[-2] if len(rows) > 1 else None
+    out: dict[str, Any] = {
+        "item_name": latest.get("ITEM_NAME1"),
+        "unit": latest.get("UNIT_NAME"),
+        "date": latest["TIME"],
+        "value": latest["DATA_VALUE"],
+        "api_key_used": "sample" if key == "sample" else "env",
+    }
+    if previous:
+        out["prev_date"] = previous["TIME"]
+        out["prev_value"] = previous["DATA_VALUE"]
+        try:
+            out["change"] = round(float(latest["DATA_VALUE"]) - float(previous["DATA_VALUE"]), 4)
+        except (TypeError, ValueError):
+            pass
+    return out
 
 
 def _token_cache_path() -> str:
@@ -479,6 +582,65 @@ def _per_stock(date: str, weekly: bool = False) -> list[dict[str, Any]]:
     return jobs
 
 
+def _stock_profile() -> list[dict[str, Any]]:
+    """ka10001. 시가총액(mac, 억원)·상장주식수(flo_stk, 천주)·PER/PBR·52주 고저.
+
+    시총과 상장주식수는 그동안 웹 조사로 메우던 항목인데 키움이 그대로 준다.
+    자사주 소각으로 상장주식수가 줄면 여기서 바로 드러난다.
+    """
+    return [
+        _job(f"profile_{name}", "ka10001", "stkinfo", {"stk_cd": code})
+        for code, name in WATCHLIST.items()
+    ]
+
+
+def _short_selling(date: str) -> list[dict[str, Any]]:
+    """ka10014. 일자별 공매도 수량·비중(trde_wght)·잔고(ovr_shrts_qty)·평균가.
+
+    tm_tp=1은 기간 조회. 최근 10거래일을 함께 받아 당일 비중이 평소보다 높은지
+    판단할 수 있게 한다.
+    """
+    end = datetime.strptime(date, "%Y%m%d")
+    start = (end - timedelta(days=20)).strftime("%Y%m%d")
+    return [
+        _job(
+            f"short_selling_{name}",
+            "ka10014",
+            "shsa",
+            {"stk_cd": code, "tm_tp": "1", "strt_dt": start, "end_dt": date},
+        )
+        for code, name in WATCHLIST.items()
+    ]
+
+
+def _overseas(date: str) -> list[dict[str, Any]]:
+    """usa20590. 미국 확정 종가·등락률. base_dt 이전 내역을 최신순으로 준다."""
+    return [
+        _job(
+            f"us_{label}",
+            "usa20590",
+            "us_mrkcond",
+            {"stex_tp": exchange, "stk_cd": symbol, "base_dt": date},
+        )
+        for symbol, exchange, label in US_WATCHLIST
+    ]
+
+
+def _macro(date: str) -> list[dict[str, Any]]:
+    """ECOS. 키움에 없는 원/달러와 국고채 금리."""
+    return [
+        {
+            "name": f"ecos_{name}",
+            "kind": "ecos",
+            "stat_code": stat,
+            "item_code": item,
+            "label": label,
+            "_date": date,
+        }
+        for name, stat, item, label in ECOS_SERIES
+    ]
+
+
 # --- preset -----------------------------------------------------------------
 
 
@@ -492,13 +654,26 @@ def preset_close(date: str) -> list[dict[str, Any]]:
         + _rankings()
         + _after_hours()
         + _per_stock(date)
+        + _stock_profile()
+        + _short_selling(date)
+        + _overseas(date)
+        + _macro(date)
     )
 
 
 def preset_premarket(date: str) -> list[dict[str, Any]]:
     """개장 전 브리핑 (평일 06:00). --date에 직전 거래일을 넘긴다."""
     return (
-        _indices() + _investor_flows(date) + _investor_streak() + _program_trades(date) + _rankings() + _per_stock(date)
+        _indices()
+        + _investor_flows(date)
+        + _investor_streak()
+        + _program_trades(date)
+        + _rankings()
+        + _per_stock(date)
+        + _stock_profile()
+        + _short_selling(date)
+        + _overseas(date)
+        + _macro(date)
     )
 
 
@@ -511,6 +686,10 @@ def preset_weekly(date: str) -> list[dict[str, Any]]:
         + _investor_streak("20")
         + _program_trades(date)
         + _per_stock(date, weekly=True)
+        + _stock_profile()
+        + _short_selling(date)
+        + _overseas(date)
+        + _macro(date)
     )
 
 
@@ -524,6 +703,18 @@ PRESETS: dict[str, Callable[[str], list[dict[str, Any]]]] = {
 def run_jobs(jobs: list[dict[str, Any]], token: str, timeout: int, pause: float) -> dict[str, Any]:
     results: dict[str, Any] = {}
     for job in jobs:
+        if job.get("kind") == "ecos":
+            try:
+                results[job["name"]] = {
+                    "source": "ecos",
+                    "label": job["label"],
+                    "data": fetch_ecos(job["stat_code"], job["item_code"], job["_date"], timeout),
+                }
+            except KiwoomError as exc:
+                results[job["name"]] = {"source": "ecos", "label": job["label"], "error": str(exc)}
+            if pause:
+                time.sleep(pause)
+            continue
         try:
             results[job["name"]] = {
                 "api_id": job["api_id"],
