@@ -179,10 +179,18 @@ KRX_SERVICES = [
     ("krx_futures", "drv/fut_bydd_trd", "선물 일별매매정보"),
     ("krx_options", "drv/opt_bydd_trd", "옵션 일별매매정보"),
 ]
-# 응답에서 KOSPI200물만 남긴다. 상품명 표기가 문서에 열거돼 있지 않아 넓게 잡고,
-# 걸러진 게 없으면 원본을 그대로 남겨 첫 실행에서 실제 표기를 확인할 수 있게 한다.
-KRX_K200_HINTS = ("코스피200", "KOSPI200", "K200", "코스피 200")
-KRX_MAX_ROWS = 40
+# 응답 실측(2026-09-04, 385행). 한 BAS_DD에 정규장과 야간장이 **각각 별도 행**으로 온다.
+#   PROD_NM "코스피200 선물"     × MKT_NM "정규"/"야간"  = 13행씩
+#   PROD_NM "미니코스피200 선물" × MKT_NM "정규"/"야간"  = 11행씩
+# ISU_NM에는 "미니코스피 F 202609 (주간)"처럼 200이 빠진 표기가 있으므로 판정은 PROD_NM으로 한다.
+# 행 전체를 join해 "코스피200"으로 매칭하면 정규·야간·미니가 한 덩어리로 섞인다.
+KRX_PRODUCTS = {"코스피200 선물": "k200", "미니코스피200 선물": "k200_mini"}
+KRX_SESSIONS = {"정규": "regular", "야간": "night"}
+# 야간은 정규에 누적된 값이 아니라 세션별 독립 집계다(둘 다 같은 전일 종가를 기준으로 삼는다).
+# 합산하면 거래량이 이중계상되고, SETL_PRC(정산가)는 정규장에만 있다.
+# 주요 필드: TDD_CLSPRC(종가) SETL_PRC(정산가) SPOT_PRC(기초자산 지수) ACC_OPNINT_QTY(미결제)
+#           ACC_TRDVOL(거래량) ACC_TRDVAL(거래대금). 전부 문자열이며 미거래 월물은 ""로 온다.
+KRX_MAX_ROWS = 30
 
 # ECOS는 당일치가 늦게 올라올 수 있다. 범위로 받아 가장 최근 값을 쓰면 공휴일·지연에 견딘다.
 # 다만 ECOS는 오래된 행부터 잘라 주므로, sample 키의 10행 제한 안에 기준일이 들어오도록
@@ -320,7 +328,16 @@ def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
         )
     if not key:
         raise KiwoomError("KRX_AUTH_KEY가 없습니다 — KOSPI200 선물·옵션 수집을 건너뜁니다.")
-    data = _get_json(f"{KRX_BASE}/{path}?basDd={date}", timeout, {"AUTH_KEY": key})
+    try:
+        data = _get_json(f"{KRX_BASE}/{path}?basDd={date}", timeout, {"AUTH_KEY": key})
+    except KiwoomError as exc:
+        # 401은 두 가지다. 키가 틀린 것과, 키는 유효하나 그 서비스를 신청하지 않은 것.
+        if "Unauthorized API Call" in str(exc):
+            raise KiwoomError(
+                f"KRX 서비스 미신청({path}) — 키는 유효하나 이 API 이용 신청이 승인되지 않았다. "
+                "KRX OpenAPI 포털에서 해당 서비스를 신청하면 된다."
+            ) from exc
+        raise
     if isinstance(data, dict) and data.get("respCode"):
         raise KiwoomError(f"KRX {data.get('respCode')}: {data.get('respMsg')}")
     rows: list[Any] = []
@@ -332,25 +349,25 @@ def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
     if not rows:
         raise KiwoomError("KRX 응답에 데이터가 없습니다.")
 
-    def is_k200(row: dict[str, Any]) -> bool:
-        text = " ".join(str(v) for v in row.values())
-        return any(hint in text for hint in KRX_K200_HINTS)
-
-    picked = [r for r in rows if isinstance(r, dict) and is_k200(r)]
-    out: dict[str, Any] = {"total_rows": len(rows), "k200_rows": len(picked)}
-    if picked:
-        out["rows"] = picked[:KRX_MAX_ROWS]
-    else:
-        # 상품명 표기를 못 맞춘 경우. 원본 앞부분과 등장한 상품명을 남겨 다음 회차에 고친다.
+    out: dict[str, Any] = {"total_rows": len(rows)}
+    matched = 0
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        product = KRX_PRODUCTS.get(str(row.get("PROD_NM", "")).strip())
+        session = KRX_SESSIONS.get(str(row.get("MKT_NM", "")).strip())
+        if not product or not session:
+            continue
+        bucket = out.setdefault(f"{product}_{session}", [])
+        if len(bucket) < KRX_MAX_ROWS:
+            bucket.append(row)
+        matched += 1
+    out["matched_rows"] = matched
+    if not matched:
+        seen = sorted({str(r.get("PROD_NM", "")) for r in rows if isinstance(r, dict)})
+        out["seen_products"] = seen[:40]
         out["rows"] = rows[:KRX_MAX_ROWS]
-        names = []
-        for r in rows[:200]:
-            if isinstance(r, dict):
-                for k, v in r.items():
-                    if "NM" in k.upper() and isinstance(v, str) and v not in names:
-                        names.append(v)
-        out["seen_names"] = names[:40]
-        out["note"] = "KOSPI200 필터에 걸린 행이 없다. seen_names로 표기를 확인해 KRX_K200_HINTS를 고쳐라."
+        out["note"] = "KRX_PRODUCTS에 걸린 행이 없다. seen_products로 실제 표기를 확인해 고쳐라."
     return out
 
 
@@ -732,12 +749,28 @@ def _baskets(date: str) -> list[dict[str, Any]]:
     return jobs
 
 
-def _derivatives(date: str) -> list[dict[str, Any]]:
-    """KRX. KOSPI200 선물·옵션 — 키움에 없는 유일한 항목이다."""
-    return [
+def _derivatives(date: str, also_today: str | None = None) -> list[dict[str, Any]]:
+    """KRX. KOSPI200 선물·옵션 — 키움에 파생이 없어 여기서만 얻는다.
+
+    야간장 행은 그 BAS_DD 정규장에 **선행하는** 세션이다(2026-09-04 실측: 야간과 정규가
+    같은 전일 종가를 기준으로 삼는다). 따라서 개장 전 회차에서는 직전 거래일뿐 아니라
+    당일자도 받아야 밤사이 야간선물을 읽을 수 있다. 아직 게시 전이면 error로 남는다.
+    """
+    jobs = [
         {"name": name, "kind": "krx", "path": path, "label": label, "_date": date}
         for name, path, label in KRX_SERVICES
     ]
+    if also_today and also_today != date:
+        jobs.append(
+            {
+                "name": "krx_futures_today",
+                "kind": "krx",
+                "path": "drv/fut_bydd_trd",
+                "label": "선물 일별매매정보(당일 — 밤사이 야간장 확인용)",
+                "_date": also_today,
+            }
+        )
+    return jobs
 
 
 def _macro(date: str) -> list[dict[str, Any]]:
@@ -790,7 +823,7 @@ def preset_premarket(date: str) -> list[dict[str, Any]]:
         + _short_selling(date)
         + _baskets(date)
         + _overseas(date)
-        + _derivatives(date)
+        + _derivatives(date, datetime.now(KST).strftime("%Y%m%d"))
         + _macro(date)
     )
 
