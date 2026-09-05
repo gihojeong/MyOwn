@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""키움증권 REST OpenAPI 수집기 — KOSPI 일일/주간 리포트 예약작업용.
+"""키움증권 REST OpenAPI 수집기 — KOSPI 개장전·마감후·주간 리포트 예약작업용.
 
 표준 라이브러리만 사용한다. 예약작업이 뜨는 컨테이너는 매번 새로 만들어지므로
 uv sync(약 140MB)나 MCP 기동 없이 바로 돌아가야 한다. urllib은 https_proxy와
@@ -14,18 +14,27 @@ SSL_CERT_FILE을 자동으로 따르므로 프록시 환경에서 추가 설정�
 
 사용 예:
 
-  # 마감 리포트용 묶음 수집
-  python3 scripts/kiwoom_collect.py --preset close --out data/kiwoom_20260904.json
+  # 자격증명·도달성 점검 (토큰 발급까지만)
+  python3 scripts/kiwoom_collect.py --check
 
-  # 임의 API 단건 호출 (스펙 확인·디버깅용)
+  # 마감 리포트 (평일 18:05) — 당일 확정치
+  python3 scripts/kiwoom_collect.py --preset close --out data/close_$(date +%Y%m%d).json
+
+  # 개장 전 브리핑 (평일 06:00) — 직전 거래일 확정치를 --date로 지정
+  python3 scripts/kiwoom_collect.py --preset premarket --date 20260904 --out data/pre.json
+
+  # 주간 리뷰 (토 06:00)
+  python3 scripts/kiwoom_collect.py --preset weekly --out data/weekly.json
+
+  # 임의 API 단건 (스펙 확인·디버깅)
   python3 scripts/kiwoom_collect.py --call ka20001 --path /api/dostk/sect \
       --body '{"mrkt_tp":"0","inds_cd":"001"}'
 
-  # 자격증명·도달성만 점검 (토큰 발급까지만)
-  python3 scripts/kiwoom_collect.py --check
+개별 호출이 실패해도 전체를 중단하지 않는다. 실패한 항목은 결과 JSON에 error로
+남으므로, 리포트에서 "확인 불가"가 데이터 부재인지 수집 실패인지 구분할 수 있다.
 
-개별 호출이 실패해도 전체를 중단하지 않는다. 실패한 항목은 결과 JSON에
-error로 남으므로, 리포트에서 "확인 불가"를 데이터 부재로 정직하게 구분할 수 있다.
+요청 파라미터는 모두 kiwoom-spec MCP(spec_show / kiwoom_help)로 확인한 값이다.
+추측으로 채운 항목은 없다.
 """
 
 from __future__ import annotations
@@ -38,7 +47,7 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Callable
 
 KST = timezone(timedelta(hours=9))
 
@@ -49,7 +58,6 @@ BASE_URLS = {
 
 TOKEN_PATH = "/oauth2/token"
 
-# 조회 계열 엔드포인트의 경로. spec_show로 확인한 값만 싣는다.
 PATHS = {
     "sect": "/api/dostk/sect",
     "mrkcond": "/api/dostk/mrkcond",
@@ -59,7 +67,19 @@ PATHS = {
     "frgnistt": "/api/dostk/frgnistt",
 }
 
-# ka10063 투자자별 코드. 기관 세부주체까지 분해해야 리포트 [B]가 채워진다.
+# 리포트가 종목 단위로 추적하는 관심종목. --codes로 덮어쓸 수 있다.
+WATCHLIST = {
+    "005930": "삼성전자",
+    "005935": "삼성전자우",  # 자사주 소각 국면에서 보통주와 등락이 갈린다
+    "000660": "SK하이닉스",
+    "402340": "SK스퀘어",
+    "034020": "두산에너빌리티",
+    "373220": "LG에너지솔루션",
+    "009150": "삼성전기",
+    "005380": "현대차",
+}
+
+# ka10063 투자자별 코드. 기관 세부주체까지 분해해야 수급 해부가 채워진다.
 INVESTORS = {
     "6": "외국인",
     "7": "기관계",
@@ -69,6 +89,9 @@ INVESTORS = {
     "2": "은행",
     "5": "기타법인",
 }
+
+# 거래소구분: 1=KRX, 2=NXT, 3=통합. 지수 산출 기준과 맞추려면 통합을 쓴다.
+EXCHANGE_ALL = "3"
 
 
 class KiwoomError(RuntimeError):
@@ -143,46 +166,202 @@ def _job(name: str, api_id: str, path_key: str, body: dict[str, Any]) -> dict[st
     return {"name": name, "api_id": api_id, "path": PATHS[path_key], "body": body}
 
 
-def preset_close() -> list[dict[str, Any]]:
-    """마감 리포트 [A] 지수 · [B] 수급 묶음.
+# --- 재사용 블록 -------------------------------------------------------------
 
-    ka20001은 inds_cur_prc_tm에 시간별 지수를 함께 실어주므로 장중 궤적까지 한 번에 얻는다.
-    ka10063은 투자자별로 따로 호출해야 기관 세부주체가 분리된다.
-    ka10066은 종목 단위 행을 돌려주므로 3주체 항등식 검산의 원자료로 쓴다.
-    """
-    jobs = [
+
+def _indices() -> list[dict[str, Any]]:
+    """ka20001. inds_cur_prc_tm에 시간별 지수가 함께 와서 장중 궤적까지 한 번에 얻는다."""
+    return [
         _job("index_kospi", "ka20001", "sect", {"mrkt_tp": "0", "inds_cd": "001"}),
         _job("index_kosdaq", "ka20001", "sect", {"mrkt_tp": "1", "inds_cd": "101"}),
         _job("index_kospi200", "ka20001", "sect", {"mrkt_tp": "2", "inds_cd": "201"}),
+        _job("sector_indices_kospi", "ka20003", "sect", {"inds_cd": "001"}),
     ]
-    for code, label in INVESTORS.items():
-        jobs.append(
-            _job(
-                f"investor_intraday_kospi_{label}",
-                "ka10063",
-                "mrkcond",
-                {
-                    "mrkt_tp": "001",
-                    "amt_qty_tp": "1",
-                    "invsr": code,
-                    "frgn_all": "0",
-                    "smtm_netprps_tp": "0",
-                    "stex_tp": "3",
-                },
-            )
-        )
-    jobs.append(
+
+
+def _investor_flows(date: str) -> list[dict[str, Any]]:
+    """ka10063을 투자자별로 나눠 호출해야 기관 세부주체가 분리된다."""
+    jobs = [
         _job(
-            "investor_after_close_kospi",
+            f"investor_intraday_{label}",
+            "ka10063",
+            "mrkcond",
+            {
+                "mrkt_tp": "001",
+                "amt_qty_tp": "1",
+                "invsr": code,
+                "frgn_all": "0",
+                "smtm_netprps_tp": "0",
+                "stex_tp": EXCHANGE_ALL,
+            },
+        )
+        for code, label in INVESTORS.items()
+    ]
+    jobs.append(
+        # 종목 단위 행. etc_corp(기타법인)가 응답에 직접 있어 3주체 잔차 역산이 불필요하다.
+        _job(
+            "investor_after_close",
             "ka10066",
             "mrkcond",
-            {"mrkt_tp": "001", "amt_qty_tp": "1", "trde_tp": "0", "stex_tp": "3"},
+            {"mrkt_tp": "001", "amt_qty_tp": "1", "trde_tp": "0", "stex_tp": EXCHANGE_ALL},
+        )
+    )
+    jobs.append(
+        _job(
+            "sector_investor_flows_kospi",
+            "ka10051",
+            "sect",
+            {"mrkt_tp": "0", "amt_qty_tp": "0", "base_dt": date, "stex_tp": EXCHANGE_ALL},
+        )
+    )
+    jobs.append(
+        _job(
+            "foreign_institution_top",
+            "ka90009",
+            "rkinfo",
+            {
+                "mrkt_tp": "001",
+                "amt_qty_tp": "1",
+                "qry_dt_tp": "1",
+                "date": date,
+                "stex_tp": EXCHANGE_ALL,
+            },
         )
     )
     return jobs
 
 
-PRESETS = {"close": preset_close}
+def _investor_streak(days: str = "5") -> list[dict[str, Any]]:
+    """ka10131. 최근 N거래일 연속 순매수 — 오늘 수급이 추세 지속인지 전환인지 판별용."""
+    return [
+        _job(
+            f"investor_streak_{days}d",
+            "ka10131",
+            "frgnistt",
+            {
+                "dt": days,
+                "mrkt_tp": "001",
+                "netslmt_tp": "2",
+                "stk_inds_tp": "0",
+                "amt_qty_tp": "0",
+                "stex_tp": EXCHANGE_ALL,
+            },
+        )
+    ]
+
+
+def _rankings() -> list[dict[str, Any]]:
+    jobs = [
+        _job(
+            "amount_top",
+            "ka10032",
+            "rkinfo",
+            {"mrkt_tp": "001", "mang_stk_incls": "1", "stex_tp": EXCHANGE_ALL},
+        )
+    ]
+    # sort_tp 1=상승률, 3=하락률
+    for sort_tp, label in (("1", "rise"), ("3", "fall")):
+        jobs.append(
+            _job(
+                f"change_rate_top_{label}",
+                "ka10027",
+                "rkinfo",
+                {
+                    "mrkt_tp": "001",
+                    "sort_tp": sort_tp,
+                    "trde_qty_cnd": "0000",
+                    "stk_cnd": "0",
+                    "crd_cnd": "0",
+                    "updown_incls": "1",
+                    "pric_cnd": "0",
+                    "trde_prica_cnd": "0",
+                    "stex_tp": EXCHANGE_ALL,
+                },
+            )
+        )
+    return jobs
+
+
+def _after_hours() -> list[dict[str, Any]]:
+    """시간외 단일가(16:00~18:00). 마감 리포트는 18:05 실행이라 데이터가 이미 확정돼 있다."""
+    jobs = []
+    # sort_base 1=상승률, 3=하락률
+    for sort_base, label in (("1", "rise"), ("3", "fall")):
+        jobs.append(
+            _job(
+                f"after_hours_rank_{label}",
+                "ka10098",
+                "rkinfo",
+                {
+                    "mrkt_tp": "001",
+                    "sort_base": sort_base,
+                    "stk_cnd": "0",
+                    "trde_qty_cnd": "0",
+                    "crd_cnd": "0",
+                    "trde_prica": "0",
+                },
+            )
+        )
+    for code, name in WATCHLIST.items():
+        jobs.append(_job(f"after_hours_{name}", "ka10087", "mrkcond", {"stk_cd": code}))
+    return jobs
+
+
+def _per_stock(date: str, weekly: bool = False) -> list[dict[str, Any]]:
+    api_id = "ka10082" if weekly else "ka10081"
+    kind = "weekly" if weekly else "daily"
+    jobs = [
+        _job(f"candle_{kind}_{name}", api_id, "chart", {"stk_cd": code, "base_dt": date})
+        for code, name in WATCHLIST.items()
+    ]
+    if not weekly:
+        jobs += [
+            _job(
+                f"investor_by_stock_{name}",
+                "ka10059",
+                "stkinfo",
+                {
+                    "dt": date,
+                    "stk_cd": code,
+                    "amt_qty_tp": "1",
+                    "trde_tp": "0",
+                    "unit_tp": "1000",
+                },
+            )
+            for code, name in WATCHLIST.items()
+        ]
+    return jobs
+
+
+# --- preset -----------------------------------------------------------------
+
+
+def preset_close(date: str) -> list[dict[str, Any]]:
+    """마감 리포트 (평일 18:05). 당일 확정 종가·수급·시간외까지."""
+    return _indices() + _investor_flows(date) + _investor_streak() + _rankings() + _after_hours() + _per_stock(date)
+
+
+def preset_premarket(date: str) -> list[dict[str, Any]]:
+    """개장 전 브리핑 (평일 06:00). --date에 직전 거래일을 넘긴다."""
+    return _indices() + _investor_flows(date) + _investor_streak() + _rankings() + _per_stock(date)
+
+
+def preset_weekly(date: str) -> list[dict[str, Any]]:
+    """주간 리뷰 (토 06:00). 주봉과 5거래일 누적 수급 중심."""
+    return (
+        _indices()
+        + _investor_flows(date)
+        + _investor_streak("5")
+        + _investor_streak("20")
+        + _per_stock(date, weekly=True)
+    )
+
+
+PRESETS: dict[str, Callable[[str], list[dict[str, Any]]]] = {
+    "close": preset_close,
+    "premarket": preset_premarket,
+    "weekly": preset_weekly,
+}
 
 
 def run_jobs(jobs: list[dict[str, Any]], token: str, timeout: int, pause: float) -> dict[str, Any]:
@@ -203,11 +382,13 @@ def run_jobs(jobs: list[dict[str, Any]], token: str, timeout: int, pause: float)
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="키움 REST OpenAPI 수집기")
-    parser.add_argument("--preset", choices=sorted(PRESETS), help="미리 정의된 수집 묶음")
+    parser.add_argument("--preset", choices=sorted(PRESETS), help="리포트별 수집 묶음")
     parser.add_argument("--call", metavar="API_ID", help="임의 API 단건 호출")
     parser.add_argument("--path", help="--call과 함께 쓰는 URL 경로 (예: /api/dostk/sect)")
     parser.add_argument("--body", default="{}", help="--call과 함께 쓰는 요청 body (JSON 문자열)")
     parser.add_argument("--check", action="store_true", help="토큰 발급까지만 수행해 자격증명·도달성 확인")
+    parser.add_argument("--date", help="기준일자 YYYYMMDD (기본: 오늘 KST)")
+    parser.add_argument("--codes", help="관심종목을 code:name 쌍의 쉼표 목록으로 덮어쓰기")
     parser.add_argument("--out", help="결과 JSON을 저장할 경로 (미지정 시 stdout)")
     parser.add_argument("--timeout", type=int, default=30, help="호출당 타임아웃 초 (기본 30)")
     parser.add_argument("--pause", type=float, default=0.2, help="호출 간 대기 초 (기본 0.2)")
@@ -216,6 +397,15 @@ def main() -> int:
     if not (args.preset or args.call or args.check):
         parser.error("--preset, --call, --check 중 하나는 지정해야 합니다.")
 
+    if args.codes:
+        WATCHLIST.clear()
+        for pair in args.codes.split(","):
+            code, _, name = pair.strip().partition(":")
+            WATCHLIST[code] = name or code
+
+    now = datetime.now(KST)
+    date = args.date or now.strftime("%Y%m%d")
+
     try:
         mode = _mode()
         token = issue_token(args.timeout)
@@ -223,9 +413,9 @@ def main() -> int:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1
 
-    now = datetime.now(KST)
     payload: dict[str, Any] = {
         "collected_at_kst": now.isoformat(),
+        "base_date": date,
         "mode": mode,
         "base_url": BASE_URLS[mode],
     }
@@ -239,11 +429,10 @@ def main() -> int:
         if not args.path:
             print("[FAIL] --call에는 --path가 필요합니다.", file=sys.stderr)
             return 1
-        jobs = [_job(args.call, args.call, "sect", {})]
-        jobs[0]["path"] = args.path
-        jobs[0]["body"] = json.loads(args.body)
+        jobs = [{"name": args.call, "api_id": args.call, "path": args.path, "body": json.loads(args.body)}]
     else:
-        jobs = PRESETS[args.preset]()
+        payload["preset"] = args.preset
+        jobs = PRESETS[args.preset](date)
 
     payload["results"] = run_jobs(jobs, token, args.timeout, args.pause)
 
