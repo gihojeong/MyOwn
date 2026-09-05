@@ -13,6 +13,8 @@ SSL_CERT_FILE을 자동으로 따르므로 프록시 환경에서 추가 설정�
   KIWOOM_MODE   demo(모의투자, 기본) | real(실전투자)
   ECOS_API_KEY  한국은행 ECOS 키(선택). 원/달러·국고채 금리 수집에만 쓰인다.
                 없으면 공개 sample 키로 동작한다. 무료 발급: https://ecos.bok.or.kr/api
+  KRX_AUTH_KEY  한국거래소 OpenAPI 키(선택). KOSPI200 선물·옵션 수집에만 쓰인다.
+                없으면 그 두 항목만 건너뛰고 나머지는 정상 수집한다.
 
 사용 예:
 
@@ -40,8 +42,8 @@ SSL_CERT_FILE을 자동으로 따르므로 프록시 환경에서 추가 설정�
 
 키움이 주지 않는 것은 두 곳에서 메운다. 미국 증시·금·유가·달러·미 국채는 키움
 해외주식 API로 추종 ETF를 조회하고(추가 키 불필요), 원/달러와 국고채 금리는
-한국은행 ECOS에서 받는다. KOSPI200 선물·베이시스·미결제는 어느 쪽에도 없어
-여전히 웹 조사가 필요하다.
+한국은행 ECOS에서 받는다. KOSPI200 선물·옵션은 키움 REST OpenAPI에 파생이 아예 없어
+한국거래소 OpenAPI에서 받는다(KRX_AUTH_KEY 필요).
 """
 
 from __future__ import annotations
@@ -168,6 +170,20 @@ ECOS_SERIES = [
     ("cd_91d", "817Y002", "010502000", "CD 91일"),
     ("corp_bond_aa3y", "817Y002", "010300000", "회사채 3년 AA-"),
 ]
+# 한국거래소 OpenAPI. 키움 REST OpenAPI에는 국내 파생이 아예 없어서(2026-09-05 확인:
+# spec_groups에 선물·옵션 그룹 없음, 실시간 스트림 21종도 전부 주식·ETF·ELW·업종,
+# 선물 종목코드를 quotes API에 직접 넣어도 빈 응답) KOSPI200 선물은 여기서 받는다.
+# KRX_AUTH_KEY가 없으면 이 블록만 건너뛴다 — ECOS와 달리 공개 sample 키가 없다.
+KRX_BASE = "https://data-dbg.krx.co.kr/svc/apis"
+KRX_SERVICES = [
+    ("krx_futures", "drv/fut_bydd_trd", "선물 일별매매정보"),
+    ("krx_options", "drv/opt_bydd_trd", "옵션 일별매매정보"),
+]
+# 응답에서 KOSPI200물만 남긴다. 상품명 표기가 문서에 열거돼 있지 않아 넓게 잡고,
+# 걸러진 게 없으면 원본을 그대로 남겨 첫 실행에서 실제 표기를 확인할 수 있게 한다.
+KRX_K200_HINTS = ("코스피200", "KOSPI200", "K200", "코스피 200")
+KRX_MAX_ROWS = 40
+
 # ECOS는 당일치가 늦게 올라올 수 있다. 범위로 받아 가장 최근 값을 쓰면 공휴일·지연에 견딘다.
 # 다만 ECOS는 오래된 행부터 잘라 주므로, sample 키의 10행 제한 안에 기준일이 들어오도록
 # 창을 좁게 잡아야 한다(2026-09-05 실측: 14일 창 + sample이면 기준일 하루 전이 최신으로 잡힘).
@@ -224,9 +240,12 @@ def _post(
         raise KiwoomError(f"JSON이 아닌 응답: {body[:200]}") from exc
 
 
-def _get_json(url: str, timeout: int) -> Any:
-    """ECOS는 GET + URL 경로 파라미터를 쓴다. 키움과 인증 체계가 달라 따로 둔다."""
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT}, method="GET")
+def _get_json(url: str, timeout: int, extra_headers: dict[str, str] | None = None) -> Any:
+    """ECOS·KRX는 GET을 쓴다. 키움과 인증 체계가 달라 따로 둔다."""
+    headers = {"User-Agent": USER_AGENT}
+    if extra_headers:
+        headers.update(extra_headers)
+    request = urllib.request.Request(url, headers=headers, method="GET")
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             body = response.read().decode("utf-8", errors="replace")
@@ -274,6 +293,45 @@ def fetch_ecos(stat_code: str, item_code: str, date: str, timeout: int = 30) -> 
             out["change"] = round(float(latest["DATA_VALUE"]) - float(previous["DATA_VALUE"]), 4)
         except (TypeError, ValueError):
             pass
+    return out
+
+
+def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
+    """KRX OpenAPI 일별 시세 한 건. 인증키는 AUTH_KEY 헤더로 보낸다."""
+    key = os.environ.get("KRX_AUTH_KEY", "").strip()
+    if not key:
+        raise KiwoomError("KRX_AUTH_KEY가 없습니다 — KOSPI200 선물·옵션 수집을 건너뜁니다.")
+    data = _get_json(f"{KRX_BASE}/{path}?basDd={date}", timeout, {"AUTH_KEY": key})
+    if isinstance(data, dict) and data.get("respCode"):
+        raise KiwoomError(f"KRX {data.get('respCode')}: {data.get('respMsg')}")
+    rows: list[Any] = []
+    if isinstance(data, dict):
+        for value in data.values():
+            if isinstance(value, list):
+                rows = value
+                break
+    if not rows:
+        raise KiwoomError("KRX 응답에 데이터가 없습니다.")
+
+    def is_k200(row: dict[str, Any]) -> bool:
+        text = " ".join(str(v) for v in row.values())
+        return any(hint in text for hint in KRX_K200_HINTS)
+
+    picked = [r for r in rows if isinstance(r, dict) and is_k200(r)]
+    out: dict[str, Any] = {"total_rows": len(rows), "k200_rows": len(picked)}
+    if picked:
+        out["rows"] = picked[:KRX_MAX_ROWS]
+    else:
+        # 상품명 표기를 못 맞춘 경우. 원본 앞부분과 등장한 상품명을 남겨 다음 회차에 고친다.
+        out["rows"] = rows[:KRX_MAX_ROWS]
+        names = []
+        for r in rows[:200]:
+            if isinstance(r, dict):
+                for k, v in r.items():
+                    if "NM" in k.upper() and isinstance(v, str) and v not in names:
+                        names.append(v)
+        out["seen_names"] = names[:40]
+        out["note"] = "KOSPI200 필터에 걸린 행이 없다. seen_names로 표기를 확인해 KRX_K200_HINTS를 고쳐라."
     return out
 
 
@@ -655,6 +713,14 @@ def _baskets(date: str) -> list[dict[str, Any]]:
     return jobs
 
 
+def _derivatives(date: str) -> list[dict[str, Any]]:
+    """KRX. KOSPI200 선물·옵션 — 키움에 없는 유일한 항목이다."""
+    return [
+        {"name": name, "kind": "krx", "path": path, "label": label, "_date": date}
+        for name, path, label in KRX_SERVICES
+    ]
+
+
 def _macro(date: str) -> list[dict[str, Any]]:
     """ECOS. 키움에 없는 원/달러와 국고채 금리."""
     return [
@@ -687,6 +753,7 @@ def preset_close(date: str) -> list[dict[str, Any]]:
         + _short_selling(date)
         + _baskets(date)
         + _overseas(date)
+        + _derivatives(date)
         + _macro(date)
     )
 
@@ -704,6 +771,7 @@ def preset_premarket(date: str) -> list[dict[str, Any]]:
         + _short_selling(date)
         + _baskets(date)
         + _overseas(date)
+        + _derivatives(date)
         + _macro(date)
     )
 
@@ -721,6 +789,7 @@ def preset_weekly(date: str) -> list[dict[str, Any]]:
         + _short_selling(date)
         + _baskets(date)
         + _overseas(date)
+        + _derivatives(date)
         + _macro(date)
     )
 
@@ -735,6 +804,18 @@ PRESETS: dict[str, Callable[[str], list[dict[str, Any]]]] = {
 def run_jobs(jobs: list[dict[str, Any]], token: str, timeout: int, pause: float) -> dict[str, Any]:
     results: dict[str, Any] = {}
     for job in jobs:
+        if job.get("kind") == "krx":
+            try:
+                results[job["name"]] = {
+                    "source": "krx",
+                    "label": job["label"],
+                    "data": fetch_krx(job["path"], job["_date"], timeout),
+                }
+            except KiwoomError as exc:
+                results[job["name"]] = {"source": "krx", "label": job["label"], "error": str(exc)}
+            if pause:
+                time.sleep(pause)
+            continue
         if job.get("kind") == "ecos":
             try:
                 results[job["name"]] = {
