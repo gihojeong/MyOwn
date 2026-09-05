@@ -51,6 +51,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -191,6 +192,27 @@ KRX_SESSIONS = {"정규": "regular", "야간": "night"}
 # 주요 필드: TDD_CLSPRC(종가) SETL_PRC(정산가) SPOT_PRC(기초자산 지수) ACC_OPNINT_QTY(미결제)
 #           ACC_TRDVOL(거래량) ACC_TRDVAL(거래대금). 전부 문자열이며 미거래 월물은 ""로 온다.
 KRX_MAX_ROWS = 30
+
+# 옵션(opt_bydd_trd)은 선물과 스키마가 다르다. 2026-09-04 실측 17,092행:
+#   · MKT_NM·SETL_PRC·SPOT_PRC가 **없다**. 세션은 ISU_NM 끝의 "(정규)"/"(야간)" 접미사뿐이다.
+#   · 콜/풋은 RGHT_TP_NM에 영문 대문자 "CALL"/"PUT"으로 온다.
+#   · 행사가 전용 필드가 없다. ISU_NM을 파싱해야 하고 천단위 콤마가 들어간다.
+#   · IMP_VOLT(내재변동성)가 직접 온다 — BS 역산이 필요 없다. 단 야간행은 전부 "0.00"이다.
+#   · "코스닥150 위클리(월) 옵션" 84행만 세션 접미사가 없다(IMP_VOLT/NXTDD_BAS_PRC로 구분).
+KRX_OPT_PRODUCTS = {
+    "코스피200 옵션": "k200",
+    "미니코스피200 옵션": "k200_mini",
+    "코스닥150 옵션": "kq150",
+    "코스피200 위클리(월) 옵션": "k200_weekly",
+    "코스닥150 위클리(월) 옵션": "kq150_weekly",
+}
+# "코스피200 C 202609 1,150.0 (정규)" — 상품토큰 · C|P · 만기 · 행사가 · (세션)
+ISU_NM_RE = re.compile(
+    r"^(?P<prod>\S+)\s+(?P<cp>[CP])\s+(?P<term>\d{6}|\d{4}W\d)\s+"
+    r"(?P<strike>[\d,]+(?:\.\d+)?)(?:\s*\((?P<sess>정규|야간)\))?\s*$"
+)
+# 17,092행을 그대로 실으면 결과 JSON이 못 쓰게 커진다. 미결제 상위 행사가만 남긴다.
+KRX_OPT_STRIKES = 25
 
 # ECOS는 당일치가 늦게 올라올 수 있다. 범위로 받아 가장 최근 값을 쓰면 공휴일·지연에 견딘다.
 # 다만 ECOS는 오래된 행부터 잘라 주므로, sample 키의 10행 제한 안에 기준일이 들어오도록
@@ -350,6 +372,11 @@ def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
         raise KiwoomError("KRX 응답에 데이터가 없습니다.")
 
     out: dict[str, Any] = {"total_rows": len(rows)}
+    if "opt_" in path:
+        # 옵션은 스키마가 달라 행을 그대로 담지 않고 행사가별 집계로 접는다.
+        for key, session in (("k200_regular", "정규"), ("k200_night", "야간")):
+            out[key] = summarize_options([r for r in rows if isinstance(r, dict)], "k200", session)
+        return out
     matched = 0
     for row in rows:
         if not isinstance(row, dict):
@@ -369,6 +396,83 @@ def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
         out["rows"] = rows[:KRX_MAX_ROWS]
         out["note"] = "KRX_PRODUCTS에 걸린 행이 없다. seen_products로 실제 표기를 확인해 고쳐라."
     return out
+
+
+def _num(value: Any) -> float:
+    """KRX는 모든 값을 문자열로 주고 미거래 항목은 빈 문자열이다."""
+    try:
+        return float(str(value).replace(",", ""))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def summarize_options(rows: list[dict[str, Any]], product: str = "k200", session: str = "정규") -> dict[str, Any]:
+    """행사가별로 접어 P/C 비율·최대고통점·미결제 분포를 만든다.
+
+    리포트가 쓰는 것은 개별 행이 아니라 이 집계다. 거래량이 아니라 미결제약정이
+    현물에 대한 헤지 수요를 결정하므로 P/C는 OI 기준을 주 지표로 둔다.
+    """
+    want = {v: k for k, v in KRX_OPT_PRODUCTS.items()}.get(product)
+    picked: list[tuple[str, str, float, dict[str, Any]]] = []
+    for row in rows:
+        if str(row.get("PROD_NM", "")).strip() != want:
+            continue
+        match = ISU_NM_RE.match(str(row.get("ISU_NM", "")).strip())
+        if not match:
+            continue
+        # 세션 접미사가 없는 상품은 IMP_VOLT로 가른다(야간행은 IV가 0이다).
+        row_session = match.group("sess") or ("정규" if _num(row.get("IMP_VOLT")) > 0 else "야간")
+        if row_session != session:
+            continue
+        picked.append((match.group("term"), match.group("cp"), _num(match.group("strike")), row))
+    if not picked:
+        return {"matched_rows": 0, "note": f"{product}/{session}에 해당하는 행이 없다."}
+
+    term = min(t for t, _, _, _ in picked)  # 근월물
+    near = [(cp, strike, row) for t, cp, strike, row in picked if t == term]
+    strikes: dict[float, dict[str, Any]] = {}
+    for cp, strike, row in near:
+        slot = strikes.setdefault(strike, {"strike": strike})
+        side = "call" if cp == "C" else "put"
+        slot[f"{side}_oi"] = _num(row.get("ACC_OPNINT_QTY"))
+        slot[f"{side}_vol"] = _num(row.get("ACC_TRDVOL"))
+        slot[f"{side}_close"] = _num(row.get("TDD_CLSPRC"))
+        slot[f"{side}_iv"] = _num(row.get("IMP_VOLT"))
+
+    call_oi = sum(v.get("call_oi", 0.0) for v in strikes.values())
+    put_oi = sum(v.get("put_oi", 0.0) for v in strikes.values())
+    call_vol = sum(v.get("call_vol", 0.0) for v in strikes.values())
+    put_vol = sum(v.get("put_vol", 0.0) for v in strikes.values())
+
+    # 최대고통점: 만기 시 옵션 보유자 총 내재가치가 최소가 되는 행사가.
+    pain = {}
+    for k in strikes:
+        pain[k] = sum(
+            v.get("call_oi", 0.0) * max(0.0, k - v["strike"])
+            + v.get("put_oi", 0.0) * max(0.0, v["strike"] - k)
+            for v in strikes.values()
+        )
+    max_pain = min(pain, key=pain.get) if pain else None
+
+    top = sorted(
+        strikes.values(),
+        key=lambda v: v.get("call_oi", 0.0) + v.get("put_oi", 0.0),
+        reverse=True,
+    )[:KRX_OPT_STRIKES]
+    return {
+        "product": want,
+        "session": session,
+        "term": term,
+        "strike_count": len(strikes),
+        "call_oi": call_oi,
+        "put_oi": put_oi,
+        "pc_oi_ratio": round(put_oi / call_oi, 4) if call_oi else None,
+        "call_volume": call_vol,
+        "put_volume": put_vol,
+        "pc_volume_ratio": round(put_vol / call_vol, 4) if call_vol else None,
+        "max_pain": max_pain,
+        "strikes": sorted(top, key=lambda v: v["strike"]),
+    }
 
 
 def _token_cache_path() -> str:
