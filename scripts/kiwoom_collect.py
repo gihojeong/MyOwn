@@ -190,6 +190,18 @@ KRX_MAX_ROWS = 40
 ECOS_LOOKBACK_DAYS = 10
 
 
+# 웹 콘솔에서 키를 복사하면 제로폭 문자(U+200B 등)나 비분리 공백이 딸려오는 일이 흔하다.
+# 2026-09-05 실측: KRX_AUTH_KEY에 제로폭 문자가 섞여 헤더가 통째로 거부됐다. 눈으로는
+# 구분이 안 되고 길이만 1 늘어나므로, 자격증명은 읽는 즉시 이 문자들을 털어낸다.
+INVISIBLE_CHARS = "\u200b\u200c\u200d\u2060\ufeff\u00a0"
+
+
+def _clean_secret(value: str) -> str:
+    for ch in INVISIBLE_CHARS:
+        value = value.replace(ch, "")
+    return value.strip()
+
+
 class KiwoomError(RuntimeError):
     pass
 
@@ -206,8 +218,8 @@ def _mode() -> str:
 
 
 def _credentials() -> tuple[str, str]:
-    key = os.environ.get("APP_KEY", "").strip()
-    secret = os.environ.get("APP_SECRET", "").strip()
+    key = _clean_secret(os.environ.get("APP_KEY", ""))
+    secret = _clean_secret(os.environ.get("APP_SECRET", ""))
     missing = [n for n, v in (("APP_KEY", key), ("APP_SECRET", secret)) if not v]
     if missing:
         raise KiwoomError(f"환경변수 {', '.join(missing)}가 비어 있습니다.")
@@ -261,7 +273,7 @@ def _get_json(url: str, timeout: int, extra_headers: dict[str, str] | None = Non
 
 def fetch_ecos(stat_code: str, item_code: str, date: str, timeout: int = 30) -> dict[str, Any]:
     """ECOS 일별 시계열 한 건. 최근 값과 직전 값을 함께 돌려줘 전일대비를 바로 계산한다."""
-    key = os.environ.get("ECOS_API_KEY", "").strip() or "sample"
+    key = _clean_secret(os.environ.get("ECOS_API_KEY", "")) or "sample"
     rows_max = 10 if key == "sample" else 100  # sample 키는 11행 이상 요청하면 ERROR-301
     end = datetime.strptime(date, "%Y%m%d")
     start = end - timedelta(days=ECOS_LOOKBACK_DAYS)
@@ -298,7 +310,14 @@ def fetch_ecos(stat_code: str, item_code: str, date: str, timeout: int = 30) -> 
 
 def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
     """KRX OpenAPI 일별 시세 한 건. 인증키는 AUTH_KEY 헤더로 보낸다."""
-    key = os.environ.get("KRX_AUTH_KEY", "").strip()
+    raw = os.environ.get("KRX_AUTH_KEY", "")
+    key = _clean_secret(raw)
+    if key != raw.strip():
+        # 무엇이 지워졌는지 값 노출 없이 알린다.
+        print(
+            f"[warn] KRX_AUTH_KEY에서 보이지 않는 문자 {len(raw.strip()) - len(key)}개를 제거했습니다.",
+            file=sys.stderr,
+        )
     if not key:
         raise KiwoomError("KRX_AUTH_KEY가 없습니다 — KOSPI200 선물·옵션 수집을 건너뜁니다.")
     data = _get_json(f"{KRX_BASE}/{path}?basDd={date}", timeout, {"AUTH_KEY": key})
