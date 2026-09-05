@@ -13,6 +13,8 @@ SSL_CERT_FILE을 자동으로 따르므로 프록시 환경에서 추가 설정�
   KIWOOM_MODE   demo(모의투자, 기본) | real(실전투자)
   ECOS_API_KEY  한국은행 ECOS 키(선택). 원/달러·국고채 금리 수집에만 쓰인다.
                 없으면 공개 sample 키로 동작한다. 무료 발급: https://ecos.bok.or.kr/api
+  KRX_AUTH_KEY  한국거래소 OpenAPI 키(선택). KOSPI200 선물·옵션 수집에만 쓰인다.
+                없으면 그 두 항목만 건너뛰고 나머지는 정상 수집한다.
 
 사용 예:
 
@@ -40,8 +42,8 @@ SSL_CERT_FILE을 자동으로 따르므로 프록시 환경에서 추가 설정�
 
 키움이 주지 않는 것은 두 곳에서 메운다. 미국 증시·금·유가·달러·미 국채는 키움
 해외주식 API로 추종 ETF를 조회하고(추가 키 불필요), 원/달러와 국고채 금리는
-한국은행 ECOS에서 받는다. KOSPI200 선물·베이시스·미결제는 어느 쪽에도 없어
-여전히 웹 조사가 필요하다.
+한국은행 ECOS에서 받는다. KOSPI200 선물·옵션은 키움 REST OpenAPI에 파생이 아예 없어
+한국거래소 OpenAPI에서 받는다(KRX_AUTH_KEY 필요).
 """
 
 from __future__ import annotations
@@ -49,6 +51,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -101,6 +104,19 @@ WATCHLIST = {
     "009150": "삼성전기",
     "005380": "현대차",
 }
+
+# 지수 바스켓 대용 ETF·해외 상장 한국물. 관심종목(WATCHLIST)과 달리 수급·공매도는 받지 않고
+# 시세만 받는다. KODEX MSCI Korea(무캡)와 KOSPI는 반도체 비중이 달라(65.74% vs 51.44%)
+# 두 지수를 연립하면 당일 반도체 S와 나머지 R을 분리할 수 있다 — 리포트 [G] ①-b가 요구하는 계산이다.
+BASKETS = {"156080": "kodex_msci_korea"}
+
+# 미국 상장 한국물. EWY는 25/50 캡 바스켓이라 KODEX(무캡)와 다르고, 한국 마감 이후 세션에서
+# 거래되므로 KODEX·KOSPI로 만든 이론가와의 차이가 곧 미 세션 재평가분(= 갭 신호)이다.
+US_KOREA = [
+    ("EWY", "NY", "ewy_korea_etf"),
+    ("SKM", "NY", "adr_sk_telecom"),
+    ("KB", "NY", "adr_kb_financial"),
+]
 
 # ka10063 투자자별 코드. 기관 세부주체까지 분해해야 수급 해부가 채워진다.
 # 이 API에는 금융투자와 사모펀드 코드가 없다 — 그 둘은 ka10066 응답의
@@ -155,10 +171,65 @@ ECOS_SERIES = [
     ("cd_91d", "817Y002", "010502000", "CD 91일"),
     ("corp_bond_aa3y", "817Y002", "010300000", "회사채 3년 AA-"),
 ]
+# 한국거래소 OpenAPI. 키움 REST OpenAPI에는 국내 파생이 아예 없어서(2026-09-05 확인:
+# spec_groups에 선물·옵션 그룹 없음, 실시간 스트림 21종도 전부 주식·ETF·ELW·업종,
+# 선물 종목코드를 quotes API에 직접 넣어도 빈 응답) KOSPI200 선물은 여기서 받는다.
+# KRX_AUTH_KEY가 없으면 이 블록만 건너뛴다 — ECOS와 달리 공개 sample 키가 없다.
+KRX_BASE = "https://data-dbg.krx.co.kr/svc/apis"
+KRX_SERVICES = [
+    ("krx_futures", "drv/fut_bydd_trd", "선물 일별매매정보"),
+    ("krx_options", "drv/opt_bydd_trd", "옵션 일별매매정보"),
+]
+# 응답 실측(2026-09-04, 385행). 한 BAS_DD에 정규장과 야간장이 **각각 별도 행**으로 온다.
+#   PROD_NM "코스피200 선물"     × MKT_NM "정규"/"야간"  = 13행씩
+#   PROD_NM "미니코스피200 선물" × MKT_NM "정규"/"야간"  = 11행씩
+# ISU_NM에는 "미니코스피 F 202609 (주간)"처럼 200이 빠진 표기가 있으므로 판정은 PROD_NM으로 한다.
+# 행 전체를 join해 "코스피200"으로 매칭하면 정규·야간·미니가 한 덩어리로 섞인다.
+KRX_PRODUCTS = {"코스피200 선물": "k200", "미니코스피200 선물": "k200_mini"}
+KRX_SESSIONS = {"정규": "regular", "야간": "night"}
+# 야간은 정규에 누적된 값이 아니라 세션별 독립 집계다(둘 다 같은 전일 종가를 기준으로 삼는다).
+# 합산하면 거래량이 이중계상되고, SETL_PRC(정산가)는 정규장에만 있다.
+# 주요 필드: TDD_CLSPRC(종가) SETL_PRC(정산가) SPOT_PRC(기초자산 지수) ACC_OPNINT_QTY(미결제)
+#           ACC_TRDVOL(거래량) ACC_TRDVAL(거래대금). 전부 문자열이며 미거래 월물은 ""로 온다.
+KRX_MAX_ROWS = 30
+
+# 옵션(opt_bydd_trd)은 선물과 스키마가 다르다. 2026-09-04 실측 17,092행:
+#   · MKT_NM·SETL_PRC·SPOT_PRC가 **없다**. 세션은 ISU_NM 끝의 "(정규)"/"(야간)" 접미사뿐이다.
+#   · 콜/풋은 RGHT_TP_NM에 영문 대문자 "CALL"/"PUT"으로 온다.
+#   · 행사가 전용 필드가 없다. ISU_NM을 파싱해야 하고 천단위 콤마가 들어간다.
+#   · IMP_VOLT(내재변동성)가 직접 온다 — BS 역산이 필요 없다. 단 야간행은 전부 "0.00"이다.
+#   · "코스닥150 위클리(월) 옵션" 84행만 세션 접미사가 없다(IMP_VOLT/NXTDD_BAS_PRC로 구분).
+KRX_OPT_PRODUCTS = {
+    "코스피200 옵션": "k200",
+    "미니코스피200 옵션": "k200_mini",
+    "코스닥150 옵션": "kq150",
+    "코스피200 위클리(월) 옵션": "k200_weekly",
+    "코스닥150 위클리(월) 옵션": "kq150_weekly",
+}
+# "코스피200 C 202609 1,150.0 (정규)" — 상품토큰 · C|P · 만기 · 행사가 · (세션)
+ISU_NM_RE = re.compile(
+    r"^(?P<prod>\S+)\s+(?P<cp>[CP])\s+(?P<term>\d{6}|\d{4}W\d)\s+"
+    r"(?P<strike>[\d,]+(?:\.\d+)?)(?:\s*\((?P<sess>정규|야간)\))?\s*$"
+)
+# 17,092행을 그대로 실으면 결과 JSON이 못 쓰게 커진다. 미결제 상위 행사가만 남긴다.
+KRX_OPT_STRIKES = 25
+
 # ECOS는 당일치가 늦게 올라올 수 있다. 범위로 받아 가장 최근 값을 쓰면 공휴일·지연에 견딘다.
 # 다만 ECOS는 오래된 행부터 잘라 주므로, sample 키의 10행 제한 안에 기준일이 들어오도록
 # 창을 좁게 잡아야 한다(2026-09-05 실측: 14일 창 + sample이면 기준일 하루 전이 최신으로 잡힘).
 ECOS_LOOKBACK_DAYS = 10
+
+
+# 웹 콘솔에서 키를 복사하면 제로폭 문자(U+200B 등)나 비분리 공백이 딸려오는 일이 흔하다.
+# 2026-09-05 실측: KRX_AUTH_KEY에 제로폭 문자가 섞여 헤더가 통째로 거부됐다. 눈으로는
+# 구분이 안 되고 길이만 1 늘어나므로, 자격증명은 읽는 즉시 이 문자들을 털어낸다.
+INVISIBLE_CHARS = "\u200b\u200c\u200d\u2060\ufeff\u00a0"
+
+
+def _clean_secret(value: str) -> str:
+    for ch in INVISIBLE_CHARS:
+        value = value.replace(ch, "")
+    return value.strip()
 
 
 class KiwoomError(RuntimeError):
@@ -177,8 +248,8 @@ def _mode() -> str:
 
 
 def _credentials() -> tuple[str, str]:
-    key = os.environ.get("APP_KEY", "").strip()
-    secret = os.environ.get("APP_SECRET", "").strip()
+    key = _clean_secret(os.environ.get("APP_KEY", ""))
+    secret = _clean_secret(os.environ.get("APP_SECRET", ""))
     missing = [n for n, v in (("APP_KEY", key), ("APP_SECRET", secret)) if not v]
     if missing:
         raise KiwoomError(f"환경변수 {', '.join(missing)}가 비어 있습니다.")
@@ -211,9 +282,12 @@ def _post(
         raise KiwoomError(f"JSON이 아닌 응답: {body[:200]}") from exc
 
 
-def _get_json(url: str, timeout: int) -> Any:
-    """ECOS는 GET + URL 경로 파라미터를 쓴다. 키움과 인증 체계가 달라 따로 둔다."""
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT}, method="GET")
+def _get_json(url: str, timeout: int, extra_headers: dict[str, str] | None = None) -> Any:
+    """ECOS·KRX는 GET을 쓴다. 키움과 인증 체계가 달라 따로 둔다."""
+    headers = {"User-Agent": USER_AGENT}
+    if extra_headers:
+        headers.update(extra_headers)
+    request = urllib.request.Request(url, headers=headers, method="GET")
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             body = response.read().decode("utf-8", errors="replace")
@@ -229,7 +303,7 @@ def _get_json(url: str, timeout: int) -> Any:
 
 def fetch_ecos(stat_code: str, item_code: str, date: str, timeout: int = 30) -> dict[str, Any]:
     """ECOS 일별 시계열 한 건. 최근 값과 직전 값을 함께 돌려줘 전일대비를 바로 계산한다."""
-    key = os.environ.get("ECOS_API_KEY", "").strip() or "sample"
+    key = _clean_secret(os.environ.get("ECOS_API_KEY", "")) or "sample"
     rows_max = 10 if key == "sample" else 100  # sample 키는 11행 이상 요청하면 ERROR-301
     end = datetime.strptime(date, "%Y%m%d")
     start = end - timedelta(days=ECOS_LOOKBACK_DAYS)
@@ -262,6 +336,143 @@ def fetch_ecos(stat_code: str, item_code: str, date: str, timeout: int = 30) -> 
         except (TypeError, ValueError):
             pass
     return out
+
+
+def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
+    """KRX OpenAPI 일별 시세 한 건. 인증키는 AUTH_KEY 헤더로 보낸다."""
+    raw = os.environ.get("KRX_AUTH_KEY", "")
+    key = _clean_secret(raw)
+    if key != raw.strip():
+        # 무엇이 지워졌는지 값 노출 없이 알린다.
+        print(
+            f"[warn] KRX_AUTH_KEY에서 보이지 않는 문자 {len(raw.strip()) - len(key)}개를 제거했습니다.",
+            file=sys.stderr,
+        )
+    if not key:
+        raise KiwoomError("KRX_AUTH_KEY가 없습니다 — KOSPI200 선물·옵션 수집을 건너뜁니다.")
+    try:
+        data = _get_json(f"{KRX_BASE}/{path}?basDd={date}", timeout, {"AUTH_KEY": key})
+    except KiwoomError as exc:
+        # 401은 두 가지다. 키가 틀린 것과, 키는 유효하나 그 서비스를 신청하지 않은 것.
+        if "Unauthorized API Call" in str(exc):
+            raise KiwoomError(
+                f"KRX 서비스 미신청({path}) — 키는 유효하나 이 API 이용 신청이 승인되지 않았다. "
+                "KRX OpenAPI 포털에서 해당 서비스를 신청하면 된다."
+            ) from exc
+        raise
+    if isinstance(data, dict) and data.get("respCode"):
+        raise KiwoomError(f"KRX {data.get('respCode')}: {data.get('respMsg')}")
+    rows: list[Any] = []
+    if isinstance(data, dict):
+        for value in data.values():
+            if isinstance(value, list):
+                rows = value
+                break
+    if not rows:
+        raise KiwoomError("KRX 응답에 데이터가 없습니다.")
+
+    out: dict[str, Any] = {"total_rows": len(rows)}
+    if "opt_" in path:
+        # 옵션은 스키마가 달라 행을 그대로 담지 않고 행사가별 집계로 접는다.
+        for key, session in (("k200_regular", "정규"), ("k200_night", "야간")):
+            out[key] = summarize_options([r for r in rows if isinstance(r, dict)], "k200", session)
+        return out
+    matched = 0
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        product = KRX_PRODUCTS.get(str(row.get("PROD_NM", "")).strip())
+        session = KRX_SESSIONS.get(str(row.get("MKT_NM", "")).strip())
+        if not product or not session:
+            continue
+        bucket = out.setdefault(f"{product}_{session}", [])
+        if len(bucket) < KRX_MAX_ROWS:
+            bucket.append(row)
+        matched += 1
+    out["matched_rows"] = matched
+    if not matched:
+        seen = sorted({str(r.get("PROD_NM", "")) for r in rows if isinstance(r, dict)})
+        out["seen_products"] = seen[:40]
+        out["rows"] = rows[:KRX_MAX_ROWS]
+        out["note"] = "KRX_PRODUCTS에 걸린 행이 없다. seen_products로 실제 표기를 확인해 고쳐라."
+    return out
+
+
+def _num(value: Any) -> float:
+    """KRX는 모든 값을 문자열로 주고 미거래 항목은 빈 문자열이다."""
+    try:
+        return float(str(value).replace(",", ""))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def summarize_options(rows: list[dict[str, Any]], product: str = "k200", session: str = "정규") -> dict[str, Any]:
+    """행사가별로 접어 P/C 비율·최대고통점·미결제 분포를 만든다.
+
+    리포트가 쓰는 것은 개별 행이 아니라 이 집계다. 거래량이 아니라 미결제약정이
+    현물에 대한 헤지 수요를 결정하므로 P/C는 OI 기준을 주 지표로 둔다.
+    """
+    want = {v: k for k, v in KRX_OPT_PRODUCTS.items()}.get(product)
+    picked: list[tuple[str, str, float, dict[str, Any]]] = []
+    for row in rows:
+        if str(row.get("PROD_NM", "")).strip() != want:
+            continue
+        match = ISU_NM_RE.match(str(row.get("ISU_NM", "")).strip())
+        if not match:
+            continue
+        # 세션 접미사가 없는 상품은 IMP_VOLT로 가른다(야간행은 IV가 0이다).
+        row_session = match.group("sess") or ("정규" if _num(row.get("IMP_VOLT")) > 0 else "야간")
+        if row_session != session:
+            continue
+        picked.append((match.group("term"), match.group("cp"), _num(match.group("strike")), row))
+    if not picked:
+        return {"matched_rows": 0, "note": f"{product}/{session}에 해당하는 행이 없다."}
+
+    term = min(t for t, _, _, _ in picked)  # 근월물
+    near = [(cp, strike, row) for t, cp, strike, row in picked if t == term]
+    strikes: dict[float, dict[str, Any]] = {}
+    for cp, strike, row in near:
+        slot = strikes.setdefault(strike, {"strike": strike})
+        side = "call" if cp == "C" else "put"
+        slot[f"{side}_oi"] = _num(row.get("ACC_OPNINT_QTY"))
+        slot[f"{side}_vol"] = _num(row.get("ACC_TRDVOL"))
+        slot[f"{side}_close"] = _num(row.get("TDD_CLSPRC"))
+        slot[f"{side}_iv"] = _num(row.get("IMP_VOLT"))
+
+    call_oi = sum(v.get("call_oi", 0.0) for v in strikes.values())
+    put_oi = sum(v.get("put_oi", 0.0) for v in strikes.values())
+    call_vol = sum(v.get("call_vol", 0.0) for v in strikes.values())
+    put_vol = sum(v.get("put_vol", 0.0) for v in strikes.values())
+
+    # 최대고통점: 만기 시 옵션 보유자 총 내재가치가 최소가 되는 행사가.
+    pain = {}
+    for k in strikes:
+        pain[k] = sum(
+            v.get("call_oi", 0.0) * max(0.0, k - v["strike"])
+            + v.get("put_oi", 0.0) * max(0.0, v["strike"] - k)
+            for v in strikes.values()
+        )
+    max_pain = min(pain, key=pain.get) if pain else None
+
+    top = sorted(
+        strikes.values(),
+        key=lambda v: v.get("call_oi", 0.0) + v.get("put_oi", 0.0),
+        reverse=True,
+    )[:KRX_OPT_STRIKES]
+    return {
+        "product": want,
+        "session": session,
+        "term": term,
+        "strike_count": len(strikes),
+        "call_oi": call_oi,
+        "put_oi": put_oi,
+        "pc_oi_ratio": round(put_oi / call_oi, 4) if call_oi else None,
+        "call_volume": call_vol,
+        "put_volume": put_vol,
+        "pc_volume_ratio": round(put_vol / call_vol, 4) if call_vol else None,
+        "max_pain": max_pain,
+        "strikes": sorted(top, key=lambda v: v["strike"]),
+    }
 
 
 def _token_cache_path() -> str:
@@ -622,8 +833,48 @@ def _overseas(date: str) -> list[dict[str, Any]]:
             "us_mrkcond",
             {"stex_tp": exchange, "stk_cd": symbol, "base_dt": date},
         )
-        for symbol, exchange, label in US_WATCHLIST
+        for symbol, exchange, label in US_WATCHLIST + US_KOREA
     ]
+
+
+def _baskets(date: str) -> list[dict[str, Any]]:
+    """지수 바스켓 대용 ETF. 국내 상장이므로 관심종목과 같은 API로 받는다."""
+    jobs: list[dict[str, Any]] = []
+    for code, label in BASKETS.items():
+        jobs.append(_job(f"basket_{label}", "ka10001", "stkinfo", {"stk_cd": code}))
+        jobs.append(
+            _job(
+                f"basket_{label}_daily",
+                "ka10081",
+                "chart",
+                {"stk_cd": code, "base_dt": date, "upd_stkpc_tp": "1"},
+            )
+        )
+    return jobs
+
+
+def _derivatives(date: str, also_today: str | None = None) -> list[dict[str, Any]]:
+    """KRX. KOSPI200 선물·옵션 — 키움에 파생이 없어 여기서만 얻는다.
+
+    야간장 행은 그 BAS_DD 정규장에 **선행하는** 세션이다(2026-09-04 실측: 야간과 정규가
+    같은 전일 종가를 기준으로 삼는다). 따라서 개장 전 회차에서는 직전 거래일뿐 아니라
+    당일자도 받아야 밤사이 야간선물을 읽을 수 있다. 아직 게시 전이면 error로 남는다.
+    """
+    jobs = [
+        {"name": name, "kind": "krx", "path": path, "label": label, "_date": date}
+        for name, path, label in KRX_SERVICES
+    ]
+    if also_today and also_today != date:
+        jobs.append(
+            {
+                "name": "krx_futures_today",
+                "kind": "krx",
+                "path": "drv/fut_bydd_trd",
+                "label": "선물 일별매매정보(당일 — 밤사이 야간장 확인용)",
+                "_date": also_today,
+            }
+        )
+    return jobs
 
 
 def _macro(date: str) -> list[dict[str, Any]]:
@@ -656,7 +907,9 @@ def preset_close(date: str) -> list[dict[str, Any]]:
         + _per_stock(date)
         + _stock_profile()
         + _short_selling(date)
+        + _baskets(date)
         + _overseas(date)
+        + _derivatives(date)
         + _macro(date)
     )
 
@@ -672,7 +925,9 @@ def preset_premarket(date: str) -> list[dict[str, Any]]:
         + _per_stock(date)
         + _stock_profile()
         + _short_selling(date)
+        + _baskets(date)
         + _overseas(date)
+        + _derivatives(date, datetime.now(KST).strftime("%Y%m%d"))
         + _macro(date)
     )
 
@@ -688,7 +943,9 @@ def preset_weekly(date: str) -> list[dict[str, Any]]:
         + _per_stock(date, weekly=True)
         + _stock_profile()
         + _short_selling(date)
+        + _baskets(date)
         + _overseas(date)
+        + _derivatives(date)
         + _macro(date)
     )
 
@@ -703,6 +960,18 @@ PRESETS: dict[str, Callable[[str], list[dict[str, Any]]]] = {
 def run_jobs(jobs: list[dict[str, Any]], token: str, timeout: int, pause: float) -> dict[str, Any]:
     results: dict[str, Any] = {}
     for job in jobs:
+        if job.get("kind") == "krx":
+            try:
+                results[job["name"]] = {
+                    "source": "krx",
+                    "label": job["label"],
+                    "data": fetch_krx(job["path"], job["_date"], timeout),
+                }
+            except KiwoomError as exc:
+                results[job["name"]] = {"source": "krx", "label": job["label"], "error": str(exc)}
+            if pause:
+                time.sleep(pause)
+            continue
         if job.get("kind") == "ecos":
             try:
                 results[job["name"]] = {
