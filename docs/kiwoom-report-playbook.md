@@ -39,7 +39,7 @@ python3 kiwoom_collect.py --preset weekly    --date <지난주금요일YYYYMMDD>
 | [A-2] 시간외 | `after_hours_rank_rise` `after_hours_rank_fall` | 시간외 단일가 등락률 상·하위 |
 | [A-2] 시간외 종목 | `after_hours_<종목명>` | `ovt_sigpric_cur_prc`(체결가) · `ovt_sigpric_flu_rt`(등락률) · `ovt_sigpric_acc_trde_qty`(거래량). 18:05 실행이면 확정돼 있다 |
 | [B] 투자자별 | `investor_intraday_<투자자>` | 외국인·기관계·투신·연기금·보험·은행·국가·기타법인의 종목별 순매수(백만원). 시장 합계는 `netprps_amt` 합산 |
-| [B] 3주체 원자료 | `investor_after_close` | 종목 단위 약 1,200행(연속조회로 전량 수신) |
+| [B] 3주체 원자료 | `investor_after_close` | 종목 단위 1,200행. **`cur_prc`는 KRX 종가가 아니다 — 아래 절을 읽어라** |
 | [B] 프로그램매매 | `program_trades_kospi` `program_trades_kosdaq` | 차익 `dfrt_trde_netprps` · 비차익 `ndiffpro_trde_netprps` |
 | [B] 연속 순매수 | `investor_streak_5d` (주간은 `_20d`도) | 추세 지속인지 전환인지 판정용 |
 | [B] 매매 상위 | `foreign_institution_top` | 외국인·기관 매매 상위 |
@@ -67,6 +67,41 @@ python3 kiwoom_collect.py --preset weekly    --date <지난주금요일YYYYMMDD>
    나머지 종목을 채울 때만 쓴다.
 3. `[A]`의 원/달러·국고채 3년/10년, `[B]`의 공매도, `[E]`의 해외 증시는 각각 `ecos_*`,
    `short_selling_*`, `us_*`로 이미 확보된다. 웹 조사를 시작하지 마라.
+
+## ★종가는 `candle_daily_*`에서 가져와라 — `investor_after_close`의 `cur_prc`는 다르다
+
+`investor_after_close`(ka10066)는 거래소구분 통합(`stex_tp=3`)으로 호출하므로 `cur_prc`가
+**NXT 애프터마켓(15:40~20:00)까지 반영한 통합 최종가**다. 같은 날 KRX 정규장 종가와 다르다.
+2026-09-04 실측:
+
+| 종목 | KRX 정규장 (`candle_daily_*`) | 통합 (`investor_after_close`) | 괴리 |
+| --- | --- | --- | --- |
+| 삼성전자 | 255,500 | 257,000 | +0.59% |
+| SK하이닉스 | 1,647,000 | 1,662,000 | +0.91% |
+| SK스퀘어 | 1,041,000 | 1,038,000 | −0.29% |
+| 삼성전자우 | 191,600 | 191,600 | 0.00% |
+
+**종가·등락률·지수 기여도 계산에는 반드시 `candle_daily_*`(ka10081, KRX 정규장 확정치)를 써라.**
+`investor_after_close`의 `cur_prc`와 `flu_rt`를 종가로 쓰면 지수 항등식이 최대 0.9%p 어긋난다.
+`profile_*`(ka10001)과 `short_selling_*`(ka10014)도 KRX 정규장 기준이라 `candle_daily_*`와 일치한다.
+
+**대신 이 괴리가 곧 [C]가 요구하는 NXT 애프터마켓 괴리율이다.** 웹에서 따로 찾지 마라 —
+`investor_after_close.cur_prc ÷ candle_daily_*.cur_prc − 1`로 바로 나온다. 밤사이 해외 변수에
+대한 국내 투자자의 첫 반응이므로 시가 갭의 선행 신호로 읽되, 괴리 0.00%(위 삼성전자우)는
+**NXT 거래가 없었다는 뜻이므로 정보량 0으로 판정하라.**
+
+## 3주체 항등식은 닫히지만 잔차가 남는다
+
+`investor_after_close`는 12페이지 1,200행에서 끊긴다(상장 종목 전체가 아니다). 2026-09-04 실측:
+
+```
+개인 −4,360,236 + 외국인 +969,489 + 기관계 +1,833,431 + 기타법인 +1,586,536 = +29,220 (백만원)
+기관 세부합(금융투자·보험·투신·기타금융·은행·연기금등·사모펀드·국가) = 1,833,445 vs 기관계 1,833,431 → 차 14
+```
+
+기관 세부합은 사실상 정확히 닫힌다. 3주체+기타법인 잔차 292억원(총거래의 0.7%)은 1,200행에서
+잘린 소형주 몫이다. **잔차를 기타법인으로 역산하지 마라** — 기타법인은 이미 실측값으로 있고,
+잔차는 절단 오차다. 리포트에는 잔차 규모를 각주로 밝히면 된다.
 
 ## 과거 사고가 구조적으로 막히는 지점
 
