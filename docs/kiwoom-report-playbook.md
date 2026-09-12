@@ -14,7 +14,7 @@
 curl -fsSL -o kiwoom_collect.py \
   https://raw.githubusercontent.com/gihojeong/MyOwn/master/scripts/kiwoom_collect.py
 
-# 마감 리포트(81건) / 개장 전 브리핑(71건) / 주간 리뷰(61건)
+# 마감 리포트(89건) / 개장 전 브리핑(80건) / 주간 리뷰(69건)
 python3 kiwoom_collect.py --preset close     --date <오늘YYYYMMDD>       --pause 0.3 --out kiwoom.json
 python3 kiwoom_collect.py --preset premarket --date <직전거래일YYYYMMDD> --pause 0.3 --out kiwoom.json
 python3 kiwoom_collect.py --preset weekly    --date <지난주금요일YYYYMMDD> --pause 0.3 --out kiwoom.json
@@ -53,7 +53,8 @@ close = r["candle_daily_삼성전자"]["data"]["stk_dt_pole_chart_qry"][0]["cur_
 | [A-2] 시간외 | `after_hours_rank_rise` `after_hours_rank_fall` | 시간외 단일가 등락률 상·하위 |
 | [A-2] 시간외 종목 | `after_hours_<종목명>` | `ovt_sigpric_cur_prc`(체결가) · `ovt_sigpric_flu_rt`(등락률) · `ovt_sigpric_acc_trde_qty`(거래량). 18:05 실행이면 확정돼 있다 |
 | [B] 투자자별 | `investor_intraday_<투자자>` | 외국인·기관계·투신·연기금·보험·은행·국가·기타법인의 종목별 순매수(백만원). 시장 합계는 `netprps_amt` 합산 |
-| [B] 3주체 원자료 | `investor_after_close` | 종목 단위 1,200행. **`cur_prc`는 KRX 종가가 아니다 — 아래 절을 읽어라** |
+| [B] 3주체 원자료 | `investor_after_close` | 종목 단위 1,200행. KRX 기준(`stex_tp=1`) |
+| [C] NXT 괴리용 | `investor_after_close_all` | 같은 호출의 통합(KRX+NXT) 사본. **`cur_prc`만 쓴다 — 수급은 위 KRX 키에서 읽어라** |
 | [B] 프로그램매매 | `program_trades_kospi` `program_trades_kosdaq` | 차익 `dfrt_trde_netprps` · 비차익 `ndiffpro_trde_netprps` |
 | [B] 연속 순매수 | `investor_streak_5d` (주간은 `_20d`도) | 추세 지속인지 전환인지 판정용 |
 | [B] 매매 상위 | `foreign_institution_top` | 외국인·기관 매매 상위 |
@@ -162,27 +163,47 @@ close = r["candle_daily_삼성전자"]["data"]["stk_dt_pole_chart_qry"][0]["cur_
 3. `[A]`의 원/달러·국고채 3년/10년, `[B]`의 공매도, `[E]`의 해외 증시는 각각 `ecos_*`,
    `short_selling_*`, `us_*`로 이미 확보된다. 웹 조사를 시작하지 마라.
 
-## ★종가는 `candle_daily_*`에서 가져와라 — `investor_after_close`의 `cur_prc`는 다르다
+## ★거래소 기준은 KRX다 — NXT는 괴리 계산에만 쓴다
 
-`investor_after_close`(ka10066)는 거래소구분 통합(`stex_tp=3`)으로 호출하므로 `cur_prc`가
-**NXT 애프터마켓(15:40~20:00)까지 반영한 통합 최종가**다. 같은 날 KRX 정규장 종가와 다르다.
-2026-09-04 실측:
+수급·프로그램매매·종가·순위 계열은 모두 KRX 기준(`stex_tp=1`)으로 받는다. 통합(KRX+NXT,
+`stex_tp=3`)이 아니다. 이유는 둘이다.
 
-| 종목 | KRX 정규장 (`candle_daily_*`) | 통합 (`investor_after_close`) | 괴리 |
+1. **지수와 시가총액이 KRX 종가로 산출된다.** 2026-09-11 실측: 삼성전자 상장주식수
+   5,846,279천주 x KRX 종가 259,500원 = 15,171,094억으로 `profile_*`의 `mac`
+   15,171,093억과 맞는다. 통합 종가 262,000원으로는 맞지 않는다. 통합 수치를 쓰면
+   지수 항등식과 시총 기여도 계산이 어긋난다.
+2. **마감 리포트가 도는 18:05에 통합은 아직 미확정이다.** NXT 애프터마켓은 20:00까지
+   거래한다. 그 시각의 통합 수치는 확정치가 아니다.
+
+차이는 작지 않다. 2026-09-11 KOSPI 프로그램매매(ka90010, P00101) 실측 대조:
+
+| 기준 | 차익 | 비차익 | 전체 |
 | --- | --- | --- | --- |
-| 삼성전자 | 255,500 | 257,000 | +0.59% |
-| SK하이닉스 | 1,647,000 | 1,662,000 | +0.91% |
-| SK스퀘어 | 1,041,000 | 1,038,000 | −0.29% |
-| 삼성전자우 | 191,600 | 191,600 | 0.00% |
+| KRX (`stex_tp=1`, 현행) | −511억 | −17,617억 | −18,128억 |
+| 통합 (`stex_tp=3`, 구버전) | −2,737억 | −20,034억 | −22,771억 |
 
-**종가·등락률·지수 기여도 계산에는 반드시 `candle_daily_*`(ka10081, KRX 정규장 확정치)를 써라.**
-`investor_after_close`의 `cur_prc`와 `flu_rt`를 종가로 쓰면 지수 항등식이 최대 0.9%p 어긋난다.
-`profile_*`(ka10001)과 `short_selling_*`(ka10014)도 KRX 정규장 기준이라 `candle_daily_*`와 일치한다.
+**그래도 통합을 버리지 않는다.** `investor_after_close_all`이 ka10066을 통합으로 한 번 더
+불러 두는 몫이다. 이 키의 `cur_prc`는 NXT 애프터마켓(15:40~20:00)까지 반영한 통합 최종가라,
+KRX 종가와 나란히 놓으면 [C]가 요구하는 **NXT 괴리율**이 그대로 나온다. 웹에서 따로 찾지 마라 —
 
-**대신 이 괴리가 곧 [C]가 요구하는 NXT 애프터마켓 괴리율이다.** 웹에서 따로 찾지 마라 —
-`investor_after_close.cur_prc ÷ candle_daily_*.cur_prc − 1`로 바로 나온다. 밤사이 해외 변수에
-대한 국내 투자자의 첫 반응이므로 시가 갭의 선행 신호로 읽되, 괴리 0.00%(위 삼성전자우)는
-**NXT 거래가 없었다는 뜻이므로 정보량 0으로 판정하라.**
+`investor_after_close_all.cur_prc ÷ candle_daily_*.cur_prc − 1`
+
+2026-09-11 실측:
+
+| 종목 | KRX 정규장 (`candle_daily_*`) | 통합 (`investor_after_close_all`) | 괴리 |
+| --- | --- | --- | --- |
+| 삼성전자 | 259,500 | 262,000 | +0.96% |
+| SK하이닉스 | 1,812,000 | 1,832,000 | +1.10% |
+| SK스퀘어 | 1,089,000 | 1,096,000 | +0.64% |
+| 삼성전자우 | 193,300 | 193,300 | 0.00% |
+
+밤사이 해외 변수에 대한 국내 투자자의 첫 반응이므로 시가 갭의 선행 신호로 읽되,
+괴리 0.00%(위 삼성전자우)는 **NXT 거래가 없었다는 뜻이므로 정보량 0으로 판정하라.**
+
+**종가·등락률·지수 기여도 계산에는 여전히 `candle_daily_*`(ka10081, KRX 정규장 확정치)를 써라.**
+`investor_after_close`의 `cur_prc`도 이제 KRX 기준이라 `candle_daily_*`와 일치하지만, 종가의
+정본은 일봉이다. `investor_after_close_all`의 `cur_prc`·`flu_rt`를 종가로 쓰면 지수 항등식이
+최대 1.1%p 어긋난다. `profile_*`(ka10001)과 `short_selling_*`(ka10014)도 KRX 정규장 기준이다.
 
 ## 3주체 항등식은 닫히지만 잔차가 남는다
 

@@ -88,13 +88,13 @@ claude.ai/code 메시지 입력창 위쪽 줄의 **클라우드 아이콘**(현�
 # 자격증명·도달성 점검 (토큰 발급까지만)
 python3 scripts/kiwoom_collect.py --check
 
-# 마감 리포트 (평일 18:05) — 81건
+# 마감 리포트 (평일 18:05) — 89건
 python3 scripts/kiwoom_collect.py --preset close --out data/close_$(date +%Y%m%d).json
 
-# 개장 전 브리핑 (평일 06:00) — 71건. --date에 직전 거래일을 넘긴다
+# 개장 전 브리핑 (평일 06:00) — 80건. --date에 직전 거래일을 넘긴다
 python3 scripts/kiwoom_collect.py --preset premarket --date 20260904 --out data/pre.json
 
-# 주간 리뷰 (토 06:00) — 61건
+# 주간 리뷰 (토 06:00) — 69건
 python3 scripts/kiwoom_collect.py --preset weekly --out data/weekly.json
 
 # 임의 API 단건 (스펙 확인·디버깅)
