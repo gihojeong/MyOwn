@@ -132,7 +132,13 @@ INVESTORS = {
     "5": "기타법인",
 }
 
-# 거래소구분: 1=KRX, 2=NXT, 3=통합. 지수 산출 기준과 맞추려면 통합을 쓴다.
+# 거래소구분: 1=KRX, 2=NXT, 3=통합. 수급·프로그램매매·종가 계열은 KRX로 받는다.
+# ① KOSPI 지수와 시가총액이 KRX 종가로 산출된다(2026-09-11 실측: 삼성전자 5,846,279천주
+#    x 259,500원 = 15,171,094억 ≈ ka10001 mac 15,171,093억. 통합 종가 262,000으로는 안 맞는다).
+# ② 마감 리포트는 18:05에 도는데 NXT는 20:00까지 거래하므로 그 시각 통합 수치는 미확정이다.
+EXCHANGE_KRX = "1"
+# 통합은 버리지 않는다. 통합 ÷ KRX − 1 이 개장 전 브리핑이 요구하는 NXT 괴리율(시가 갭
+# 선행 신호)이라 두 기준을 모두 받아야 계산된다 — investor_after_close_all이 그 몫이다.
 EXCHANGE_ALL = "3"
 
 # 미국 상장 종목·ETF. 키움 해외주식 API(usa20590)로 조회하며 별도 API 키가 필요 없다.
@@ -622,7 +628,7 @@ def _investor_flows(date: str) -> list[dict[str, Any]]:
                 "invsr": code,
                 "frgn_all": "0",
                 "smtm_netprps_tp": "0",
-                "stex_tp": EXCHANGE_ALL,
+                "stex_tp": EXCHANGE_KRX,
             },
             max_pages=6,
         )
@@ -634,6 +640,18 @@ def _investor_flows(date: str) -> list[dict[str, Any]]:
             "investor_after_close",
             "ka10066",
             "mrkcond",
+            {"mrkt_tp": "001", "amt_qty_tp": "1", "trde_tp": "0", "stex_tp": EXCHANGE_KRX},
+            max_pages=12,
+        )
+    )
+    jobs.append(
+        # 같은 호출을 통합(KRX+NXT)으로 한 번 더. cur_prc가 NXT 애프터마켓까지 반영한
+        # 통합 최종가라, KRX 종가와 나란히 놓으면 종목별 NXT 괴리율이 그대로 나온다.
+        # 수급 수치는 KRX 기준인 위 investor_after_close를 쓰고, 여기서는 가격만 읽는다.
+        _job(
+            "investor_after_close_all",
+            "ka10066",
+            "mrkcond",
             {"mrkt_tp": "001", "amt_qty_tp": "1", "trde_tp": "0", "stex_tp": EXCHANGE_ALL},
             max_pages=12,
         )
@@ -643,7 +661,7 @@ def _investor_flows(date: str) -> list[dict[str, Any]]:
             "sector_investor_flows_kospi",
             "ka10051",
             "sect",
-            {"mrkt_tp": "0", "amt_qty_tp": "0", "base_dt": date, "stex_tp": EXCHANGE_ALL},
+            {"mrkt_tp": "0", "amt_qty_tp": "0", "base_dt": date, "stex_tp": EXCHANGE_KRX},
         )
     )
     jobs.append(
@@ -656,7 +674,7 @@ def _investor_flows(date: str) -> list[dict[str, Any]]:
                 "amt_qty_tp": "1",
                 "qry_dt_tp": "1",
                 "date": date,
-                "stex_tp": EXCHANGE_ALL,
+                "stex_tp": EXCHANGE_KRX,
             },
         )
     )
@@ -676,7 +694,7 @@ def _investor_streak(days: str = "5") -> list[dict[str, Any]]:
                 "netslmt_tp": "2",
                 "stk_inds_tp": "0",
                 "amt_qty_tp": "0",
-                "stex_tp": EXCHANGE_ALL,
+                "stex_tp": EXCHANGE_KRX,
             },
         )
     ]
@@ -696,7 +714,7 @@ def _program_trades(date: str) -> list[dict[str, Any]]:
                 "amt_qty_tp": "1",
                 "mrkt_tp": code,
                 "min_tic_tp": "0",
-                "stex_tp": EXCHANGE_ALL,
+                "stex_tp": EXCHANGE_KRX,
             },
         )
         for code, label in (("P00101", "kospi"), ("P10102", "kosdaq"))
@@ -709,7 +727,7 @@ def _rankings() -> list[dict[str, Any]]:
             "amount_top",
             "ka10032",
             "rkinfo",
-            {"mrkt_tp": "001", "mang_stk_incls": "1", "stex_tp": EXCHANGE_ALL},
+            {"mrkt_tp": "001", "mang_stk_incls": "1", "stex_tp": EXCHANGE_KRX},
         )
     ]
     # sort_tp 1=상승률, 3=하락률
@@ -728,7 +746,7 @@ def _rankings() -> list[dict[str, Any]]:
                     "updown_incls": "1",
                     "pric_cnd": "0",
                     "trde_prica_cnd": "0",
-                    "stex_tp": EXCHANGE_ALL,
+                    "stex_tp": EXCHANGE_KRX,
                 },
             )
         )
