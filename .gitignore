@@ -3,3 +3,22 @@ __pycache__/
 
 # 수집기 출력 — 시세·수급 원자료라 저장소에 남기지 않는다
 data/
+kiwoom.json
+kiwoom_run.log
+
+# 예약작업 세션이 작업 디렉토리에 남기는 일회성 산출물.
+# 리포트 본문은 메일과 Drive로 발행되고, 예측 기록은 Drive에 남는다.
+# 저장소가 보관하는 것은 docs/ 지침과 scripts/ 수집기뿐이다.
+kospi_close_*.html
+kospi_premarket_*.html
+kospi_weekly_*.html
+build.py
+verify.py
+calc*.py
+ex[0-9]*.py
+top31.json
+dec.json
+fc.json
+
+# 수집기를 URL로 내려받으면 루트에 사본이 생긴다(scripts/ 원본과 동일)
+/kiwoom_collect.py
