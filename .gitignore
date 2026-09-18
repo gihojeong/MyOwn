@@ -3,3 +3,17 @@ __pycache__/
 
 # 수집기 출력 — 시세·수급 원자료라 저장소에 남기지 않는다
 data/
+kiwoom.json
+kiwoom_run.log
+ka10051*.json
+
+# 회차별 산출물 — 매일 새로 만들어지는 값이라 남기지 않는다
+calc_out.json
+fc.json
+kospi_close_*.html
+
+# 세션 중 임시 추출 스크립트
+ex[0-9]*.py
+
+# 수집기는 scripts/kiwoom_collect.py가 정본. 작업 디렉토리로 받아온 사본은 무시한다
+/kiwoom_collect.py
