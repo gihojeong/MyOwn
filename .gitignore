@@ -17,3 +17,24 @@ ex[0-9]*.py
 
 # 수집기는 scripts/kiwoom_collect.py가 정본. 작업 디렉토리로 받아온 사본은 무시한다
 /kiwoom_collect.py
+
+# 세션 중 임시 추출·검증 스크립트 (ext.py, ext2.py ...)
+ext*.py
+
+# 회차별 중간 계산 산출물
+decomp.json
+master.json
+
+# 진단용 단건 프로브 응답 (ah_stkinfo.json 등)
+ah_*.json
+
+# htmlBody 전사용 조각 파일 · 각종 실행 로그
+f.txt
+*.log
+
+# 회차 스크립트는 scripts/close-report/가 정본. 작업 디렉토리의 당일 인스턴스는 무시한다
+/build.py
+/calc.py
+/fc.py
+/master.py
+/verify.py
