@@ -10,10 +10,24 @@ ka10051*.json
 # 회차별 산출물 — 매일 새로 만들어지는 값이라 남기지 않는다
 calc_out.json
 fc.json
+calc*.json
+hk.json
+short.json
 kospi_close_*.html
 
 # 세션 중 임시 추출 스크립트
 ex[0-9]*.py
 
+# 세션 중 임시 파일 — 전사용 조각(fold -w 3000)과 스크레이퍼 응답 확인용 덤프
+f.txt
+t[0-9]*.html
+
 # 수집기는 scripts/kiwoom_collect.py가 정본. 작업 디렉토리로 받아온 사본은 무시한다
 /kiwoom_collect.py
+
+# 빌드·계산 스크립트는 scripts/close-report/가 정본이다.
+# 회차 중 작업 디렉토리 루트에 새로 쓴 사본은 정본을 가리므로 커밋하지 않는다.
+/build.py
+/calc*.py
+/verify.py
+/scrape_hk.py
