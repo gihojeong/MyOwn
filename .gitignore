@@ -24,6 +24,8 @@ ex[0-9]*.py
 /verify*.py
 /patch*.py
 /hk.py
+/audit*.py
+/audit*.json
 
 # 수집기는 scripts/kiwoom_collect.py가 정본. 작업 디렉토리로 받아온 사본은 무시한다
 /kiwoom_collect.py
