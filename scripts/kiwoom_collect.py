@@ -182,6 +182,13 @@ ECOS_SERIES = [
 # 선물 종목코드를 quotes API에 직접 넣어도 빈 응답) KOSPI200 선물은 여기서 받는다.
 # KRX_AUTH_KEY가 없으면 이 블록만 건너뛴다 — ECOS와 달리 공개 sample 키가 없다.
 KRX_BASE = "https://data-dbg.krx.co.kr/svc/apis"
+# 전종목 일별매매정보. **국내 주식 종가·시총·상장주식수의 정본이다.**
+# 키움 일봉(ka10081)은 확정된 과거일에도 NXT 체결이 섞인 종가를 준다(2026-09-22 실측:
+# 삼성전자 KRX 276,500 vs 키움 277,500, 6종목 전량 불일치). 종가·등락률·시총·상장주식수는
+# 반드시 이쪽을 쓰고, 키움 일봉은 과거 시계열 추세용으로만 써라.
+# 단 당일치는 장 마감 당일 저녁에 아직 게시되지 않는다(파생과 동일).
+KRX_STOCK_SERVICE = ("krx_stocks", "sto/stk_bydd_trd", "전종목 일별매매정보(KRX 확정)")
+
 KRX_SERVICES = [
     ("krx_futures", "drv/fut_bydd_trd", "선물 일별매매정보"),
     ("krx_options", "drv/opt_bydd_trd", "옵션 일별매매정보"),
@@ -378,6 +385,20 @@ def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
         raise KiwoomError("KRX 응답에 데이터가 없습니다.")
 
     out: dict[str, Any] = {"total_rows": len(rows)}
+    if path.startswith("sto/"):
+        # 942행 전량을 실으면 결과 JSON이 커진다. 관심종목은 통째로,
+        # 나머지는 시총 상위만 남긴다(리포트의 시총 상위 30 표가 이걸 쓴다).
+        by_code = {r.get("ISU_CD"): r for r in rows if isinstance(r, dict)}
+        out["watchlist"] = {
+            name: by_code[code] for code, name in WATCHLIST.items() if code in by_code
+        }
+        ranked = sorted(
+            (r for r in rows if isinstance(r, dict)),
+            key=lambda r: _num(r.get("MKTCAP")),
+            reverse=True,
+        )
+        out["top_by_market_cap"] = ranked[:40]
+        return out
     if "opt_" in path:
         # 옵션은 스키마가 달라 행을 그대로 담지 않고 행사가별 집계로 접는다.
         for key, session in (("k200_regular", "정규"), ("k200_night", "야간")):
@@ -871,6 +892,12 @@ def _baskets(date: str) -> list[dict[str, Any]]:
     return jobs
 
 
+def _krx_stocks(date: str) -> list[dict[str, Any]]:
+    """KRX 전종목 확정 시세. 종가·시총·상장주식수를 한 번에 준다."""
+    name, path, label = KRX_STOCK_SERVICE
+    return [{"name": name, "kind": "krx", "path": path, "label": label, "_date": date}]
+
+
 def _derivatives(date: str, also_today: str | None = None) -> list[dict[str, Any]]:
     """KRX. KOSPI200 선물·옵션 — 키움에 파생이 없어 여기서만 얻는다.
 
@@ -927,6 +954,7 @@ def preset_close(date: str) -> list[dict[str, Any]]:
         + _short_selling(date)
         + _baskets(date)
         + _overseas(date)
+        + _krx_stocks(date)
         + _derivatives(date)
         + _macro(date)
     )
@@ -945,6 +973,7 @@ def preset_premarket(date: str) -> list[dict[str, Any]]:
         + _short_selling(date)
         + _baskets(date)
         + _overseas(date)
+        + _krx_stocks(date)
         + _derivatives(date, datetime.now(KST).strftime("%Y%m%d"))
         + _macro(date)
     )
@@ -963,6 +992,7 @@ def preset_weekly(date: str) -> list[dict[str, Any]]:
         + _short_selling(date)
         + _baskets(date)
         + _overseas(date)
+        + _krx_stocks(date)
         + _derivatives(date)
         + _macro(date)
     )
