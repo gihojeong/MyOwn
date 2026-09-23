@@ -11,9 +11,19 @@ ka10051*.json
 calc_out.json
 fc.json
 kospi_close_*.html
+/calc*.json
+/hk.json
+/collect.log
+*.log
 
-# 세션 중 임시 추출 스크립트
+# 세션 중 임시 추출·계산·빌드 스크립트
+# 루트 한정 패턴이다. 정본 코드는 scripts/ 아래에 있으므로 영향받지 않는다.
 ex[0-9]*.py
+/calc*.py
+/build*.py
+/verify*.py
+/patch*.py
+/hk.py
 
 # 수집기는 scripts/kiwoom_collect.py가 정본. 작업 디렉토리로 받아온 사본은 무시한다
 /kiwoom_collect.py
