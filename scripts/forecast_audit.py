@@ -140,10 +140,31 @@ def month(d):
 
 
 def main():
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    argv = sys.argv[1:]
     win = "all"
-    if "--window" in sys.argv:
-        win = sys.argv[sys.argv.index("--window") + 1]
+    args = []
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if a == "--window":                      # --window weekly
+            if i + 1 < len(argv):
+                win = argv[i + 1]
+                i += 2
+                continue
+            i += 1
+            continue
+        if a.startswith("--window="):             # --window=weekly
+            win = a.split("=", 1)[1]
+            i += 1
+            continue
+        if a.startswith("--"):                    # 알 수 없는 플래그는 무시
+            i += 1
+            continue
+        args.append(a)
+        i += 1
+    if win not in ("all", "daily", "weekly", "monthly"):
+        print(f"--window 값이 잘못됐다: {win!r}. all|daily|weekly|monthly 중 하나여야 한다.")
+        return
     rows = parse(args[0]) if args else ROWS
     rows = sorted(rows, key=lambda r: r[0])
     if not rows:
