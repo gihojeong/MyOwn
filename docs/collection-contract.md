@@ -53,8 +53,8 @@ python3 scripts/kiwoom_collect.py --check
 python3 scripts/kiwoom_collect.py --preset <PRESET> --date <YYYYMMDD> --pause 0.25 --out kiwoom.json
 ```
 
-돌아가는 동안 Drive 읽기(예측 계보)·**Gmail 1차 리서치 읽기(3절)**·요인용 웹 검색을
-**병렬로** 진행한다. 수집기가 끝날 때까지 기다리며 노는 시간은 없어야 한다.
+돌아가는 동안 Drive 읽기(예측 계보)·**Gmail 1차 리서치(3절)**·**매크로 웹 조사(4절)**·
+당일 요인 검색을 **병렬로** 진행한다. 수집기가 끝날 때까지 기다리며 노는 시간은 없어야 한다.
 
 ### ④ 결과 JSON을 Read 도구로 열지 마라
 
@@ -94,6 +94,8 @@ python3 -c "import json;d=json.load(open('kiwoom.json'))['results'];print(d['ind
 
 당일 뉴스·정책·공시·특징주 사유 / 아시아 증시 동시간대 흐름 / 미 지수선물 장중 방향 /
 NDF 야간 호가 / 메모리 현물가 / 실적·컨센서스.
+**그리고 가격이 아닌 것 — 전반적 경제 상황(물가·성장·통화정책·지정학)은 4절이 의무로 다룬다.**
+가격만 모으고 매크로를 건너뛰면 `[해석9]`의 '규명'이 구조적으로 불가능하다.
 
 ### 사용자 메일함이 주는 것 — **웹 검색으로 대체되지 않는다**
 
@@ -144,27 +146,56 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
 | 주간 리뷰 | `newer_than:8d` | 본문 **최소 2건** (Tier 1에서) |
 
 ```
-{from:ark@arkinvest.com from:semianalysis@substack.com from:irrationalanalysis@substack.com
- from:jedec@smartbrief.com from:newsletter@semi-mags.com
- from:today@semiconductorpackagingnews.com} newer_than:<N>d
+{from:ark@arkinvest.com from:kcif@kcif.or.kr from:semianalysis@substack.com
+ from:irrationalanalysis@substack.com from:thechipletter@substack.com
+ from:tspasemiconductor@substack.com from:jedec@smartbrief.com
+ from:tomshardware@smartbrief.com from:newsletter@semi-mags.com
+ from:editor@semiconductordigest.com from:today@semiconductorpackagingnews.com}
+ newer_than:<N>d
 ```
+
+### 범위 규율 — 읽는 것은 **둘뿐**이다
+
+사용자 지시(2026-09-26): **"경제 관련된 이메일만 참고하면 된다. 그런데 반도체 관련
+이메일은 반도체 섹터에 영향을 줄 수 있으니 참고하는 게 좋겠다."**
+
+→ 등재 기준은 **① 경제·금융 ② 반도체** 두 축뿐이다. AI·개발·소비자 IT·과학 일반
+뉴스레터는 **아무리 흥미로워도 등재하지 마라.** 아래 등급은 2026-09-26에 최근 21일
+받은메일함 201건을 전수 조회해 실측으로 만든 것이며, **추측으로 발신자를 늘리지 마라.**
 
 ### 소스 등급
 
-**Tier 1 — 논리 체인을 인용할 수 있는 곳**
-- `ark@arkinvest.com` — ARK / Cathie Wood. **매크로(금리·유동성·밸류에이션) 서사의 1순위.**
-  주간 뉴스레터 + "A Letter To Investors" + Stock Commentary 세 종류가 온다.
-- `semianalysis@substack.com` — 반도체 공급·수요 구조. **메모리 TAM·HBM·중국 증설의 1순위.**
-- `irrationalanalysis@substack.com` — 반도체 개별 종목·부품 레벨 비판적 메모.
+**Tier 1 — 논리 체인을 인용할 수 있는 곳(본문 읽기 허용)**
+
+| 발신자 | 축 | 쓰임 |
+| --- | --- | --- |
+| `ark@arkinvest.com` | 경제 | ARK / Cathie Wood. **금리·유동성·밸류에이션 서사 1순위.** 주간 뉴스레터 · "A Letter To Investors" · Stock Commentary |
+| `kcif@kcif.or.kr` | 경제 | 국제금융센터. **들어오면 즉시 Tier 1.** 현재 수신 중단 상태 — 아래 절 참조 |
+| `semianalysis@substack.com` | 반도체 | 공급·수요 구조. **메모리 TAM·HBM·중국 증설 1순위** |
+| `irrationalanalysis@substack.com` | 반도체 | 개별 종목·부품 레벨 비판적 메모 |
+| `thechipletter@substack.com` | 반도체 | 반도체 산업 구조·역사 해설 |
+| `tspasemiconductor@substack.com` | 반도체 | 반도체 종목 분석 |
 
 **Tier 2 — 사실 확인용(제목·스니펫만, 본문 페치 금지)**
-- `jedec@smartbrief.com` · `newsletter@semi-mags.com` · `today@semiconductorpackagingnews.com`
-  — 표준·패키징·중국 메모리 동향의 **1차 사실 소스**. 반증 조건 점검에 쓴다.
 
-**제외(시간 낭비 — 쿼리에 넣지 마라)**
-`zdnet` · `towardsdatascience` · `macrumors` · `platformer` · `pragmaticengineer` ·
-`cautiousoptimism` · `figurelabs` · `prada` · `onelittlestory` · `turingpostkorea` ·
-`publishing@email.mckinsey.com`(시황 무관). 이들은 시장 판단에 기여하지 않는다.
+`jedec@smartbrief.com`(표준·메모리) · `tomshardware@smartbrief.com`(메모리 가격·제품) ·
+`newsletter@semi-mags.com`(Semiconductor Engineering) ·
+`editor@semiconductordigest.com` · `today@semiconductorpackagingnews.com`(패키징)
+→ **중국 메모리 동향의 1차 사실 소스.** 프롬프트 `[해석10]`의 반증 조건 (3) CXMT·중국
+증설 점검에 직접 쓴다. 이 경로를 돌리지 않고 "신규 정보 없음"을 쓰면 아래 강제 조항 3 위반이다.
+
+**Tier 3 — 경제·산업 리서치이나 시황 기여 낮음(제목만, 월간 이상 주기로만 참조)**
+
+`publishing@email.mckinsey.com` — 산업·거시 테마. **다만 하루 3~4통씩 오는 고빈도**라
+회차 시간을 잡아먹는다. 제목에 금리·인플레·무역·반도체가 없으면 넘겨라.
+
+**제외 — 쿼리에 넣지 마라(경제·반도체 어느 축도 아니다)**
+
+`astralcodexten` · `razib` · `computeradsfromthepast` · `towardsdatascience` ·
+`pragmaticengineer` · `platformer` · `cautiousoptimism` · `turingpostkorea` ·
+`zdnet` · `macrumors` · `figurelabs` · `onelittlestory` · `intechopen` ·
+`linkedin`(invitations/jobalerts/messages) · `skyscanner` · `hotels.com` · `prada` ·
+`news.all@mail.all.com` · `no-reply-claude@mail.anthropic.com`(**자기 리포트 회신 — 읽지 마라**)
 
 ### 강제 조항 4개
 
@@ -187,17 +218,103 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
 - 수치가 API 확정치와 어긋나면 **API가 옳다.** 뉴스레터는 해석을 가져오는 곳이지
   종가를 가져오는 곳이 아니다.
 
-### 구독이 없는 것 — 오해하지 마라
+### 국제금융센터(KCIF) — 구독은 있었고, 지금은 끊겼다
 
-**국제금융센터(KCIF)는 이 메일함에 수신 이력이 0건이다.**
-`from:kcif.or.kr`·한글 키워드·기간 무제한으로 확인했고, 검색에 걸리는 29건은 전부
-사용자가 samsung.com으로 보낸 **과거 리포트 본문**이 매칭된 것이다.
-→ **"놓쳤다"가 아니라 "구독이 없다".** 필요하면 `kcif.or.kr`을 웹 경로로 넣되,
-메일함에서 찾다가 시간을 쓰지 마라.
+★2026-09-26 1차 판정("수신 이력 0건")은 **틀렸다. 정정한다.**
+쿼리를 `from:kcif.or.kr in:anywhere`로 넓히자 **3건이 나왔고 전부 별표**다:
+
+| 날짜 | 제목 |
+| --- | --- |
+| 2025-07-14 | `[Weekly] 주간 Wall Street 인사이트(7.14)` |
+| 2025-07-14 | `[7월 14일 daily] 국제금융속보` — 관세·미 CPI·금리 전망 |
+| 2025-07-14 | `[Weekly] 주간 이슈(7.14)` — 미 CPI·중국 GDP·연준 베이지북 |
+
+발신 `kcif@kcif.or.kr`. **세 건 다 사용자가 별표를 달았다 = 높은 가치로 평가했다.**
+그런데 **2025-07-14 이후 14개월간 수신이 0건**이다. 구독이 중단된 상태다.
+
+→ **조치**: 메일함에서 KCIF를 기대하지 마라(있어도 1년 넘은 것뿐이다). 대신
+`kcif.or.kr`을 **4절 매크로 웹 경로의 1순위**로 쓴다. 발행물은 `국제금융속보`(일간),
+`주간 Wall Street 인사이트`, `주간 이슈`이며 **주간 리뷰가 쓸 값은 후자 둘**이다.
+→ 단 새 KCIF 메일이 들어오면 **Tier 1으로 즉시 승격**한다. 쿼리에 발신자를 남겨 둔 이유다.
+
+★교훈: **`in:anywhere` 없이 "수신 0건"을 단정하지 마라.** 1차 쿼리는 기본 범위(스팸·휴지통
+제외)였고 기간도 좁았다. 0건을 보고하려면 **`in:anywhere` + 기간 무제한**으로 한 번 더 쳐라.
 
 ---
 
-## 4. 종가는 KRX, 시세는 키움
+## 4. 전반적 경제 상황 — 웹 매크로 조사 (2026-09-26 신설, 의무)
+
+### 왜 생겼나
+
+사용자 지시(2026-09-26): **"웹검색을 통해서, 국장·미장 종목 및 선물/상품 가격 등등 외에도
+전반적인 경제상황을 좀 찾아서 반영해 봐."**
+
+2026-09-26 주간 리뷰는 **가격만 모았다.** 지수·종목·ETF·금리·환율·유가는 전부 확보했는데
+**그 가격을 만드는 거시 환경을 한 줄도 조사하지 않았다.** 그 결과 같은 주에 나온 아래를
+전부 놓쳤다:
+
+- **OECD 중간 경제전망이 2026-09-23, 즉 그 주의 마지막 거래일에 발표**됐다
+  (`Weathering Successive Shocks`). 세계 성장 2.9%(2026)·3.0%(2027)로 제시하고
+  하방 위험에 **"장기 국채금리의 추가 상승"**과 **"AI 투자 수익이 기대에 못 미치는 것"**을
+  명시했다. 리포트는 미10Y 주간 +24bp와 30Y 5.43%를 표에만 적고 이 프레임과 연결하지 못했다.
+- **한국은행 9월 통화신용정책보고서** — 8월 CPI **+3.4%**, 근원 **+3.1%**, 성장률 전망
+  2026년 **3.3%** / 2027년 **2.9%**, "물가는 상당 기간 목표치를 웃돌 것"으로 **추가 인상 시사**.
+  리포트는 "기준금리 3.00%"만 배경으로 깔고 **실질금리가 마이너스**라는 점을 짚지 못했다.
+- **한국 성장률 3.3% > 세계 2.9%**. 이것은 그 회차가 계산한 "한국 고유분 +1.89%p 초과수익"의
+  **독립적 교차검증**이었는데 연결하지 못했다.
+
+**가격은 결과이고 매크로는 원인이다. 원인을 조사하지 않으면 `[해석9]`의 '규명'이 불가능하다.**
+
+### 무엇을 찾는가 — 6항목, 이 순서로
+
+| # | 항목 | 회차 | 소스 1순위 |
+| --- | --- | --- | --- |
+| 1 | **한국 물가·성장·통화정책** — CPI·근원·성장률 전망·금통위 스탠스 | 전 회차 | 한국은행 통화신용정책보고서 · KDI 경제전망 · 자본시장연구원 |
+| 2 | **한국 실물** — 수출(관세청 순별/월간)·산업생산·소비 | 전 회차 | 관세청 · 기재부 최근경제동향 |
+| 3 | **미 통화정책·물가·고용** — 연준 스탠스, 코어 PCE, 고용 | 전 회차 | 연준 발언 보도 · 미 지표 캘린더 |
+| 4 | **세계 성장·기관 전망** | **주간 전용** | **OECD 중간전망** · IMF WEO · 세계은행 · Goldman·Morgan Stanley |
+| 5 | **지정학·교역조건** — 호르무즈·이란, 미중 관세·통제, 공급망 | 전 회차 | 로이터·블룸버그 · CSIS·KEIA(한국 영향 정량) |
+| 6 | **국제금융센터 발행물**(메일 수신 중단분의 웹 대체) | 주간 권장 | `kcif.or.kr` — `주간 이슈` · `주간 Wall Street 인사이트` |
+
+- **개장 전·마감 회차**는 1·2·3·5를 **각 1회 검색**으로 끝낸다(총 4회 이내). 4번은 건너뛴다.
+- **주간 리뷰**는 6항목 전부. 4번은 주간 리뷰의 고유 책무다.
+
+### 강제 조항 3개
+
+1. **전이 경로 없는 매크로 수치는 본문에 쓰지 마라** — `[해석1]`과 동일 규율.
+   `한국 CPI 3.4%` 단독 기재는 무효다. `CPI 3.4% + 기준금리 3.00% → 실질금리 -0.4% →
+   한은 추가 인상 압력 → 성장주 할인율 상방 → 반도체 밸류에이션 역풍`처럼 **사슬로** 적는다.
+2. **기관 전망치는 발표일과 기관명을 함께 적어라.** 전망치는 수시로 개정되고 기관 간
+   편차가 크다(2026-09 실측: 세계 성장 OECD 2.9% vs PIIE 3.0% vs Goldman 2.8%).
+   **편차를 숨기고 한 숫자만 쓰지 마라. 범위로 제시하고 채택값과 이유를 밝혀라.**
+3. **캘린더 날짜는 달력으로 검증하라.** 웹이 주는 지표 발표일은 자주 틀린다.
+   2026-09-26 실측: 어떤 소스가 미 고용보고서를 `10/4`로 줬는데 **10/4는 일요일**이다.
+   요일이 맞지 않으면 **"미확인"으로 적고 추정 날짜를 단정하지 마라.**
+
+### 매크로 국면 상수 (2026-09-26 기준 — 회차마다 갱신하라)
+
+```
+한국   기준금리 3.00% (2026-08-27 연속 인상, 2.50% -> 3.00%)
+       8월 CPI +3.4% / 근원 +3.1%  -> 목표 2% 상회, 실질금리 마이너스
+       성장률 전망 2026 3.3% / 2027 2.9% (한국은행)
+       한은 스탠스: "물가는 상당 기간 목표치를 웃돌 것" = 추가 인상 시사
+세계   OECD 중간전망(2026-09-23) 2.9%(2026) / 3.0%(2027)
+       하방 위험: 중동 수출 차질 · 강한 엘니뇨 · 장기금리 추가 상승 · AI 투자 수익 미달
+미국   연준 의장 케빈 워시(2026-05-22 취임). "고용은 견조, 물가는 여전히 높다"
+       코어 PCE 전망 2026년말 2.6% / 2027년말 2.3%
+중국   성장률 2026 5.0% -> 2027 4.5% (재정 부양 효과 소멸)
+지정학 호르무즈 — 미-이란이 UN총회 계기로 단계적 합의 탐색(카타르 중재).
+       이란 조건: 해상봉쇄 해제 · 자산 동결 해제 · 전쟁 종식.
+       -> 합의 진전은 유가 하락 = 한국 교역조건 개선(원유 전량 수입)
+       미중 — 2026-09-24 정상회담 반도체 통제 의제 제외, 성과 제한. 외교 시한 2건 설정
+```
+
+★이 블록은 **배경이 아니라 입력이다.** 리포트의 매크로 서술은 여기서 출발하고,
+바뀐 항목만 갱신해 다음 회차에 넘긴다.
+
+---
+
+## 5. 종가는 KRX, 시세는 키움
 
 키움의 `cur_prc` 계열은 **NXT(넥스트레이드) 체결(15:40~20:00)을 포함**한다.
 따라서 정규장 종가가 아니다. 2026-09-23 관심종목 8개 전수에서 KRX 확정치와 어긋났다
@@ -209,7 +326,7 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
 
 ---
 
-## 5. 실패를 다섯 가지로 가른다 — 섞어 적지 마라
+## 6. 실패를 다섯 가지로 가른다 — 섞어 적지 마라
 
 | 에러 문자열 | 정체 | 조치 |
 | --- | --- | --- |
@@ -234,7 +351,7 @@ curl -sS "$HTTPS_PROXY/__agentproxy/status"    # recentRelayFailures
 
 ---
 
-## 6. 금지
+## 7. 금지
 
 - 자격증명(`APP_KEY` / `APP_SECRET` / `KRX_AUTH_KEY` / `ECOS_API_KEY`)의 **값을 출력하지 마라.**
   유무와 길이만 적는다. 파일·문서·커밋·프롬프트 어디에도 값을 쓰지 마라.
