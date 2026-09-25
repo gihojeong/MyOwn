@@ -150,9 +150,14 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
  from:irrationalanalysis@substack.com from:thechipletter@substack.com
  from:tspasemiconductor@substack.com from:jedec@smartbrief.com
  from:tomshardware@smartbrief.com from:newsletter@semi-mags.com
- from:editor@semiconductordigest.com from:today@semiconductorpackagingnews.com}
- newer_than:<N>d
+ from:editor@semiconductordigest.com from:today@semiconductorpackagingnews.com
+ from:techsoda@substack.com from:clausaasholm@substack.com
+ from:thesemiconductornewsletter@substack.com} newer_than:<N>d in:anywhere
 ```
+
+★**`in:anywhere`는 생략 금지다.** 2026-09-26 실측: 관련 메일 다수가 **휴지통에 있었다**
+(techsoda CXMT 분석 · thesemiconductornewsletter 주간 모니터 · SemiVision 주간).
+사용자의 메일 정리로 휴지통에 간 것도 수집 대상이다.
 
 ### 범위 규율 — 읽는 것은 **둘뿐**이다
 
@@ -170,7 +175,8 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
 | 발신자 | 축 | 쓰임 |
 | --- | --- | --- |
 | `ark@arkinvest.com` | 경제 | ARK / Cathie Wood. **금리·유동성·밸류에이션 서사 1순위.** 주간 뉴스레터 · "A Letter To Investors" · Stock Commentary |
-| `kcif@kcif.or.kr` | 경제 | 국제금융센터. **들어오면 즉시 Tier 1.** 현재 수신 중단 상태 — 아래 절 참조 |
+| `kcif@kcif.or.kr` | 경제 | 국제금융센터. **이 계정엔 미수신 — 웹이 정본**(아래 절). 메일이 들어오면 그대로 Tier 1 |
+| `techsoda@substack.com` · `techsoda+industry-spotlight@substack.com` | 경제·반도체 | "Global Market Watch" 시황 + 산업 스포트라이트. **9/24 "The Memory Capacity Vacuum: … PC Makers into CXMT's Orbit"** — 반증 조건 (3) 직격 |
 | `semianalysis@substack.com` | 반도체 | 공급·수요 구조. **메모리 TAM·HBM·중국 증설 1순위** |
 | `irrationalanalysis@substack.com` | 반도체 | 개별 종목·부품 레벨 비판적 메모 |
 | `thechipletter@substack.com` | 반도체 | 반도체 산업 구조·역사 해설 |
@@ -180,7 +186,9 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
 
 `jedec@smartbrief.com`(표준·메모리) · `tomshardware@smartbrief.com`(메모리 가격·제품) ·
 `newsletter@semi-mags.com`(Semiconductor Engineering) ·
-`editor@semiconductordigest.com` · `today@semiconductorpackagingnews.com`(패키징)
+`editor@semiconductordigest.com` · `today@semiconductorpackagingnews.com`(패키징) ·
+`clausaasholm@substack.com`(분기 반도체 공급망 업데이트) ·
+`thesemiconductornewsletter@substack.com`(주간 공정·제조 모니터)
 → **중국 메모리 동향의 1차 사실 소스.** 프롬프트 `[해석10]`의 반증 조건 (3) CXMT·중국
 증설 점검에 직접 쓴다. 이 경로를 돌리지 않고 "신규 정보 없음"을 쓰면 아래 강제 조항 3 위반이다.
 
@@ -195,7 +203,9 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
 `pragmaticengineer` · `platformer` · `cautiousoptimism` · `turingpostkorea` ·
 `zdnet` · `macrumors` · `figurelabs` · `onelittlestory` · `intechopen` ·
 `linkedin`(invitations/jobalerts/messages) · `skyscanner` · `hotels.com` · `prada` ·
-`news.all@mail.all.com` · `no-reply-claude@mail.anthropic.com`(**자기 리포트 회신 — 읽지 마라**)
+`news.all@mail.all.com` · `marriottbonvoy` · `wadiz` · `ef.com` · `email.claude.com` ·
+`newsletter@investingmail.com`(Investing.com 제품 광고 — 시황 아님) ·
+`no-reply-claude@mail.anthropic.com`(**자기 리포트 회신 — 읽지 마라**)
 
 ### 강제 조항 4개
 
@@ -218,27 +228,37 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
 - 수치가 API 확정치와 어긋나면 **API가 옳다.** 뉴스레터는 해석을 가져오는 곳이지
   종가를 가져오는 곳이 아니다.
 
-### 국제금융센터(KCIF) — 구독은 있었고, 지금은 끊겼다
+### 국제금융센터(KCIF) — **매일 발행되고, 사용자는 받고 있다. 이 Gmail에 없을 뿐이다**
 
-★2026-09-26 1차 판정("수신 이력 0건")은 **틀렸다. 정정한다.**
-쿼리를 `from:kcif.or.kr in:anywhere`로 넓히자 **3건이 나왔고 전부 별표**다:
+★2026-09-26 이 절에 두 번 틀린 판정을 적었다("구독 없음" → "구독 끊김"). **둘 다 폐기한다.**
+사용자 확인: **9/25에도 KCIF 메일을 받았다.** 웹으로도 실재를 확인했다 —
+`kcif.or.kr/annual/newsflashList`의 **2026-09-25자 `[9.25] 미국 30년물 국채금리, 장중
+5.50%까지 상승하며 '04년 이후 최고 기록`**. 국제금융속보는 영업일 매일 나온다.
 
-| 날짜 | 제목 |
-| --- | --- |
-| 2025-07-14 | `[Weekly] 주간 Wall Street 인사이트(7.14)` |
-| 2025-07-14 | `[7월 14일 daily] 국제금융속보` — 관세·미 CPI·금리 전망 |
-| 2025-07-14 | `[Weekly] 주간 이슈(7.14)` — 미 CPI·중국 GDP·연준 베이지북 |
+그러나 **수집 경로인 `gihojeong@gmail.com`에는 없다.** 실측 근거:
+- `from:kcif.or.kr in:anywhere` 기간 무제한 → **2025-07-14 3건뿐**(전부 별표)
+- `after:2026/09/24 before:2026/09/27 in:anywhere` **전수 77건**을 두 페이지로 넘겨 확인 → KCIF 0건
+- `from:국제금융센터` 표시명 검색 60일 → 0건
 
-발신 `kcif@kcif.or.kr`. **세 건 다 사용자가 별표를 달았다 = 높은 가치로 평가했다.**
-그런데 **2025-07-14 이후 14개월간 수신이 0건**이다. 구독이 중단된 상태다.
+→ **판정: KCIF는 수집 경로가 아닌 다른 수신 주소(가장 유력: `giho.jeong@samsung.com`)로 온다.**
+  예약작업은 그 메일함에 접근할 수 없다.
 
-→ **조치**: 메일함에서 KCIF를 기대하지 마라(있어도 1년 넘은 것뿐이다). 대신
-`kcif.or.kr`을 **4절 매크로 웹 경로의 1순위**로 쓴다. 발행물은 `국제금융속보`(일간),
-`주간 Wall Street 인사이트`, `주간 이슈`이며 **주간 리뷰가 쓸 값은 후자 둘**이다.
-→ 단 새 KCIF 메일이 들어오면 **Tier 1으로 즉시 승격**한다. 쿼리에 발신자를 남겨 둔 이유다.
+**그래서 KCIF는 웹 경로가 정본이다 — 매 회차 의무(4절 ⑥).** 검증된 경로(2026-09-26 200):
 
-★교훈: **`in:anywhere` 없이 "수신 0건"을 단정하지 마라.** 1차 쿼리는 기본 범위(스팸·휴지통
-제외)였고 기간도 좁았다. 0건을 보고하려면 **`in:anywhere` + 기간 무제한**으로 한 번 더 쳐라.
+| 발행물 | 주기 | URL | 쓰는 회차 |
+| --- | --- | --- | --- |
+| 국제금융속보 | 영업일 매일 | `kcif.or.kr/annual/newsflashList` | **전 회차** |
+| 이슈브리핑 | 수시 | `kcif.or.kr/brief/briefList` | 주간 |
+| 전체 보고서(주간 이슈·주간 Wall Street 인사이트 포함) | 주간 | `kcif.or.kr/report/reportList` | **주간** |
+
+- 목록 페이지는 **제목에 핵심이 요약돼 있다**(`[9.25] …` 형식). 개장 전·마감은 **최근 2일 제목**만으로 충분하다.
+- 사용자가 KCIF를 `gihojeong@gmail.com`으로 **자동전달**하면 Tier 1 메일 경로가 살아난다.
+  그 전까지 메일함 KCIF 0건을 "KCIF 없음"으로 적지 마라. **웹을 봐라.**
+
+★교훈 2개(이 절에서 실제로 저지른 것):
+1. **`in:anywhere` 없이 "수신 0건"을 단정하지 마라.**
+2. **내 메일함 0건 ≠ 사용자가 못 받음.** 수집 계정과 사용자 수신 계정은 다를 수 있다.
+   0건이면 **웹에서 발행 여부를 먼저 확인**하고, "이 계정 미수신"으로 적어라.
 
 ---
 
@@ -274,10 +294,32 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
 | 3 | **미 통화정책·물가·고용** — 연준 스탠스, 코어 PCE, 고용 | 전 회차 | 연준 발언 보도 · 미 지표 캘린더 |
 | 4 | **세계 성장·기관 전망** | **주간 전용** | **OECD 중간전망** · IMF WEO · 세계은행 · Goldman·Morgan Stanley |
 | 5 | **지정학·교역조건** — 호르무즈·이란, 미중 관세·통제, 공급망 | 전 회차 | 로이터·블룸버그 · CSIS·KEIA(한국 영향 정량) |
-| 6 | **국제금융센터 발행물**(메일 수신 중단분의 웹 대체) | 주간 권장 | `kcif.or.kr` — `주간 이슈` · `주간 Wall Street 인사이트` |
+| 6 | **국제금융센터(KCIF)** — 수집 Gmail 미수신이므로 웹이 정본 | **전 회차** | `kcif.or.kr/annual/newsflashList`(속보) · 주간은 `report/reportList` 추가 |
 
-- **개장 전·마감 회차**는 1·2·3·5를 **각 1회 검색**으로 끝낸다(총 4회 이내). 4번은 건너뛴다.
+- **개장 전·마감 회차**는 1·2·3·5를 **각 1회 검색** + 6의 속보 목록 1회 페치로 끝낸다(총 5회 이내). 4번은 건너뛴다.
 - **주간 리뷰**는 6항목 전부. 4번은 주간 리뷰의 고유 책무다.
+
+### ★수집 루틴 상수 — 매 회차 이 순서 그대로 (2026-09-26 확정)
+
+사용자 지시: **"경제채널에서 수집하는 루틴은 모두 master에 기록해서 상수로 가져가."**
+아래는 회차마다 바꾸지 않는 고정 루틴이다. 회차가 할 일은 `<N>`(기간)만 채우는 것이다.
+
+```
+R-MAIL  Gmail   search_threads(3절 쿼리, newer_than:<N>d in:anywhere, pageSize=25)
+                -> Tier 1 별표·미읽음 본문 읽기(개장전·마감 1건 / 주간 2건 이상)
+                -> Tier 2 제목만으로 반증조건 (3) 중국 메모리 점검
+R-KCIF  Web     WebFetch kcif.or.kr/annual/newsflashList  -> 최근 2일(주간은 5영업일) 제목
+                [주간] WebFetch kcif.or.kr/report/reportList -> 주간 이슈 · 주간 Wall Street 인사이트
+R-KR    Web     WebSearch "한국은행 통화정책 물가 <월> 2026" · "관세청 수출 <순> 2026"
+R-US    Web     WebSearch "Fed Warsh <주> 2026" · 미 지표 캘린더(날짜는 달력으로 검증)
+R-GEO   Web     WebSearch "Hormuz Iran <월 일> 2026" · "US China tariff chip controls <월> 2026"
+R-INST  Web     [주간 전용] OECD 중간전망/IMF WEO/세계은행 + 하우스(Goldman·MS) — 발표일·기관명·편차
+```
+
+- `<N>` = 개장 전·마감 `2`, 주간 `8`.
+- 결과는 리포트 **데이터 신뢰도 박스에 루틴별 건수로** 적는다: `R-MAIL 7건(Tier1 3) · R-KCIF 속보 2일 · …`
+  **0건도 적는다.** 적지 않은 루틴은 "건너뜀"으로 간주된다.
+- 루틴이 실패하면 **6절의 실패 유형**으로 분류해 원문 에러를 적는다.
 
 ### 강제 조항 3개
 
@@ -301,6 +343,8 @@ mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 �
 세계   OECD 중간전망(2026-09-23) 2.9%(2026) / 3.0%(2027)
        하방 위험: 중동 수출 차질 · 강한 엘니뇨 · 장기금리 추가 상승 · AI 투자 수익 미달
 미국   연준 의장 케빈 워시(2026-05-22 취임). "고용은 견조, 물가는 여전히 높다"
+       9월 PMI 5년래 최고 -> 금리인상 우려 확대 (KCIF 9/24)
+       30년물 장중 5.50%, 2004년 이후 최고 (KCIF 9/25) / 10년물 5.18% 마감(9/25)
        코어 PCE 전망 2026년말 2.6% / 2027년말 2.3%
 중국   성장률 2026 5.0% -> 2027 4.5% (재정 부양 효과 소멸)
 지정학 호르무즈 — 미-이란이 UN총회 계기로 단계적 합의 탐색(카타르 중재).
