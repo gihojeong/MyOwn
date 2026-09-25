@@ -132,6 +132,10 @@ NDF 야간 호가 / 메모리 현물가 / 실적·컨센서스.
 
 ### 절차 — 수집기와 병렬로, 1회 호출
 
+★**도구부터 로드하라.** 세 트리거 프롬프트는 Gmail 도구로 `send_message`만 로드한다.
+조회 도구는 이 계약서가 책임진다 — 프롬프트의 ToolSearch 단계에서 함께 불러라:
+`ToolSearch("select:mcp__Gmail__search_threads,mcp__Gmail__get_thread")`
+
 ```
 mcp__Gmail__search_threads(query="<아래 쿼리>", pageSize=25)
 mcp__Gmail__get_thread(threadId=...)   # Tier 1 중 당일 판단에 걸리는 것만
