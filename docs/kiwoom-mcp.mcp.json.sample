@@ -1,0 +1,48 @@
+{
+  "_README": [
+    "이 파일은 샘플이며 비활성 상태다. 저장소 루트의 .mcp.json 으로 복사하면 활성화된다:",
+    "    cp docs/kiwoom-mcp.mcp.json.sample .mcp.json",
+    "",
+    "★활성화 전에 읽을 것 — 무인 회차(06:00 개장 전 / 18:05 마감)에 미치는 영향",
+    "프로젝트 스코프 MCP 서버는 세션 기동 시 승인 절차를 탈 수 있다. 자동 모드로 도는",
+    "트리거 세션이 거기서 멈추면 리포트가 발행되지 않는다. 그 위험이 MCP의 이득보다 크다고",
+    "판단해 기본 비활성으로 둔다. 수동 세션에서만 쓰려면 ~/.claude.json(user scope)에",
+    "넣는 쪽이 안전하다 — scripts/setup_kiwoom_mcp.sh 가 그렇게 한다.",
+    "",
+    "또한 command/args 의 경로는 scripts/setup_kiwoom_mcp.sh 가 만들어 둔 뒤에만 존재한다.",
+    "부트스트랩을 돌리지 않은 컨테이너에서는 서버 연결이 실패한다(세션 자체는 정상).",
+    "",
+    "앱 키는 값이 아니라 ${...} 참조로만 둔다. 값은 환경 설정에 넣는다 — docs/setup.md 참조.",
+    "주문 도구는 꺼져 있다. 켜려면 kiwoom-exec.env 에 \"KIWOOM_MCP_ALLOW_ORDERS\": \"1\" 추가.",
+    "자세한 내용: docs/kiwoom-mcp.md"
+  ],
+  "mcpServers": {
+    "kiwoom-spec": {
+      "type": "stdio",
+      "command": "/root/.local/bin/uv",
+      "args": [
+        "run",
+        "--frozen",
+        "--directory",
+        "/root/.local/share/mcp/Kiwoom-REST-API/mcp_spec",
+        "kiwoom-spec-mcp"
+      ]
+    },
+    "kiwoom-exec": {
+      "type": "stdio",
+      "command": "/root/.local/bin/uv",
+      "args": [
+        "run",
+        "--frozen",
+        "--directory",
+        "/root/.local/share/mcp/Kiwoom-REST-API/mcp_exec",
+        "kiwoom-exec-mcp"
+      ],
+      "env": {
+        "APP_KEY": "${APP_KEY}",
+        "APP_SECRET": "${APP_SECRET}",
+        "KIWOOM_MODE": "demo"
+      }
+    }
+  }
+}
