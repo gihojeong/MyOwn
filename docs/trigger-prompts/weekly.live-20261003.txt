@@ -66,7 +66,9 @@ GitHub raw로도 읽을 수 있다(2026-10-03 기준 HTTP 200):
 
 · 수집기는 ★포그라운드★로 띄워라. nohup 백그라운드가 "exit 0"을 내고도 산출물 없이 끝난 전례가 있다:
       python3 scripts/kiwoom_collect.py --preset weekly --date <마지막거래일 YYYYMMDD> \
-              --pause 0.25 --out kw_weekly.json --log kw_weekly.log
+              --pause 0.25 --out kw_weekly.json > kw_weekly.log 2>&1
+  ★수집기에 --log 플래그는 ★없다★. 로그는 셸 리다이렉션으로 받아라.
+    (2026-10-05 리허설에서 --log 를 쓴 문서 때문에 즉시 에러로 죽었다.)
   기대치 ★70항목 요청 / 67 성공★. 2~6분 걸린다. timeout 540 을 걸어라.
   실패 3건(krx_stocks · krx_futures · krx_options)은 ★구조적 정상★이다 —
   KRX OpenAPI는 전일분을 익영업일 07:09~08:53 KST에 게시하므로 금요일분은 토요일에 없다.

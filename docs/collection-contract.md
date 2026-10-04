@@ -624,6 +624,25 @@ rm -rf ~/.cache/kiwoom-collect
 자사주 매입이 확인되면 그 규모를 **다음 거래일 전망의 "나머지" 블록 전제에 명시적으로 넣는다**
 (매입 지속 = 상방 쿠션, 종료·소진 = 하방 리스크).
 
+### 8-3b. ★수집기 인자 — 있는 것만 쓴다 (2026-10-05 신설)
+
+```
+--preset {close,premarket,weekly}   --call API_ID   --path PATH   --body BODY
+--check   --no-token-cache   --date YYYYMMDD   --codes CODES
+--out FILE   --timeout SEC   --pause SEC
+```
+
+**`--log` 플래그는 없다.** 로그는 셸 리다이렉션으로 받는다.
+
+```bash
+python3 scripts/kiwoom_collect.py --preset premarket --date 20261002 \
+        --pause 0.25 --out kiwoom.json > kiwoom.log 2>&1
+```
+
+2026-10-05 리허설에서 `--log` 를 지시한 문서 때문에
+`error: unrecognized arguments: --log` 로 **즉시 죽었다.** 납기 회차에서 이러면 그 회차를 잃는다.
+**문서에 명령을 적을 때는 `--help` 로 인자를 확인하고 적어라.**
+
 ### 8-4. 파이썬·출력 관련 실측 제약
 
 - 결과 JSON(약 4.5MB)을 `Read` 도구로 열지 마라. python으로 필요한 키만 뽑아라.
