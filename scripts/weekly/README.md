@@ -11,7 +11,8 @@
 # 0) 수집 — 반드시 먼저. 캐시 토큰이 죽어 있을 수 있으니 ★먼저 캐시를 비운다★
 rm -rf ~/.cache/kiwoom-collect
 python3 scripts/kiwoom_collect.py --preset weekly --date 20261002 \
-        --out kw_weekly2.json --log kw_weekly.log
+        --out kw_weekly2.json > kw_weekly.log 2>&1
+# ★--log 플래그는 없다. 로그는 셸 리다이렉션으로 받는다.
 # 기대치: 70항목 중 67 성공. krx_stocks/futures/options 3건 실패는 구조적 정상
 # (KRX는 전일분을 익영업일 07:09~08:53 게시).
 
