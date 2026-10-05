@@ -38,6 +38,9 @@ Drive 폴더 1hLv3NpWB3I70y33ZSpmhYgU6MGU-0cbK 에
 없으면 git clone https://github.com/gihojeong/MyOwn.git 로 가져와라.
 ★clone URL에 토큰을 넣지 마라 — 분류기가 Credential Exploration으로 차단한다.
 
+    cat docs/common-report-guide.md     ← ★서술 방식·시장관·부록·예측력의 정본★
+                                          [G0] 리포트 골격(조망→매크로→마이크로→전망)이
+                                          이 프롬프트의 절 순서보다 우선한다
     cat scripts/weekly/README.md        ← 실행 순서·API 단위·토큰 무효화. ★1차 정본★
     cat docs/collection-contract.md     ← 수집 계약. 프리셋 weekly = 70항목
     cat docs/kiwoom-report-playbook.md  ← 해석 규율 [해석1]~[해석11], HTML 출력 규격
@@ -97,10 +100,15 @@ GitHub raw로도 읽을 수 있다(2026-10-03 기준 HTTP 200):
   · ka20001(index_*)·ka20003(sector_*)은 --date를 무시하고 ★조회 시점 실시간값★을 준다.
     토요일 조회라면 금요일 종가와 같지만, 과거 기준일 종가로 쓰려면 반드시 확인하라.
 
-· ★종가는 KRX가 정본이다 — ka10066(장마감 투자자별)의 cur_prc와 ka10082(주봉).
-  키움 cur_prc·candle_daily는 NXT(15:40~20:00) 체결이 섞인다.
-  그 격차를 버리지 말고 ★시간외 방향 신호★로 쓰라(2026-10-03 회차: 삼성전자우 500원, 하이닉스 1,000원 차이).
+· ★키움 가격 엔드포인트는 전부 통합가(KRX+NXT)다 — ka10066 cur_prc·ka10001 cur_prc·candle_daily
+  셋이 서로 일치하지만 셋 다 KRX 정규장 종가가 아니다. 셋의 차이로 NXT 괴리를 구하려 하지 마라(항상 0이다).
+  KRX 정규장 확정 종가의 정본은 ① krx_stocks(익영업일 게시) ② 당일 마감 회차가
+  Drive kospi_forecast_<다음거래일>에 남긴 기록(언론 3사 이상 교차) 둘뿐이다.
+  NXT 괴리 = 키움 통합가 − KRX 확정가. 실측 2026-10-02: 삼성전자 0원, 삼성전자우 +500원(+0.249%p),
+  SK하이닉스 +1,000원(+0.054%p). 우선주가 가장 크다. 그 격차를 버리지 말고 ★시간외 방향 신호★로 쓰라.
   AlphaSquare 개별종목 quote가 19:59:59면 NXT 종료가다 — 종가 소스로 쓰지 마라.
+· ★일간 수익률은 한 스냅샷 안에서 닫아라 — pred_pre/base_pric 또는 flu_rt를 그대로 쓴다.
+  어제 기록한 종가를 분모로 쓰면 통합가 재생성 드리프트가 섞인다(실측 59종목 중 41종목 불일치, 최대 1.65%).
 
 ════════════════════════════════════════════════════════════════════════
 ■ 4단계 — 채점 입력. API에 없다. 반드시 장부에서 읽어라
