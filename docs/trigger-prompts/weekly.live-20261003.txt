@@ -38,6 +38,9 @@ Drive 폴더 1hLv3NpWB3I70y33ZSpmhYgU6MGU-0cbK 에
 없으면 git clone https://github.com/gihojeong/MyOwn.git 로 가져와라.
 ★clone URL에 토큰을 넣지 마라 — 분류기가 Credential Exploration으로 차단한다.
 
+    cat docs/common-report-guide.md     ← ★서술 방식·시장관·부록·예측력의 정본★
+                                          [G0] 리포트 골격(조망→매크로→마이크로→전망)이
+                                          이 프롬프트의 절 순서보다 우선한다
     cat scripts/weekly/README.md        ← 실행 순서·API 단위·토큰 무효화. ★1차 정본★
     cat docs/collection-contract.md     ← 수집 계약. 프리셋 weekly = 70항목
     cat docs/kiwoom-report-playbook.md  ← 해석 규율 [해석1]~[해석11], HTML 출력 규격

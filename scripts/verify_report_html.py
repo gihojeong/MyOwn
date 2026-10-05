@@ -3,7 +3,7 @@
 """리포트 HTML 발송 전 검증 — 4개 루틴 공용.
 
 사용법:
-    python3 scripts/verify_report_html.py report.html [gloss.json]
+    python3 scripts/verify_report_html.py report.html [gloss.json] [--coverage]
 
 gloss.json (선택) 형식 — 부록 누락 검사를 켠다:
     {"terms": ["SOXX", "EWY", ...], "codes": ["005930", ...], "ignore": ["KST"]}
@@ -15,6 +15,9 @@ gloss.json (선택) 형식 — 부록 누락 검사를 켠다:
   4. %-포맷 누출 (%%  %.4f  None 등)
   5. ★부록 누락 — 본문 약어·종목코드가 부록 사전에 다 있나 (gloss.json 있을 때)
   6. Gmail 클리핑 한도 (기본 95,000 bytes)
+  7. ★커버리지 체크표 18행 — 섹터 11 + 요인군 7 (--coverage 를 줬을 때만)
+     guide v11 에서 "변화 없음" 줄이 본문에서 부록 (라)로 내려갔다. 발행 회차는 반드시 켜라.
+     복기·리허설 산출물처럼 시장 전망이 없는 문서에는 켜지 마라.
 
 종료코드 0 = PASS. 0이 아니면 ★발송하지 마라.★
 """
@@ -28,8 +31,26 @@ LEAKS = ['%%', '%.4f', '%.2f', '%+.', '{:', 'None', 'nan', 'inf']
 APPENDIX_MARKER = '찾아보기'
 LIMIT = 95000
 
+# [G2-2] (라) 커버리지 체크표 — 섹터 11 + 요인군 7 = 18행 고정.
+# guide v11 에서 "변화 없음" 줄이 본문에서 부록으로 내려갔다. 그 대가로 이 검사가 생겼다.
+SECTORS = ['반도체', '조선', '방산', '전력기기', '2차전지', '자동차',
+           '화장품', '바이오', '금융', '인터넷', '엔터']
+FACTORS = ['해외시장', '매크로', '국제정치', '업체', '수급', '정책', '캘린더']
 
-def verify(path, gloss_path=None, limit=LIMIT):
+
+def check_coverage(h):
+    """부록 (라) 18행이 다 있나. 발행 회차에만 켠다(--coverage)."""
+    miss_s = [s for s in SECTORS if s not in h]
+    miss_f = [f for f in FACTORS if f not in h]
+    out = []
+    if miss_s:
+        out.append('커버리지(섹터 11) 누락: %s' % ', '.join(miss_s))
+    if miss_f:
+        out.append('커버리지(요인군 7) 누락: %s' % ', '.join(miss_f))
+    return out
+
+
+def verify(path, gloss_path=None, limit=LIMIT, coverage=False):
     h = open(path, encoding='utf-8').read()
     fail, warn = [], []
 
@@ -76,6 +97,9 @@ def verify(path, gloss_path=None, limit=LIMIT):
         if unused:
             warn.append('부록에만 있고 본문에 없는 약어: %s' % ', '.join(unused))
 
+    if coverage:
+        fail += check_coverage(h)
+
     size = len(h.encode('utf-8'))
     if size > limit:
         fail.append('용량 초과 %d bytes (한도 %d)' % (size, limit))
@@ -93,7 +117,9 @@ def verify(path, gloss_path=None, limit=LIMIT):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
+    args = [a for a in sys.argv[1:] if a != '--coverage']
+    cov = '--coverage' in sys.argv
+    if not args:
         print(__doc__)
         sys.exit(2)
-    sys.exit(verify(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None))
+    sys.exit(verify(args[0], args[1] if len(args) > 1 else None, coverage=cov))
