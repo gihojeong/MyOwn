@@ -80,8 +80,8 @@ REQ_GROUPS = [
     ("이론가 대비 괴리", ["이론가", "패리티", "괴리"]),
     ("프리미엄 변화",    ["프리미엄 변화", "웃돈", "비싼 정도"]),
     ("예측 채점",        ["예측 채점", "채점"]),
-    ("MAE",              ["MAE"]),
-    ("RMSE",             ["RMSE"]),
+    ("MAE",              ["MAE", "평균절대오차"]),
+    ("RMSE",             ["RMSE", "제곱평균제곱근"]),
     ("80% 구간",         ["80% 구간"]),
     ("블록 귀속",        ["블록 귀속", "귀속"]),
     ("공매도",           ["공매도"]),
@@ -90,8 +90,8 @@ REQ_GROUPS = [
     ("선물-현물 상태",   ["콘탱고", "백워데이션", "선물이 현물보다"]),
     ("반증 조건",        ["반증하는 조건", "반증 조건"]),
     ("수집기 토큰 사고", ["토큰 무효화", "8005"]),
-    ("KRX",              ["KRX"]),
-    ("ECOS",             ["ECOS"]),
+    ("KRX",              ["KRX", "거래소 전종목", "거래소 확정"]),
+    ("ECOS",             ["ECOS", "한국은행 통계"]),
     ("면책",             ["면책"]),
     ("자기상관",         ["자기상관"]),
     # [T]: 중심 수축 → 예측 폭이 실제보다 좁았던 정도
@@ -160,7 +160,12 @@ else:
     appx_txt = strip_tags(h[cut:])
 
     abbr = {a for a in re.findall(r'[A-Z]{2,6}', body_txt)} - NOISE
-    codes = set(re.findall(r'(?<!\d)[0-9]{6}(?!\d)', body_txt))
+    # 계산박스(bgcolor="#16301f")는 산식 본문이라 소수가 많다. 코드 검사에서 뺀다.
+    #   실측 2026-10-10: 0.019807 같은 소수가 '019807' 로 잡혀 16건이 오탐됐다.
+    body_nocalc = re.sub(r'<table[^>]*bgcolor="#16301f".*?</table>', ' ', h[:cut], flags=re.S)
+    body_nocalc = strip_tags(body_nocalc)
+    # 소수점 뒤에 붙은 숫자 덩어리도 코드가 아니다 — 앞뒤로 숫자와 점을 모두 막는다.
+    codes = set(re.findall(r'(?<![\d.])[0-9]{6}(?![\d.])', body_nocalc))
 
     miss_a = sorted(a for a in abbr if a not in appx_txt)
     miss_c = sorted(c for c in codes if c not in appx_txt)
