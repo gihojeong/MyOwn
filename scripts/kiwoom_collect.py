@@ -76,6 +76,17 @@ USER_AGENT = "kiwoom-collect/1.0"
 RATE_LIMIT_RETRIES = 3
 RATE_LIMIT_BACKOFF = 1.0
 
+# ── 토큰 발급 재시도 ────────────────────────────────────────────────────────
+# 이 컨테이너의 나가는 IP는 고정이 아니라 호출마다 160.79.106.128~143 사이에서 바뀐다.
+# 키움 API 사용신청에는 10개까지만 등록할 수 있어, 미등록 IP로 나가는 회차가 섞이면
+# 토큰 발급이 8050(IP 미등록)으로 떨어진다. 같은 요청을 다시 보내면 다른 IP로 나가므로
+# 재시도만으로 뚫린다(2026-10-10 실측: 1회 성공률 약 50~60%, 12회 재시도로 사실상 100%).
+# ★조회(call)도 같은 IP 검사를 받는다.★ 2026-10-10 premarket 전수 81건 중 40건이 8050이었다.
+# (ka10001 6회 연속 성공은 표본이 작아 생긴 착시였다 — 발급 전용이라고 오판하지 마라.)
+TOKEN_RETRY_DEFAULT = 12
+TOKEN_RETRY_PAUSE = 0.6
+TOKEN_RETRY_CODES = ("8050",)
+
 # 토큰 발급(au10001)에는 유량 제한이 있어 연속 호출하면 1700으로 거절된다.
 # 발급 토큰은 24시간짜리이므로 만료 전까지 재사용한다.
 TOKEN_CACHE_DIR = os.path.join(
@@ -534,19 +545,87 @@ def _save_token(token: str, expires_dt: str) -> None:
         pass  # 캐시는 최적화일 뿐이라 실패해도 수집은 계속한다
 
 
-def issue_token(timeout: int = 20, use_cache: bool = True) -> str:
+def _ip_unregistered(data: dict[str, Any]) -> bool:
+    """8050은 HTTP 200 + return_code != 0 으로 오므로 본문을 열어야 보인다."""
+    if data.get("return_code") in (None, 0):
+        return False
+    return any(code in str(data.get("return_msg", "")) for code in TOKEN_RETRY_CODES)
+
+
+def _post_retrying(
+    url: str,
+    body: dict[str, Any],
+    headers: dict[str, str],
+    timeout: int,
+    retries: int = TOKEN_RETRY_DEFAULT,
+) -> tuple[dict[str, Any], dict[str, str]]:
+    """유량 제한과 IP 로테이션(8050)을 함께 흡수해 한 건을 보낸다.
+
+    유량 제한은 지수 백오프로 RATE_LIMIT_RETRIES회, IP 미등록은 짧은 대기로 retries회.
+    둘은 원인이 다르므로 횟수를 따로 센다.
+    """
+    attempts = max(1, retries)
+    rate_hits = 0
+    last: KiwoomError | None = None
+    for _ in range(attempts):
+        try:
+            data, response_headers = _post(url, body, headers, timeout)
+        except KiwoomRateLimited:
+            if rate_hits >= RATE_LIMIT_RETRIES:
+                raise
+            time.sleep(RATE_LIMIT_BACKOFF * (2**rate_hits))
+            rate_hits += 1
+            continue
+        except KiwoomError as exc:
+            if not _token_retryable(exc):
+                raise
+            last = exc
+            time.sleep(TOKEN_RETRY_PAUSE)
+            continue
+        if _ip_unregistered(data):
+            last = KiwoomError(
+                f"토큰 발급 실패 [{data.get('return_code')}]: {data.get('return_msg')}"
+            )
+            time.sleep(TOKEN_RETRY_PAUSE)
+            continue
+        return data, response_headers
+    raise KiwoomError(f"{last} (재시도 {attempts}회 모두 미등록 IP로 나갔다)")
+
+
+def _token_retryable(exc: KiwoomError) -> bool:
+    """나가는 IP가 바뀌면 풀릴 수 있는 실패만 재시도 대상으로 본다.
+
+    8001(키 검증 실패)이나 1700(발급 유량 초과)은 재시도해도 같은 답이 오므로 제외한다.
+    """
+    message = str(exc)
+    if any(code in message for code in TOKEN_RETRY_CODES):
+        return True
+    return message.startswith("연결 실패") or "Connection reset" in message
+
+
+def issue_token(
+    timeout: int = 20,
+    use_cache: bool = True,
+    retries: int = TOKEN_RETRY_DEFAULT,
+) -> str:
     """접근토큰을 얻는다 (au10001). 응답의 토큰 필드명은 'token'이다.
 
     발급에 유량 제한이 있어(초과 시 return_code 1700) 캐시된 토큰을 우선 쓴다.
+    IP 미등록(8050)은 다음 시도가 다른 IP로 나가면 풀리므로 retries회까지 다시 보낸다.
     """
     if use_cache:
         cached = _cached_token()
         if cached:
             return cached
+    return _issue_token_once(timeout, retries)
+
+
+def _issue_token_once(timeout: int = 20, retries: int = TOKEN_RETRY_DEFAULT) -> str:
+    """토큰을 발급한다. 캐시는 보지 않는다 — 8050만 retries회까지 다시 보낸다."""
     key, secret = _credentials()
     payload = {"grant_type": "client_credentials", "appkey": key, "secretkey": secret}
     headers = {"Content-Type": "application/json;charset=UTF-8", "User-Agent": USER_AGENT}
-    data, _ = _post(BASE_URLS[_mode()] + TOKEN_PATH, payload, headers, timeout)
+    data, _ = _post_retrying(BASE_URLS[_mode()] + TOKEN_PATH, payload, headers, timeout, retries)
     if data.get("return_code") not in (None, 0):
         raise KiwoomError(f"토큰 발급 실패 [{data.get('return_code')}]: {data.get('return_msg')}")
     token = data.get("token")
@@ -585,15 +664,8 @@ def call(
         if cont_yn == "Y" and next_key:
             headers["cont-yn"] = cont_yn
             headers["next-key"] = next_key
-        # 유량 제한은 API마다 다르고 ka10066은 1회로 좁다. 초당 한도라 짧은 대기로 풀린다.
-        for attempt in range(RATE_LIMIT_RETRIES + 1):
-            try:
-                data, response_headers = _post(url, body, headers, timeout)
-                break
-            except KiwoomRateLimited:
-                if attempt == RATE_LIMIT_RETRIES:
-                    raise
-                time.sleep(RATE_LIMIT_BACKOFF * (2**attempt))
+        # 유량 제한(API마다 다르고 ka10066은 1회로 좁다)과 IP 로테이션(8050)을 함께 흡수한다.
+        data, response_headers = _post_retrying(url, body, headers, timeout)
         code = data.get("return_code")
         if code not in (None, 0):
             raise KiwoomError(f"{api_id} 실패 [{code}]: {data.get('return_msg')}")
@@ -1055,6 +1127,12 @@ def main() -> int:
     parser.add_argument("--body", default="{}", help="--call과 함께 쓰는 요청 body (JSON 문자열)")
     parser.add_argument("--check", action="store_true", help="토큰 발급까지만 수행해 자격증명·도달성 확인")
     parser.add_argument("--no-token-cache", action="store_true", help="캐시된 토큰을 무시하고 새로 발급")
+    parser.add_argument(
+        "--token-retries",
+        type=int,
+        default=TOKEN_RETRY_DEFAULT,
+        help=f"IP 미등록(8050) 재시도 횟수 (기본 {TOKEN_RETRY_DEFAULT}). 발급·조회 모두 적용",
+    )
     parser.add_argument("--date", help="기준일자 YYYYMMDD (기본: 오늘 KST)")
     parser.add_argument("--codes", help="관심종목을 code:name 쌍의 쉼표 목록으로 덮어쓰기")
     parser.add_argument("--out", help="결과 JSON을 저장할 경로 (미지정 시 stdout)")
@@ -1076,7 +1154,11 @@ def main() -> int:
 
     try:
         mode = _mode()
-        token = issue_token(args.timeout, use_cache=not args.no_token_cache)
+        token = issue_token(
+            args.timeout,
+            use_cache=not args.no_token_cache,
+            retries=args.token_retries,
+        )
     except KiwoomError as exc:
         print(f"[FAIL] {exc}", file=sys.stderr)
         return 1
