@@ -87,6 +87,13 @@ TOKEN_RETRY_DEFAULT = 12
 TOKEN_RETRY_PAUSE = 0.6
 TOKEN_RETRY_CODES = ("8050",)
 
+# 8005(Token이 유효하지 않습니다)는 재시도가 아니라 재발급으로 푼다. 같은 토큰을 다시 보내면
+# 같은 답이 온다. 2026-10-10 premarket 전수에서 후반 해외주식 4건이 이걸로 떨어졌고,
+# 캐시를 비우고 같은 호출을 하니 전부 성공했다 — 수집 도중에 토큰이 무효화된 것이다.
+# 원인은 1회 관측으로 특정하지 못했다(§8-1은 MCP 동시 발급을 범인으로 적고 있다).
+TOKEN_DEAD_CODES = ("8005",)
+TOKEN_REISSUE_LIMIT = 2
+
 # 토큰 발급(au10001)에는 유량 제한이 있어 연속 호출하면 1700으로 거절된다.
 # 발급 토큰은 24시간짜리이므로 만료 전까지 재사용한다.
 TOKEN_CACHE_DIR = os.path.join(
@@ -543,6 +550,11 @@ def _save_token(token: str, expires_dt: str) -> None:
         os.chmod(path, 0o600)
     except OSError:
         pass  # 캐시는 최적화일 뿐이라 실패해도 수집은 계속한다
+
+
+def _token_dead(exc: KiwoomError) -> bool:
+    """8005 — 토큰이 서버에서 무효화됐다. 재발급해야 풀린다."""
+    return any(code in str(exc) for code in TOKEN_DEAD_CODES)
 
 
 def _ip_unregistered(data: dict[str, Any]) -> bool:
@@ -1104,16 +1116,37 @@ def run_jobs(jobs: list[dict[str, Any]], token: str, timeout: int, pause: float)
             if pause:
                 time.sleep(pause)
             continue
-        try:
-            results[job["name"]] = {
-                "api_id": job["api_id"],
-                "request": job["body"],
-                "data": call(
-                    job["api_id"], job["path"], job["body"], token, timeout, job.get("max_pages", 1)
-                ),
-            }
-        except KiwoomError as exc:
-            results[job["name"]] = {"api_id": job["api_id"], "request": job["body"], "error": str(exc)}
+        for reissue in range(TOKEN_REISSUE_LIMIT + 1):
+            try:
+                results[job["name"]] = {
+                    "api_id": job["api_id"],
+                    "request": job["body"],
+                    "data": call(
+                        job["api_id"],
+                        job["path"],
+                        job["body"],
+                        token,
+                        timeout,
+                        job.get("max_pages", 1),
+                    ),
+                }
+                break
+            except KiwoomError as exc:
+                # 토큰이 수집 도중 무효화되면(8005) 남은 전 항목이 같은 오류로 쓸려 나간다.
+                # 캐시를 버리고 한 번 재발급해 그 건부터 이어 간다. 재발급 횟수는 상한을 둔다.
+                if _token_dead(exc) and reissue < TOKEN_REISSUE_LIMIT:
+                    try:
+                        token = issue_token(timeout, use_cache=False)
+                    except KiwoomError:
+                        pass
+                    else:
+                        continue
+                results[job["name"]] = {
+                    "api_id": job["api_id"],
+                    "request": job["body"],
+                    "error": str(exc),
+                }
+                break
         if pause:
             time.sleep(pause)
     return results
