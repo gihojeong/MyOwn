@@ -75,6 +75,11 @@ USER_AGENT = "kiwoom-collect/1.0"
 # 유량 초과(1700)는 API별로 창이 좁아 연속조회에서 자주 걸린다. 짧게 기다렸다 재시도한다.
 RATE_LIMIT_RETRIES = 3
 RATE_LIMIT_BACKOFF = 1.0
+# 컨테이너의 외부 IP가 요청마다 바뀌어(2026-10-10 실측: 160.79.106.x 중 최소 8개)
+# 키움에 등록된 IP가 아닌 쪽으로 나가면 return_code 3 / 8050이 온다. 재시도하면 다른 IP로 나간다.
+# 실측 성공률은 호출당 33~42%였다. 12회 재시도면 호출 한 건이 실패할 확률이 (0.67)^12 = 0.8%다.
+IP_RETRIES = 12
+IP_BACKOFF = 1.0
 
 # 토큰 발급(au10001)에는 유량 제한이 있어 연속 호출하면 1700으로 거절된다.
 # 발급 토큰은 24시간짜리이므로 만료 전까지 재사용한다.
@@ -247,6 +252,16 @@ def _clean_secret(value: str) -> str:
 
 class KiwoomError(RuntimeError):
     pass
+
+
+class KiwoomIpUnregistered(KiwoomError):
+    """8050 — 나간 IP가 키움에 등록되지 않았다. 다른 IP로 다시 나가면 풀린다."""
+
+
+def _is_ip_unregistered(data: dict[str, Any]) -> bool:
+    if data.get("return_code") in (None, 0):
+        return False
+    return "8050" in str(data.get("return_msg", ""))
 
 
 class KiwoomRateLimited(KiwoomError):
@@ -546,7 +561,15 @@ def issue_token(timeout: int = 20, use_cache: bool = True) -> str:
     key, secret = _credentials()
     payload = {"grant_type": "client_credentials", "appkey": key, "secretkey": secret}
     headers = {"Content-Type": "application/json;charset=UTF-8", "User-Agent": USER_AGENT}
-    data, _ = _post(BASE_URLS[_mode()] + TOKEN_PATH, payload, headers, timeout)
+    for attempt in range(IP_RETRIES + 1):
+        data, _ = _post(BASE_URLS[_mode()] + TOKEN_PATH, payload, headers, timeout)
+        if not _is_ip_unregistered(data):
+            break
+        if attempt == IP_RETRIES:
+            raise KiwoomIpUnregistered(
+                f"토큰 발급 실패 [8050] {IP_RETRIES + 1}회 재시도: {data.get('return_msg')}"
+            )
+        time.sleep(IP_BACKOFF)
     if data.get("return_code") not in (None, 0):
         raise KiwoomError(f"토큰 발급 실패 [{data.get('return_code')}]: {data.get('return_msg')}")
     token = data.get("token")
@@ -586,14 +609,23 @@ def call(
             headers["cont-yn"] = cont_yn
             headers["next-key"] = next_key
         # 유량 제한은 API마다 다르고 ka10066은 1회로 좁다. 초당 한도라 짧은 대기로 풀린다.
-        for attempt in range(RATE_LIMIT_RETRIES + 1):
+        total_retries = RATE_LIMIT_RETRIES + IP_RETRIES
+        for attempt in range(total_retries + 1):
             try:
                 data, response_headers = _post(url, body, headers, timeout)
-                break
             except KiwoomRateLimited:
-                if attempt == RATE_LIMIT_RETRIES:
+                if attempt == total_retries:
                     raise
-                time.sleep(RATE_LIMIT_BACKOFF * (2**attempt))
+                time.sleep(RATE_LIMIT_BACKOFF * (2 ** min(attempt, 3)))
+                continue
+            if _is_ip_unregistered(data):
+                if attempt == total_retries:
+                    raise KiwoomIpUnregistered(
+                        f"{api_id} 실패 [8050] {total_retries + 1}회 재시도: {data.get('return_msg')}"
+                    )
+                time.sleep(IP_BACKOFF)
+                continue
+            break
         code = data.get("return_code")
         if code not in (None, 0):
             raise KiwoomError(f"{api_id} 실패 [{code}]: {data.get('return_msg')}")
