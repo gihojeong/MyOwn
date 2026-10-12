@@ -51,6 +51,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import socket
 import re
 import sys
 import time
@@ -80,6 +81,13 @@ RATE_LIMIT_BACKOFF = 1.0
 # 실측 성공률은 호출당 33~42%였다. 12회 재시도면 호출 한 건이 실패할 확률이 (0.67)^12 = 0.8%다.
 IP_RETRIES = 12
 IP_BACKOFF = 1.0
+# 에이전트 프록시의 터널이 교환 중에 끊기면 도구에는 맨 연결 리셋으로 온다
+# (2026-10-12 실측: 프록시 status 의 recentRelayFailures 에 ws_closed_mid_exchange,
+#  api.kiwoom.com:443, "tunnel closed (code 1006) after 7s"). 더미 키 대조군으로 재며
+#  연결 성공률이 2/3 였다 — 즉 원격이 거부한 것이 아니라 터널이 간헐적으로 죽는다.
+# 전송 계층에서 다시 걸면 풀린다. ★정책 차단(403/407)은 재시도하지 않는다 — 다시 걸어도 같다.★
+CONN_RETRIES = 6
+CONN_BACKOFF = 1.5
 
 # 토큰 발급(au10001)에는 유량 제한이 있어 연속 호출하면 1700으로 거절된다.
 # 발급 토큰은 24시간짜리이므로 만료 전까지 재사용한다.
@@ -268,6 +276,49 @@ class KiwoomRateLimited(KiwoomError):
     """유량 초과(HTTP 429 / return_code 1700). 잠시 기다렸다 다시 부르면 된다."""
 
 
+class KiwoomConnectionLost(KiwoomError):
+    """터널이 교환 중에 끊겼다. 원격의 거부가 아니므로 다시 걸면 풀린다."""
+
+
+# 재시도해도 같은 답이 오는 것들 — 조직 정책 차단이다. 여기에 걸리면 재시도하지 않는다.
+_POLICY_MARKERS = ("403", "407", "forbidden", "proxy authentication", "tunnel connection failed")
+
+
+def _is_transient_conn(reason: object) -> bool:
+    """연결이 끊긴 것이 일시적인가. 정책 차단이면 False."""
+    text = str(reason).lower()
+    if any(m in text for m in _POLICY_MARKERS):
+        return False
+    if isinstance(reason, (ConnectionResetError, ConnectionAbortedError, TimeoutError, socket.timeout)):
+        return True
+    return any(
+        m in text
+        for m in (
+            "connection reset",
+            "remote end closed",
+            "connection aborted",
+            "timed out",
+            "broken pipe",
+            "errno 104",
+            "eof occurred",
+        )
+    )
+
+
+def _with_conn_retry(fn, what: str):
+    """전송 계층 재시도. 토큰·조회·KRX·ECOS 가 모두 이 경로를 쓴다."""
+    for attempt in range(CONN_RETRIES + 1):
+        try:
+            return fn()
+        except KiwoomConnectionLost as exc:
+            if attempt == CONN_RETRIES:
+                raise KiwoomError(
+                    f"{what} 연결 실패 {CONN_RETRIES + 1}회 재시도: {exc}"
+                ) from exc
+            time.sleep(CONN_BACKOFF * (1 + attempt))
+    raise AssertionError("unreachable")
+
+
 def _mode() -> str:
     mode = os.environ.get("KIWOOM_MODE", "demo").strip().lower()
     if mode not in BASE_URLS:
@@ -286,7 +337,7 @@ def _credentials() -> tuple[str, str]:
     return key, secret
 
 
-def _post(
+def _post_once(
     url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int
 ) -> tuple[dict[str, Any], dict[str, str]]:
     """응답 body와 헤더를 함께 돌려준다. 연속조회 키가 헤더로 오기 때문이다."""
@@ -302,15 +353,19 @@ def _post(
             raise KiwoomRateLimited(f"HTTP 429: {detail}") from exc
         raise KiwoomError(f"HTTP {exc.code}: {detail}") from exc
     except urllib.error.URLError as exc:
-        # 프록시 정책 차단(CONNECT 403)도 여기로 떨어진다.
+        # 프록시 정책 차단(CONNECT 403)도 여기로 떨어진다. 그것은 재시도해도 같다.
+        if _is_transient_conn(exc.reason):
+            raise KiwoomConnectionLost(f"연결 끊김: {exc.reason}") from exc
         raise KiwoomError(f"연결 실패: {exc.reason}") from exc
+    except (ConnectionResetError, socket.timeout) as exc:
+        raise KiwoomConnectionLost(f"연결 끊김: {exc}") from exc
     try:
         return json.loads(body), response_headers
     except ValueError as exc:
         raise KiwoomError(f"JSON이 아닌 응답: {body[:200]}") from exc
 
 
-def _get_json(url: str, timeout: int, extra_headers: dict[str, str] | None = None) -> Any:
+def _get_json_once(url: str, timeout: int, extra_headers: dict[str, str] | None = None) -> Any:
     """ECOS·KRX는 GET을 쓴다. 키움과 인증 체계가 달라 따로 둔다."""
     headers = {"User-Agent": USER_AGENT}
     if extra_headers:
@@ -322,11 +377,25 @@ def _get_json(url: str, timeout: int, extra_headers: dict[str, str] | None = Non
     except urllib.error.HTTPError as exc:
         raise KiwoomError(f"HTTP {exc.code}: {exc.read().decode('utf-8', 'replace')[:300]}") from exc
     except urllib.error.URLError as exc:
+        if _is_transient_conn(exc.reason):
+            raise KiwoomConnectionLost(f"연결 끊김: {exc.reason}") from exc
         raise KiwoomError(f"연결 실패: {exc.reason}") from exc
+    except (ConnectionResetError, socket.timeout) as exc:
+        raise KiwoomConnectionLost(f"연결 끊김: {exc}") from exc
     try:
         return json.loads(body)
     except ValueError as exc:
         raise KiwoomError(f"JSON이 아닌 응답: {body[:200]}") from exc
+
+
+def _post(
+    url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int
+) -> tuple[dict[str, Any], dict[str, str]]:
+    return _with_conn_retry(lambda: _post_once(url, payload, headers, timeout), url.rsplit("/", 1)[-1])
+
+
+def _get_json(url: str, timeout: int, extra_headers: dict[str, str] | None = None) -> Any:
+    return _with_conn_retry(lambda: _get_json_once(url, timeout, extra_headers), url.split("?")[0].rsplit("/", 1)[-1])
 
 
 def fetch_ecos(stat_code: str, item_code: str, date: str, timeout: int = 30) -> dict[str, Any]:
