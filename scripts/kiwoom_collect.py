@@ -727,13 +727,19 @@ def _job(
 # --- 재사용 블록 -------------------------------------------------------------
 
 
-def _indices() -> list[dict[str, Any]]:
-    """ka20001. inds_cur_prc_tm에 시간별 지수가 함께 와서 장중 궤적까지 한 번에 얻는다."""
+def _indices(date: str) -> list[dict[str, Any]]:
+    """ka20001. inds_cur_prc_tm에 시간별 지수가 함께 와서 장중 궤적까지 한 번에 얻는다.
+
+    ka20006(업종 일봉)이 함께 들어 있다. 지수 일별 시가·고가·저가·종가가 수십 행 오므로
+    σ·장중·시가갭·종가위치를 매 회차 재계산할 수 있다. 이것 없이는 σ 를 갱신할 경로가 없다.
+    """
     return [
         _job("index_kospi", "ka20001", "sect", {"mrkt_tp": "0", "inds_cd": "001"}),
         _job("index_kosdaq", "ka20001", "sect", {"mrkt_tp": "1", "inds_cd": "101"}),
         _job("index_kospi200", "ka20001", "sect", {"mrkt_tp": "2", "inds_cd": "201"}),
         _job("sector_indices_kospi", "ka20003", "sect", {"inds_cd": "001"}),
+        _job("index_daily_kospi", "ka20006", "chart", {"inds_cd": "001", "base_dt": date}),
+        _job("index_daily_kosdaq", "ka20006", "chart", {"inds_cd": "101", "base_dt": date}),
     ]
 
 
@@ -1044,7 +1050,7 @@ def _macro(date: str) -> list[dict[str, Any]]:
 def preset_close(date: str) -> list[dict[str, Any]]:
     """마감 리포트 (평일 18:05). 당일 확정 종가·수급·시간외까지."""
     return (
-        _indices()
+        _indices(date)
         + _investor_flows(date)
         + _investor_streak()
         + _program_trades(date)
@@ -1064,7 +1070,7 @@ def preset_close(date: str) -> list[dict[str, Any]]:
 def preset_premarket(date: str) -> list[dict[str, Any]]:
     """개장 전 브리핑 (평일 06:00). --date에 직전 거래일을 넘긴다."""
     return (
-        _indices()
+        _indices(date)
         + _investor_flows(date)
         + _investor_streak()
         + _program_trades(date)
@@ -1083,7 +1089,7 @@ def preset_premarket(date: str) -> list[dict[str, Any]]:
 def preset_weekly(date: str) -> list[dict[str, Any]]:
     """주간 리뷰 (토 06:00). 주봉과 5거래일 누적 수급 중심."""
     return (
-        _indices()
+        _indices(date)
         + _investor_flows(date)
         + _investor_streak("5")
         + _investor_streak("20")
