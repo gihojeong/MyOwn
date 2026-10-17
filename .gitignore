@@ -30,3 +30,5 @@ ex[0-9]*.py
 # 수집기는 scripts/kiwoom_collect.py가 정본. 작업 디렉토리로 받아온 사본은 무시한다
 /kiwoom_collect.py
 wk.json
+# 푸시가 막혔을 때 커밋을 뽑아 두는 복구용 패치. 커밋 자체가 정본이므로 저장소에 남기지 않는다.
+*.patch
