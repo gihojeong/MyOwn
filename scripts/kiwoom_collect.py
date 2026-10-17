@@ -51,6 +51,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import socket
 import re
 import sys
 import time
@@ -75,17 +76,22 @@ USER_AGENT = "kiwoom-collect/1.0"
 # 유량 초과(1700)는 API별로 창이 좁아 연속조회에서 자주 걸린다. 짧게 기다렸다 재시도한다.
 RATE_LIMIT_RETRIES = 3
 RATE_LIMIT_BACKOFF = 1.0
-
-# ── 토큰 발급 재시도 ────────────────────────────────────────────────────────
-# 이 컨테이너의 나가는 IP는 고정이 아니라 호출마다 160.79.106.128~143 사이에서 바뀐다.
-# 키움 API 사용신청에는 10개까지만 등록할 수 있어, 미등록 IP로 나가는 회차가 섞이면
-# 토큰 발급이 8050(IP 미등록)으로 떨어진다. 같은 요청을 다시 보내면 다른 IP로 나가므로
-# 재시도만으로 뚫린다(2026-10-10 실측: 1회 성공률 약 50~60%, 12회 재시도로 사실상 100%).
-# ★조회(call)도 같은 IP 검사를 받는다.★ 2026-10-10 premarket 전수 81건 중 40건이 8050이었다.
-# (ka10001 6회 연속 성공은 표본이 작아 생긴 착시였다 — 발급 전용이라고 오판하지 마라.)
-TOKEN_RETRY_DEFAULT = 12
-TOKEN_RETRY_PAUSE = 0.6
-TOKEN_RETRY_CODES = ("8050",)
+# 컨테이너의 외부 IP가 요청마다 바뀌어(2026-10-10 실측: 160.79.106.128~143 중 최소 8개)
+# 키움에 등록된 IP가 아닌 쪽으로 나가면 return_code 3 / 8050이 온다. 재시도하면 다른 IP로 나간다.
+# 실측 성공률은 호출당 33~42%였다. 12회 재시도면 호출 한 건이 실패할 확률이 (0.67)^12 = 0.8%다.
+# ★발급만이 아니라 조회(call)도 같은 IP 검사를 받는다.★ 2026-10-10 premarket 전수 81건 중
+# 40건이 8050이었다. (ka10001 6연속 성공은 표본이 작아 생긴 착시다 — 발급 전용으로 오판하지 마라.)
+# ★이것이 유일한 전송 재시도 경로다.★ 2026-10-17 병합 전까지 구 경로(_post_retrying)가
+# 함께 남아 있었고, 어느 쪽이 도는지 알 수 없어 혼선을 낳았다. 두 구현을 두지 마라.
+IP_RETRIES = 12
+IP_BACKOFF = 1.0
+# 에이전트 프록시의 터널이 교환 중에 끊기면 도구에는 맨 연결 리셋으로 온다
+# (2026-10-12 실측: 프록시 status 의 recentRelayFailures 에 ws_closed_mid_exchange,
+#  api.kiwoom.com:443, "tunnel closed (code 1006) after 7s"). 더미 키 대조군으로 재며
+#  연결 성공률이 2/3 였다 — 즉 원격이 거부한 것이 아니라 터널이 간헐적으로 죽는다.
+# 전송 계층에서 다시 걸면 풀린다. ★정책 차단(403/407)은 재시도하지 않는다 — 다시 걸어도 같다.★
+CONN_RETRIES = 6
+CONN_BACKOFF = 1.5
 
 # 8005(Token이 유효하지 않습니다)는 재시도가 아니라 재발급으로 푼다. 같은 토큰을 다시 보내면
 # 같은 답이 온다. 2026-10-10 premarket 전수에서 후반 해외주식 4건이 이걸로 떨어졌고,
@@ -267,8 +273,61 @@ class KiwoomError(RuntimeError):
     pass
 
 
+class KiwoomIpUnregistered(KiwoomError):
+    """8050 — 나간 IP가 키움에 등록되지 않았다. 다른 IP로 다시 나가면 풀린다."""
+
+
+def _is_ip_unregistered(data: dict[str, Any]) -> bool:
+    if data.get("return_code") in (None, 0):
+        return False
+    return "8050" in str(data.get("return_msg", ""))
+
+
 class KiwoomRateLimited(KiwoomError):
     """유량 초과(HTTP 429 / return_code 1700). 잠시 기다렸다 다시 부르면 된다."""
+
+
+class KiwoomConnectionLost(KiwoomError):
+    """터널이 교환 중에 끊겼다. 원격의 거부가 아니므로 다시 걸면 풀린다."""
+
+
+# 재시도해도 같은 답이 오는 것들 — 조직 정책 차단이다. 여기에 걸리면 재시도하지 않는다.
+_POLICY_MARKERS = ("403", "407", "forbidden", "proxy authentication", "tunnel connection failed")
+
+
+def _is_transient_conn(reason: object) -> bool:
+    """연결이 끊긴 것이 일시적인가. 정책 차단이면 False."""
+    text = str(reason).lower()
+    if any(m in text for m in _POLICY_MARKERS):
+        return False
+    if isinstance(reason, (ConnectionResetError, ConnectionAbortedError, TimeoutError, socket.timeout)):
+        return True
+    return any(
+        m in text
+        for m in (
+            "connection reset",
+            "remote end closed",
+            "connection aborted",
+            "timed out",
+            "broken pipe",
+            "errno 104",
+            "eof occurred",
+        )
+    )
+
+
+def _with_conn_retry(fn, what: str):
+    """전송 계층 재시도. 토큰·조회·KRX·ECOS 가 모두 이 경로를 쓴다."""
+    for attempt in range(CONN_RETRIES + 1):
+        try:
+            return fn()
+        except KiwoomConnectionLost as exc:
+            if attempt == CONN_RETRIES:
+                raise KiwoomError(
+                    f"{what} 연결 실패 {CONN_RETRIES + 1}회 재시도: {exc}"
+                ) from exc
+            time.sleep(CONN_BACKOFF * (1 + attempt))
+    raise AssertionError("unreachable")
 
 
 def _mode() -> str:
@@ -289,7 +348,7 @@ def _credentials() -> tuple[str, str]:
     return key, secret
 
 
-def _post(
+def _post_once(
     url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int
 ) -> tuple[dict[str, Any], dict[str, str]]:
     """응답 body와 헤더를 함께 돌려준다. 연속조회 키가 헤더로 오기 때문이다."""
@@ -305,15 +364,19 @@ def _post(
             raise KiwoomRateLimited(f"HTTP 429: {detail}") from exc
         raise KiwoomError(f"HTTP {exc.code}: {detail}") from exc
     except urllib.error.URLError as exc:
-        # 프록시 정책 차단(CONNECT 403)도 여기로 떨어진다.
+        # 프록시 정책 차단(CONNECT 403)도 여기로 떨어진다. 그것은 재시도해도 같다.
+        if _is_transient_conn(exc.reason):
+            raise KiwoomConnectionLost(f"연결 끊김: {exc.reason}") from exc
         raise KiwoomError(f"연결 실패: {exc.reason}") from exc
+    except (ConnectionResetError, socket.timeout) as exc:
+        raise KiwoomConnectionLost(f"연결 끊김: {exc}") from exc
     try:
         return json.loads(body), response_headers
     except ValueError as exc:
         raise KiwoomError(f"JSON이 아닌 응답: {body[:200]}") from exc
 
 
-def _get_json(url: str, timeout: int, extra_headers: dict[str, str] | None = None) -> Any:
+def _get_json_once(url: str, timeout: int, extra_headers: dict[str, str] | None = None) -> Any:
     """ECOS·KRX는 GET을 쓴다. 키움과 인증 체계가 달라 따로 둔다."""
     headers = {"User-Agent": USER_AGENT}
     if extra_headers:
@@ -325,11 +388,25 @@ def _get_json(url: str, timeout: int, extra_headers: dict[str, str] | None = Non
     except urllib.error.HTTPError as exc:
         raise KiwoomError(f"HTTP {exc.code}: {exc.read().decode('utf-8', 'replace')[:300]}") from exc
     except urllib.error.URLError as exc:
+        if _is_transient_conn(exc.reason):
+            raise KiwoomConnectionLost(f"연결 끊김: {exc.reason}") from exc
         raise KiwoomError(f"연결 실패: {exc.reason}") from exc
+    except (ConnectionResetError, socket.timeout) as exc:
+        raise KiwoomConnectionLost(f"연결 끊김: {exc}") from exc
     try:
         return json.loads(body)
     except ValueError as exc:
         raise KiwoomError(f"JSON이 아닌 응답: {body[:200]}") from exc
+
+
+def _post(
+    url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int
+) -> tuple[dict[str, Any], dict[str, str]]:
+    return _with_conn_retry(lambda: _post_once(url, payload, headers, timeout), url.rsplit("/", 1)[-1])
+
+
+def _get_json(url: str, timeout: int, extra_headers: dict[str, str] | None = None) -> Any:
+    return _with_conn_retry(lambda: _get_json_once(url, timeout, extra_headers), url.split("?")[0].rsplit("/", 1)[-1])
 
 
 def fetch_ecos(stat_code: str, item_code: str, date: str, timeout: int = 30) -> dict[str, Any]:
@@ -663,68 +740,16 @@ def _token_dead(exc: KiwoomError) -> bool:
     return any(code in str(exc) for code in TOKEN_DEAD_CODES)
 
 
-def _ip_unregistered(data: dict[str, Any]) -> bool:
-    """8050은 HTTP 200 + return_code != 0 으로 오므로 본문을 열어야 보인다."""
-    if data.get("return_code") in (None, 0):
-        return False
-    return any(code in str(data.get("return_msg", "")) for code in TOKEN_RETRY_CODES)
 
 
-def _post_retrying(
-    url: str,
-    body: dict[str, Any],
-    headers: dict[str, str],
-    timeout: int,
-    retries: int = TOKEN_RETRY_DEFAULT,
-) -> tuple[dict[str, Any], dict[str, str]]:
-    """유량 제한과 IP 로테이션(8050)을 함께 흡수해 한 건을 보낸다.
-
-    유량 제한은 지수 백오프로 RATE_LIMIT_RETRIES회, IP 미등록은 짧은 대기로 retries회.
-    둘은 원인이 다르므로 횟수를 따로 센다.
-    """
-    attempts = max(1, retries)
-    rate_hits = 0
-    last: KiwoomError | None = None
-    for _ in range(attempts):
-        try:
-            data, response_headers = _post(url, body, headers, timeout)
-        except KiwoomRateLimited:
-            if rate_hits >= RATE_LIMIT_RETRIES:
-                raise
-            time.sleep(RATE_LIMIT_BACKOFF * (2**rate_hits))
-            rate_hits += 1
-            continue
-        except KiwoomError as exc:
-            if not _token_retryable(exc):
-                raise
-            last = exc
-            time.sleep(TOKEN_RETRY_PAUSE)
-            continue
-        if _ip_unregistered(data):
-            last = KiwoomError(
-                f"토큰 발급 실패 [{data.get('return_code')}]: {data.get('return_msg')}"
-            )
-            time.sleep(TOKEN_RETRY_PAUSE)
-            continue
-        return data, response_headers
-    raise KiwoomError(f"{last} (재시도 {attempts}회 모두 미등록 IP로 나갔다)")
 
 
-def _token_retryable(exc: KiwoomError) -> bool:
-    """나가는 IP가 바뀌면 풀릴 수 있는 실패만 재시도 대상으로 본다.
-
-    8001(키 검증 실패)이나 1700(발급 유량 초과)은 재시도해도 같은 답이 오므로 제외한다.
-    """
-    message = str(exc)
-    if any(code in message for code in TOKEN_RETRY_CODES):
-        return True
-    return message.startswith("연결 실패") or "Connection reset" in message
 
 
 def issue_token(
     timeout: int = 20,
     use_cache: bool = True,
-    retries: int = TOKEN_RETRY_DEFAULT,
+    retries: int = IP_RETRIES,
 ) -> str:
     """접근토큰을 얻는다 (au10001). 응답의 토큰 필드명은 'token'이다.
 
@@ -738,12 +763,25 @@ def issue_token(
     return _issue_token_once(timeout, retries)
 
 
-def _issue_token_once(timeout: int = 20, retries: int = TOKEN_RETRY_DEFAULT) -> str:
-    """토큰을 발급한다. 캐시는 보지 않는다 — 8050만 retries회까지 다시 보낸다."""
+def _issue_token_once(timeout: int = 20, retries: int = IP_RETRIES) -> str:
+    """토큰을 발급한다. 캐시는 보지 않는다 — 8050만 retries회까지 다시 보낸다.
+
+    ★retries 는 --token-retries 로 들어온다. IP_RETRIES 를 직접 쓰면 그 플래그가 죽는다.★
+    (2026-10-17 병합 때 실제로 죽어 있었다 — 두 브랜치의 재시도 구조를 합치다 생긴 일이다.)
+    """
     key, secret = _credentials()
     payload = {"grant_type": "client_credentials", "appkey": key, "secretkey": secret}
     headers = {"Content-Type": "application/json;charset=UTF-8", "User-Agent": USER_AGENT}
-    data, _ = _post_retrying(BASE_URLS[_mode()] + TOKEN_PATH, payload, headers, timeout, retries)
+    attempts = max(1, retries)
+    for attempt in range(attempts + 1):
+        data, _ = _post(BASE_URLS[_mode()] + TOKEN_PATH, payload, headers, timeout)
+        if not _is_ip_unregistered(data):
+            break
+        if attempt == attempts:
+            raise KiwoomIpUnregistered(
+                f"토큰 발급 실패 [8050] {attempts + 1}회 재시도: {data.get('return_msg')}"
+            )
+        time.sleep(IP_BACKOFF)
     if data.get("return_code") not in (None, 0):
         raise KiwoomError(f"토큰 발급 실패 [{data.get('return_code')}]: {data.get('return_msg')}")
     token = data.get("token")
@@ -782,8 +820,24 @@ def call(
         if cont_yn == "Y" and next_key:
             headers["cont-yn"] = cont_yn
             headers["next-key"] = next_key
-        # 유량 제한(API마다 다르고 ka10066은 1회로 좁다)과 IP 로테이션(8050)을 함께 흡수한다.
-        data, response_headers = _post_retrying(url, body, headers, timeout)
+        # 유량 제한은 API마다 다르고 ka10066은 1회로 좁다. 초당 한도라 짧은 대기로 풀린다.
+        total_retries = RATE_LIMIT_RETRIES + IP_RETRIES
+        for attempt in range(total_retries + 1):
+            try:
+                data, response_headers = _post(url, body, headers, timeout)
+            except KiwoomRateLimited:
+                if attempt == total_retries:
+                    raise
+                time.sleep(RATE_LIMIT_BACKOFF * (2 ** min(attempt, 3)))
+                continue
+            if _is_ip_unregistered(data):
+                if attempt == total_retries:
+                    raise KiwoomIpUnregistered(
+                        f"{api_id} 실패 [8050] {total_retries + 1}회 재시도: {data.get('return_msg')}"
+                    )
+                time.sleep(IP_BACKOFF)
+                continue
+            break
         code = data.get("return_code")
         if code not in (None, 0):
             raise KiwoomError(f"{api_id} 실패 [{code}]: {data.get('return_msg')}")
@@ -819,16 +873,18 @@ def _job(
 def _indices(date: str) -> list[dict[str, Any]]:
     """ka20001. inds_cur_prc_tm에 시간별 지수가 함께 와서 장중 궤적까지 한 번에 얻는다.
 
-    ka20006(업종 일봉 600행)을 함께 받는다. σ(19) 자력 계산과 거래대금 시계열의
-    유일한 경로인데 2026-10-16 회차까지 preset 에 없어서 매번 별도 단건 호출에
-    의존했다. trde_prica 는 백만원, 지수 값은 100배 정수다.
+    ka20006(업종 일봉 600행)을 코스피·코스닥 둘 다 함께 받는다. 지수 일별 시가·고가·저가·
+    종가와 거래대금이 오므로 σ·장중·시가갭·종가위치를 매 회차 재계산할 수 있고,
+    이것 없이는 σ 를 갱신할 경로가 없다. 2026-10-16 회차까지 preset 에 없어서 매번 별도
+    단건 호출에 의존했다. trde_prica 는 백만원, 지수 값은 100배 정수다.
     """
     return [
         _job("index_kospi", "ka20001", "sect", {"mrkt_tp": "0", "inds_cd": "001"}),
         _job("index_kosdaq", "ka20001", "sect", {"mrkt_tp": "1", "inds_cd": "101"}),
         _job("index_kospi200", "ka20001", "sect", {"mrkt_tp": "2", "inds_cd": "201"}),
         _job("sector_indices_kospi", "ka20003", "sect", {"inds_cd": "001"}),
-        _job("kospi_daily_bars", "ka20006", "chart", {"inds_cd": "001", "base_dt": date}),
+        _job("index_daily_kospi", "ka20006", "chart", {"inds_cd": "001", "base_dt": date}),
+        _job("index_daily_kosdaq", "ka20006", "chart", {"inds_cd": "101", "base_dt": date}),
     ]
 
 
@@ -1306,8 +1362,8 @@ def main() -> int:
     parser.add_argument(
         "--token-retries",
         type=int,
-        default=TOKEN_RETRY_DEFAULT,
-        help=f"IP 미등록(8050) 재시도 횟수 (기본 {TOKEN_RETRY_DEFAULT}). 발급·조회 모두 적용",
+        default=IP_RETRIES,
+        help=f"IP 미등록(8050) 재시도 횟수 (기본 {IP_RETRIES}). 발급·조회 모두 적용",
     )
     parser.add_argument("--date", help="기준일자 YYYYMMDD (기본: 오늘 KST)")
     parser.add_argument("--codes", help="관심종목을 code:name 쌍의 쉼표 목록으로 덮어쓰기")

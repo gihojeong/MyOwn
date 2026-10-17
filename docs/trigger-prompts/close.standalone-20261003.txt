@@ -1,0 +1,140 @@
+한국시간(KST) 평일 저녁 18:05다. 시간외 단일가(16:00~18:00)가 방금 끝났다. ★19:00 발행이 납기다.
+오늘 하루 KOSPI를 결산하는 ★마감 리포트★를 작성해 ① HTML 파일 전달 ② giho.jeong@samsung.com으로
+전문 메일 발송 ③ 다음 거래일 예측을 Drive에 기록, 세 가지를 모두 수행하라.
+수신자 BJ는 반도체 패키징 FA 엔지니어(과학기술·정량 배경)로 박사 수준의 밀도와 간결함을 원하고,
+수식은 실제 수치를 대입한 계산 과정을 보고 싶어 한다. "무슨 일이 있었다"가 아니라 "그 사건이 KOSPI의
+어느 부분을 어떤 경로로 움직였는가"의 인과 서술로 쓸 것. 무인 실행이므로 확인 질문 없이 판단해 진행하라.
+모든 웹 접근은 자동승인으로 간주하고 승인을 기다리며 시간을 끌지 마라. 서브에이전트(Agent)를 쓰지 마라.
+
+════════════════════════════════════════════════════════════════
+■ 0단계 — 날짜·시각 확정을 다른 무엇보다 먼저
+════════════════════════════════════════════════════════════════
+bash date를 믿지 말고 외부 서버 시각으로 교차검증하라:
+    curl -sI https://www.google.com | grep -i '^date:'
+★확정 날짜가 주말이거나 한국 증시 휴장일이면 리포트를 만들지 말고 그 사실만 알리고 멈춰라.
+ 2026년 4분기 휴장: 10/3(토 개천절) · 10/5(월 대체공휴일) · 10/9(금 한글날) · 12/25(금).
+ 그 외는 bash로 주말만 걸러라.
+
+■ 1단계 — 중복 발송 가드 (두 번째로 확인하라)
+Drive 폴더 1hLv3NpWB3I70y33ZSpmhYgU6MGU-0cbK 에 ★다음 거래일자★ kospi_forecast_<YYYYMMDD> 가 이미 있거나,
+giho.jeong@samsung.com 으로 당일 마감 리포트가 이미 발송됐으면 ★다른 루틴이 이미 수행한 것이다.
+중복 발송하지 말고 그 사실만 보고하고 즉시 멈춰라.★
+
+════════════════════════════════════════════════════════════════
+■ 2단계 — 규격 문서를 먼저 읽어라. 저장소가 정본이다
+════════════════════════════════════════════════════════════════
+저장소 gihojeong/MyOwn 이 필요하다. 판정 기준은 이것뿐이다:
+    find . -name kiwoom_collect.py -not -path "*/.git/*"
+없으면 git clone https://github.com/gihojeong/MyOwn.git
+★clone URL에 토큰을 넣지 마라 — 분류기가 Credential Exploration으로 차단한다. 평범한 공개 clone이 통과한다.
+
+    curl -fsSL https://raw.githubusercontent.com/gihojeong/MyOwn/master/docs/trigger-prompts/close.live-20260929.txt
+    curl -fsSL https://raw.githubusercontent.com/gihojeong/MyOwn/master/docs/collection-contract.md
+    curl -fsSL https://raw.githubusercontent.com/gihojeong/MyOwn/master/docs/kiwoom-report-playbook.md
+    ls scripts/close-report/    ← build.py·calc.py·score.py·verify.py·drive.py 가 있으면 그것을 쓰라
+
+★close.live-20260929.txt(약 55KB)가 이 회차의 ★전체 규격★이다 — 수집 항목 [A]~[F], 해석 규율
+ [해석1]~[해석11], 시총 상위30 분해, HTML 출력 규격, 발행 절차가 전부 거기 있다. 그대로 따르라.
+★문서가 이 프롬프트보다 최신이다. 충돌하면 문서가 이긴다. 단 아래 3단계 "확정 사실"은 문서보다 뒤에
+ 실측된 것이므로 어긋나는 부분은 아래가 이긴다.
+
+════════════════════════════════════════════════════════════════
+■ 3단계 — ★수집 전 필수 절차. 빠뜨리면 전 항목이 조용히 실패한다 (2026-10-03 실측)
+════════════════════════════════════════════════════════════════
+① ★토큰 캐시를 먼저 비워라:   rm -rf ~/.cache/kiwoom-collect
+   같은 APP_KEY로 키움 MCP가 새 접근토큰을 발급하면 수집기가 캐시한 토큰이 서버에서 무효화된다
+   → 전 항목이 `8005 Token이 유효하지 않습니다`로 떨어진다. 실측 사고: 70건 중 6건으로 붕괴.
+② ★`--check`를 신뢰하지 마라 — ★죽은 토큰에도 token_issued=true를 보고한다.★ 사전점검으로 안 잡힌다.
+   진짜 판정은 ★실제 수집 성공 건수★다(close 프리셋 기대치: 90항목 요청 / 80 성공).
+③ ★이 회차 동안 kiwoom_query(MCP)를 호출하지 마라. 명세 조회용 kiwoom-spec은 자격증명을 안 쓰므로 무관.
+④ ★수집기는 포그라운드로 띄워라. nohup 백그라운드가 "exit 0"을 내고도 산출물 없이 끝난 전례가 있다:
+      timeout 540 python3 scripts/kiwoom_collect.py --preset close --date <당일 YYYYMMDD> \
+              --pause 0.25 --out kiwoom.json --log kiwoom.log
+   2~6분 걸린다. 도는 동안 Drive 계보 읽기·메일함(계약서 3절)·웹 조사를 병렬로 진행하라.
+⑤ ★APP_KEY·APP_SECRET·KRX_AUTH_KEY가 환경변수로 주입돼 있으면 수집기가 동작한다(mode=demo, mockapi).
+   비어 있으면 즉시 웹 경로로 전환하고 ★데이터 신뢰도 박스에 한 줄 명시★하라:
+     "수집기 미가동 — APP_KEY 부재. 전 항목 웹 경로." 그리고 --check 원문 에러를 인프라 메모에 그대로 남겨라.
+   ★사용자에게 앱키를 묻지 마라. 키 값을 출력하지 마라 — 존재 여부와 길이만.
+⑥ ★Gmail·Google Drive 도구는 ToolSearch로 로드하라:
+     ToolSearch("select:mcp__Gmail__send_message,mcp__Gmail__get_message,mcp__Gmail__search_threads,
+                 mcp__Google_Drive__search_files,mcp__Google_Drive__read_file_content,
+                 mcp__Google_Drive__create_file,mcp__Google_Drive__trash_file")
+   ★커넥터가 이 세션에 붙어 있지 않아 로드가 안 되면 재시도하지 말고, HTML 파일은 SendUserFile로 전달한 뒤
+   PushNotification 첫 줄에 "커넥터 미연결 — 메일·Drive 미수행"을 적고 종료하라. 조용히 넘어가지 마라.
+
+════════════════════════════════════════════════════════════════
+■ 4단계 — ★데이터 판정 규율 (오진으로 시간 버리지 마라)
+════════════════════════════════════════════════════════════════
+· ★demo 스텁 — 폐기하고 언론 경유를 정본으로 쓰라. return_code=0이라 실패로 안 잡힌다:
+    investor_after_close · investor_streak_5d · investor_by_stock (삼성전자 등락 부호가 반대로 나온다)
+    flu_rt · trde_qty · pred_pre 가 0으로 스텁. ★0은 값이 아니다. 등락률은 가격에서 직접 계산하라.
+  ★ka20001(index_*)·ka20003(sector_*)은 --date를 무시하고 ★조회 시점 실시간값★을 준다.
+· ★API 단위: ka10066 투자자별 백만원(억원은 /100) · ka10051 업종별 억원 · ka90010 프로그램 백만원 ·
+  ka20001/ka20003 trde_prica 백만원 · ka90009는 단위 불명이라 ★순위만★ 쓴다.
+  ★가격 필드에 전일대비 부호가 접두로 붙는다. "-201500"은 음수가 아니라 하락이다. abs()를 취하라.
+  ★투자자별 항등식: 개인+외국인+기관+기타법인+국가+내국인대우외국인 = 0.
+    etc_fnnc(기타금융)는 ★기관의 하위 항목★이다 — etc_corp(기타법인)과 혼동하면 항등식이 깨진다.
+· 채택 가능(실측 검증): KRX 전종목·선물·옵션(실 KRX API), ECOS 금리·환율(실 API), ka90010 프로그램·베이시스,
+  ka10051, ka10066, 공매도 shrts_trnsn(언론치와 0.1~0.2% 일치), KODEX 156080, 해외 15종
+· ★종가는 KRX가 정본. 키움 cur_prc·candle_daily·short_selling 종가는 NXT(15:40~20:00)가 섞인다.
+  그 격차를 버리지 말고 ★시간외 방향 대리지표★로 쓰라 — 시간외 전용 API(ka10087·ka10098)는 demo
+  미제공이라 이것이 [A-2]를 부분 복구하는 유일한 경로다(2026-09-28: 관심 8종 전부 음수, 평균 -0.573%,
+  지수 환산 -0.167%p = 정규장 매도압력의 장후 연장).
+  ★AlphaSquare 개별종목 quote가 19:59:59면 NXT 종료가다 — 종가 소스로 쓰지 마라.
+· ★KRX 당일분은 18:05에 미게시다(게시는 익영업일 07:09~08:53 KST). 당일 종가는 ★언론 3사 이상 교차★로
+  확정하고, ★전일분 KRX 확정치(942행)는 받아서 Drive 기록에 남겨라★ — 다음 아침 회차가 물려받는다.
+  942행 원시 호출은 fetch_krx()로 안 된다(watchlist+top40으로 접어서 준다). 직접 호출하라:
+    import sys, os; sys.path.insert(0, os.path.join(os.getcwd(), 'scripts'))
+    import kiwoom_collect as kc
+    key = kc._clean_secret(os.environ['KRX_AUTH_KEY'])
+    data = kc._get_json(kc.KRX_BASE + '/sto/stk_bydd_trd?basDd=YYYYMMDD', 45, {'AUTH_KEY': key})
+    rows = [v for v in data.values() if isinstance(v, list)][0]
+  필드: ISU_CD · ISU_NM · MKT_NM · TDD_CLSPRC · FLUC_RT · MKTCAP · LIST_SHRS · ACC_TRDVAL
+· ECOS_API_KEY 미등록이면 sample 키로 동작한다(국고채 3·10·30년·환율 정상 반환, 최대 10건). 오류 아니다.
+· 결과 JSON(약 4.5MB)을 Read 도구로 열지 마라. python으로 필요한 키만 뽑아라.
+  파이썬은 heredoc 대신 Write로 .py 저장 후 python3 실행하라. numpy 없음.
+  '{:+,}'.format() 을 쓰라(`%+,d` 미지원). f-string 안에 삼중따옴표·백슬래시 금지(SyntaxError).
+  Bash 출력은 32KB에서 잘린다. 전문 읽기는 fold -s -w 2400 후 Read 도구로.
+· 웹 조회는 'WebSearch로 URL을 노출시킨 뒤 그 URL을 WebFetch' 순서(PROVENANCE 우회). 검색어에 "2026"을 넣어라.
+· "확인 불가"는 close.live-20260929.txt의 4경로를 다 돌린 뒤에만 쓴다. 추정치로 빈칸을 메우지 마라.
+  쓸 때는 각 항목에 "결산 영향: 있음/낮음/없음"을 붙여 ★데이터 신뢰도 박스★에 나열하라(각주에 묻지 마라).
+
+════════════════════════════════════════════════════════════════
+■ 5단계 — 산출 (close.live-20260929.txt 의 [출력 규격]·[발행 절차]를 그대로)
+════════════════════════════════════════════════════════════════
+① 이메일 호환 HTML 1종 → SendUserFile (files는 반드시 배열)
+   Outlook/Exchange 호환: 레이아웃 전부 <table>, 스타일 전부 인라인, <div>부터 시작.
+   ★금지: <style> · class= · display:grid · display:flex · inline-block · border-radius · @media ·
+   <svg> · <script> · var(-- · href="#" · <!DOCTYPE> · <html> · <head> · <body>
+   상승 #d03b3b ▲ / 하락 #2a78d6 ▼ / 보합 ― · 강조 #16301f. ★▲▼와 숫자 부호를 정규식으로 일치 검사하라.
+   ★용량 ≤95KB. len(html.encode('utf-8'))를 출력해 확인하라(Gmail 클리핑 한도 102,400바이트).
+   발송 전 python assert로 금지 문자열 0건·태그 개폐 균형(table/tr/td/div/font/b)을 검증하라.
+② 같은 HTML을 giho.jeong@samsung.com 으로 ★htmlBody 전문 전사★ 발송.
+   ★첨부 금지 · plain-text body 파라미터 금지 · 요약·수정·생략 금지 · DOCTYPE 추가 금지.
+   ★전사는 파일을 python으로 5등분해 part0~4.txt 로 쪼갠 뒤 cat으로 하나씩 읽어 그대로 옮겨라.
+     한 번에 cat 하면 출력이 persist 파일로 빠져 컨텍스트에 안 들어온다. 95KB 기준 5~8분 걸린다.
+   제목: "[KOSPI 마감 리포트] YYYY-MM-DD (요일) {종가} ▲/▼{등락률} — {한 줄 핵심}"
+   발송 후 mcp__Gmail__get_message(messageFormat MINIMAL)로 반영을 확인하라.
+③ 다음 거래일 예측을 Drive에 kospi_forecast_<다음거래일 YYYYMMDD> 로 기록
+   (폴더 1hLv3NpWB3I70y33ZSpmhYgU6MGU-0cbK, contentMimeType='text/plain', 파싱 가능한 평문).
+   ★저장 후 read_file_content로 전문이 들어갔는지 확인하라. Drive는 부분수정이 안 된다 —
+   갱신은 새 파일 create → read 검증 → 이전 파일 trash 순서다. 같은 제목 중복을 남기지 마라.
+   ★연휴 전이면 다음 개장일 날짜를 쓰고 공백 거래일 수를 명시하라.
+④ PushNotification: 첫 줄은 오늘의 결론 한 줄, 이어서 KOSPI 종가·등락률, 예측 괴리 ±%p,
+   메일 발송 여부, ★실제 발행 시각과 19:00 대비 초과 분★, 확인 불가 항목 수. 전문용어 없이.
+
+★헤더의 "발행 HH:MM"은 발송 직전 ★실제 시각★으로 갱신하라. 예정 시각 선기입은 허위 표기다.
+★메일은 한 번만 보낸다. 발송 후 오류를 발견하면 ★정정 메일을 자동으로 보내지 말고★
+ Drive 기록에 REV로 적고 PushNotification에 정정 내용을 적어라.
+★납기 19:00. 완결성보다 납기가 우선이다. ★18:50 조사 하드 스톱.★ 그 시점까지 못 구한 항목만
+ "확인 불가"로 확정하고 더 붙잡지 마라. 18:50까지 전체본이 안 되면 결론+KPI+수급만 담은 축약본을
+ 먼저 보내고, 전체본은 제목에 "(전체본)"을 붙여 한 번 더 보내라.
+
+■ 원칙
+· 수치는 반드시 실제 조회로 확보한다. 계산(비중·기여도·요인분해·예측 괴리)은 python으로 검산하고
+  산식과 전제를 계산박스로 노출하라. ★암산 금지.★ 거래소 공식치가 아님을 면책에 명시하라.
+· 관측(무엇이 움직였나)과 해석(왜)을 구분하라. 규명 없이 나열한 리포트는 미완성이다.
+· 모든 해외 수치는 "수치 → 전이 채널 → 한국 영향 → 크기" 경로와 함께 쓴다. 지표 나열 금지.
+· 한국 고유분을 주장하기 전에 EM 요인분해를 하라(SOXX를 한국 고유분 기준으로 쓰지 마라).
+· 자기 예측의 실패를 축소하지 말 것. 예측 괴리 검증은 자기 채점이므로 관대함이 곧 결함이다.
+· Word/docx·PDF 첨부를 만들지 마라. 본문 전문이 확정된 방식이다.
