@@ -76,14 +76,22 @@ USER_AGENT = "kiwoom-collect/1.0"
 # 유량 초과(1700)는 API별로 창이 좁아 연속조회에서 자주 걸린다. 짧게 기다렸다 재시도한다.
 RATE_LIMIT_RETRIES = 3
 RATE_LIMIT_BACKOFF = 1.0
-# 컨테이너의 외부 IP가 요청마다 바뀌어(2026-10-10 실측: 160.79.106.128~143 중 최소 8개)
-# 키움에 등록된 IP가 아닌 쪽으로 나가면 return_code 3 / 8050이 온다. 재시도하면 다른 IP로 나간다.
-# 실측 성공률은 호출당 33~42%였다. 12회 재시도면 호출 한 건이 실패할 확률이 (0.67)^12 = 0.8%다.
+# 컨테이너의 외부 IP가 요청마다 바뀌어 키움에 등록된 IP가 아닌 쪽으로 나가면
+# return_code 3 / 8050이 온다. 재시도하면 다른 IP로 나가므로 재시도만으로 뚫린다.
+# ★2026-10-17 재측정: IP 풀이 넓어졌다.★
+#   10-10 관측: 160.79.106.128~143 (/28 16개) · 시도당 성공률 33~42%
+#   10-17 관측: 위 범위 + ★160.79.106.16 · .17 (범위 밖)★ — 14회 중 5회(36%)가 새 블록이다.
+#   키움 사용신청은 IP 10개 한도이므로 등록분이 새 블록을 못 덮는다 →
+#   시도당 성공률 ★20.8%(5/24)★ 로 떨어졌다. 기대 재시도 (1-p)/p = 3.80회, 실측 3.8회로 일치.
+# 그래서 12 → 20 으로 올린다. 호출당 실패 확률 (0.792)^13 = 4.8% → (0.792)^21 = 0.7%,
+# 84호출 preset 기준 기대 실패 4.0건 → 0.6건. ★평균 소요는 안 늘고 꼬리만 줄어든다★
+# (평균 재시도는 p 가 정하고 캡이 정하지 않는다).
+# ★근본 해결은 키움 OpenAPI 포털의 등록 IP 갱신이다 — 코드로는 꼬리만 깎을 수 있다.★
 # ★발급만이 아니라 조회(call)도 같은 IP 검사를 받는다.★ 2026-10-10 premarket 전수 81건 중
 # 40건이 8050이었다. (ka10001 6연속 성공은 표본이 작아 생긴 착시다 — 발급 전용으로 오판하지 마라.)
 # ★이것이 유일한 전송 재시도 경로다.★ 2026-10-17 병합 전까지 구 경로(_post_retrying)가
 # 함께 남아 있었고, 어느 쪽이 도는지 알 수 없어 혼선을 낳았다. 두 구현을 두지 마라.
-IP_RETRIES = 12
+IP_RETRIES = 20
 IP_BACKOFF = 1.0
 # 에이전트 프록시의 터널이 교환 중에 끊기면 도구에는 맨 연결 리셋으로 온다
 # (2026-10-12 실측: 프록시 status 의 recentRelayFailures 에 ws_closed_mid_exchange,
@@ -781,6 +789,9 @@ def _issue_token_once(timeout: int = 20, retries: int = IP_RETRIES) -> str:
             raise KiwoomIpUnregistered(
                 f"토큰 발급 실패 [8050] {attempts + 1}회 재시도: {data.get('return_msg')}"
             )
+        # ★침묵 금지★ 시도 횟수와 코드만 남긴다(토큰·본문 제외). 이 줄이 없으면
+        # "로그 0바이트" 를 죽음으로 오진한다 — 2026-10-14 에 실제로 그렇게 오진했다.
+        print(f"[retry] au10001 8050 {attempt + 1}/{attempts}", file=sys.stderr, flush=True)
         time.sleep(IP_BACKOFF)
     if data.get("return_code") not in (None, 0):
         raise KiwoomError(f"토큰 발급 실패 [{data.get('return_code')}]: {data.get('return_msg')}")
@@ -828,6 +839,8 @@ def call(
             except KiwoomRateLimited:
                 if attempt == total_retries:
                     raise
+                print(f"[retry] {api_id} 1700 {attempt + 1}/{total_retries}",
+                      file=sys.stderr, flush=True)
                 time.sleep(RATE_LIMIT_BACKOFF * (2 ** min(attempt, 3)))
                 continue
             if _is_ip_unregistered(data):
@@ -835,6 +848,8 @@ def call(
                     raise KiwoomIpUnregistered(
                         f"{api_id} 실패 [8050] {total_retries + 1}회 재시도: {data.get('return_msg')}"
                     )
+                print(f"[retry] {api_id} 8050 {attempt + 1}/{total_retries}",
+                      file=sys.stderr, flush=True)
                 time.sleep(IP_BACKOFF)
                 continue
             break
