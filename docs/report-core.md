@@ -122,6 +122,22 @@
 
 ## [S] 수집 절차
 
+0. ★★저장소를 먼저 최신으로 맞춰라 (2026-10-17 신설)★★
+   curl 로 받는 규격 문서는 항상 최신이지만, 실제로 도는 `scripts/kiwoom_collect.py` 는
+   세션 컨테이너의 ★로컬 체크아웃★ 이다. 상주 세션(마감·개장 전)은 컨테이너가 사는 동안
+   코드가 그대로여서 master 에 들어간 수정을 ★영구히 못 본다.★
+   ```
+   cd /home/user/MyOwn
+   git fetch origin 2>&1 | tail -2
+   git pull --ff-only 2>&1 | tail -3 || git pull --ff-only origin master 2>&1 | tail -3
+   grep -c fallback_days scripts/kiwoom_collect.py      # 8 이상이면 최신
+   ```
+   - ★`--ff-only` 만 쓴다.★ 로컬 커밋이 있어 멈추면 거기서 끝낸다 — merge·rebase·reset·force
+     금지. 그 상태로 수집하고 장부 `[인프라]` 에 "저장소 미갱신(로컬 커밋 N건)" 으로 적는다.
+   - 확인 명령이 0 이면 수집기가 낡았다. KRX 전종목(게시일 폴백)·증시자금 추이·ka20006 이
+     없는 것을 ★"수집 실패" 로 적지 말고 "저장소 미갱신" 으로 적어라.★
+   - 코드 동기화이고 산식 변경이 아니다 — 평일 회차 제약에 걸리지 않는다.
+   상세: `docs/collection-contract.md` §1 ⓞ
 1. ★토큰 캐시를 먼저 비워라: `rm -rf ~/.cache/kiwoom-collect`★
    같은 APP_KEY 로 키움 MCP(kiwoom-exec)가 새 접근토큰을 발급하면 수집기가 캐시한 토큰이
    서버에서 무효화된다 → 전 항목이 `8005` 로 떨어진다.
