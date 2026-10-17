@@ -369,18 +369,60 @@ def fetch_ecos(stat_code: str, item_code: str, date: str, timeout: int = 30) -> 
     return out
 
 
-def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
-    """KRX OpenAPI 일별 시세 한 건. 인증키는 AUTH_KEY 헤더로 보낸다."""
+_KRX_KEY_WARNED = False
+
+
+def _krx_key() -> str:
+    """KRX 인증키를 정리해 돌려준다. 비가시 문자 경고는 회차당 한 번만 낸다.
+
+    2026-10-17 확인: 이 키에는 비가시 문자가 1개 붙어 있고 제거 후 호출은 모두 성공한다.
+    즉 이 경고는 ★실패 원인이 아니다★. 전종목 0행을 이것 탓으로 오진하지 마라.
+    """
+    global _KRX_KEY_WARNED
     raw = os.environ.get("KRX_AUTH_KEY", "")
     key = _clean_secret(raw)
-    if key != raw.strip():
-        # 무엇이 지워졌는지 값 노출 없이 알린다.
+    if key != raw.strip() and not _KRX_KEY_WARNED:
+        # 무엇이 지워졌는지 값 노출 없이 알린다. 무해하다.
         print(
-            f"[warn] KRX_AUTH_KEY에서 보이지 않는 문자 {len(raw.strip()) - len(key)}개를 제거했습니다.",
+            f"[info] KRX_AUTH_KEY에서 보이지 않는 문자 {len(raw.strip()) - len(key)}개를 "
+            "제거했습니다(무해 — 실패 원인이 아닙니다).",
             file=sys.stderr,
         )
+        _KRX_KEY_WARNED = True
+    return key
+
+
+def fetch_krx(path: str, date: str, timeout: int = 30, fallback_days: int = 0) -> dict[str, Any]:
+    """KRX OpenAPI 일별 시세 한 건. 인증키는 AUTH_KEY 헤더로 보낸다.
+
+    fallback_days > 0 이면 date 부터 하루씩 뒤로 물러나며 ★게시가 끝난 가장 최근 날짜★를
+    찾는다. KRX는 거래일 D의 확정 자료를 익영업일 07:09~08:53 KST에 올리므로
+    (2026-10-17 실측: 10/16 05:57 호출 → 10/15분 0행 / 10/17 08:18 호출 → 10/15분 940행)
+    개장 전(05:53)·마감(17:35) 회차는 둘 다 게시 창 바깥이고 그냥 호출하면 영구히 0행이다.
+    """
+    key = _krx_key()
     if not key:
         raise KiwoomError("KRX_AUTH_KEY가 없습니다 — KOSPI200 선물·옵션 수집을 건너뜁니다.")
+    if fallback_days:
+        tried: list[str] = []
+        cursor = datetime.strptime(date, "%Y%m%d")
+        for _ in range(fallback_days + 1):
+            stamp = cursor.strftime("%Y%m%d")
+            try:
+                out = fetch_krx(path, stamp, timeout)
+            except KiwoomError as exc:
+                if "데이터가 없습니다" not in str(exc):
+                    raise
+                tried.append(stamp)
+                cursor -= timedelta(days=1)
+                continue
+            out["requested_date"] = date
+            out["resolved_date"] = stamp
+            out["skipped_dates"] = tried
+            return out
+        raise KiwoomError(
+            f"KRX 미게시 — {date} 부터 {fallback_days}일 뒤로 찾아도 데이터가 없다: {tried}"
+        )
     try:
         data = _get_json(f"{KRX_BASE}/{path}?basDd={date}", timeout, {"AUTH_KEY": key})
     except KiwoomError as exc:
@@ -440,6 +482,70 @@ def fetch_krx(path: str, date: str, timeout: int = 30) -> dict[str, Any]:
         out["seen_products"] = seen[:40]
         out["rows"] = rows[:KRX_MAX_ROWS]
         out["note"] = "KRX_PRODUCTS에 걸린 행이 없다. seen_products로 실제 표기를 확인해 고쳐라."
+    return out
+
+
+FUND_TREND_URL = "https://stock.naver.com/api/domestic/market/trendDeposit"
+FUND_TREND_ROWS = 60  # pageSize 상한은 200
+FUND_FIELDS = (
+    ("dep", "customerDeposit", "투자자예탁금"),
+    ("cred", "creditLoan", "신용융자잔고"),
+    ("fund_stock", "beneficiaryCertificateStock", "주식형 수익증권"),
+    ("fund_mixed", "beneficiaryCertificateMixing", "혼합형 수익증권"),
+    ("fund_bond", "beneficiaryCertificateBond", "채권형 수익증권"),
+)
+
+
+def fetch_fund_trend(timeout: int = 30) -> dict[str, Any]:
+    """투자자예탁금·신용융자잔고 추이. 단위는 억원.
+
+    ★이 계열을 E의 선행 변수로 쓰지 마라 (2026-10-17 측정, 200거래일 표본).★
+      · 공시 지연 2거래일 — 10/17(토) 기준 최신 자금일이 10/14다.
+      · 계열 자체의 내재 지연 — 라벨 날짜를 s거래일 당겨 동시 상관을 최대화하면
+        Δ신용융자는 s=3에서 +0.5149, Δ예탁금은 s=2에서 +0.6119 로 최대가 된다.
+      · 합계 4~5거래일 전의 시장을 설명하는 값이고, 시차 회귀 12건 중 |t|>1.96 이
+        1건뿐이며 그 1건도 지연을 바꾸면 부호가 뒤집힌다.
+    용도는 ★추이 서술 전용★ 이다. 레버리지 수준과 대기 자금의 방향만 적는다.
+    """
+    url = f"{FUND_TREND_URL}?startIdx=0&pageSize={FUND_TREND_ROWS}"
+    data = _get_json(url, timeout, {"Referer": "https://finance.naver.com/sise/sise_deposit.naver"})
+    rows = data.get("content") if isinstance(data, dict) else None
+    if not rows:
+        raise KiwoomError(f"자금 계열 응답에 데이터가 없습니다: {str(data)[:200]}")
+    rows = sorted(rows, key=lambda r: r["bizdate"])  # 과거 → 최신
+    series = []
+    for row in rows:
+        item = {"date": row["bizdate"]}
+        for key, src, _label in FUND_FIELDS:
+            item[key] = _num(row.get(src))
+        series.append(item)
+
+    def delta(key: str, back: int) -> dict[str, Any] | None:
+        if len(series) <= back:
+            return None
+        now, then = series[-1][key], series[-1 - back][key]
+        return {
+            "from_date": series[-1 - back]["date"],
+            "abs_eok": round(now - then, 1),
+            "abs_jo": round((now - then) / 1e4, 4),
+            "pct": round((now / then - 1) * 100, 4) if then else None,
+        }
+
+    latest = series[-1]
+    out: dict[str, Any] = {
+        "as_of": latest["date"],
+        "unit": "억원",
+        "rows": len(series),
+        "levels_jo": {k: round(latest[k] / 1e4, 4) for k, _s, _l in FUND_FIELDS},
+        "labels": {k: l for k, _s, l in FUND_FIELDS},
+        "delta": {
+            k: {f"{n}d": delta(k, n) for n in (1, 5, 20)} for k, _s, _l in FUND_FIELDS
+        },
+        "series": series[-25:],
+        "usage_note": "추이 서술 전용. 공시 2거래일 + 내재 2~3거래일 지연으로 선행 변수가 아니다.",
+    }
+    if len(series) >= 2:
+        out["cred_over_dep_pct"] = round(latest["cred"] / latest["dep"] * 100, 4)
     return out
 
 
@@ -710,13 +816,19 @@ def _job(
 # --- 재사용 블록 -------------------------------------------------------------
 
 
-def _indices() -> list[dict[str, Any]]:
-    """ka20001. inds_cur_prc_tm에 시간별 지수가 함께 와서 장중 궤적까지 한 번에 얻는다."""
+def _indices(date: str) -> list[dict[str, Any]]:
+    """ka20001. inds_cur_prc_tm에 시간별 지수가 함께 와서 장중 궤적까지 한 번에 얻는다.
+
+    ka20006(업종 일봉 600행)을 함께 받는다. σ(19) 자력 계산과 거래대금 시계열의
+    유일한 경로인데 2026-10-16 회차까지 preset 에 없어서 매번 별도 단건 호출에
+    의존했다. trde_prica 는 백만원, 지수 값은 100배 정수다.
+    """
     return [
         _job("index_kospi", "ka20001", "sect", {"mrkt_tp": "0", "inds_cd": "001"}),
         _job("index_kosdaq", "ka20001", "sect", {"mrkt_tp": "1", "inds_cd": "101"}),
         _job("index_kospi200", "ka20001", "sect", {"mrkt_tp": "2", "inds_cd": "201"}),
         _job("sector_indices_kospi", "ka20003", "sect", {"inds_cd": "001"}),
+        _job("kospi_daily_bars", "ka20006", "chart", {"inds_cd": "001", "base_dt": date}),
     ]
 
 
@@ -977,9 +1089,23 @@ def _baskets(date: str) -> list[dict[str, Any]]:
 
 
 def _krx_stocks(date: str) -> list[dict[str, Any]]:
-    """KRX 전종목 확정 시세. 종가·시총·상장주식수를 한 번에 준다."""
+    """KRX 전종목 확정 시세. 종가·시총·상장주식수를 한 번에 준다.
+
+    ★_fallback_days★ 가 핵심이다. 이 서비스는 2026-10-10~10-16 여섯 회차 연속 0행이었고
+    원인은 인증이 아니라 호출 시각이었다(fetch_krx 주석 참조). 게시가 끝난 가장 최근
+    날짜까지 물러나서 받는다 — 1~2거래일 지연된 시총이라도 10/7 에 고정된 값보다 낫다.
+    (고정 비용 실측: 반도체 벤치마크 비중 70.487% vs 10/16 실측 66.654%, 3.833%p 과대)
+    """
     name, path, label = KRX_STOCK_SERVICE
-    return [{"name": name, "kind": "krx", "path": path, "label": label, "_date": date}]
+    return [{
+        "name": name, "kind": "krx", "path": path, "label": label,
+        "_date": date, "_fallback_days": 6,
+    }]
+
+
+def _fund_trend() -> list[dict[str, Any]]:
+    """투자자예탁금·신용융자잔고 추이 (네이버 경유, 억원)."""
+    return [{"name": "fund_trend", "kind": "fund", "label": "증시자금 추이(예탁금·신용융자)"}]
 
 
 def _derivatives(date: str, also_today: str | None = None) -> list[dict[str, Any]]:
@@ -1027,7 +1153,7 @@ def _macro(date: str) -> list[dict[str, Any]]:
 def preset_close(date: str) -> list[dict[str, Any]]:
     """마감 리포트 (평일 18:05). 당일 확정 종가·수급·시간외까지."""
     return (
-        _indices()
+        _indices(date)
         + _investor_flows(date)
         + _investor_streak()
         + _program_trades(date)
@@ -1039,6 +1165,7 @@ def preset_close(date: str) -> list[dict[str, Any]]:
         + _baskets(date)
         + _overseas(date)
         + _krx_stocks(date)
+        + _fund_trend()
         + _derivatives(date)
         + _macro(date)
     )
@@ -1047,7 +1174,7 @@ def preset_close(date: str) -> list[dict[str, Any]]:
 def preset_premarket(date: str) -> list[dict[str, Any]]:
     """개장 전 브리핑 (평일 06:00). --date에 직전 거래일을 넘긴다."""
     return (
-        _indices()
+        _indices(date)
         + _investor_flows(date)
         + _investor_streak()
         + _program_trades(date)
@@ -1058,6 +1185,7 @@ def preset_premarket(date: str) -> list[dict[str, Any]]:
         + _baskets(date)
         + _overseas(date)
         + _krx_stocks(date)
+        + _fund_trend()
         + _derivatives(date, datetime.now(KST).strftime("%Y%m%d"))
         + _macro(date)
     )
@@ -1066,7 +1194,7 @@ def preset_premarket(date: str) -> list[dict[str, Any]]:
 def preset_weekly(date: str) -> list[dict[str, Any]]:
     """주간 리뷰 (토 06:00). 주봉과 5거래일 누적 수급 중심."""
     return (
-        _indices()
+        _indices(date)
         + _investor_flows(date)
         + _investor_streak("5")
         + _investor_streak("20")
@@ -1077,6 +1205,7 @@ def preset_weekly(date: str) -> list[dict[str, Any]]:
         + _baskets(date)
         + _overseas(date)
         + _krx_stocks(date)
+        + _fund_trend()
         + _derivatives(date)
         + _macro(date)
     )
@@ -1097,10 +1226,24 @@ def run_jobs(jobs: list[dict[str, Any]], token: str, timeout: int, pause: float)
                 results[job["name"]] = {
                     "source": "krx",
                     "label": job["label"],
-                    "data": fetch_krx(job["path"], job["_date"], timeout),
+                    "data": fetch_krx(
+                        job["path"], job["_date"], timeout, job.get("_fallback_days", 0)
+                    ),
                 }
             except KiwoomError as exc:
                 results[job["name"]] = {"source": "krx", "label": job["label"], "error": str(exc)}
+            if pause:
+                time.sleep(pause)
+            continue
+        if job.get("kind") == "fund":
+            try:
+                results[job["name"]] = {
+                    "source": "naver",
+                    "label": job["label"],
+                    "data": fetch_fund_trend(timeout),
+                }
+            except KiwoomError as exc:
+                results[job["name"]] = {"source": "naver", "label": job["label"], "error": str(exc)}
             if pause:
                 time.sleep(pause)
             continue
