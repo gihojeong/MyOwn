@@ -1,0 +1,27 @@
+# BJ투자 모닝 리서치 브리프 — 추가 블록 (2026-10-17)
+#
+# 이 루틴은 KOSPI 세 루틴과 계통이 다르다. 규격은 /mnt/project-files/research-digest/RUNBOOK.md
+# 이고 장부·수집기·Drive 전망을 공유하지 않는다. 환경에 MyOwn 저장소가 추가됐으므로
+# ★재사용할 수 있는 것만★ 아래 블록으로 알려 주고, KOSPI 규격을 끌어오지는 않는다.
+#
+# 적용 방법: 기존 프롬프트 맨 끝에 아래 ■ 블록을 그대로 붙인다. 기존 문장은 고치지 않는다.
+# ★적용 전 사용자 확인을 받았다 / 받지 않았다를 장부 [인프라] 에 적어라.★
+
+■ 저장소 자원 (환경에 gihojeong/MyOwn 이 추가됐다, 2026-10-17)
+  이 루틴의 규격은 그대로 RUNBOOK.md 다. 저장소는 ★도구만★ 빌려 쓴다.
+    B=https://raw.githubusercontent.com/gihojeong/MyOwn/master
+  · 메일 HTML 검증기 — python3 -I scripts/verify_report_html.py <html> --coverage
+    Outlook 금칙 태그(style·class=·display:grid/flex·@media·svg·script·border-radius·
+    DOCTYPE·position:)·태그 개폐 균형·▲▼ 부호 일치·% 포맷 누출·95KB 상한을 본다.
+    ★이 브리프의 email.html 에도 그대로 쓸 수 있다. 종료코드 0 이 아니면 발송하지 마라.★
+    (--coverage 는 KOSPI 리포트 전용 18행 체크이므로 이 루틴에서는 빼고 돌려라.)
+  · 메일 전사 절차 — htmlBody 전문 전사. 파일을 python 으로 5등분해 part0~4.txt 로 쪼갠 뒤
+    cat 으로 하나씩 읽어 옮긴다(한 번에 cat 하면 32KB 에서 잘린다). 첨부·plain body·요약 금지.
+  · 보안 제약(공통) — 키 값과 API 응답 본문을 출력하지 않는다. TLS 검증을 끄지 않는다.
+    HTTPS_PROXY 를 해제하지 않는다. 정책 거부(403/407)는 재시도하지 않고 보고한다.
+    ★모델 식별자를 커밋·산출물에 적지 않는다.★
+  · JS 렌더링 페이지에서 데이터 경로를 찾는 법 — Playwright Chromium 은 프록시 CA 를 읽지
+    못해 ERR_CERT_AUTHORITY_INVALID 가 난다. ★검증을 끄지 말고★ Next.js 청크를 받아
+    엔드포인트 문자열을 찾는 쪽이 빠르다(네이버 증시자금 경로를 그렇게 찾았다).
+  ★KOSPI 장부(report_scoreboard · report_glossary)와 키움 수집기는 건드리지 마라.
+   이 루틴의 산출물은 /mnt/project-files/research-digest/ 와 지정 아티팩트에만 남는다.★
