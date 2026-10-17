@@ -1,0 +1,29 @@
+오늘자 'BJ투자 모닝 리서치 브리프'를 만들어 07:30 KST 전에 giho.jeong@samsung.com으로 발송해줘(발신은 연결된 Gmail 계정). 주말·휴일 포함 매일 발송한다.
+
+절차와 규칙은 전부 /mnt/project-files/research-digest/RUNBOOK.md에 있다. 먼저 그 파일을 끝까지 읽고 그대로 따른다. 핵심만 요약하면:
+- 국내 증권사 리포트(네이버 리서치 6개 카테고리, PDF 원문)와 해외 IB 시각을 최근 최소 7일분 종합. 이미 분석한 리포트는 cache/processed_ids.json에 있으니 새 것만 수집하고, 이전 호의 analysis 노트와 data.json에서 맥락을 이어받는다. 주말·휴일에는 신규 국내 리포트가 적으므로 7일 종합과 해외 동향·IB 시각 갱신 중심으로 쓴다.
+- 시장전망이 먼저, 그다음 종목(진입가·보유기간·1차/최종 매도가·손절·손익비, 실시세로 스크립트 계산), 목표가 레이더, 일정, 마지막에 오늘의 레슨(lessons.json에서 미사용 1개, 기록).
+- 자체 견해는 반드시 'BJ투자'로 표기('당사' 금지). 모든 차트에 Y축 제목과 단위.
+- 신문 요약이 아니라 리포트 수치(EPS·멀티플·TP 산식)로 계산 과정을 보여주는 심층 분석.
+- renderer/render.py로 web.html과 email.html을 만들고, web은 https://claude.ai/artifact/Jq4jBm2TvtMD4BTFVANDcT 에 새 버전으로 게시, email.html은 축약 없이(인라인 스타일 전체 본문) Gmail send_message의 htmlBody로 그대로 발송.
+- 결과물은 /mnt/project-files/research-digest/YYYYMMDD/에 저장하고 캐시와 lessons.json을 갱신.
+단계가 실패해도 준비된 만큼은 보내고, 메일 하단에 무엇이 빠졌는지 적는다.
+
+■ 저장소 자원 (환경에 gihojeong/MyOwn 이 추가됐다, 2026-10-17)
+  이 루틴의 규격은 그대로 RUNBOOK.md 다. 저장소는 ★도구만★ 빌려 쓴다.
+    B=https://raw.githubusercontent.com/gihojeong/MyOwn/master
+  · 메일 HTML 검증기 — python3 -I scripts/verify_report_html.py <html>
+    Outlook 금칙 태그(style·class=·display:grid/flex·@media·svg·script·border-radius·
+    DOCTYPE·position:)·태그 개폐 균형·▲▼ 부호 일치·% 포맷 누출·95KB 상한을 본다.
+    ★email.html 에 그대로 쓸 수 있다. 종료코드 0 이 아니면 발송하지 마라.★
+    (--coverage 는 KOSPI 리포트 전용 18행 체크이므로 이 루틴에서는 붙이지 마라.)
+  · 메일 전사 — htmlBody 전문 전사. 파일을 python 으로 5등분해 part0~4.txt 로 쪼갠 뒤
+    cat 으로 하나씩 읽어 옮긴다(한 번에 cat 하면 32KB 에서 잘린다). 첨부·plain body·요약 금지.
+  · 보안 제약(공통) — 키 값과 API 응답 본문을 출력하지 않는다. ★TLS 검증을 끄지 않는다.
+    HTTPS_PROXY 를 해제하지 않는다.★ 정책 거부(403/407)는 재시도하지 않고 보고한다.
+    ★모델 식별자를 커밋·산출물에 적지 않는다.★
+  · JS 렌더링 페이지에서 데이터 경로를 찾는 법 — Playwright Chromium 은 프록시 CA 를 읽지
+    못해 ERR_CERT_AUTHORITY_INVALID 가 난다. ★검증을 끄지 말고★ Next.js 청크를 받아
+    엔드포인트 문자열을 찾는 쪽이 빠르다(네이버 증시자금 경로를 그렇게 찾았다).
+  ★KOSPI 장부(report_scoreboard · report_glossary)와 키움 수집기는 건드리지 마라.
+   이 루틴의 산출물은 /mnt/project-files/research-digest/ 와 지정 아티팩트에만 남는다.★
