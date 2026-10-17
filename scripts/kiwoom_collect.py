@@ -49,13 +49,16 @@ SSL_CERT_FILE을 자동으로 따르므로 프록시 환경에서 추가 설정�
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import os
 import socket
 import re
+import ssl
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
@@ -90,7 +93,10 @@ RATE_LIMIT_BACKOFF = 1.0
 #   그래도 preset 실측 성공률은 48%로 기록(33~42%)보다 낫다 — ★악화되지 않았다.★
 # 캡은 12 → 20. p=48% 에서는 12 로도 호출당 실패 0.02% 라 충분하지만, 풀이 넓어진 것이
 #   사실이므로 꼬리 여유를 둔다. ★평균 소요는 p 가 정하고 캡이 정하지 않으므로 비용이 없다.★
-# ★근본 해결은 키움 OpenAPI 포털의 등록 IP 갱신이다 — 코드로는 꼬리만 깎을 수 있다.★
+# ★근본 해결은 포털의 IP 재등록이 아니라 ★연결을 박는 것★이다 (2026-10-17).★
+#   egress IP 는 CONNECT 터널마다 뽑히므로, 터널 하나를 재사용하면 IP 가 고정된다.
+#   등록 IP 에 닿은 터널을 핀으로 박고 8050 일 때만 다시 거는 것이 _PINNED/_drop_conn 이다.
+#   실측: 다이얼 3회로 등록 IP를 찾고 그 뒤 15/15 성공(8050 0건). 아래 48% 는 ★그 전 숫자다.★
 # ★발급만이 아니라 조회(call)도 같은 IP 검사를 받는다.★ 2026-10-10 premarket 전수 81건 중
 # 40건이 8050이었다. (ka10001 6연속 성공은 표본이 작아 생긴 착시다 — 발급 전용으로 오판하지 마라.)
 # ★이것이 유일한 전송 재시도 경로다.★ 2026-10-17 병합 전까지 구 경로(_post_retrying)가
@@ -314,6 +320,10 @@ def _is_transient_conn(reason: object) -> bool:
         return False
     if isinstance(reason, (ConnectionResetError, ConnectionAbortedError, TimeoutError, socket.timeout)):
         return True
+    # 핀 연결을 재사용하다 서버가 먼저 닫으면 RemoteDisconnected·BadStatusLine 류로 온다.
+    # 다시 걸면 풀리므로 일시적이다(정책 차단은 위에서 이미 걸러졌다).
+    if isinstance(reason, http.client.HTTPException):
+        return True
     return any(
         m in text
         for m in (
@@ -360,28 +370,85 @@ def _credentials() -> tuple[str, str]:
     return key, secret
 
 
+# ── 핀 연결: 한 터널 = 한 egress IP ────────────────────────────────────────
+# 에이전트 프록시는 CONNECT 터널마다 다른 IP로 나간다. urllib 은 호출마다 새 연결을
+# 열기 때문에 등록된 IP에 닿아도 다음 호출에서 그 IP를 잃는다 — 8050의 진짜 원인이다.
+# 2026-10-17 실측(api.ipify.org): ★한 연결 12회 = 고유 IP 1개★(160.79.106.133),
+#   ★새 연결 12회 = 고유 IP 3개★(.17/.131/.137). 연결이 IP를 정한다.
+# 그래서 연결을 박아 두고, 8050일 때만 일부러 다시 걸어 IP를 굴린다(_drop_conn).
+# 실측(ka10001, 같은 날): 다이얼 3회로 등록 IP를 찾은 뒤 ★15/15 성공 · 8050 0건 · 11.1초★.
+#   대조군(호출마다 새 연결)은 호출당 성공률 48%, premarket 84건에 8050 재시도 91회였다.
+# ★urllib 으로 되돌리지 마라 — 그러면 IP가 호출마다 다시 굴러간다.★
+# GET(KRX·ECOS·네이버)은 8050 검사를 받지 않으므로 urllib 그대로 둔다(리다이렉트 처리 때문).
+_PINNED: dict[tuple[str, int], http.client.HTTPSConnection] = {}
+
+
+def _conn(host: str, port: int, timeout: int) -> http.client.HTTPSConnection:
+    """호스트별 터널을 하나 박아 둔다. 핀이 없으면 새로 건다 — 그때 IP가 다시 굴러간다."""
+    key = (host, port)
+    conn = _PINNED.get(key)
+    if conn is None:
+        proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy") or ""
+        context = ssl.create_default_context()  # SSL_CERT_FILE(프록시 CA)을 읽는다
+        if proxy:
+            parsed = urllib.parse.urlparse(proxy)
+            conn = http.client.HTTPSConnection(
+                parsed.hostname, parsed.port or 443, timeout=timeout, context=context
+            )
+            conn.set_tunnel(host, port)
+        else:
+            conn = http.client.HTTPSConnection(host, port, timeout=timeout, context=context)
+        conn.connect()
+        _PINNED[key] = conn
+    elif conn.sock is not None:
+        conn.sock.settimeout(timeout)  # 연결은 유지하고 호출별 제한시간만 바꾼다
+    return conn
+
+
+def _drop_conn(host: str = "", port: int = 443) -> None:
+    """핀을 뽑는다. 다음 호출이 새 터널을 열어 ★다른 IP로★ 나간다. 8050의 대처다."""
+    keys = [(host, port)] if host else list(_PINNED)
+    for key in keys:
+        conn = _PINNED.pop(key, None)
+        if conn is not None:
+            try:
+                conn.close()
+            except OSError:
+                pass
+
+
 def _post_once(
     url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int
 ) -> tuple[dict[str, Any], dict[str, str]]:
     """응답 body와 헤더를 함께 돌려준다. 연속조회 키가 헤더로 오기 때문이다."""
+    parsed = urllib.parse.urlparse(url)
+    host = parsed.hostname or ""
+    port = parsed.port or 443
+    target = parsed.path + (f"?{parsed.query}" if parsed.query else "")
     data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    request = urllib.request.Request(url, data=data, headers=headers, method="POST")
+    sent = dict(headers)
+    sent.setdefault("Host", host)
+    sent["Content-Length"] = str(len(data))
+    sent["Connection"] = "keep-alive"
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            body = response.read().decode("utf-8", errors="replace")
-            response_headers = {k.lower(): v for k, v in response.headers.items()}
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")[:500]
-        if exc.code == 429:
-            raise KiwoomRateLimited(f"HTTP 429: {detail}") from exc
-        raise KiwoomError(f"HTTP {exc.code}: {detail}") from exc
-    except urllib.error.URLError as exc:
-        # 프록시 정책 차단(CONNECT 403)도 여기로 떨어진다. 그것은 재시도해도 같다.
-        if _is_transient_conn(exc.reason):
-            raise KiwoomConnectionLost(f"연결 끊김: {exc.reason}") from exc
-        raise KiwoomError(f"연결 실패: {exc.reason}") from exc
-    except (ConnectionResetError, socket.timeout) as exc:
-        raise KiwoomConnectionLost(f"연결 끊김: {exc}") from exc
+        conn = _conn(host, port, timeout)
+        conn.request("POST", target, body=data, headers=sent)
+        response = conn.getresponse()
+        body = response.read().decode("utf-8", errors="replace")
+        status = response.status
+        response_headers = {k.lower(): v for k, v in response.getheaders()}
+        if response.will_close:
+            _drop_conn(host, port)
+    except (OSError, http.client.HTTPException) as exc:
+        # 깨진 핀을 들고 있으면 다음 호출도 같이 죽는다. 뽑고 나서 판정한다.
+        _drop_conn(host, port)
+        if _is_transient_conn(exc):
+            raise KiwoomConnectionLost(f"연결 끊김: {exc}") from exc
+        raise KiwoomError(f"연결 실패: {exc}") from exc
+    if status == 429:
+        raise KiwoomRateLimited(f"HTTP 429: {body[:500]}")
+    if status >= 400:
+        raise KiwoomError(f"HTTP {status}: {body[:500]}")
     try:
         return json.loads(body), response_headers
     except ValueError as exc:
@@ -796,6 +863,7 @@ def _issue_token_once(timeout: int = 20, retries: int = IP_RETRIES) -> str:
         # ★침묵 금지★ 시도 횟수와 코드만 남긴다(토큰·본문 제외). 이 줄이 없으면
         # "로그 0바이트" 를 죽음으로 오진한다 — 2026-10-14 에 실제로 그렇게 오진했다.
         print(f"[retry] au10001 8050 {attempt + 1}/{attempts}", file=sys.stderr, flush=True)
+        _drop_conn()  # ★이 줄이 재시도를 의미 있게 만든다 — 다음 시도가 다른 IP로 나간다★
         time.sleep(IP_BACKOFF)
     if data.get("return_code") not in (None, 0):
         raise KiwoomError(f"토큰 발급 실패 [{data.get('return_code')}]: {data.get('return_msg')}")
@@ -854,6 +922,7 @@ def call(
                     )
                 print(f"[retry] {api_id} 8050 {attempt + 1}/{total_retries}",
                       file=sys.stderr, flush=True)
+                _drop_conn()  # ★핀을 뽑아 IP를 굴린다. 안 뽑으면 같은 IP로 또 8050이다★
                 time.sleep(IP_BACKOFF)
                 continue
             break
