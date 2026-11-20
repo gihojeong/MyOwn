@@ -2,11 +2,12 @@
 usage: python3 doe.py run|analyze"""
 import sys, os, json, itertools, numpy as np
 import stack as S, fem2
-PRODUCTS = {   # 제품: (gen, nh, mid Si −/+ [mm])
-    "hbm4_8h":   ("hbm4", 8, 0.0326, 0.0356),
-    "hbm3e_12h": ("hbm3e", 12, 0.0243, 0.0273),
+PRODUCTS = {   # 제품: (gen, nh, mid Si −/+ [mm], 두께 세트)
+    "hbm4_8h":          ("hbm4", 8, 0.0326, 0.0356, "design"),
+    "hbm3e_12h":        ("hbm3e", 12, 0.0243, 0.0273, "design"),
+    "hbm3e_12h_micron": ("hbm3e", 12, 0.0232, 0.0262, "micron"),
 }
-PROD = os.environ.get("DOE_PRODUCT", "hbm4_8h"); _g, _n, _a0, _a1 = PRODUCTS[PROD]
+PROD = os.environ.get("DOE_PRODUCT", "hbm4_8h"); _g, _n, _a0, _a1, _set = PRODUCTS[PROD]
 OUTD = "out2/doe" if PROD == "hbm4_8h" else f"out2/doe_{PROD}"; os.makedirs(OUTD, exist_ok=True)
 FIGP = "figs/doe" if PROD == "hbm4_8h" else f"figs/doe_{PROD}"
 FAC = {  # code: (이름, key, low, high, 단위표시배율, 단위)
@@ -16,7 +17,7 @@ FAC = {  # code: (이름, key, low, high, 단위표시배율, 단위)
     "E": ("NCF α2", "ncf_a2", 70e-6, 110e-6, 1e6, "ppm"),
 }
 K = list(FAC)
-BASE = dict(gen=_g, nh=_n, set_="design")
+BASE = dict(gen=_g, nh=_n, set_=_set)
 CAL = json.load(open("out2/calib3.json")); FIX = dict(soft=True, t0b=CAL["t0b"])
 def design():
     runs = [dict(zip(K, x)) for x in itertools.product([-1, 1], repeat=len(K))]

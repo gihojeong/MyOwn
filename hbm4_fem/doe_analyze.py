@@ -21,7 +21,7 @@ def lenth(e):
     g = (1+0.95**(1/len(e)))/2
     return pse, stats.t.ppf(.975, d)*pse, stats.t.ppf(g, d)*pse
 md = [f"# {doe.PROD.upper()} TCB DOE (2⁴ 완전요인 + 중심점)", "",
-      f"기준: {doe.PROD.upper()} {doe.case_of(F[0]['x'])['tot']*1e3:.0f} μm, S 설계두께, Tg 연화, T0b {doe.CAL['t0b']:.0f} °C, bump vf {doe.case_of(F[0]['x'])['vf']:.3f}, 1/4 대칭 C3D8I.", "",
+      f"기준: {doe.PROD.upper()} {doe.case_of(F[0]['x'])['tot']*1e3:.0f} μm, 두께 세트 {doe.BASE['set_']}, Tg 연화, T0b {doe.CAL['t0b']:.0f} °C, bump vf {doe.case_of(F[0]['x'])['vf']:.3f}, 1/4 대칭 C3D8I.", "",
       "| 요인 | − | 0 | + |", "|---|---|---|---|"]
 for k in K:
     nm, key, lo, hi, sc, u = doe.FAC[k]; md.append(f"| {k}: {nm} | {lo*sc:g} {u} | {(lo+hi)/2*sc:g} | {hi*sc:g} {u} |")

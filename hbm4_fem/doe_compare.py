@@ -3,18 +3,21 @@ import json, numpy as np, matplotlib
 matplotlib.use("Agg"); import matplotlib.pyplot as plt
 plt.rcParams.update({"font.family": "NanumGothic", "axes.unicode_minus": False, "font.size": 9,
                      "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "grid.alpha": .25})
-P = {"HBM4-8H (775 μm)": "out2/doe/summary.json", "HBM3E-12H (720 μm)": "out2/doe_hbm3e_12h/summary.json"}
+import os
+P = {"HBM4-8H 설계": "out2/doe/summary.json", "HBM3E-12H 설계": "out2/doe_hbm3e_12h/summary.json",
+     "HBM3E-12H Micron실측": "out2/doe_hbm3e_12h_micron/summary.json"}
+P = {k: v for k, v in P.items() if os.path.exists(v)}
 S = {k: json.load(open(v)) for k, v in P.items()}
 RESP = {"w25": "warp 25°C [μm]", "w230": "warp 230°C [μm]", "si_s1_25": "Si σ1 max 25°C [MPa]",
         "gap_peel_25": "gap peel σzz 25°C [MPa]", "gap_shear_25": "gap τ max 25°C [MPa]"}
-TERMS = ["A", "C", "D", "E", "AC"]; COL = ["#2a78d6", "#eb6834"]
+TERMS = ["A", "C", "D", "E", "AC"]; COL = ["#2a78d6", "#eb6834", "#1baf7a"]
 fig, ax = plt.subplots(1, len(RESP), figsize=(17, 3.8))
 md = ["| 응답 | 제품 | 평균 | " + " | ".join(TERMS) + " |", "|---|---|---|" + "---|"*len(TERMS)]
 for a, (q, lab) in zip(ax, RESP.items()):
-    x = np.arange(len(TERMS)); w = .38
+    x = np.arange(len(TERMS)); w = .8/len(S)
     for i, (pn, s) in enumerate(S.items()):
         e = [s[q]["eff"][t] for t in TERMS]
-        a.bar(x+(i-.5)*w, e, w*.92, color=COL[i], label=pn)
+        a.bar(x+(i-(len(S)-1)/2)*w, e, w*.92, color=COL[i], label=pn)
         md.append(f"| {lab} | {pn} | {s[q]['mean']:.2f} | " + " | ".join(f"{v:+.3f}" for v in e) + " |")
     a.axhline(0, color="#888", lw=.8); a.set_xticks(x); a.set_xticklabels(TERMS); a.set_title(lab, fontsize=10)
     a.set_ylabel("효과 (+수준 − −수준)".replace("−", "-"))
