@@ -7,3 +7,4 @@ python3 run_all.py $VARS                                            # mesh + ccx
 for v in $VARS; do python3 post.py $v; done
 python3 compare.py
 for v in $VARS; do for f in T_op w_25 vm_25; do python3 blender_results.py $v $f 400; done; done
+python3 diff_pair.py A_MRMUF D_MID47
