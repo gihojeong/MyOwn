@@ -47,17 +47,23 @@ W = []
 for s in steps:
     w = s["DISP"][1][:nx*ny, 2].reshape(ny, nx)*1e3            # μm
     w = w - (A @ np.linalg.lstsq(A, w.ravel(), rcond=None)[0]).reshape(ny, nx); W.append(w)
+xm, ym = XX-P.FOOT[0]/2, YY-P.FOOT[1]/2
+A2 = np.c_[np.ones(XX.size), xm.ravel(), ym.ravel(), xm.ravel()**2, ym.ravel()**2, (xm*ym).ravel()]
 for lab, w in zip(labels, W):
     sign = np.sign(w[[0, 0, -1, -1], [0, -1, 0, -1]].mean() - w[ny//2, nx//2])
-    R["warpage"][lab] = dict(coplanarity_um=float(w.max()-w.min()), signed_um=float(sign*(w.max()-w.min())))
+    c = np.linalg.lstsq(A2, w.ravel(), rcond=None)[0]; wf = (A2 @ c).reshape(ny, nx)
+    bow = wf[[0, 0, -1, -1], [0, -1, 0, -1]].mean() - c[0]          # 2차 곡면: 모서리 평균 - 중심 (+ smile)
+    R["warpage"][lab] = dict(coplanarity_um=float(w.max()-w.min()), signed_um=float(sign*(w.max()-w.min())),
+                             bow_um=float(bow), kx=float(2*c[3]*1e-3), ky=float(2*c[4]*1e-3),
+                             local_um=float(np.ptp(w-wf)))
 sel = [0, len(P.SWEEP)-1, len(labels)-1]; lim = max(abs(W[i]).max() for i in sel)
 fig = plt.figure(figsize=(15, 4.8))
 for c, i in enumerate(sel):
     ax = fig.add_subplot(1, 3, c+1, projection="3d")
     ax.plot_surface(XX, YY, W[i], cmap="RdBu_r", vmin=-lim, vmax=lim, rstride=1, cstride=1, linewidth=0, antialiased=True)
     ax.set_zlim(-lim*1.2, lim*1.2); ax.set_xlabel("x [mm]"); ax.set_ylabel("y [mm]"); ax.set_zlabel("w [μm]")
-    r = R["warpage"][labels[i]]; shape = "smile(오목)" if r["signed_um"] > 0 else "crying(볼록)"
-    ax.set_title(f"{labels[i]}: {r['signed_um']:+.2f} μm  {shape}"); ax.view_init(28, -55); ax.set_box_aspect((1, 1.16, .55))
+    r = R["warpage"][labels[i]]; shape = "smile(오목)" if r["bow_um"] > 0 else "crying(볼록)"
+    ax.set_title(f"{labels[i]}: bow {r['bow_um']:+.2f} μm {shape}\ncoplanarity {r['coplanarity_um']:.2f} μm"); ax.view_init(28, -55); ax.set_box_aspect((1, 1.16, .55))
 fig.suptitle(f"[{V}] 하면 warpage (평면 보정, 응력 0 온도 {P.T_STRESSFREE:.0f}°C, +:smile)", fontsize=12); fig.tight_layout()
 fig.savefig(f"{FIG}/warpage3d_{V}.png", dpi=150); plt.close(fig)
 
