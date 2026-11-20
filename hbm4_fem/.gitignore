@@ -10,3 +10,4 @@ out2/*
 !out2/*.json
 !out2/*.csv
 !out2/validate.log
+out3/
