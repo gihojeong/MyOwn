@@ -1,0 +1,6 @@
+out/*
+!out/*.png
+!out/*.blend
+!out/geometry_*.json
+!out/summary_*.json
+__pycache__/
