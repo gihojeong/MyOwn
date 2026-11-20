@@ -864,7 +864,7 @@ function f_bond(s, p) {
     if (p.nonwet) { R(s, px(4) - 0.135, jy + gap * 0.4, 0.27, gap * 0.3, MX.bare, { lw: 0.8 }); annotTo(s, px(4), jy + gap * 0.55, 2, "non-wet — solder 가 상대 pad 에 젖지 않아 전기적으로 열린다", K.pink); }
   }
   // HCB 는 bump 간극이 없다 → gap 치수 대신 접합 계면 표시
-  if (m === "hcb") pill(s, x0 + w + 0.1, jy + gap / 2, "bump 없음 · 계면 직접 접합", { fs: 8, fill: MX.ox, align: "left" });
+  if (m === "hcb") pill(s, x0 + w / 2, jy + gap + 0.38 + 0.3, "bump 없음 · Cu–Cu / 유전막 직접 접합", { fs: 8, fill: MX.ox, nogut: true });
   else dimV(s, x0 + w + 0.05, jy, jy + gap, "gap " + (p.gap_um || 10) + " µm", { align: "left" });
   dimH(s, px(2), px(3), top - 0.42, "pitch " + (p.pitch_um || 40) + " µm");
   const rows = [["항목", "TC-NCF", "MR-MUF", "HCB"],
@@ -902,9 +902,9 @@ function f_warp(s, p) {
   // 명칭 규약 (EA STANDARDS 2.5): 측정 자세 그대로 위에서 본 형상 — 중앙이 기준면에서 멀어짐(∩) = Cry, 가까워짐(∪) = Smile
   const rows = [["측정 자세", "중앙이 기준면에서 멂 (∩)", "중앙이 기준면에 가까움 (∪)"],
     ["위에서 본 이름", "Cry (convex)", "Smile (concave)"],
-    ["bump 면 아래 → die BEOL 면", "오목", "볼록"], ["BEOL 면 위 → die BEOL 면", "볼록", "오목"]];
-  s.addTable(rows.map((r, ri) => r.map((c) => ({ text: c, options: (ri === 1 || ri === (bumpDown ? 2 : 3)) ? { color: K.alert } : {} }))), { x: RC.x, y: TOP, w: RC.w, h: 2.5, fs: 15 });
-  pill(s, RC.x, TOP + 2.75, "자세를 밝혀야 die 의 실제 휨 방향을 알 수 있다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+    ["bump 면 아래: BEOL 면", "오목", "볼록"], ["BEOL 면 위: BEOL 면", "볼록", "오목"]];
+  s.addTable(rows.map((r, ri) => r.map((c) => ({ text: c, options: (ri === 1 || ri === (bumpDown ? 2 : 3)) ? { color: K.alert } : {} }))), { x: RC.x, y: TOP - 0.05, w: RC.w, h: 2.3, fs: 14 });
+  pill(s, RC.x, TOP + 2.62, "자세를 밝혀야 die 의 실제 휨 방향을 알 수 있다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   const g = axes(s, RC.x + 0.72, TOP + 3.55, 2.8, 1.25, {
     xmin: 25, xmax: 260, xticks: [25, 100, 175, 260], ymin: -150, ymax: 150, yticks: [-150, -75, 0, 75, 150],
     xlab: "온도 (°C)", ylab: "warpage (µm) — 기준면 기준 부호",
@@ -976,7 +976,7 @@ function f_therm(s, p) {
     return a.map((v, k2) => Math.round((v + (b[k2] - v) * r) * 255).toString(16).padStart(2, "0")).join("").toUpperCase(); };
   const avail = 4.1, dieH = Math.min(0.2, (avail - 0.3) / n * 0.7), gap = Math.min(0.1, (avail - 0.3) / n * 0.3);
   const x0 = LC.x + 0.25, top = TOP + 0.62, tt = [];
-  ttl(s, "적층 방향 온도 — core " + (n - 1) + " + base 1 (열은 위로 빠져나간다)", LC.x, TOP - 0.04, 4.3);
+  ttl(s, "적층 방향 온도 — core " + (n - 1) + " + base 1", LC.x, TOP - 0.04, 4.3);
   const tMin = p.tTop || 95, tMax = tMin + dT * (n - 1);
   for (let i = 0; i < n; i++) {
     const Ti = tMin + dT * i; tt.push(Ti);
@@ -986,7 +986,7 @@ function f_therm(s, p) {
   }
   R(s, x0 - 0.1, top - 0.26, 2.65, 0.24, MX.cold, { lw: 0.9, text: "TIM / lid (방열)", fs: 8 });
   A(s, x0 + 2.62, top + n * (dieH + gap) - 0.1, x0 + 2.62, top - 0.08, K.rust, 1.5);
-  pill(s, x0 + 2.7, top + n * (dieH + gap) / 2, "열 흐름", { fs: 8, fill: K.orange, align: "left" });
+  pill(s, x0 + 2.7, top + n * (dieH + gap) / 2, "열 흐름 (위로)", { fs: 8, fill: K.orange, align: "left" });
   
   const rows = [["층", "두께 (µm)", "k (W/mK)", "R (m²K/W)"]]
     .concat(layers.map((l) => [l[0], String(l[1]), String(l[2]), hid ? "?" : ((l[1] * 1e-6) / l[2]).toExponential(2)]))
@@ -1069,7 +1069,7 @@ function f_fa(s, p) {
 // ========== T11. 신뢰성 시험 순서 ==========
 function f_rel(s, p) {
   const x0 = LC.x + 0.1, y0 = TOP + 0.3;
-  const seq = p.seq || [["JESD22-A113", "MSL preconditioning", "J-STD-020 리플로 260 °C × 3회"], ["JESD22-A104", "Temperature Cycling", "-55 / +125 °C, 1000 cycle"], ["JESD22-A118", "uHAST", "130 °C / 85% RH, 96 h"], ["JESD22-A103", "HTS", "150 °C, 1000 h"]];
+  const seq = p.seq || [["JESD22-A113", "MSL preconditioning", "J-STD-020 리플로 × 3회"], ["JESD22-A104", "Temperature Cycling", "-55 / +125 °C, 1000 cycle"], ["JESD22-A118", "uHAST", "130 °C / 85% RH, 96 h"], ["JESD22-A103", "HTS", "150 °C, 1000 h"]];
   ttl(s, "시험 순서 (preconditioning이 먼저)", LC.x, TOP - 0.04, 4.3);
   seq.forEach((r, i) => {
     const yy = y0 + i * 0.85;
@@ -1216,6 +1216,73 @@ function f_film(s, p) {
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 비례 아님");
 }
 
+// ========== T16. 데이터 표 (조건별 측정값 · lot 비교 · 시험 결과) ==========
+// p:{title, cols:[머리글…], rows:[[셀…]…] (≤7행 × ≤5열, 셀 ≤14자), hl:[r,c] | hlRow | hlCol, notes:[…] (≤3), unit}
+function f_table(s, p) {
+  const cols = (p.cols || []).slice(0, 5), rows = (p.rows || []).slice(0, 7).map((r) => r.slice(0, 5).map((c) => c == null ? "" : String(c)));
+  const all = [cols].concat(rows), nr = all.length, notes = (p.notes || []).slice(0, 3);
+  const X = DG.x + 0.1, W = DG.w - 0.2;
+  ttl(s, (p.title || "측정 결과") + (p.unit ? "  (" + p.unit + ")" : ""), X, TOP - 0.04, W);
+  const rh = Math.min(0.56, (notes.length ? 3.75 : 4.6) / nr), y0 = TOP + 0.36, th = rh * nr;
+  const hl = p.hl || null;
+  s.addTable(all.map((r, ri) => r.map((c, ci) => ({ text: c, options:
+    ((hl && hl[0] + 1 === ri && hl[1] === ci) || (p.hlRow != null && p.hlRow + 1 === ri && ri > 0) || (p.hlCol != null && p.hlCol === ci && ri > 0)) ? { color: K.alert } : {} }))),
+    { x: X, y: y0, w: W, h: th, fs: nr > 6 ? 15 : 16, noFirstW: cols.length > 3 });
+  let ny = y0 + th + 0.32;
+  notes.forEach((t, i) => { const raw = tw(t, 8 * 1.52) * 1.08 + 0.40, ln = Math.max(1, Math.ceil(raw / W)), hh = 0.24 * 1.52 * (1 + 0.84 * (ln - 1));
+    pill(s, X, ny + hh / 2, t, { fs: 8, fill: i === 0 ? K.violet : K.card2, align: "left", nogut: true, maxW: W }); ny += hh + 0.12; });
+  flagOf(s, p); cap(s, p.note || "표의 값은 문항 제시값");
+}
+
+// ========== T17. Wafer map (불량 · 두께 · TTV 분포) ==========
+// p:{title, grid 9–25, values:[[…]] (grid×grid, null=칩 없음) | pattern: edge·center·ring·notch·random·quadrant,
+//    scale:{min,max,unit}, bin: true(합/불 2색), marks:[[col,row,라벨]], bullets:[…] (≤3)}
+function f_wafermap(s, p) {
+  const N = Math.max(9, Math.min(25, p.grid || 15)), sc = p.scale || { min: 0, max: 100, unit: "" };
+  const R0 = 2.05, cx = LC.x + 2.2, cy = TOP + 2.35, cell = 2 * R0 / N;
+  const hash = (i, j) => { const v = Math.sin(i * 12.9898 + j * 78.233 + (p.seed || 0) * 3.7) * 43758.5453; return v - Math.floor(v); };
+  const pat = (rr, mx, my, i, j) => { switch (p.pattern) {
+    case "center": return 1 - rr * rr; case "ring": return Math.exp(-Math.pow((rr - 0.62) / 0.16, 2));
+    case "notch": return Math.max(0, 1 - Math.hypot(mx, my - R0) / R0 * 0.9);
+    case "quadrant": return (mx > 0 && my < 0) ? 0.85 : 0.12;
+    case "random": return hash(i, j) > 0.86 ? 1 : 0.05;
+    default: return Math.pow(rr, 4); } };
+  const ramp = (f) => { const c = [[0.79, 0.86, 0.93], [0.99, 0.93, 0.74], [0.96, 0.66, 0.52], [0.80, 0.30, 0.22]];
+    const t = Math.max(0, Math.min(0.999, f)) * 3, k = Math.floor(t), r = t - k, a = c[k], b = c[Math.min(3, k + 1)];
+    return a.map((v, q) => Math.round((v + (b[q] - v) * r) * 255).toString(16).padStart(2, "0")).join("").toUpperCase(); };
+  // 바닥 그림자 + wafer 원판 (위에서 본 평면, 살짝 띄운 입체감)
+  E(s, cx - R0 - 0.04, cy - R0 + 0.07, 2 * R0 + 0.14, 2 * R0 + 0.06, "D9CFC0", { line: null, tr: 30 });
+  E(s, cx - R0 - 0.08, cy - R0 - 0.08, 2 * R0 + 0.16, 2 * R0 + 0.16, "E9E4DC", { lw: 1.0 });
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const x = cx - R0 + i * cell, y = cy - R0 + j * cell, mx = x + cell / 2 - cx, my = y + cell / 2 - cy, rr = Math.hypot(mx, my) / R0;
+    if (Math.hypot(Math.abs(mx) + cell / 2, Math.abs(my) + cell / 2) > R0 + cell * 0.15) continue;
+    let v = p.values && p.values[j] ? p.values[j][i] : null;
+    if (p.values && v == null) continue;
+    const f = v != null ? (v - sc.min) / ((sc.max - sc.min) || 1) : pat(rr, mx, my, i, j);
+    const fill = p.bin ? (f >= 0.5 ? "D0683A" : "CFE3B2") : ramp(f);
+    R(s, x + 0.008, y + 0.008, cell - 0.016, cell - 0.016, fill, { lw: 0.3, line: "8B847A" });
+  }
+  poly(s, [[cx - 0.12, cy + R0 + 0.08], [cx + 0.12, cy + R0 + 0.08], [cx, cy + R0 - 0.1]], K.sheet, { lw: 0.9 });
+  T(s, "notch", cx + 0.16, cy + R0 - 0.08, 0.8, 0.2, { fs: 7, color: K.muted });
+  (p.marks || []).slice(0, 4).forEach((m, k) => { const ax = cx - R0 + (m[0] + 0.5) * cell, ay = cy - R0 + (m[1] + 0.5) * cell;
+    E(s, ax - 0.06, ay - 0.06, 0.12, 0.12, null, { lw: 1.6, line: K.alert });
+    lead(s, ax + 0.06, ay, LC.x + 4.45, TOP + 0.35 + k * 0.48, m[2], { fill: K.pink, align: "right", nogut: true }); });
+  // 오른쪽: 제목 · 색 막대 · 요점
+  ttl(s, p.title || "wafer map", RC.x, TOP - 0.04, RC.w);
+  if (p.bin) legend(s, RC.x, TOP + 0.4, [["CFE3B2", "합격 die"], ["D0683A", "불량 die"]], { cols: 2, cw: 1.6 });
+  else {
+    const bx = RC.x, by = TOP + 0.45, bw = 2.9;
+    for (let k = 0; k < 24; k++) R(s, bx + bw * k / 24, by, bw / 24 + 0.004, 0.2, ramp(k / 23), { line: null });
+    R(s, bx, by, bw, 0.2, null, { lw: 0.7 });
+    T(s, String(sc.min), bx - 0.2, by + 0.24, 0.6, 0.2, { fs: 7, color: K.muted, align: "left" });
+    T(s, String(sc.max) + (sc.unit ? " " + sc.unit : ""), bx + bw - 0.9, by + 0.24, 1.1, 0.2, { fs: 7, color: K.muted, align: "right" });
+  }
+  let by2 = TOP + 1.2;
+  (p.bullets || []).slice(0, 3).forEach((t, i) => { const raw = tw(t, 8 * 1.52) * 1.08 + 0.40, ln = Math.max(1, Math.ceil(raw / RC.w)), hh = 0.24 * 1.52 * (1 + 0.84 * (ln - 1));
+    pill(s, RC.x, by2 + hh / 2, t, { fs: 8, fill: i === 0 ? K.violet : K.card2, align: "left", maxW: RC.w }); by2 += hh + 0.14; });
+  flagOf(s, p); cap(s, p.note || "die 격자는 위에서 본 평면 · 색은 문항 제시값 또는 분포 유형의 설명용 모델");
+}
+
 
 // ── 그림이 필요 없는 주제: 핵심 개념 카드 ──────────────────────────────
 // p:{title, points:[문장...], ask, flag}
@@ -1241,7 +1308,7 @@ function f_note(s, p) {
 }
 
 
-module.exports = { f_bond, f_warp, f_sip, f_therm, f_fa, f_rel, f_stack, f_hcb, f_plot, f_film, f_note };
+module.exports = { f_bond, f_warp, f_sip, f_therm, f_fa, f_rel, f_stack, f_hcb, f_plot, f_film, f_note, f_table, f_wafermap };
 MODS["./fig2.js"] = module.exports; })({ exports: {} });
 
 const F = Object.assign({}, MODS["./fig1.js"], MODS["./fig2.js"]);
