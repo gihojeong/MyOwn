@@ -1,0 +1,7 @@
+scan('HBM4 높이', r'HBM4[^E].{0,80}?(\d{3})\s?µm|(\d{3})\s?µm.{0,60}HBM4[^E]')
+scan('HBM 높이 720/775 언급', r'7[27][05]\s?µm')
+scan('HBM4 I/O/채널', r'HBM4(?!E).{0,60}?(1,?024|2,?048|\d+\s?채널|\d+\s?개 채널)')
+scan('HBM3E JEDEC', r'HBM3E.{0,40}JEDEC|JEDEC.{0,40}HBM3E')
+scan('HBM3 속도', r'HBM3(?![E\d]).{0,60}?(\d+(?:\.\d+)?)\s?Gb/?p?s')
+scan('HBM3E 속도', r'HBM3E.{0,60}?(\d+(?:\.\d+)?)\s?Gb/?p?s')
+scan('HBM4 속도', r'HBM4(?!E).{0,60}?(\d+(?:\.\d+)?)\s?Gb/?p?s')

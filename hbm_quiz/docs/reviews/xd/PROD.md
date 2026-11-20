@@ -22,6 +22,10 @@
 | PROD-B-0132 | E | HCB 비표준 표기 Hybrid Copper Bonding | “HCB” 로 통일(첫 언급 “HCB(Cu–Cu hybrid bonding)”) |
 | PROD-I-0057 | W | µbump 표기 변형 마이크로 범프 | “µbump”(U+00B5, 하이픈 없음) 로 통일 — STANDARDS 2.4 표기 |
 
+### 참고
+
+- **받을 이관 문항(Phase 2 에 EA 가 이동)**: DRAM-I-0165, SIP-A-0003, SIP-B-0069 — 도착 후 W3 에서 이 분야 문항과의 중복을 다시 본다. W2 신규 출제 때 같은 개념을 또 쓰지 말 것.
+
 ## 2. 교차 중복 · 근중복 (보유 분야 판정)
 
 판정 기준: 그 개념이 어느 분야 학습 목표의 핵심인가(ROSTER §3). 숫자는 핵심 텍스트+보기 char 4-gram Jaccard(참고값, 0.35 이상 판독).

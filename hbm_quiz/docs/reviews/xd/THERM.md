@@ -70,9 +70,13 @@
 | WARP-A-0058 | E | HCB 비표준 표기 hybrid bonding | “HCB” 로 통일(첫 언급 “HCB(Cu–Cu hybrid bonding)”) |
 | WARP-I-0061 | W | µbump 표기 변형 micro-bump | “µbump”(U+00B5, 하이픈 없음) 로 통일 — STANDARDS 2.4 표기 |
 
+### 참고
+
 - **f_therm.n 일괄 점검(W)**: k=1 인데 지문에 단수가 없는 f_therm 문항 311개는 그림이 기본 n(대개 12)을 “die 12장” 으로 그려 지문에 없는 단수를 보여 준다(E_K1_FIG_NUM 성격). 단수가 풀이에 필요 없으면 k=0 주제도로, 필요하면 지문에 “N단(core N + base 1)” 을 쓰고 n=N+1.
 
 - **20단 설정**: THERM 의 20단 문항은 JEDEC HBM4 단수(4/8/12/16-Hi) 밖이다. 유지하려면 지문에 “가정” 임을 밝힌다(STANDARDS 2.2).
+
+- **받을 이관 문항(Phase 2 에 EA 가 이동)**: FA-A-0024, WARP-A-0246, WARP-I-0320 — 도착 후 W3 에서 이 분야 문항과의 중복을 다시 본다. W2 신규 출제 때 같은 개념을 또 쓰지 말 것.
 
 ## 2. 교차 중복 · 근중복 (보유 분야 판정)
 

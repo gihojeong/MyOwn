@@ -23,7 +23,11 @@
 | SIP-A-0075 | E | HCB 비표준 표기 Hybrid Bonding, hybrid bonding | “HCB” 로 통일(첫 언급 “HCB(Cu–Cu hybrid bonding)”) |
 | SIP-B-0173 | E | HCB 비표준 표기 하이브리드 본딩 | “HCB” 로 통일(첫 언급 “HCB(Cu–Cu hybrid bonding)”) |
 
+### 참고
+
 - **표현 권고(W, 수치는 규약과 일치)**: SIP 문항 71개가 “접합 간극은 die 수보다 하나 적습니다” 라고 쓴다. die 수에 base 를 넣으면 값은 맞지만 THERM 의 오류(“12단 → 간극 11”)와 같은 문장이라 학습자가 혼동한다. 공유 ctx 를 “간극 수 = core die 수(N)” 로 바꿀 것. 대상: SIP-A-0002~0042, SIP-A-0142, SIP-A-0151, SIP-A-0164, SIP-A-0187~0190, SIP-B-0087, SIP-B-0090~0094, SIP-B-0098~0099, SIP-B-0128, SIP-B-0157, SIP-B-0167, SIP-B-0169~0170, SIP-B-0174~0175, SIP-I-0126, SIP-I-0131~0132, SIP-I-0134, SIP-I-0137, SIP-I-0161, SIP-I-0170, SIP-I-0172
+
+- **받을 이관 문항(Phase 2 에 EA 가 이동)**: COW-I-0188, FEOL-A-0018, FEOL-B-0035, FEOL-B-0042 — 도착 후 W3 에서 이 분야 문항과의 중복을 다시 본다. W2 신규 출제 때 같은 개념을 또 쓰지 말 것.
 
 ## 2. 교차 중복 · 근중복 (보유 분야 판정)
 

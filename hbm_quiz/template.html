@@ -855,7 +855,9 @@ function f_bond(s, p) {
     if (m === "ncf") {
       for (let i = 0; i < 11; i++) E(s, x0 + 0.2 + i * 0.36, jy + gap * 0.16, 0.055, 0.055, MX.si2, { lw: 0.4 });
       if (p.filler_trap) { E(s, px(2) - 0.03, jy + gap * 0.48, 0.07, 0.07, MX.si2, { lw: 0.7 }); annotTo(s, px(2), jy + gap * 0.48, 1, "silica filler 가 joint 에 끼어 미접합", K.pink); }
-      annotTo(s, x0 + 0.56, jy + gap * 0.16, 3, "NCF 안의 silica filler", MX.ncf);
+      // 결함 주석 3개(void·filler trap·non-wet)가 띠를 채우면 일반 설명 라벨은 오른쪽 표 아래로 보낸다
+      if (p.voids && p.filler_trap && p.nonwet) pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.92, "회색 점 = NCF 안의 silica filler", { fs: 8, fill: MX.ncf, align: "left", maxW: RC.w });
+      else annotTo(s, x0 + 0.56, jy + gap * 0.16, 3, "NCF 안의 silica filler", MX.ncf);
     } else {
       annotTo(s, x0 + 0.1, jy + gap * 0.5, 3, "액상 EMC 주입 방향", MX.emc);
     }
@@ -1069,7 +1071,7 @@ function f_fa(s, p) {
 // ========== T11. 신뢰성 시험 순서 ==========
 function f_rel(s, p) {
   const x0 = LC.x + 0.1, y0 = TOP + 0.3;
-  const seq = p.seq || [["JESD22-A113", "MSL preconditioning", "J-STD-020 리플로 × 3회"], ["JESD22-A104", "Temperature Cycling", "-55 / +125 °C, 1000 cycle"], ["JESD22-A118", "uHAST", "130 °C / 85% RH, 96 h"], ["JESD22-A103", "HTS", "150 °C, 1000 h"]];
+  const seq = p.seq || [["JESD22-A113", "MSL preconditioning", "J-STD-020 리플로 × 3회"], ["JESD22-A104", "Temperature Cycling", "cond. B −55/+125 °C, " + (p.tcCycles || 700) + " cycle"], ["JESD22-A118", "uHAST", "130 °C / 85% RH, 96 h"], ["JESD22-A103", "HTS", "150 °C, 1000 h"]];
   ttl(s, "시험 순서 (preconditioning이 먼저)", LC.x, TOP - 0.04, 4.3);
   seq.forEach((r, i) => {
     const yy = y0 + i * 0.85;
@@ -1089,6 +1091,9 @@ function f_rel(s, p) {
   curve(s, [[g.X(0), g.Y(0)]].concat(fails.map((f) => [g.X(f[0]), g.Y(f[1])])), K.rust, 1.7);
   fails.forEach((f, i) => { E(s, g.X(f[0]) - 0.05, g.Y(f[1]) - 0.05, 0.1, 0.1, K.rust, { line: null }); pill(s, g.X(f[0]) - (i === fails.length - 1 ? 0.3 : 0), g.Y(f[1]) - 0.22 - (i % 2) * 0.34, f[1] + "%", { fs: 8, fill: K.cream }); });
   L(s, g.X(0), g.Y(p.crit || 1), g.X(XM), g.Y(p.crit || 1), "4D6B35", 1.1, { dash: 1 });
+  // TC 축일 때 규격 cycle 수(기본 JESD22-A104 cond. B 700 cycle)를 세로 점선으로
+  const tcC = p.tcCycles || 700;
+  if (!p.xlab && tcC <= XM) { L(s, g.X(tcC), g.Y(0), g.X(tcC), g.Y(YM), K.edge, 0.9, { dash: 1 }); T(s, "규격 " + tcC, g.X(tcC) - 0.4, g.Y(0) - 0.24, 0.8, 0.2, { fs: 7, align: "center", color: K.muted }); }
   pill(s, g.X(0) + 0.08, g.Y(YM) + 0.22, "판정 기준선 " + (p.crit || 1) + "%", { fs: 8, fill: K.green, align: "left" });
   if (p.bullet) pill(s, RC.x, TOP + 4.15, p.bullet, { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "고장률 곡선은 문항 제시값 · 조건은 각 JESD 문서 기준");
@@ -1440,9 +1445,15 @@ function askOf(q){
   return t.length >= 8 && t.length < 160 ? t : q.title;
 }
 // 해설: 문장 단위로 끊고, 계산식(=, ≈, ×, ÷ 가 든 비한글 구간)은 고정폭으로, 1.2e-3 은 1.2×10⁻³ 으로, [근거] 는 각주로
-function fmtExp(raw){
+// 출처: 레코드 src(문자열 · 배열 · {title, doc, year, url, note}) 우선, 없으면 해설 끝 [근거] 꼬리표
+function srcText(v){ if (v == null || v === "") return "";
+  if (Array.isArray(v)) return v.map(srcText).filter(Boolean).join(" · ");
+  if (typeof v === "object") return [v.title || v.t, v.doc || v.std, v.year, v.url, v.note].filter(Boolean).join(", ") || JSON.stringify(v);
+  return String(v); }
+function fmtExp(raw, srcField){
   let t = String(raw || ""), src = "";
   const k = t.indexOf("[근거]"); if (k >= 0) { src = t.slice(k + 4).trim(); t = t.slice(0, k).trim(); }
+  const sf = srcText(srcField); if (sf) src = sf;
   const E = x => String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const math = x => E(x).replace(/([^\uAC00-\uD7A3\u3131-\u318E①-⑳()\[\]「」'"]+)/g, (run) => {
       if (!/\d/.test(run) || !/[=≈×÷∝√^]/.test(run)) return run;
@@ -1790,7 +1801,7 @@ function render(){
       let cls="opt", tag=""; if (graded){ if(j===q.a){ cls+=" ok"; tag=`<span class="tag">${j===a?"정답 · 내 답":"정답"}</span>`; } else if(j===a){ cls+=" no"; tag=`<span class="tag">내 답</span>`; } else cls+=" dim"; } else if (j===a) cls+=" sel";
       return `<button type="button" class="${cls}" data-ans="${j}" aria-pressed="${j===a}"${graded?' aria-disabled="true"':""}><span class="n" aria-hidden="true">${j+1}</span><span class="tx"><span class="sr">${j+1}번 보기: </span>${esc(o)}</span>${tag}</button>`;
     }).join("")}</div>
-    ${graded ? `<div class="exp" role="note"><span class="k">해설 <span class="ans">— 정답 ${"①②③④"[q.a]}</span></span>${fmtExp(q.exp)}</div>` : ""}
+    ${graded ? `<div class="exp" role="note"><span class="k">해설 <span class="ans">— 정답 ${"①②③④"[q.a]}</span></span>${fmtExp(q.exp, q.src)}</div>` : ""}
     <div class="gradebar"><button class="big" type="button" id="gradeBtn" ${graded||remain?"disabled":""}>${graded?"채점 완료":(remain?`채점 (남은 문항 ${remain}개)`:"전체 채점하기")}</button></div>
     <div class="nav"><button type="button" ${prev?`data-go="q${prev.i}"`:"disabled"}>← 이전</button>
       ${graded

@@ -1,6 +1,7 @@
 # HBM 이해도 평가 — 문항 품질 기준서 (STANDARDS)
 
 - 소유: EA (Editor-in-chief Agent) · 적용 대상: `data/NN_CODE.json` 전 문항 · 자동 검사: `tools/validate.py`
+- 변경 이력: 2026-11-20 FACT §9 반영 — 부록 B 참조(HBM3 단수, 패키지 높이 비확정, HBM4 하위 호환, JESD47 조건, HCB pitch·휨, 105 °C).
 - 변경 이력: 2026-11-20 DA Phase 1 반영 — 부록 A 를 LAYOUT_RULES §3–4 와 일치(hideResult 의무, f_bond `dish` opt-in, f_sip `lines`, f_therm `core`, f_table·f_wafermap), 질문 마지막 문장 ≤ 90자, 수식 띄어쓰기, `metrics: []` 키 유지.
 - 변경 이력: 2026-11-20 W0.5 — WARP 를 WARP(Warpage 와 기계적 응력)·THERM(열 설계와 방열, `data/13_THERM.json`, legacy_prefix WARP)으로 분할. Smile/Cry 규약 확정.
 - 이 문서는 **모든 분야 에이전트의 공통 헌장**이다. 분야 브리프(`docs/agents/briefs/CODE.md`)는 이 문서를 전제로 쓴다.
@@ -32,16 +33,18 @@
 
 ### 2.2 확실한 기준값 (이 표 밖의 JEDEC 수치는 출처 확인 없이 쓰지 말 것)
 
-| 항목 | HBM2E | HBM3 (JESD238) | HBM3E | HBM4 (JESD270-4, 2025-04) |
+| 항목 | HBM2E (JEDEC 문서명은 HBM2, JESD235C) | HBM3 (JESD238) | HBM3E | HBM4 (JESD270-4, 2025-04) |
 |---|---|---|---|---|
 | I/O 폭 / 스택 | 1,024 bit | 1,024 bit | 1,024 bit | **2,048 bit** |
 | 독립 채널 × 폭 | 8 × 128 bit | 16 × 64 bit | 16 × 64 bit | **32 × 64 bit** |
 | pseudo channel | 16 × 64 bit | 32 × 32 bit | 32 × 32 bit | **64 × 32 bit** |
-| 핀 속도 | JEDEC 3.2 Gb/s (업체 3.6) | **6.4 Gb/s** | 별도 JEDEC 세대 아님. 업체 9.2–9.8 Gb/s 급 | **JEDEC 8 Gb/s**, 업체는 그 이상 발표 |
+| 핀 속도 | JEDEC 3.2 Gb/s (업체 3.6) | **6.4 Gb/s** | 별도 JEDEC 세대 아님. 업체 9.2–10 Gb/s 급(Samsung 12H 1,280 GB/s) | **JEDEC 8 Gb/s**, 업체는 그 이상 발표 |
 | 스택 대역폭 | ≈ 410–460 GB/s | ≈ 819 GB/s | ≈ 1.2 TB/s 급 | ≈ 2 TB/s (8 Gb/s 기준) |
-| 단수 | 최대 12-Hi | 4/8/12/16-Hi | 8-Hi 24 GB, 12-Hi 36 GB (24 Gb die) | 4/8/12/16-Hi, 24 Gb·32 Gb die, 최대 64 GB |
-| 패키지 높이 | 720 µm | 720 µm | 720 µm | **775 µm** |
+| 단수 | 최대 12-Hi | 4/8/12-Hi (16-Hi 는 향후 확장 조항) | 8-Hi 24 GB, 12-Hi 36 GB (24 Gb die) | 4/8/12/16-Hi, 24 Gb·32 Gb die, 최대 64 GB |
+| 패키지 높이 ¹ | 720 µm | 720 µm | 720 µm | 775 µm |
+| 컨트롤러 호환 | | | HBM3 컨트롤러 호환(업체) | **HBM3 컨트롤러와 하위 호환(JESD270-4 발표문 명시)** |
 
+- ¹ **패키지 높이는 JEDEC 확정값으로 쓰지 않는다**(FACT F12·F13): 720 µm 은 Samsung 공식(2019, 8·12단 패키지) [V], HBM3/3E 의 "JEDEC 720 µm" 은 보도 [R]. 775 µm 은 JESD270-4 발표문에 없고 보도 [R] + SK hynix Hot Chips 2026 의 HBM4 제품 Z-height [V-2차]. JESD270-4(4A) 본문 확인 전까지 문항에서는 **"높이 상한(설계 조건) 775 µm"** 처럼 주어진 조건으로만 쓰고 "JEDEC 규격값" 으로 묻지 않는다. HBM4E 높이 완화(825–900 µm)는 [R] 뿐 → 사용 금지.
 - 대역폭 = I/O 폭(bit) × 핀 속도(Gb/s) ÷ 8 → GB/s. 해설에 반드시 이 식을 보인다.
 - 용량 = die 밀도(Gb) × core die 수 ÷ 8 → GB. base die 는 셀 배열이 없어 용량에 기여하지 않는다.
 - 위 표 중 **굵게 표시하지 않은 업체 값**은 "업체 발표 기준" 으로만 쓴다. HBM3E 를 "JEDEC 규격" 이라 부르지 않는다.
@@ -51,18 +54,18 @@
 | 시험 | 문서 | 대표 조건 |
 |---|---|---|
 | MSL 분류 / preconditioning | J-STD-020 (분류·리플로 프로파일) / **JESD22-A113** (preconditioning 절차) | 흡습 후 리플로 3회 |
-| Temperature Cycling | JESD22-A104 | 예: −55 / +125 °C (condition B), 1000 cycle |
-| HTOL | JESD22-A108 | 125 °C 급, 바이어스, 1000 h |
-| HTS | JESD22-A103 | 150 °C 급, 무바이어스, 1000 h |
+| Temperature Cycling | JESD22-A104 | JESD47 자격: condition B −55/+125 °C **700 cycle**, condition G −40/+125 °C 850 cycle. 1000 cycle 은 고객·사내 기준으로만 |
+| HTOL | JESD22-A108 | Tj ≥ 125 °C, Vcc ≥ Vccmax, 1000 h |
+| HTSL | JESD22-A103 | Ta ≥ 150 °C, 무바이어스, 1000 h |
 | THB | JESD22-A101 | 85 °C / 85 %RH, 바이어스, 1000 h |
-| bHAST / uHAST | JESD22-A110 / JESD22-A118 | 130 °C / 85 %RH, 96 h (바이어스 유무) |
-| 자격 시험 체계 | JESD47 | 3 lot × 77 개, 0 fail (LTPD 기반) — "누적 고장률 n % 이하" 는 JEDEC 판정 기준이 아니다. 사내 기준으로 쓸 때는 그렇게 명시 |
+| bHAST / uHAST | JESD22-A110 / JESD22-A118 | 130 °C / 85 %RH, 96 h (또는 110 °C, 264 h), 바이어스 유무 |
+| 자격 시험 체계 | JESD47 | HTOL 3 lot × 77, 패키지 시험(TC·THB/HAST·uHAST·HTSL) 3 lot × 25, 모두 0 fail — "누적 고장률 n % 이하" 는 JEDEC 판정 기준이 아니다. 사내 기준으로 쓸 때는 그렇게 명시. (FACT 는 JESD47G 원문으로 확인 — 최신판에서 수치가 바뀌었을 수 있으므로 문항에 판 번호를 쓰지 않는다) |
 | ESD | ANSI/ESDA/JEDEC JS-001 (HBM), JS-002 (CDM) | |
 
 ### 2.4 물성·범위 (계산 문항의 기본값; 문항이 다른 값을 주면 그 값을 따른다)
 - Cu 비저항 1.68–1.72 × 10⁻⁸ Ω·m · CTE: Cu 16.5–17, Si 2.6–2.9, SnAg ≈ 22, 충전 EMC 7–15 (Tg 이하) ppm/K
 - 열전도율(W/m·K): Si 120–150, Cu ≈ 390, SiO₂ ≈ 1.4, NCF·underfill 0.2–0.7, 충전 EMC/MUF 0.7–3, TIM 3–10
-- HBM 현실 범위(설정값이 벗어나면 사유를 지문에 밝힌다): core die 30–60 µm, base die 50–100 µm, µbump pitch 25–55 µm, 접합 간극 5–15 µm(TC-NCF·MR-MUF), HCB pad pitch ≤ 10 µm 이고 **HCB 에는 bump 간극이 없다**, µbump 당 전류 수십 mA 이하(평균 전류 밀도 10⁴ A/cm² 급이 EM 시험 영역), DRAM 접합부 온도 상한 85 / 95 °C(확장, refresh 2배) / 105 °C(일부 규격)
+- HBM 현실 범위(설정값이 벗어나면 사유를 지문에 밝힌다): core die 30–60 µm, base die 50–100 µm, µbump pitch 25–55 µm, 접합 간극 5–15 µm(TC-NCF·MR-MUF), HCB pitch: HBM 용 공개 발표는 < 18 µm 수준(SK hynix Hot Chips 2026), 로직 SoIC 는 9 µm 이하 — 문항 설정값은 2–15 µm(그림 `f_hcb` 는 ≤ 10 µm 만 표시 가능하므로 그보다 크면 `f_note`/`f_table`) 이고 **HCB 에는 bump 간극이 없다**. HCB 의 nm 급 요구는 **표면 거칠기·Cu recess** 이며 die 휨 허용치는 µm 급이다("die 휨 100 nm" 류 서술 금지), µbump 당 전류 수십 mA 이하(평균 전류 밀도 10⁴ A/cm² 급이 EM 시험 영역), DRAM 접합부 온도 상한 85 / 95 °C(확장, refresh 2배). 105 °C 는 출처 확인 전 정답 근거로 쓰지 않는다. 스택 전력·열유속은 '보고된 범위' 로 단정하지 말고 **문항 설정값**으로만 준다
 - **결과값이 비현실적이면(예: 최하단 die 150 °C 이상, 단일 pillar 100 kA/cm², 1 ppm 배율 오차가 125 µm 변위) 문항 설정 자체를 고친다.** "계산은 맞다" 는 변명이 되지 않는다.
 
 ### 2.5 용어 규약 (분야 간 통일 — 위반은 교차분야 검사에서 E)
@@ -202,7 +205,7 @@
 | `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` 1–8, **`lines`**, `bullet` | **`lines` 생략 시 숫자 없는 "HBM I/O 배선"**. 지문이 1,024 / 2,048 배선을 말하면 `lines` 를 그 값으로(E_FIG_SIP_LINES). HBM3E = 1024, HBM4 = 2048 |
 | `f_therm` | **`core`**(권장, n = core+1) 또는 `n`(base 포함 총 die 수), `q_Wmm2`, `tTop`, `limit`, `layers` ≤ 5행, `hideResult` | 새 문항은 `core` 로. N단 → `core: N`. 결과 온도는 현실 범위(≈ 110 °C 이하) |
 | `f_fa` | `tech`: lit·obirch·eotpr·xrm · `hot`, `fov_um`, `depth` · `feats` ≤ 4 · `dz`, `zpeak` | 지문 기법과 tech 일치 |
-| `f_rel` | `seq` ≤ 4행, `cur`, `fails` ≤ 5점, `xlab`, `xmax`, `ymax`, `crit`, `hint`, `bullet` | 기본 seq 첫 행은 JESD22-A113 preconditioning. HTOL·HTS 는 `xlab`/`xmax` 를 시간 축으로 |
+| `f_rel` | `seq` ≤ 4행, `cur`, `fails` ≤ 5점, `xlab`, `xmax`, `ymax`, `crit`, `hint`, `bullet` | 기본 seq 첫 행은 JESD22-A113 preconditioning. 기본 seq 의 TC "1000 cycle" 은 JESD47(condition B 700 cycle)과 다르다 — JEDEC 자격 시험을 묻는 문항은 `seq` 를 직접 준다(DA 수정 요청 중). HTOL·HTS 는 `xlab`/`xmax` 를 시간 축으로 |
 | `f_stack` | `n`(core die 수), `highlight`, `gap_um`, `h_um`, `limit_um`, `bullet`, `hideResult` | 계산 답을 `n`/`h_um` 에 넣지 말 것 |
 | `f_hcb` | `pitch_um` ≤ 10, `tol_nm`, `off_nm`, `dish_nm`, `bullet`, `hideResult` | |
 | `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
@@ -212,3 +215,16 @@
 | **`f_wafermap`** | `title`, `grid` 9–25, `values` 또는 `pattern`(edge·center·ring·notch·random·quadrant), `scale`, `bin`, `marks` ≤ 4, `bullets` ≤ 3, `seed` | 맵 패턴을 묻는 문항에서 bullets·marks 로 원인을 쓰지 말 것 |
 
 예시는 LAYOUT_RULES §4 참조.
+
+
+## 부록 B. FACT §9 정정 제안 검토 결과 (2026-11-20, EA)
+
+| # | 제안 | 판정 | 반영 위치 · 근거 |
+|---|---|---|---|
+| 1 | HBM3 단수 4/8/12-Hi (16-Hi 는 향후 확장) | **수용** | 2.2 표. JEDEC HBM3 발표문 [S] 문구와 일치 |
+| 2 | 패키지 높이 775 µm 굵게 해제 + 각주 | **수용** | 2.2 각주 ¹. 정답 근거는 [S]/[V] 만 쓴다는 2.1 원칙과 일치. JESD270-4 본문 확인 시 복원 |
+| 3 | HBM2E 문서명(JESD235C), HBM3E 업체 9.2–10 Gb/s, HBM4 의 HBM3 컨트롤러 하위 호환 | **수용** | 2.2 표. 하위 호환은 JEDEC 발표문 [S] 명시 — EA 가 Phase 1 브리프(PROD §2)에서 PROD-I-0003 의 "HBM4 비호환" 을 '유지 가치' 로 적은 것은 **철회**(F04 정정이 우선) |
+| 4 | JESD47 조건(TC B 700 / G 850 cycle, 표본 77·25, HTOL·HTSL·bHAST 조건) | **수용(판 번호 단서 포함)** | 2.3 표. FACT 가 JESD47G 원문을 직접 확인. 최신판 차이 가능성이 있어 문항에는 판 번호·표본 수를 정답으로 묻지 않도록 단서 추가 |
+| 5 | HCB pad pitch "≤ 10 µm" 완화, die 휨 µm 급 | **부분 수용** | 2.4. 공개 발표(< 18 µm)와 로직(≤ 9 µm)을 함께 적고 문항 설정값 2–15 µm 로 정함. "≤ 10 µm" 를 버리지 않은 이유: `f_hcb` 그림 표시 범위가 1–10 µm(LAYOUT_RULES §4)라 그 이상은 그림 대신 다른 템플릿을 쓰도록 안내 필요. die 휨 µm 급 문구는 그대로 수용 |
+| 6 | 105 °C 근거 미확인 표기, 열유속은 '문항 설정값' | **수용** | 2.4 |
+| 부기 | `f_rel` 기본 seq TC 1000 cycle ≠ JESD47 700 | **수용** | 부록 A `f_rel` 행 + `EA_to_DA.md` §15 |
