@@ -1,0 +1,1679 @@
+<title>HBM 이해도 평가</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Noto+Sans+KR:wght@400;600;800&display=swap">
+<style>/* Layout: course sidebar | step canvas (metrics + isometric drawing + timeline) | explanation panel — paper-sheet look */
+:root {
+  --paper: #f4ebe0; --card: #f8f0e6; --card2: #f6eee3; --line: #ddd3c5; --line-strong: #c6bbac;
+  --ink: #1d1b18; --ink2: #34302b; --muted: #6f6961; --edge: #3a3530;
+  --green: #cfe3b2; --green-ink: #2f5a1e; --violet: #ece3f6; --violet-line: #d5c8e2; --orange: #fcdcbd; --rust: #c8552a; --blue: #cfe0f5; --pink: #f6d3d0; --mint: #dff0de;
+  --sheet: #f9f2e8; --sheet-grid: #ebe2d5; --sheet-ink: #1d1b18;
+  --mono: "JetBrains Mono", "Noto Sans KR", ui-monospace, Menlo, monospace;
+  --sans: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+  --shadow: 1.5px 2.5px 0 #46413b;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #1c1915; --card: #25211c; --card2: #2b2620; --line: #3a342c; --line-strong: #4d453b;
+  --ink: #f1e9dd; --ink2: #ddd3c5; --muted: #a39a8e; --edge: #d9cfc1;
+  --green: #4d6b35; --green-ink: #d6ebc0; --violet: #362e44; --violet-line: #4e4260; --orange: #6a4428; --rust: #ef8a5c; --blue: #2c3d55; --pink: #5a3330; --mint: #2f4a33;
+  --shadow: 1.5px 2.5px 0 #000; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #1c1915; --card: #25211c; --card2: #2b2620; --line: #3a342c; --line-strong: #4d453b;
+  --ink: #f1e9dd; --ink2: #ddd3c5; --muted: #a39a8e; --edge: #d9cfc1;
+  --green: #4d6b35; --green-ink: #d6ebc0; --violet: #362e44; --violet-line: #4e4260; --orange: #6a4428; --rust: #ef8a5c; --blue: #2c3d55; --pink: #5a3330; --mint: #2f4a33;
+  --shadow: 1.5px 2.5px 0 #000; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { background: var(--paper); color: var(--ink); }
+body { font-family: var(--sans); font-size: 14px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 24px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--rust); outline-offset: 2px; }
+.top { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-weight: 800; font-size: 15px; }
+.top .sp { flex: 1; }
+.chip { font-family: var(--mono); font-size: 11.5px; font-weight: 600; border: 1px solid var(--edge); border-radius: 99px; padding: 3px 10px; background: var(--card); white-space: nowrap; }
+.iconbtn { border: 1px solid var(--line-strong); background: var(--card); border-radius: 8px; padding: 5px 9px; font-family: var(--mono); font-size: 12px; }
+.app { display: grid; grid-template-columns: 240px minmax(0, 1fr) 320px; gap: 14px; margin-top: 14px; align-items: start; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+/* sidebar */
+.side { padding: 12px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 10px); }
+.side h3 { font-family: var(--mono); font-size: 12px; margin: 2px 4px 10px; display: flex; justify-content: space-between; color: var(--muted); }
+.les { margin-bottom: 4px; }
+.les > button { width: 100%; display: flex; align-items: center; gap: 8px; border: 0; background: none; padding: 7px 6px; border-radius: 8px; text-align: left; font-family: var(--mono); font-weight: 600; font-size: 13px; }
+.les > button:hover { background: var(--card2); }
+.les .sq { width: 14px; height: 12px; border-radius: 3px; border: 1px solid var(--edge); flex: none; }
+.les .cnt { margin-left: auto; color: var(--muted); font-size: 11px; font-weight: 400; }
+.steps { list-style: none; margin: 2px 0 6px 18px; padding: 0 0 0 10px; border-left: 1px dashed var(--line-strong); }
+.steps button { width: 100%; text-align: left; border: 0; background: none; padding: 4px 8px; border-radius: 6px; font-size: 12.5px; color: var(--ink2); display: flex; gap: 6px; }
+.steps button[aria-current="step"] { background: var(--green); border: 1px solid var(--edge); color: var(--green-ink); font-weight: 700; }
+.steps .ck { color: var(--muted); width: 12px; flex: none; }
+.prog { margin-top: 10px; padding: 8px 6px 2px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; }
+.refbtn { width: 100%; margin-top: 8px; border: 1px solid var(--line-strong); background: var(--card2); border-radius: 8px; padding: 6px; font-size: 12.5px; font-family: var(--mono); }
+/* main */
+.crumb { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.hd { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+h1 { font-size: clamp(20px, 2.3vw, 27px); margin: 4px 0 4px; text-wrap: balance; letter-spacing: -0.01em; }
+.sub { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+.chips { display: flex; gap: 6px; padding-top: 8px; }
+.chip.t-구조 { background: var(--mint); } .chip.t-문제 { background: var(--pink); } .chip.t-계산 { background: var(--orange); } .chip.t-비교 { background: var(--blue); } .chip.t-개요 { background: var(--violet); } .chip.t-정리 { background: var(--green); }
+.canvas { padding: 12px; }
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.metric { background: var(--paper); border: 1px solid var(--line-strong); border-radius: 10px; padding: 7px 10px; min-width: 0; }
+.metric .l { font-family: var(--mono); font-size: 10.5px; color: var(--muted); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.metric .v { font-family: var(--mono); font-weight: 800; font-size: 15px; margin-top: 3px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.metric .v.warn { color: var(--rust); }
+.tools { display: flex; gap: 6px; justify-content: flex-end; margin: 8px 0 6px; }
+.stage-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--line); }
+.stage { display: block; width: 100%; min-width: 760px; height: auto; background-color: var(--sheet);
+  background-image: repeating-linear-gradient(30deg, transparent 0 33px, var(--sheet-grid) 33px 34px), repeating-linear-gradient(150deg, transparent 0 33px, var(--sheet-grid) 33px 34px); }
+.stage .ft { width: 100%; height: 100%; display: flex; flex-direction: column; font-family: var(--sans); overflow: visible; color: var(--sheet-ink); }
+.stage .ft.nw { white-space: nowrap; align-items: center; }
+.stage .el { animation: rise .42s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i) * 4ms); }
+.stage .el.flow { animation: rise .42s both, dash 1.1s linear infinite; animation-delay: calc(var(--i) * 4ms), 0s; }
+.paused .stage .el.flow { animation-play-state: running, paused; }
+@keyframes rise { from { opacity: .15; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+@keyframes dash { to { stroke-dashoffset: -22; } }
+@media (prefers-reduced-motion: reduce) { .stage .el, .stage .el.flow { animation: none !important; } }
+.mtable { width: 100%; height: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 11.2px; color: #34302b; table-layout: fixed; }
+.mtable th, .mtable td { border: 1px solid #c6bbac; padding: 5px 7px; vertical-align: middle; background: #fffdf8; line-height: 1.35; }
+.mtable th { font-size: 12.5px; color: #1d1b18; } .mtable td.w { color: #b8321f; background: #fbedea; }
+.tl { margin-top: 12px; padding: 10px 14px 8px; }
+.tl .row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.tl ol { list-style: none; display: flex; padding: 0; margin: 8px 0 0; position: relative; }
+.tl ol::before { content: ""; position: absolute; left: 7%; right: 7%; top: 13px; border-top: 1px solid var(--line-strong); }
+.tl li { flex: 1; text-align: center; position: relative; min-width: 0; }
+.tl li button { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; font-size: 11.5px; color: var(--muted); }
+.tl .dot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line-strong); background: var(--paper); display: grid; place-items: center; font-family: var(--mono); font-weight: 800; font-size: 12px; }
+.tl li.done .dot { border-color: var(--edge); background: var(--card2); color: var(--ink); }
+.tl li.cur .dot { border: 2px solid var(--edge); background: var(--green); color: var(--green-ink); }
+.tl li.cur button { color: var(--ink); font-weight: 700; }
+/* panel */
+.panel { padding: 14px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 10px); }
+.ph { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--muted); font-weight: 600; }
+.panel h2 { font-size: 18px; margin: 10px 0 8px; line-height: 1.35; text-wrap: balance; }
+.panel p { font-size: 13.2px; line-height: 1.62; color: var(--ink2); margin: 0 0 10px; }
+.key { background: var(--violet); border: 1px solid var(--violet-line); border-radius: 10px; padding: 10px 12px; display: grid; grid-template-columns: 26px 1fr; gap: 8px; margin: 4px 0 12px; }
+.key .ic { width: 26px; height: 26px; border: 1px solid var(--edge); border-radius: 7px; display: grid; place-items: center; background: var(--paper); font-size: 13px; }
+.key .k { font-family: var(--mono); font-size: 10.5px; color: var(--muted); font-weight: 700; }
+.key div p { margin: 2px 0 0; font-size: 12.8px; }
+.chg h4 { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin: 0 0 6px; }
+.chg ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.chg li { display: grid; grid-template-columns: 18px 1fr; gap: 6px; font-size: 12.8px; color: var(--ink2); line-height: 1.45; }
+.chg .sg { width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; color: #fff; margin-top: 1px; }
+.sg.p { background: #6fae5f; } .sg.m { background: #c8552a; } .sg.e { background: #9a9187; } .sg.q { background: #8e7cc3; }
+.nav { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin-top: 14px; }
+.nav button { border: 1px solid var(--edge); border-radius: 10px; padding: 9px 12px; font-family: var(--mono); font-weight: 700; font-size: 12.5px; background: var(--card2); }
+.nav .nx { background: var(--green); color: var(--green-ink); box-shadow: var(--shadow); text-align: center; }
+.nav button:disabled { opacity: .45; cursor: default; }
+.hint { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-top: 8px; text-align: center; }
+kbd { border: 1px solid var(--line-strong); border-radius: 4px; padding: 0 4px; font-family: var(--mono); font-size: 10px; background: var(--paper); }
+.learn { margin-top: 12px; padding: 12px 14px; }
+.learn h4 { margin: 0 0 8px; font-family: var(--mono); font-size: 12px; }
+.learn ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 12.5px; color: var(--ink2); }
+.learn li { display: flex; gap: 8px; } .learn .bx { width: 14px; height: 14px; border: 1px solid var(--line-strong); border-radius: 3px; flex: none; margin-top: 2px; display: grid; place-items: center; font-size: 10px; }
+.learn li.v .bx { background: var(--green); border-color: var(--edge); }
+.refs { padding: 18px 20px; }
+.refs ol { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 7px; font-size: 13px; color: var(--ink2); }
+.refs li { display: grid; grid-template-columns: 38px 1fr; gap: 4px; overflow-wrap: anywhere; }
+.refs li b { font-family: var(--mono); color: var(--muted); }
+.cite { font-family: var(--mono); font-size: .86em; color: var(--muted); }
+@media (max-width: 1180px) { .app { grid-template-columns: 210px minmax(0, 1fr); } .panel { grid-column: 2; position: static; } }
+@media (max-width: 820px) { .app { grid-template-columns: minmax(0, 1fr); } .side, .panel { position: static; grid-column: auto; } .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } .side .steps { display: none; } .side .les.open .steps { display: block; } .tl li button span:last-child { display: none; } }
+/* 상황도 안의 표 — SVG user unit 기준이므로 지문 글자 크기에 맞춰 확대 */
+.mtable{font-size:17px;line-height:1.32}
+.mtable th,.mtable td{padding:7px 9px}
+.mtable th{font-size:17px}
+/* ── 뷰포트 고정 3단: 좌측 tree · 지문+상황도 · 문제 (페이지 스크롤 없음) ── */
+html{height:100%}
+body{height:100vh;overflow:hidden;margin:0;padding-block:0;display:flex;flex-direction:column}
+.top{flex:0 0 auto;padding:8px 0;min-height:0}
+.app{flex:1 1 auto;min-height:0;margin:9px 0 0;gap:12px;align-items:stretch;
+  grid-template-columns:376px minmax(0,5fr) minmax(0,3fr)}
+body.nav-off .app{grid-template-columns:0 minmax(0,5fr) minmax(0,3fr)}
+body.nav-off .side{display:none}
+.side{height:100%;overflow:auto;position:static}
+#main{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+#panelCol{height:100%;min-height:0;overflow:auto;position:static}
+.stemcard{flex:0 0 auto;min-height:0;overflow:visible}
+#figRow .stage-wrap{align-items:center;justify-content:center}
+#figRow{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:8px 11px;overflow:hidden}
+#figRow .stage-wrap{flex:1 1 auto;min-height:0;display:flex;border:0}
+#figRow svg.stage{width:100%;height:100%;min-width:0;border-radius:10px;border:1px solid var(--line)}
+h1{font-size:clamp(16px,1.35vw,20px);margin:1px 0;line-height:1.25}
+.hd{gap:8px;margin-bottom:2px}
+.crumb{font-size:11px}
+#main>.sub{display:none}
+html{height:100%;overflow:hidden}
+html.sc{height:auto;overflow:auto}
+body.scrollable{height:auto;overflow:auto;display:block}
+body.scrollable .app{height:auto;max-height:none}
+body.scrollable .side{height:auto;max-height:none;overflow:visible;position:sticky;top:10px;align-self:start}
+body.scrollable #main,body.scrollable #panelCol{height:auto;overflow:visible}
+@media (max-width:1430px){.app{grid-template-columns:300px minmax(0,5fr) minmax(0,3fr)}}
+@media (max-width:1180px){body{overflow:auto;height:auto;display:block}.app{grid-template-columns:260px minmax(0,1fr);height:auto;max-height:none}
+  #main,#panelCol,.side{height:auto}#figRow{min-height:320px}}
+@media (max-width:860px){.app{grid-template-columns:minmax(0,1fr)}}
+/* ── 좌측 tree (2배) ── */
+.side{padding:14px 12px}
+.side h3{font-size:13px;margin:2px 4px 12px}
+.side .les>button{font-size:15px;padding:9px 8px;gap:10px}
+.side .les .sq{width:18px;height:15px}
+.side .les .cnt{font-size:13px}
+.side .steps{margin:4px 0 10px 22px;padding-left:12px}
+.side .steps button{font-size:13.4px;line-height:1.45;padding:6px 9px;gap:8px}
+.side .steps .ck{width:15px;font-size:13px}
+.side .prog{font-size:13px;padding-top:10px}
+.refbtn{font-size:13.5px;padding:9px}
+
+/* ── 문제 영역 (키움) ── */
+.lvchip{font-family:var(--mono);font-size:11px;font-weight:700;border-radius:5px;padding:2px 7px;border:1px solid var(--edge)}
+.lv-B{background:var(--mint)} .lv-I{background:var(--blue)} .lv-A{background:var(--pink)}
+.panel{padding:16px 18px}
+.panel h2{font-size:19px;margin:10px 0 10px;line-height:1.4}
+.stem{font-size:14.6px;line-height:1.68;color:var(--ink2);margin:0 0 9px;word-break:keep-all}
+.qhdr{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.02em;margin:10px 0 6px}
+.opts{display:grid;gap:9px;margin:2px 0}
+.opt{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;text-align:left;
+  border:1px solid var(--line-strong);background:var(--card2);border-radius:11px;padding:10px 13px;
+  font-size:14.2px;line-height:1.55;word-break:keep-all}
+.opt:hover{background:var(--paper)}
+.opt .n{font-family:var(--mono);font-weight:800;font-size:13.5px;border:1px solid var(--edge);border-radius:50%;
+  width:25px;height:25px;display:grid;place-items:center;background:var(--paper);flex:none}
+.opt.sel{border:2px solid var(--edge);background:var(--violet);padding:11px 13px}
+.opt.ok{border:2px solid #2f5a1e;background:var(--green);padding:11px 13px}
+.opt.no{border:2px solid var(--rust);background:var(--pink);padding:11px 13px}
+.opt.ok .n{background:#2f5a1e;color:#fff;border-color:#2f5a1e}
+.opt.no .n{background:var(--rust);color:#fff;border-color:var(--rust)}
+.exp{background:var(--violet);border:1px solid var(--violet-line);border-radius:11px;padding:12px 14px;margin-top:14px}
+.exp .k{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:700}
+.exp p{margin:4px 0 0;font-size:14.2px;line-height:1.75}
+.verdict{font-family:var(--mono);font-size:13px;font-weight:800;border-radius:8px;padding:4px 11px;border:1px solid var(--edge)}
+.v-ok{background:var(--green);color:var(--green-ink)} .v-no{background:var(--pink);color:#8c2b1c}
+.panel .ph{font-size:13px}
+.nav button{font-size:13.5px;padding:11px 14px}
+
+/* ── 중앙(지문·그림) ── */
+.metric .l{font-size:11px}
+.metric .v{font-size:15px;margin-top:1px}
+.metric{padding:5px 8px}
+.metrics{gap:6px}
+.stemcard{padding:12px 15px;margin-bottom:0}
+.stemcard .qhdr{margin:0 0 8px}
+
+.side .les .cnt.done{color:var(--green-ink);font-weight:700}
+.steps .ck.a{color:var(--rust);font-weight:800}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:10px 0 0}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:9px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;background:var(--card);padding:7px 13px;font-family:var(--mono);font-size:13px;font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--green);color:var(--green-ink)}
+.gradebar{display:flex;gap:8px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.gradebar .big{flex:1;border:1px solid var(--edge);border-radius:11px;padding:11px;font-family:var(--mono);font-weight:800;
+  font-size:13.5px;background:var(--orange);box-shadow:var(--shadow);text-align:center}
+.gradebar .big:disabled{opacity:.45;box-shadow:none;cursor:default;background:var(--card2)}
+
+/* ── 시작 화면 ── */
+.startwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;max-width:1020px;margin:0 auto;width:100%;
+  grid-column:1 / -1;overflow:auto;max-height:100%}
+.setup{padding:22px 24px}
+.setup h2{font-size:17px;margin:0 0 4px}
+.setup .lead{color:var(--muted);font-size:13.5px;margin:0 0 18px;line-height:1.7}
+.fld{margin:0 0 20px}
+.fld>label{display:block;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);margin:0 0 8px}
+.fld .note{font-size:12.5px;color:var(--muted);margin:7px 0 0;line-height:1.6}
+.domgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.domgrid button{display:grid;grid-template-columns:20px 1fr auto;gap:9px;align-items:center;text-align:left;
+  border:1px solid var(--line-strong);background:var(--card2);border-radius:10px;padding:10px 12px;font-size:13.6px}
+.domgrid button[aria-pressed="true"]{border:2px solid var(--edge);background:var(--green);padding:9px 11px}
+.domgrid .bx{width:18px;height:18px;border:1px solid var(--edge);border-radius:4px;background:var(--paper);
+  display:grid;place-items:center;font-size:12px;font-weight:800}
+.domgrid .c{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.startbar{display:flex;gap:10px;align-items:center;margin-top:6px}
+.startbtn{flex:1;border:1px solid var(--edge);border-radius:12px;padding:15px;font-family:var(--mono);font-weight:800;
+  font-size:15px;background:var(--green);color:var(--green-ink);box-shadow:var(--shadow);text-align:center}
+.startbtn:disabled{opacity:.45;box-shadow:none;cursor:default;background:var(--card2);color:var(--muted)}
+.summary{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 18px}
+.summary .b{border:1px solid var(--edge);border-radius:11px;padding:9px 14px;background:var(--paper);min-width:96px}
+.summary .b .l{font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:700}
+.summary .b .v{font-family:var(--mono);font-size:19px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+
+/* ── 결과 ── */
+.res{padding:20px 22px}
+.res h2{margin:0 0 4px;font-size:21px}
+.score{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.score .b{border:1px solid var(--edge);border-radius:12px;padding:10px 14px;background:var(--card2);min-width:112px}
+.score .b .l{font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:700}
+.score .b .v{font-family:var(--mono);font-size:22px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.res h4{font-family:var(--mono);font-size:12.5px;margin:18px 0 6px;color:var(--muted)}
+.res .wrongs{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.res .wrongs li{display:grid;grid-template-columns:38px 1fr auto;gap:9px;font-size:13.4px;align-items:center;
+  border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--card2)}
+.res .wrongs b{font-family:var(--mono);color:var(--rust);font-size:11.5px}
+.res .wrongs button{border:1px solid var(--line-strong);background:var(--paper);border-radius:7px;padding:4px 9px;font-size:12px;font-family:var(--mono)}
+svg.chart{display:block;width:100%;max-width:940px;height:auto;background:var(--sheet);border:1px solid var(--line);border-radius:10px}
+/* 막대 차트 — 항목 수와 무관하게 막대 두께·글자 크기 고정 */
+.bars{position:relative;background:var(--sheet);border:1px solid var(--line);border-radius:10px;
+  padding:14px 18px 8px 18px;max-width:940px}
+.brow{display:grid;grid-template-columns:168px minmax(0,1fr) 108px;align-items:center;gap:12px;height:30px;position:relative;z-index:1}
+.blab{font-size:13.4px;text-align:right;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btrack{height:20px;border:1px solid var(--line-strong);border-radius:4px;background:var(--card);overflow:hidden}
+.bfill{height:100%;border-right:1px solid var(--edge)}
+.bval{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink2);white-space:nowrap}
+.bval span{font-weight:400;color:var(--muted)}
+.bgrid{position:absolute;left:calc(168px + 12px + 18px);right:calc(108px + 12px + 18px);top:14px;bottom:36px;z-index:0}
+.bgrid span{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line-strong)}
+.baxis{position:relative;height:18px;margin-left:180px;margin-right:120px}
+.baxis span{position:absolute;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:var(--muted);top:2px}
+.btitle{text-align:center;font-size:12px;font-weight:700;color:var(--ink2);margin:2px 0 6px;
+  margin-left:180px;margin-right:120px}
+.hint2{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px}
+.histtab{width:100%;border-collapse:collapse;font-size:13.4px;margin-top:4px}
+.histtab th,.histtab td{border:1px solid var(--line);padding:7px 10px;text-align:center;background:var(--card2)}
+.histtab th{background:var(--card);font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:700}
+.histtab td:nth-child(2){font-family:var(--mono);font-size:12.5px}
+.figflag{display:inline-block;margin-left:9px;background:var(--yellow,#f7dc8c);border:1px solid var(--edge);border-radius:99px;padding:1px 9px;font-size:11px;font-weight:700;color:var(--ink);font-family:var(--sans)}
+:root{--yellow:#f7dc8c} :root[data-theme="dark"]{--yellow:#6a5a28} @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--yellow:#6a5a28}}
+
+/* ── 그림 확대 ── */
+.lb{position:fixed;inset:0;background:rgba(26,22,17,.72);z-index:50;display:grid;place-items:center;padding:24px}
+.lb[hidden]{display:none}
+.lb .inner{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:14px;max-width:1500px;width:100%;max-height:94vh;overflow:auto}
+.lb .bar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.lb .bar .t{font-family:var(--mono);font-size:12.5px;font-weight:700;flex:1}
+</style>
+
+<header class="top">
+  <div class="brand"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><g stroke="#3a3530" stroke-width="1"><path d="M11 13l8-4-8-4-8 4z" fill="#e2d6f3"/><path d="M3 9v3l8 4v-3z" fill="#cbbfdc"/><path d="M19 9v3l-8 4v-3z" fill="#b6a9c9"/><path d="M3 13v3l8 4v-3z" fill="#cfe3b2"/><path d="M19 13v3l-8 4v-3z" fill="#a9c08c"/></g></svg>HBM 이해도 평가</div>
+  <span class="chip" style="background:var(--green)" id="modeChip">시험 구성</span>
+  <span class="sp"></span>
+  <span class="chip" id="clock" style="min-width:96px;text-align:center">—</span>
+  <span class="chip" id="topProg">0 / 0</span>
+  <button class="iconbtn" id="navBtn" type="button" aria-label="목록 접기">☰ 목록</button>
+  <button class="iconbtn" id="startBtn" type="button">시험 구성</button>
+  <button class="iconbtn" id="resBtn" type="button">결과</button>
+  <button class="iconbtn" id="themeBtn" type="button" aria-label="테마 전환">◐ 테마</button>
+</header>
+
+<div class="app" id="app"></div>
+<div class="lb" id="lb" hidden><div class="inner"><div class="bar"><span class="t" id="lbT"></span><button class="iconbtn" id="lbX" type="button">✕ 닫기</button></div><div id="lbB"></div></div></div>
+
+<script>
+const MODS = {};
+var LIB = (function () {
+  const U = 100, PT = U / 72;
+  const FS = 1.52;   // 상황도 글자 확대 배율 (지문 글자 크기에 맞춤)
+  const K = {
+    paper: "F4EBE0", sheet: "F9F2E8", card: "F8F0E6", line: "DDD3C5", lineSoft: "E6DDD0", lineStrong: "C6BBAC",
+    edge: "3A3530", ink: "1D1B18", ink2: "34302B", muted: "6F6961", muted2: "8B847A",
+    green: "CFE3B2", green2: "B2D491", green3: "7FC278", violet: "E7DDF5", violet2: "CDBDE6", orange: "FCDCBD", orange2: "F4B98A",
+    mint: "DFF0DE", rust: "D0683A", blue: "CFE0F5", blue2: "A9C6EC", yellow: "F7DC8C", cream: "FFFBF4", red: "C8372D", gray: "D9D2C7",
+  };
+  const M = { dram: "E2D6F3", base: "CFE3B2", xpu: "BCD3F0", inter: "E8DCC8", sub: "D8CDBD", phy: "F8C99B", mc: "F7DC8C", pe: "F2A88B", sram: "BFE3DA", sens: "F5D0E3", d2d: "F8C99B", cold: "C9D4DE", lp: "D7E4F3" };
+  function shade(hex, k) {
+    const n = [0, 2, 4].map((i) => parseInt(hex.substr(i, 2), 16));
+    return n.map((v) => { const t = k > 0 ? v + (255 - v) * k : v * (1 + k); return Math.max(0, Math.min(255, Math.round(t))).toString(16).padStart(2, "0"); }).join("").toUpperCase();
+  }
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const f = (v) => (Math.round(v * U * 10) / 10);
+  const col = (c) => (c ? "#" + c : "none");
+  const nm = (p) => p;
+  function emit(s, str, cls) { s.n = (s.n || 0) + 1; s.out.push(str.replace("<", `<`).replace(/^<(\w+)/, `<$1 class="el ${cls || ""}" style="--i:${Math.min(s.n, 160)}"`)); }
+  function strokeAttrs(o, defW = 0.9) {
+    if (o.line === null) return 'stroke="none"';
+    const w = o.lw == null ? defW : o.lw;
+    return `stroke="${col(o.line || K.edge)}" stroke-width="${(w * PT * 0.9).toFixed(2)}" stroke-linejoin="round"${o.dash ? ' stroke-dasharray="5 3.5"' : ""}`;
+  }
+  function poly(s, pts, fill, o = {}) {
+    const op = o.tr ? ` fill-opacity="${(1 - o.tr / 100).toFixed(2)}"` : "";
+    emit(s, `<polygon points="${pts.map((p) => f(p[0]) + "," + f(p[1])).join(" ")}" fill="${col(fill)}"${op} ${strokeAttrs(o)}/>`);
+  }
+  function L(s, x1, y1, x2, y2, c = K.edge, w = 1, o = {}) {
+    emit(s, `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${col(c)}" stroke-width="${(w * PT * 0.9).toFixed(2)}"${o.dash ? ' stroke-dasharray="5 3.5"' : ""} stroke-linecap="round"/>`, o.flow ? "flow" : "");
+  }
+  function A(s, x1, y1, x2, y2, c = K.edge, w = 1.25, o = {}) {
+    const ang = Math.atan2(y2 - y1, x2 - x1), hl = o.hl || 0.09 + w * 0.012, hw = hl * 0.62;
+    const head = (xa, ya, a) => {
+      const bx = xa - hl * Math.cos(a), by = ya - hl * Math.sin(a);
+      poly(s, [[xa, ya], [bx + hw * Math.sin(a), by - hw * Math.cos(a)], [bx - hw * Math.sin(a), by + hw * Math.cos(a)]], c, { line: null });
+      return [bx, by];
+    };
+    let [sx, sy] = [x1, y1], [ex, ey] = [x2, y2];
+    if (o.end !== false) [ex, ey] = head(x2, y2, ang);
+    if (o.both) [sx, sy] = head(x1, y1, ang + Math.PI);
+    emit(s, `<line x1="${f(sx)}" y1="${f(sy)}" x2="${f(ex)}" y2="${f(ey)}" stroke="${col(c)}" stroke-width="${(w * PT * 0.9).toFixed(2)}" stroke-dasharray="${o.dash ? "5 3.5" : "7 4"}" stroke-linecap="round"/>`, "flow");
+  }
+  function runsHTML(text, o) {
+    if (Array.isArray(text)) return text.map((r) => {
+      const ro = r.options || {}; let st = "";
+      if (ro.bold) st += "font-weight:700;"; if (ro.color) st += `color:#${ro.color};`; if (ro.fontSize) st += `font-size:${ro.fontSize * PT}px;`;
+      return `<span style="${st}">${esc(r.text)}</span>${ro.breakLine ? "<br>" : ""}`;
+    }).join("");
+    return esc(text).replace(/\n/g, "<br>");
+  }
+  function fo(s, x, y, w, h, html, o) {
+    const jc = o.valign === "middle" ? "center" : o.valign === "bottom" ? "flex-end" : "flex-start";
+    const st = `font-size:${((o.fs || 10) * PT * FS).toFixed(1)}px;line-height:${(o.lsm || 1.0) * 1.2};color:#${o.color || K.ink};font-weight:${o.bold ? 700 : 400};text-align:${o.align || "left"};justify-content:${jc}`;
+    emit(s, `<foreignObject x="${f(x)}" y="${f(y)}" width="${f(Math.max(w, 0.05))}" height="${f(Math.max(h, 0.05))}"><div xmlns="http://www.w3.org/1999/xhtml" class="ft${o.nowrap ? " nw" : ""}" style="${st}">${html}</div></foreignObject>`, "txt");
+  }
+  function T(s, text, x, y, w, h, o = {}) { fo(s, x, y, w, h, runsHTML(text, o), o); }
+  function R(s, x, y, w, h, fill, o = {}) {
+    const rx = o.round ? Math.min(w, h) * o.round * 0.5 : 0;
+    const op = o.tr ? ` fill-opacity="${(1 - o.tr / 100).toFixed(2)}"` : "";
+    if (o.shadow) emit(s, `<rect x="${f(x + 0.015)}" y="${f(y + 0.025)}" width="${f(w)}" height="${f(h)}" rx="${f(rx)}" fill="#46413B"/>`);
+    emit(s, `<rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" rx="${f(rx)}" fill="${col(fill)}"${op} ${strokeAttrs(o)}/>`);
+    if (o.text != null && o.text !== "") fo(s, x + 0.02, y, w - 0.04, h, runsHTML(o.text), { fs: o.fs || 8, bold: o.bold, color: o.color, align: o.align || "center", valign: "middle", nowrap: !String(o.text).includes("\n") && h < 0.35 });
+  }
+  function E(s, x, y, w, h, fill, o = {}) {
+    emit(s, `<ellipse cx="${f(x + w / 2)}" cy="${f(y + h / 2)}" rx="${f(w / 2)}" ry="${f(h / 2)}" fill="${col(fill)}" ${o.line === null ? 'stroke="none"' : strokeAttrs(o)}/>`);
+  }
+  function tw(t, fs) { let e = 0; for (const ch of t) e += /[ㄱ-힝]/.test(ch) ? 0.93 : /[A-Z0-9%#@]/.test(ch) ? 0.66 : 0.56; return e * fs / 72; }
+  function pill(s, cx, cy, text, o = {}) {
+    const fs = o.fs || 8; let w = tw(text, fs * FS) * 1.08 + 0.26 * FS, h = (o.h || 0.24) * FS;
+    // 칸 가드: 위쪽 영역(주석 띠 위)에서는 왼쪽 그림칸과 오른쪽 설명칸 사이 통로를 넘지 않게 줄바꿈한다
+    let mw = o.maxW;
+    if (!o.nogut) {
+      const RIGHT = cx < 5.03 ? 5.03 : 9.03, LEFT = cx < 5.03 ? 0.56 : 5.25;
+      const room = o.align === "left" ? RIGHT - cx
+                 : o.align === "right" ? cx - LEFT
+                 : 2 * Math.min(cx - LEFT, RIGHT - cx);
+      if (room > 0.55) mw = mw ? Math.min(mw, room) : room;
+    }
+    if (mw && w > mw) { const ln = Math.ceil(w / mw); w = mw; h = h * (1 + 0.84 * (ln - 1)); }
+    const x = o.align === "left" ? cx : o.align === "right" ? cx - w : cx - w / 2;
+    R(s, x, cy - h / 2, w, h, o.fill || K.cream, { round: 1, lw: o.lw || 1, line: o.line || K.edge, text, fs, bold: o.bold !== false, color: o.color || K.ink, shadow: o.shadow });
+    return { x, w };
+  }
+  function ISO(ox, oy, u, zk = 1) { const c = 0.8660254; const P = (x, y, z = 0) => [ox + (x - y) * c * u, oy + (x + y) * 0.5 * u - z * u * zk]; P.u = u; return P; }
+  function isoBox(s, P, x, y, z, dx, dy, dz, c, o = {}) {
+    const lw = o.lw == null ? 0.9 : o.lw, ln = o.line || K.edge;
+    const top = [P(x, y, z + dz), P(x + dx, y, z + dz), P(x + dx, y + dy, z + dz), P(x, y + dy, z + dz)];
+    const left = [P(x, y + dy, z), P(x + dx, y + dy, z), P(x + dx, y + dy, z + dz), P(x, y + dy, z + dz)];
+    const right = [P(x + dx, y, z), P(x + dx, y + dy, z), P(x + dx, y + dy, z + dz), P(x + dx, y, z + dz)];
+    if (!o.noSides) { poly(s, left, o.lc || shade(c, -0.1), { line: ln, lw, tr: o.tr }); poly(s, right, o.rc || shade(c, -0.22), { line: ln, lw, tr: o.tr }); }
+    if (!o.noTop) poly(s, top, o.tc || c, { line: ln, lw, tr: o.tr });
+  }
+  function isoRect(s, P, x, y, z, dx, dy, c, o = {}) { poly(s, [P(x, y, z), P(x + dx, y, z), P(x + dx, y + dy, z), P(x, y + dy, z)], c, { line: o.line || K.edge, lw: o.lw == null ? 0.75 : o.lw, dash: o.dash, tr: o.tr }); }
+  function OBL(ox, oy, u, uz) { uz = uz || u; const P = (x, y, z) => [ox + x * u + y * u * 0.5 * 0.866, oy - z * uz - y * u * 0.5 * 0.5]; P.u = u; return P; }
+  function oblBox(s, P, x, y, z, dx, dy, dz, c, o = {}) {
+    const lw = o.lw == null ? 0.9 : o.lw, ln = o.line || K.edge;
+    const front = [P(x, y, z), P(x + dx, y, z), P(x + dx, y, z + dz), P(x, y, z + dz)];
+    const top = [P(x, y, z + dz), P(x + dx, y, z + dz), P(x + dx, y + dy, z + dz), P(x, y + dy, z + dz)];
+    const side = [P(x + dx, y, z), P(x + dx, y + dy, z), P(x + dx, y + dy, z + dz), P(x + dx, y, z + dz)];
+    if (!o.noTop) poly(s, top, o.tc || shade(c, 0.25), { line: ln, lw, tr: o.tr });
+    if (!o.noSide) poly(s, side, o.sc || shade(c, -0.2), { line: ln, lw, tr: o.tr });
+    poly(s, front, o.fc || c, { line: ln, lw, tr: o.tr, dash: o.dash });
+    if (o.text) { const [x1, y1] = P(x, y, z + dz), [x2, y2] = P(x + dx, y, z); T(s, o.text, x1, y1, x2 - x1, y2 - y1, { fs: o.fs || 8, bold: o.bold !== false, align: "center", valign: "middle", color: o.color || K.ink }); }
+  }
+  function isoGrid() {}
+  const pres = { shapes: {} };
+  return { pres, W: 13.333, H: 7.5, K, M, shade, nm, poly, L, A, R, T, E, tw, pill, ISO, isoBox, isoRect, OBL, oblBox, isoGrid };
+})();
+
+function req(p){ if(p==="./lib.js") return LIB; return MODS[p]; }
+// ===== 상황도 템플릿 1부: 공용 헬퍼 + TSV / CMP / Backside pad / Bump / Sawing =====
+(function (module) { const require = req;
+const { K, M, shade, poly, L, A, R, T, E, tw, pill, ISO, isoBox, isoRect, OBL, oblBox } = require("./lib.js");
+K.pink = "F6D3D0"; K.pink2 = "EFB8B2"; K.alert = "C8372D";
+const DG = { x: 0.55, y: 2.36, w: 8.5, h: 5.75 };
+// 2단 레이아웃 기준 밴드
+const LC = { x: DG.x + 0.05, w: 4.45 };            // 좌측 열
+const RC = { x: DG.x + 4.72, w: 3.78 };            // 우측 열
+const TOP = DG.y + 0.30, BOT = DG.y + DG.h - 0.30;
+
+// 공정 재료 색
+const MX = {
+  si: "D9D2C7", si2: "C7BFB1", ox: "CFE0F5", ox2: "A9C6EC", sin: "F6D3D0", cu: "F4B98A", cu2: "E09A5E",
+  ti: "BFE3DA", ni: "E6E9ED", ni2: "C9CFD6", sol: "D8D2E8", imc: "C8A86B", ncf: "EFE3D2", emc: "E8DCC8",
+  pad: "F7DC8C", bare: "FFFBF4", hot: "F2A88B", cold: "C9D4DE", lowk: "E2D6F3", tape: "DFF0DE",
+};
+
+function cap(s, t) { T(s, t, DG.x, DG.y + DG.h - 0.15, 6.6, 0.15, { fs: 8, color: K.muted }); }
+function ttl(s, t, x, y, w) { T(s, t, x, y, w || 3.6, 0.17, { fs: 9, bold: true, color: K.ink }); }
+function lead(s, ax, ay, lx, ly, text, o = {}) {
+  L(s, ax, ay, lx, ly, K.edge, 0.75);
+  E(s, ax - 0.025, ay - 0.025, 0.05, 0.05, K.edge, { line: null });
+  pill(s, lx, ly, text, Object.assign({ align: lx < ax ? "right" : "left", fs: 8 }, o));
+}
+function dimH(s, x1, x2, y, text, o = {}) { A(s, x1, y, x2, y, K.edge, 0.8, { both: true }); pill(s, (x1 + x2) / 2, y, text, { fs: 8, h: 0.2, fill: o.fill || K.cream }); }
+function dimV(s, x, y1, y2, text, o = {}) { A(s, x, y1, x, y2, K.edge, 0.8, { both: true }); pill(s, x + (o.align === "right" ? -0.06 : 0.06), (y1 + y2) / 2 + (o.dy || 0), text, { fs: 8, h: 0.2, fill: o.fill || K.cream, align: o.align || "left" }); }
+// 양 축 눈금 값이 모두 찍히는 좌표계. 제목은 ylab 한 줄로만 둔다(겹침 방지).
+function axes(s, x, y, w, h, o) {
+  const X = (v) => x + w * (v - o.xmin) / (o.xmax - o.xmin), Y = (v) => y + h - h * (v - o.ymin) / (o.ymax - o.ymin);
+  (o.yticks || []).forEach((t) => { L(s, x, Y(t), x + w, Y(t), K.lineStrong, 0.5, { dash: 1 }); T(s, o.fmty ? o.fmty(t) : String(t), x - 0.56, Y(t) - 0.075, 0.5, 0.15, { fs: 8, align: "right", color: K.muted }); });
+  (o.xticks || []).forEach((t) => { L(s, X(t), y, X(t), y + h, K.lineStrong, 0.5, { dash: 1 }); T(s, o.fmtx ? o.fmtx(t) : String(t), X(t) - 0.26, y + h + 0.03, 0.52, 0.15, { fs: 8, align: "center", color: K.muted }); });
+  L(s, x, y, x, y + h, K.edge, 1); L(s, x, y + h, x + w, y + h, K.edge, 1);
+  if (o.xlab) { const RB = x < 5.03 ? 5.03 : 9.03; T(s, o.xlab, x - 0.3, y + h + 0.19, Math.min(w + 0.6, RB - (x - 0.3)), 0.20, { fs: 8, align: "center", bold: true, color: K.ink2 }); }
+  if (o.ylab) { const RB = x < 5.03 ? 5.03 : 9.03; T(s, o.ylab, x - 0.56, y - 0.46, Math.min(w + 0.56, RB - (x - 0.56)), 0.32, { fs: 8, bold: true, color: K.ink2 }); }
+  return { X, Y };
+}
+const clampX = (x, w2) => Math.max(DG.x + (w2 || 0.5), Math.min(DG.x + DG.w - (w2 || 0.5), x));
+function curve(s, pts, c, lw, o = {}) { for (let i = 1; i < pts.length; i++) L(s, pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], c, lw || 1.3, o); }
+function hatch(s, x, y, w, h, c, step) {
+  step = step || 0.09;
+  for (let t = 0; t < w + h; t += step) {
+    const x1 = Math.max(x, x + t - h), y1 = Math.min(y + h, y + t), x2 = Math.min(x + w, x + t), y2 = Math.max(y, y + t - w);
+    if (x2 > x1) L(s, x1, y1, x2, y2, c || K.lineStrong, 0.45);
+  }
+}
+function legend(s, x, y, items, o = {}) {
+  const cw = o.cw || 1.15, cols = o.cols || 1;
+  items.forEach(([c, t], i) => {
+    const cx = x + (i % cols) * cw, cy = y + Math.floor(i / cols) * 0.27;
+    R(s, cx, cy, 0.17, 0.15, c, { lw: 0.7 }); T(s, t, cx + 0.24, cy - 0.03, cw - 0.26, 0.22, { fs: 8, color: K.ink2 });
+  });
+}
+// 표: 행 수에 맞춰 높이를 자동 계산
+function table(s, rows, x, y, w, hit) {
+  s.addTable(rows.map((r, ri) => r.map((c) => ({ text: c, options: (Array.isArray(hit) ? hit.indexOf(ri) >= 0 : ri === hit) ? { color: K.alert } : {} }))),
+    { x, y, w, h: 0.32 + rows.length * 0.60 });
+}
+function tableCol(s, rows, x, y, w, hitCol) {
+  s.addTable(rows.map((r) => r.map((c, ci) => ({ text: c, options: ci === hitCol ? { color: K.alert } : {} }))),
+    { x, y, w, h: 0.32 + rows.length * 0.60 });
+}
+function flagOf(s, p) { /* 조건 표시는 카드 머리말(HTML)에서 처리 */ }
+// 좌측 열 주석 띠: 그림 아래에 왼쪽 정렬 pill 을 쌓는다 (화면 밖 잘림 방지)
+const ANY = TOP + 3.58;                                   // 주석 띠 시작 y
+function annot(s, i, text, fill) { pill(s, LC.x, ANY + i * 0.50, text, { fs: 8, fill: fill || K.violet, align: "left", nogut: true, maxW: 4.45 }); }
+function annotTo(s, ax, ay, i, text, fill) {
+  const ly = ANY + i * 0.44;
+  L(s, ax, ay, LC.x + 0.1, ly - 0.14, K.edge, 0.75);
+  E(s, ax - 0.025, ay - 0.025, 0.05, 0.05, K.edge, { line: null });
+  annot(s, i, text, fill);
+}
+
+// ========== T1. TSV 단면 ==========
+function f_tsv(s, p) {
+  const cx = LC.x + 1.5, top = TOP + 0.78, dep = 2.55, wt = 0.6, wb = wt * (p.taper == null ? 0.82 : p.taper);
+  R(s, LC.x, top - 0.26, 3.0, 0.26, MX.lowk, { lw: 0.8, text: "BEOL / low-k ILD", fs: 8 });
+  R(s, LC.x, top, 3.0, dep + 0.52, MX.si, { lw: 0.9 });
+  T(s, "Si (core die)", LC.x + 1.95, top + 1.9, 1.15, 0.2, { fs: 8, bold: true, color: K.ink2 });
+  const n = 22, amp = (p.scallop || 0) * 0.018;
+  const half = (i) => wt / 2 + (wb / 2 - wt / 2) * (i / n);
+  const off = (k) => { const a = [], b = [];
+    for (let i = 0; i <= n; i++) { const yy = top + dep * i / n, hw = half(i) - k, bb = amp * Math.abs(Math.sin(i * Math.PI / 2)); a.push([cx - hw - bb, yy]); b.push([cx + hw + bb, yy]); }
+    return a.concat(b.slice().reverse()); };
+  poly(s, off(0), MX.bare, { lw: 0.9 });
+  poly(s, off(0.03), MX.ox, { lw: 0.5 });
+  poly(s, off(0.055), p.barrier === false ? MX.ox : MX.ti, { lw: 0.5 });
+  const fill = p.fill || "good", inner = off(0.075);
+  poly(s, inner, MX.cu, { lw: 0.5 });
+  if (fill === "void") { E(s, cx - 0.11, top + dep * 0.44, 0.22, 0.5, MX.bare, { lw: 0.9 }); annotTo(s, cx + 0.1, top + dep * 0.5, 0, "void — 충전이 중앙에서 닫혀 빈 공간이 남았다", K.pink); }
+  else if (fill === "seam") { L(s, cx, top + 0.2, cx, top + dep - 0.1, K.edge, 0.9, { dash: 1 }); annotTo(s, cx, top + 1.1, 0, "seam — 양 측벽 성장면이 중심에서 만났다", K.pink); }
+  else if (fill === "pinch") { poly(s, [[cx - 0.1, top + 0.1], [cx + 0.1, top + 0.1], [cx + 0.03, top + 0.95], [cx - 0.03, top + 0.95]], MX.bare, { lw: 0.8 }); annotTo(s, cx, top + 0.55, 0, "pinch-off — 입구가 먼저 닫혔다", K.pink); }
+  if (p.overburden !== false) R(s, cx - wt / 2 - 0.1, top - 0.26 - 0.14, wt + 0.2, 0.14, MX.cu, { lw: 0.8 });
+  dimH(s, cx - wt / 2, cx + wt / 2, top - 0.5, "Ø " + (p.dia_um || 5) + " µm");
+  dimV(s, LC.x + 3.12, top, top + dep, (p.depth_um || 60) + " µm");
+  annot(s, 1, "aspect ratio = 깊이 / 직경 = " + (p.ar || 12) + " : 1", K.orange);
+  // 우측: 측벽 확대 + 범례
+  ttl(s, "측벽 확대 (Bosch 주기)", RC.x, TOP, 2.6);
+  const ix = RC.x + 0.1, iy = TOP + 0.26;
+  R(s, ix, iy, 1.05, 1.6, MX.si, { lw: 0.8 });
+  const pts = [];
+  for (let i = 0; i <= 30; i++) { const yy = iy + 1.6 * i / 30; pts.push([ix + 0.95 - (p.scallop ? 0.08 : 0.0) * Math.abs(Math.sin(i * Math.PI / 3)), yy]); }
+  curve(s, pts, K.edge, 1.1);
+  poly(s, pts.concat([[ix + 1.05, iy + 1.6], [ix + 1.05, iy]]), MX.bare, { line: null, tr: 12 });
+  dimV(s, ix + 0.22, iy + 0.55, iy + 1.05, (p.scallopPitch || 0.35) + " µm");
+  pill(s, RC.x + 1.35, iy + 0.5, "scallop "  + (p.scallopDepth || 60) + " nm", { fs: 8, fill: p.scallop ? K.orange : K.mint, align: "left", maxW: 2.4 });
+  pill(s, RC.x + 1.35, iy + 0.95, p.scallop ? "측벽 거칠기 → liner 피복 불균일" : "매끈한 측벽", { fs: 8, fill: K.violet, align: "left", maxW: 2.4 });
+  ttl(s, "막 구성", RC.x, iy + 1.95, 2.4);
+  legend(s, RC.x, iy + 2.24, [[MX.ox, "liner SiO2"], [p.barrier === false ? MX.bare : MX.ti, p.barrier === false ? "barrier 없음 (Cu 확산 위험)" : "barrier Ta / TaN"], [MX.cu, "Cu (electroplated)"], [MX.bare, "void / 미충전"]], { cols: 1, cw: 3.6 });
+  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
+}
+
+// ========== T2. CMP dishing / erosion ==========
+function f_cmp(s, p) {
+  const x0 = LC.x + 0.15, y0 = TOP + 0.42;
+  ttl(s, "상면: pattern density 가 다른 두 영역", LC.x, TOP - 0.02, 4.3);
+  R(s, x0, y0, 1.5, 1.3, MX.si, { lw: 0.9 });
+  R(s, x0 + 1.5, y0, 1.5, 1.3, MX.si, { lw: 0.9 });
+  const put = (ox, nx, r) => { for (let i = 0; i < nx; i++) for (let j = 0; j < nx; j++) E(s, ox + 0.14 + i * (1.22 / nx), y0 + 0.11 + j * (1.06 / nx), r, r, MX.cu, { lw: 0.5 }); };
+  put(x0, p.nA || 4, 0.18); put(x0 + 1.5, p.nB || 8, 0.09);
+  pill(s, x0 + 0.1, y0 + 1.62, "A · " + (p.densA || 15) + "%", { fs: 8, fill: K.blue, align: "left" });
+  pill(s, x0 + 1.6, y0 + 1.62, "B · " + (p.densB || 55) + "%", { fs: 8, fill: K.orange, align: "left" });
+  const cy = y0 + 2.3, hh = 0.5;
+  ttl(s, "CMP 후 단면 표면 높이", LC.x, cy - 0.26, 3.6);
+  R(s, x0, cy, 3.0, hh, MX.si, { lw: 0.9 });
+  const prof = [];
+  for (let i = 0; i <= 64; i++) {
+    const t = i / 64, xx = x0 + 3.0 * t;
+    let d = (t > 0.5 ? (p.erosion_nm || 40) / 420 : 0) + ((p.dish_nm || 90) / 420) * Math.pow(Math.abs(Math.sin(t * Math.PI * (t > 0.5 ? 16 : 8))), 2);
+    prof.push([xx, cy + d * 0.55]);
+  }
+  curve(s, prof, K.rust, 1.6);
+  L(s, x0, cy, x0 + 3.0, cy, K.edge, 0.7, { dash: 1 });
+  annotTo(s, x0 + 0.9, cy + 0.12, 0, "dishing " + (p.dish_nm || 90) + " nm — 넓은 Cu 가 국부로 파인다", K.pink);
+  annotTo(s, x0 + 2.5, cy + 0.2, 1, "erosion " + (p.erosion_nm || 40) + " nm — 고밀도 영역이 함께 내려간다", K.pink);
+  const g = axes(s, RC.x + 0.72, TOP + 0.75, 2.8, 2.9, {
+    xmin: 0, xmax: 60, xticks: [0, 15, 30, 45, 60], ymin: 0, ymax: 160, yticks: [0, 40, 80, 120, 160],
+    xlab: "pattern density (%)", ylab: "표면 단차 (nm)",
+  });
+  const dd = [[5, 25], [15, 55], [30, 95], [45, 125], [60, 150]], ee = [[5, 10], [15, 22], [30, 38], [45, 52], [60, 62]];
+  curve(s, dd.map(([a, b]) => [g.X(a), g.Y(b)]), K.rust, 1.6); dd.forEach(([a, b]) => E(s, g.X(a) - 0.05, g.Y(b) - 0.05, 0.1, 0.1, K.rust, { line: null }));
+  curve(s, ee.map(([a, b]) => [g.X(a), g.Y(b)]), "4D6B35", 1.6, { dash: 1 }); ee.forEach(([a, b]) => E(s, g.X(a) - 0.05, g.Y(b) - 0.05, 0.1, 0.1, "4D6B35", { line: null }));
+  legend(s, RC.x + 0.72, TOP + 4.1, [[K.rust, "dishing (배선 폭 의존)"], ["4D6B35", "erosion (영역 전체)"]], { cols: 1, cw: 3.0 });
+  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 그래프는 설명용 경향선");
+}
+
+// ========== T3. Backside pad 공정 단면 ==========
+// p:{step 0..7, defect:'undercut'|'residue'|'none', ox1,sin,ox2,ni_um}
+function f_bs(s, p) {
+  const step = p.step == null ? 7 : p.step;
+  const x0 = LC.x + 0.1, w = 2.35, sy = TOP + 2.45;            // Si 상면
+  R(s, x0, sy, w, 0.95, MX.si, { lw: 0.9, text: "Si", fs: 8 });
+  const tsv = [x0 + 0.55, x0 + 1.17, x0 + 1.79], tw2 = 0.22, prot = step >= 1 ? 0 : 0.14;
+  tsv.forEach((tx) => { R(s, tx - tw2 / 2 - 0.03, sy, tw2 + 0.06, 0.95, MX.ox, { lw: 0.4 }); R(s, tx - tw2 / 2, sy - prot, tw2, 0.95 + prot, MX.cu, { lw: 0.6 }); });
+  // 절연막 적층
+  let y = sy; const names = [];
+  const lay = (th, c, nm2) => { R(s, x0, y - th, w, th, c, { lw: 0.65 }); y -= th; names.push([nm2, y + th / 2, c]); };
+  if (step >= 1) lay(0.13, MX.ox, "SiO2 " + (p.ox1 || 300) + "nm");
+  if (step >= 2) lay(0.11, MX.sin, "SiN " + (p.sin || 200) + "nm");
+  if (step === 3) lay(0.20, MX.ox2, "희생 SiO2 " + (p.ox2 || 500) + "nm");
+  if (step === 3) annot(s, 1, "이 희생 SiO2 는 다음 CMP 에서 전량 제거된다", K.violet);
+  // pad 개구 + seed + Ni
+  if (step >= 5) tsv.forEach((tx) => R(s, tx - 0.17, y, 0.34, sy - y, MX.bare, { lw: 0.6 }));
+  if (step >= 5) tsv.forEach((tx) => {
+    poly(s, [[tx - 0.26, y], [tx + 0.26, y], [tx + 0.26, y - 0.04], [tx + 0.21, y - 0.04], [tx + 0.21, sy - 0.04], [tx - 0.21, sy - 0.04], [tx - 0.21, y - 0.04], [tx - 0.26, y - 0.04]], MX.ti, { lw: 0.55 });
+    poly(s, [[tx - 0.26, y - 0.04], [tx + 0.26, y - 0.04], [tx + 0.26, y - 0.075], [tx + 0.185, y - 0.075], [tx + 0.185, sy - 0.075], [tx - 0.185, sy - 0.075], [tx - 0.185, y - 0.075], [tx - 0.26, y - 0.075]], MX.cu, { lw: 0.55 });
+  });
+  if (step === 5) { R(s, x0, y - 0.04, w, 0.04, MX.ti, { lw: 0.35, tr: 30 }); R(s, x0, y - 0.075, w, 0.035, MX.cu, { lw: 0.35, tr: 30 }); }
+  if (step >= 6) { tsv.forEach((tx) => R(s, tx - 0.26, y - 0.29, 0.52, 0.215, MX.ni, { lw: 0.75 })); if (step === 6) { R(s, x0, y - 0.04, w, 0.04, MX.ti, { lw: 0.35, tr: 30 }); R(s, x0, y - 0.075, w, 0.035, MX.cu, { lw: 0.35, tr: 30 }); } }
+  if (step >= 7 && p.defect === "undercut") {
+    tsv.forEach((tx) => { R(s, tx - 0.26, y - 0.075, 0.07, 0.075, MX.bare, { lw: 0.5 }); R(s, tx + 0.19, y - 0.075, 0.07, 0.075, MX.bare, { lw: 0.5 }); });
+    annotTo(s, tsv[1] + 0.23, y - 0.04, 1, "seed undercut — Ni pad 가장자리 들뜸", K.pink);
+  }
+  if (step >= 7 && p.defect === "residue") {
+    R(s, x0 + 0.2, y - 0.03, w - 0.4, 0.03, MX.cu, { lw: 0.35, tr: 15 });
+    annotTo(s, tsv[1] - 0.45, y - 0.015, 1, "seed residue: pad 사이에 Cu 가 남아 leakage 경로가 된다", K.pink);
+  }
+  // 좌측 라벨
+  names.forEach(([t, yy, c], i) => lead(s, x0 + w - 0.15, yy, x0 + w + 0.18, TOP + 0.3 + i * 0.50, t, { fill: c }));
+  if (step >= 5) lead(s, tsv[2] + 0.23, y - 0.05, x0 + w + 0.18, TOP + 0.3 + names.length * 0.50, "Ti / Cu seed", { fill: MX.ti });
+  if (step >= 6) lead(s, tsv[2] + 0.24, y - 0.2, x0 + w + 0.18, TOP + 0.3 + (names.length + 1) * 0.50, "Ni plating " + (p.ni_um || 2) + " µm", { fill: MX.ni });
+  annotTo(s, tsv[0], sy + 0.75, 0, "TSV Cu — reveal 로 뒷면에 드러난 상태", MX.cu);
+  if (step === 4) annot(s, 1, "CMP: SiN stop 으로 희생 SiO2 전량 제거", K.mint);
+  // 우측: 공정 순서
+  const names2 = ["TSV reveal", "SiO2 증착", "SiN 증착", "SiO2 희생막", "CMP (SiN stop)", "Ti / Cu seed", "Ni plating", "seed etching"];
+  ttl(s, "공정 순서", RC.x, TOP - 0.02, 2.0);
+  names2.forEach((t, i) => {
+    const cur = i === step, yy = TOP + 0.34 + i * 0.44;
+    R(s, RC.x, yy, 3.6, 0.36, cur ? K.green : (i < step ? K.card2 : K.sheet), { lw: cur ? 1.3 : 0.7, round: 0.5, text: (i + 1) + ". " + t, fs: 8, bold: cur, align: "left", color: i < step ? K.muted : K.ink });
+  });
+  annot(s, 2, "최종 절연막 = SiO2 / SiN 2층", K.mint);
+  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
+}
+
+// ========== T4. Bump / UBM / IMC ==========
+function f_bump(s, p) {
+  const cx = LC.x + 1.5, y = TOP + 0.55, pw = 0.95;
+  R(s, LC.x + 0.2, y, 2.6, 0.28, MX.si, { lw: 0.9, text: "upper die", fs: 8 });
+  let yy = y + 0.28;
+  R(s, cx - pw / 2 - 0.1, yy, pw + 0.2, 0.09, MX.lowk, { lw: 0.6 }); yy += 0.09;
+  R(s, cx - pw / 2, yy, pw, 0.11, MX.cu, { lw: 0.7 }); yy += 0.11;
+  if (p.niBarrier) { R(s, cx - pw / 2, yy, pw, 0.08, MX.ni, { lw: 0.7 }); yy += 0.08; }
+  const imc1 = yy, it = Math.max(0.05, (p.imc_um || 2) * 0.035);
+  R(s, cx - pw / 2, yy, pw, it, MX.imc, { lw: 0.7 }); yy += it;
+  const st = Math.max(0.14, (p.solder_um || 15) * 0.014), soly = yy;
+  R(s, cx - pw / 2, yy, pw, st, MX.sol, { lw: 0.7 }); yy += st;
+  R(s, cx - pw / 2, yy, pw, it, MX.imc, { lw: 0.7 }); yy += it;
+  if (p.niBarrier) { R(s, cx - pw / 2, yy, pw, 0.08, MX.ni, { lw: 0.7 }); yy += 0.08; }
+  const ph = Math.max(0.3, (p.pillar_um || 25) * 0.014), piy = yy;
+  R(s, cx - pw / 2, yy, pw, ph, MX.cu, { lw: 0.8, text: "Cu pillar", fs: 8 }); yy += ph;
+  R(s, LC.x + 0.2, yy, 2.6, 0.28, MX.si, { lw: 0.9, text: "lower die", fs: 8 });
+  if (p.kirkendall) {
+    for (let i = 0; i < 5; i++) E(s, cx - 0.36 + i * 0.17, piy - 0.035, 0.075, 0.055, MX.bare, { lw: 0.6 });
+    annotTo(s, cx - 0.36, piy - 0.01, 1, "Kirkendall void — Cu 측 계면의 공극", K.pink);
+  }
+  if (p.em) {
+    A(s, cx + pw / 2 + 0.42, yy - 0.12, cx + pw / 2 + 0.42, imc1 - 0.05, K.rust, 1.6);
+    pill(s, LC.x + 0.15, TOP + 0.18, "통전 조건 j = " + (p.j_kA || 15) + " kA/cm²", { fs: 8, fill: K.orange, align: "left" });
+    for (let i = 0; i < 4; i++) E(s, cx - pw / 2 + 0.03 + i * 0.055, soly + st * 0.15, 0.05, 0.05, K.rust, { line: null, tr: 25 });
+    annotTo(s, cx - pw / 2 + 0.04, soly + st * 0.3, 2, "current crowding — 모서리 전류 집중", K.pink);
+  }
+  const cP = piy + ph / 2, cS = soly + st / 2, need = 0.44;
+  const push = Math.max(0, need - Math.abs(cP - cS));
+  dimV(s, LC.x + 2.95, piy, piy + ph, "pillar " + (p.pillar_um || 25) + " µm", { dy: push / 2 });
+  dimV(s, LC.x + 2.95, soly, soly + st, "solder " + (p.solder_um || 15) + " µm", { dy: -push / 2 });
+  annotTo(s, cx + pw / 2 - 0.06, imc1 + it / 2, 0, "IMC " + (p.imc_um || 2) + " µm (Cu6Sn5 / Cu3Sn) 계면", MX.imc);
+  legend(s, LC.x + 0.1, TOP + 3.05, [[MX.cu, "Cu"], [MX.sol, "solder"], [MX.imc, "IMC"], [MX.ni, p.niBarrier ? "Ni 적용" : "Ni 없음"]], { cols: 4, cw: 1.08 });
+  const g = axes(s, RC.x + 0.68, TOP + 0.95, 2.85, 2.3, {
+    xmin: 0, xmax: 1000, xticks: [0, 250, 500, 750, 1000], ymin: 0, ymax: 8, yticks: [0, 2, 4, 6, 8],
+    xlab: "유지 시간 (h) @ " + (p.temp || 150) + " °C", ylab: "IMC 두께 (µm) — 확산 성장",
+  });
+  const k = p.k == null ? 0.22 : p.k, pts = [];
+  for (let t = 0; t <= 1000; t += 20) pts.push([g.X(t), g.Y(Math.min(8, k * Math.sqrt(t)))]);
+  curve(s, pts, K.rust, 1.7);
+  pill(s, g.X(620), g.Y(7.3), "x = k · t^0.5", { fs: 8, fill: K.cream });
+  if (p.hours) L(s, g.X(p.hours), g.Y(0), g.X(p.hours), g.Y(8), K.edge, 1.0, { dash: 1 });
+  pill(s, RC.x, TOP + 3.95, p.bullet || "IMC 가 두꺼울수록 계면 파괴 확률 증가", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 그래프는 확산 지배 가정의 경향선");
+}
+
+// ========== T5. Sawing / dicing 단면 ==========
+function f_saw(s, p) {
+  const m = p.method || "blade", x0 = LC.x + 0.1, w = 4.1, top = TOP + 0.75, siH = 1.6;
+  R(s, x0, top, w, 0.16, MX.lowk, { lw: 0.8 });
+  R(s, x0, top + 0.16, w, 0.1, MX.ox, { lw: 0.6 });
+  R(s, x0, top + 0.26, w, siH, MX.si, { lw: 0.9, text: "Si", fs: 8 });
+  const cx = x0 + w / 2, kerf = Math.max(0.1, (p.kerf_um || 40) * 0.0045), bot = top + 0.26 + siH;
+  const cut = (x1, x2, y1, y2, c) => R(s, x1, y1, x2 - x1, y2 - y1, c || MX.bare, { lw: 0.8 });
+  const haz = (x1, x2, y1, y2) => R(s, x1, y1, x2 - x1, y2 - y1, MX.hot, { lw: 0.5, tr: 45 });
+  if (m === "blade") {
+    cut(cx - kerf / 2, cx + kerf / 2, top, bot);
+    [-1, 1].forEach((sgn) => poly(s, [[cx + sgn * kerf / 2, top], [cx + sgn * (kerf / 2 + 0.17), top], [cx + sgn * kerf / 2, top + 0.16]], MX.bare, { lw: 0.8 }));
+    poly(s, [[cx - kerf / 2, bot], [cx - kerf / 2 - 0.19, bot], [cx - kerf / 2, bot - 0.13]], MX.bare, { lw: 0.8 });
+    annotTo(s, cx + kerf / 2 + 0.13, top + 0.04, 0, "top chipping " + (p.chip_um || 25) + " µm — 상부막이 뜯겨 나간다", K.pink);
+    annotTo(s, cx - kerf / 2 - 0.15, bot - 0.06, 1, "back-side chipping — 뒷면 모서리 결손", K.pink);
+  } else if (m === "lg") {
+    cut(cx - kerf / 2 - 0.09, cx + kerf / 2 + 0.09, top, top + 0.26);
+    haz(cx - kerf / 2 - 0.17, cx - kerf / 2 - 0.09, top, top + 0.26); haz(cx + kerf / 2 + 0.09, cx + kerf / 2 + 0.17, top, top + 0.26);
+    cut(cx - kerf / 2, cx + kerf / 2, top + 0.26, bot);
+    annotTo(s, cx + kerf / 2 + 0.14, top + 0.12, 0, "laser grooving 으로 상부막 선제거 · HAZ " + (p.haz_um || 5) + " µm", K.orange);
+    annotTo(s, cx + kerf / 2, bot - 0.35, 1, "홈을 낸 뒤 blade 로 Si 를 절단한다", K.cream);
+  } else if (m === "stealth") {
+    for (let i = 0; i < 5; i++) E(s, cx - 0.045, top + 0.42 + i * 0.21, 0.09, 0.1, MX.hot, { lw: 0.6 });
+    L(s, cx, top + 0.3, cx, bot, K.edge, 0.8, { dash: 1 });
+    R(s, x0, bot, w, 0.11, MX.tape, { lw: 0.8, text: "expansion tape", fs: 8 });
+    A(s, cx - 0.45, bot + 0.26, cx - 1.1, bot + 0.26, K.rust, 1.4); A(s, cx + 0.45, bot + 0.26, cx + 1.1, bot + 0.26, K.rust, 1.4);
+    annotTo(s, cx + 0.05, top + 0.85, 0, "modified layer — Si 내부에만 개질층을 만든다", K.orange);
+    annot(s, 1, "tape expansion 으로 분리 · kerf 손실 없음", K.mint);
+  } else if (m === "plasma") {
+    cut(cx - kerf / 2, cx + kerf / 2, top + 0.26, bot);
+    cut(cx - kerf / 2 - 0.04, cx + kerf / 2 + 0.04, top, top + 0.26);
+    annotTo(s, cx + kerf / 2, top + 0.85, 0, "수직 측벽 · HAZ 없음 · kerf " + (p.kerf_um || 10) + " µm", K.mint);
+    annot(s, 1, "scribe lane 금속은 Si 식각으로 안 걷힌다", K.pink);
+  } else if (m === "deeplaser") {
+    cut(cx - kerf / 2, cx + kerf / 2, top, bot - 0.18);
+    haz(cx - kerf / 2 - 0.12, cx - kerf / 2, top, bot - 0.18); haz(cx + kerf / 2, cx + kerf / 2 + 0.12, top, bot - 0.18);
+    annotTo(s, cx + kerf / 2 + 0.1, top + 0.8, 0, "HAZ " + (p.haz_um || 12) + " µm · 재응고층이 측벽에 남는다", K.orange);
+    annot(s, 1, "열영향부가 깊어 측벽 강도가 낮아진다", K.pink);
+  } else if (m === "dbg") {
+    cut(cx - kerf / 2 - 0.07, cx + kerf / 2 + 0.07, top, top + 0.8);
+    R(s, x0, bot - 0.32, w, 0.32, MX.si2, { lw: 0.7, tr: 20 });
+    A(s, x0 + 0.3, bot + 0.26, x0 + w - 0.3, bot + 0.26, K.rust, 1.4, { both: true });
+    annot(s, 1, "half-cut 후 backgrinding 으로 개별화한다", K.mint);
+    annotTo(s, cx + kerf / 2 + 0.1, top + 0.4, 0, "half-cut 깊이", K.cream);
+  }
+  dimH(s, cx - kerf / 2, cx + kerf / 2, top - 0.80, "kerf " + (p.kerf_um || 40) + " µm");
+  lead(s, x0 + 0.45, top + 0.08, x0 + 0.45, top - 0.26, "low-k ILD / passivation", { fill: MX.lowk, align: "left" });
+  const rows = [["방식", "kerf", "HAZ", "상부막 손상"],
+    ["blade", "30–60 µm", "없음", "chipping 큼"],
+    ["laser grooving + blade", "30–50 µm", "수 µm", "작음"],
+    ["stealth", "분리식 (0)", "내부 개질층", "없음"],
+    ["plasma", "5–15 µm", "없음", "없음"],
+    ["deep laser", "20–40 µm", "10 µm 이상", "작음"]];
+  const keymap = { blade: 1, lg: 2, stealth: 3, plasma: 4, deeplaser: 5, dbg: 1 };
+  table(s, rows, RC.x, TOP, RC.w, keymap[m]);
+  pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.42, p.bullet || "붉은 행이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
+}
+
+module.exports = { DG, LC, RC, TOP, BOT, MX, cap, ttl, lead, dimH, dimV, axes, curve, hatch, legend, table, tableCol, flagOf, annot, annotTo, ANY, clampX, f_tsv, f_cmp, f_bs, f_bump, f_saw };
+MODS["./fig1.js"] = module.exports; })({ exports: {} });
+
+// ===== 상황도 템플릿 2부: 적층 / Warpage / SiP / 열 / FA / Reliability =====
+(function (module) { const require = req;
+const { K, M, shade, poly, L, A, R, T, E, tw, pill, ISO, isoBox, isoRect, OBL, oblBox } = require("./lib.js");
+const { DG, LC, RC, TOP, BOT, MX, cap, ttl, lead, dimH, dimV, axes, curve, hatch, legend, table, tableCol, flagOf, annot, annotTo, ANY, clampX } = require("./fig1.js");
+
+// ========== T6. CoW 접합 (TC-NCF / MR-MUF / HCB) ==========
+function f_bond(s, p) {
+  const m = p.method || "ncf", x0 = LC.x + 0.1, w = 3.45, top = TOP + 1.0;
+  const gap = Math.max(0.3, (p.gap_um || 10) * 0.038);
+  R(s, x0, top, w, 0.38, MX.si, { lw: 0.9, text: "upper core die", fs: 8 });
+  const jy = top + 0.38;
+  R(s, x0, jy + gap, w, 0.38, MX.si, { lw: 0.9, text: "lower core die (TSV 보유)", fs: 8 });
+  const np = 6, px = (i) => x0 + 0.5 + i * ((w - 1.0) / (np - 1));
+  if (m === "hcb") {
+    R(s, x0, jy, w, gap, MX.ox, { lw: 0.8 });
+    for (let i = 0; i < np; i++) {
+      const dish = i === 3 ? 0.05 : 0;
+      R(s, px(i) - 0.12, jy + dish, 0.24, gap - dish, MX.cu, { lw: 0.7 });
+      if (i === 3) R(s, px(i) - 0.12, jy, 0.24, dish, MX.bare, { lw: 0.6 });
+    }
+    annotTo(s, px(3), jy + 0.03, 0, "pad dishing 으로 Cu 가 맞닿지 못해 미접합 void 가 남았다", K.pink);
+    annotTo(s, px(5) + 0.14, jy + gap * 0.5, 2, "SiCN 유전막 직접 접합", MX.ox);
+    annot(s, 1, "solder 없이 상온 접합 후 anneal 로 Cu 접합", K.mint);
+  } else {
+    if (m === "ncf") R(s, x0, jy, w, gap, MX.ncf, { lw: 0.8 });
+    else { R(s, x0, jy, w, gap, MX.emc, { lw: 0.8 }); A(s, x0 - 0.04, jy + gap * 0.5, x0 + 0.5, jy + gap * 0.5, K.rust, 1.4); }
+    for (let i = 0; i < np; i++) {
+      R(s, px(i) - 0.11, jy, 0.22, gap * 0.4, MX.cu, { lw: 0.7 });
+      R(s, px(i) - 0.135, jy + gap * 0.4, 0.27, gap * 0.3, MX.sol, { lw: 0.7 });
+      R(s, px(i) - 0.11, jy + gap * 0.7, 0.22, gap * 0.3, MX.cu, { lw: 0.7 });
+    }
+    if (m === "ncf") {
+      for (let i = 0; i < 11; i++) E(s, x0 + 0.2 + i * 0.36, jy + gap * 0.16, 0.055, 0.055, MX.si2, { lw: 0.4 });
+      if (p.filler_trap) { E(s, px(2) - 0.03, jy + gap * 0.48, 0.07, 0.07, MX.si2, { lw: 0.7 }); annotTo(s, px(2), jy + gap * 0.48, 1, "silica filler 가 joint 에 끼어 미접합", K.pink); }
+      annotTo(s, x0 + 0.56, jy + gap * 0.16, 3, "NCF 안의 silica filler", MX.ncf);
+    } else {
+      annotTo(s, x0 + 0.1, jy + gap * 0.5, 3, "액상 EMC 주입 방향", MX.emc);
+    }
+    for (let k = 0; k < (p.voids || 0); k++) E(s, px(1 + k * 2) - 0.22, jy + gap * 0.22, 0.1, 0.1, MX.bare, { lw: 0.7 });
+    if (p.voids) annotTo(s, px(1) - 0.17, jy + gap * 0.27, 0, "접합층 내 void " + p.voids + "개 — 열 경로와 접착 면적이 줄어든다", K.pink);
+    if (p.nonwet) { R(s, px(4) - 0.135, jy + gap * 0.4, 0.27, gap * 0.3, MX.bare, { lw: 0.8 }); annotTo(s, px(4), jy + gap * 0.55, 2, "non-wet — solder 가 상대 pad 에 젖지 않아 전기적으로 열린다", K.pink); }
+  }
+  dimV(s, x0 + w + 0.05, jy, jy + gap, "gap " + (p.gap_um || 10) + " µm", { align: "left" });
+  dimH(s, px(2), px(3), top - 0.42, "pitch " + (p.pitch_um || 40) + " µm");
+  const rows = [["항목", "TC-NCF", "MR-MUF", "HCB"],
+    ["접합 매체", "NCF + solder", "solder + MUF", "Cu–Cu + SiCN"],
+    ["가압·가열", "layer마다", "일괄 reflow", "상온 후 anneal"],
+    ["gap 하한", "5–7 µm", "7 µm 급", "0 (bump 없음)"],
+    ["주 결함", "void · filler", "fillet · flow void", "dishing · particle"],
+    ["열 경로", "filler 의존", "EMC 전도 유리", "계면 최소"]];
+  tableCol(s, rows, RC.x, TOP, RC.w, { ncf: 1, mrmuf: 2, hcb: 3 }[m]);
+  pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.42, p.bullet || "붉은 열이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
+}
+
+// ========== T7. Warpage (기준면 명시) ==========
+function f_warp(s, p) {
+  const ref = p.ref || "bump-down", sg = p.sign == null ? 1 : p.sign;
+  const x0 = LC.x + 0.25, w = 3.6, cy = TOP + 1.15, amp = Math.max(0.14, Math.min(0.5, (p.mag_um || 80) * 0.0026));
+  ttl(s, "측정 상황: 어느 면을 아래로 두었는가", LC.x, TOP - 0.04, 4.3);
+  const baseY = cy + 1.25;
+  L(s, x0 - 0.15, baseY, x0 + w + 0.15, baseY, K.edge, 1.4);
+  hatch(s, x0 - 0.15, baseY, w + 0.3, 0.15, K.lineStrong, 0.12);
+  T(s, "측정 기준면 (chuck)", x0, baseY + 0.19, 2.2, 0.15, { fs: 8, color: K.muted });
+  const yAt = (t, d) => cy + d - sg * amp * Math.cos((t - 0.5) * Math.PI);
+  const prof = (d) => { const a = []; for (let i = 0; i <= 48; i++) { const t = i / 48; a.push([x0 + w * t, yAt(t, d)]); } return a; };
+  poly(s, prof(0).concat(prof(0.3).reverse()), MX.si, { lw: 1.0 });
+  const bumpDown = ref === "bump-down";
+  for (let i = 0; i <= 8; i++) { const t = i / 8, xx = x0 + w * t; const yb = yAt(t, bumpDown ? 0.3 : 0.0); R(s, xx - 0.05, bumpDown ? yb : yb - 0.1, 0.1, 0.1, MX.cu, { lw: 0.6 }); }
+  pill(s, x0 + w / 2, yAt(0.5, 0) - 0.3, bumpDown ? "Bump면이 아래 (bump-down)" : "BEOL면이 위 (BEOL-up)", { fs: 8, fill: K.blue });
+  const midY = yAt(0.5, 0.15), edgeY = yAt(0, 0.15);
+  A(s, x0 + w / 2, baseY, x0 + w / 2, midY + 0.18, K.rust, 1.3, { both: true });
+  pill(s, x0 + w / 2 + 0.1, (baseY + midY) / 2, "중앙 변위 " + (p.mag_um || 80) + " µm", { fs: 8, fill: K.orange, align: "left" });
+  L(s, x0, edgeY, x0 + w, edgeY, K.edge, 0.7, { dash: 1 });
+  annot(s, 0, sg > 0 ? "중앙이 기준면에서 멀어진 형상" : "중앙이 기준면에 가까워진 형상", K.pink);
+  // 우측: 명명 규칙 표 (3행으로 압축) + 온도 곡선
+  const rows = [["기준면", "중앙이 멀어짐", "중앙이 가까워짐"],
+    ["bump 면이 아래", "Smile", "Cry"], ["BEOL 면이 위", "Cry", "Smile"]];
+  table(s, rows, RC.x, TOP, RC.w, bumpDown ? 1 : 2);
+  pill(s, RC.x, TOP + 0.32 + 3 * 0.60 + 0.30, "기준면을 밝혀야 이름이 정해진다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  const g = axes(s, RC.x + 0.72, TOP + 3.20, 2.8, 1.70, {
+    xmin: 25, xmax: 260, xticks: [25, 100, 175, 260], ymin: -150, ymax: 150, yticks: [-150, -75, 0, 75, 150],
+    xlab: "온도 (°C)", ylab: "warpage (µm) — 기준면 기준 부호",
+  });
+  const tg = p.tg || 125, pts = [];
+  for (let t = 25; t <= 260; t += 5) { const v = (t < tg ? -1.3 * (t - 25) : -1.3 * (tg - 25) + 1.9 * (t - tg)) * sg; pts.push([g.X(t), g.Y(Math.max(-150, Math.min(150, v)))]); }
+  curve(s, pts, K.rust, 1.6);
+  L(s, g.X(tg), g.Y(-150), g.X(tg), g.Y(150), K.edge, 0.9, { dash: 1 });
+  pill(s, clampX(g.X(tg), 0.75), g.Y(150) + 0.26, "Tg " + tg + "°C", { fs: 8, fill: K.yellow });
+  if (p.temp) { L(s, g.X(p.temp), g.Y(-150), g.X(p.temp), g.Y(150), "4D6B35", 1.0); pill(s, Math.min(Math.max(g.X(p.temp), RC.x + 1.45), RC.x + 2.95), g.Y(150) + 0.72, "측정 " + p.temp + "°C", { fs: 8, fill: K.green }); }
+  flagOf(s, p); cap(s, p.note || "변위는 과장 표시 · 곡선은 Tg 전후 경향의 설명용 모델");
+}
+
+// ========== T8. SiP 조립 구조 ==========
+function f_sip(s, p) {
+  const t = p.type || "cowos-s", u = 0.047, zk = 1.1;
+  const P = ISO(LC.x + 2.25, TOP + 0.95, u, zk);
+  isoBox(s, P, 0, 0, 0, 72, 56, 1.8, M.sub, { lw: 0.8 });
+  let zt = 1.8, midName = "", midCol = M.inter;
+  if (t === "cowos-s") { isoBox(s, P, 5, 5, zt, 60, 46, 0.9, M.inter, { lw: 0.8 }); midName = "Si interposer (전면, TSV 보유)"; zt += 0.9; }
+  else if (t === "cowos-r") { isoBox(s, P, 5, 5, zt, 60, 46, 0.6, "E7DDF5", { lw: 0.8 }); midName = "organic RDL interposer (TSV 없음)"; midCol = "E7DDF5"; zt += 0.6; }
+  else if (t === "cowos-l") { isoBox(s, P, 5, 5, zt, 60, 46, 0.6, "E7DDF5", { lw: 0.8 }); isoBox(s, P, 26, 10, zt + 0.1, 10, 36, 0.5, M.phy, { lw: 0.9 }); midName = "RDL + LSI bridge (국부 미세배선)"; midCol = M.phy; zt += 0.6; }
+  else { isoBox(s, P, 24, 8, zt - 0.1, 12, 40, 0.8, M.phy, { lw: 0.9 }); midName = t === "emib-t" ? "EMIB-T bridge (TSV 보유)" : "EMIB bridge (기판 매립, 신호만)"; midCol = M.phy; }
+  const zD = zt;
+  isoBox(s, P, 30, 12, zD, 24, 30, 2.6, M.xpu, { lw: 1.0 });
+  const hb = (x, y) => { isoBox(s, P, x, y, zD, 11, 12.8, 0.45, M.base, { lw: 0.7 }); let z = zD + 0.45; for (let i = 0; i < 8; i++) { isoBox(s, P, x, y, z, 11, 12.8, 0.26, M.dram, { lw: 0.4 }); z += 0.26; } };
+  const n = p.nHBM || 2;
+  hb(14, 12); if (n >= 2) hb(14, 28); if (n >= 3) hb(56, 12); if (n >= 4) hb(56, 28);
+  let a = P(42, 27, zD + 2.6); pill(s, a[0], a[1], "SoC / XPU", { fill: K.cream, fs: 8 });
+  a = P(20, 14, zD + 2.5); lead(s, a[0], a[1], LC.x + 0.05, TOP + 0.02, "HBM stack", { fill: M.dram, align: "left" });
+  a = P(45, 51, zt); annotTo(s, a[0], a[1], 0, midName, midCol);
+  a = P(12, 56, 1.8); annotTo(s, a[0], a[1], 1, "package substrate", M.sub);
+  // 우측 단면 개념도
+  ttl(s, "단면 개념도: 신호 경로", RC.x, TOP - 0.04, 3.4);
+  const Q = OBL(RC.x + 0.12, TOP + 2.7, 0.097);
+  oblBox(s, Q, 0, 0, 0, 33, 5, 2.2, M.sub, { lw: 0.7, text: "substrate", fs: 8 });
+  if (t === "cowos-s") { oblBox(s, Q, 2, 0, 2.2, 29, 5, 1.5, M.inter, { lw: 0.7, text: "Si interposer + TSV", fs: 8 }); for (const tx of [8, 16, 24]) { const a1 = Q(tx, 0, 2.2), a2 = Q(tx, 0, 3.7); L(s, a1[0], a1[1], a2[0], a2[1], "8C6D3F", 1.2); } }
+  else if (t === "cowos-r") oblBox(s, Q, 2, 0, 2.2, 29, 5, 1.1, "E7DDF5", { lw: 0.7, text: "RDL (유기)", fs: 8 });
+  else if (t === "cowos-l") { oblBox(s, Q, 2, 0, 2.2, 29, 5, 1.1, "E7DDF5", { lw: 0.7, text: "RDL", fs: 8 }); oblBox(s, Q, 12, 0, 2.3, 9, 5, 0.9, M.phy, { lw: 0.8 }); }
+  else { oblBox(s, Q, 11, 0, 0.5, 11, 5, 1.3, M.phy, { lw: 0.8 }); if (t === "emib-t") for (const tx of [13, 16.5, 20]) { const a1 = Q(tx, 0, 0.5), a2 = Q(tx, 0, 1.8); L(s, a1[0], a1[1], a2[0], a2[1], "8C6D3F", 1.2); } }
+  if (t.indexOf("emib") === 0) { const bq = Q(16, 0, -1.6); pill(s, bq[0], bq[1], "bridge", { fs: 8, fill: M.phy }); }
+  const zz = t.indexOf("emib") === 0 ? 2.2 : (t === "cowos-s" ? 3.7 : 3.3);
+  oblBox(s, Q, 3, 0, zz, 10, 5, 6.5, M.dram, { lw: 0.7, text: "HBM", fs: 8 });
+  oblBox(s, Q, 19, 0, zz, 11, 5, 6.5, M.xpu, { lw: 0.8, text: "XPU", fs: 8 });
+  const b1 = Q(13, 0, zz + 1), b2 = Q(19, 0, zz + 1); A(s, b1[0], b1[1], b2[0], b2[1], K.rust, 1.3, { both: true });
+  const qq = Q(16, 0, zz + 8.4);
+  pill(s, qq[0], qq[1], t.indexOf("emib") === 0 ? "bridge 경유 2,048선" : "interposer 경유 2,048선", { fs: 8, fill: K.cream });
+  const msg = t === "emib" ? ["전원은 bridge를 통과하지 못하고 substrate 경유", K.pink]
+    : t === "emib-t" ? ["bridge 내 TSV로 전원도 수직 통과", K.mint]
+    : t === "cowos-s" ? ["전면 Si → reticle 크기가 상한", K.violet]
+    : t === "cowos-r" ? ["TSV가 없어 전원은 substrate 경유 · 저비용", K.violet]
+    : ["미세배선이 필요한 구간만 bridge로 국한", K.violet];
+  pill(s, RC.x, TOP + 3.5, msg[0], { fs: 8, fill: msg[1], align: "left", maxW: RC.w });
+  if (p.bullet) pill(s, RC.x, TOP + 3.95, p.bullet, { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 비례 근사");
+}
+
+// ========== T9. 열 경로 / 층별 ΔT ==========
+function f_therm(s, p) {
+  const n = p.n || 12, q = p.q_Wmm2 == null ? 0.2 : p.q_Wmm2;
+  const layers = p.layers || [["Si (die)", 30, 120], ["BEOL", 6, 3], ["bond layer", 9, 0.6]];
+  const Rth = layers.reduce((a, l) => a + (l[1] * 1e-6) / l[2], 0), dT = q * 1e6 * Rth;
+  const hotc = (f) => { const c = [[0.80, 0.86, 0.91], [0.99, 0.90, 0.72], [0.96, 0.66, 0.54], [0.84, 0.36, 0.26]];
+    const t = Math.max(0, Math.min(0.999, f)) * 3, i = Math.floor(t), r = t - i, a = c[i], b = c[Math.min(3, i + 1)];
+    return a.map((v, k2) => Math.round((v + (b[k2] - v) * r) * 255).toString(16).padStart(2, "0")).join("").toUpperCase(); };
+  const avail = 4.1, dieH = Math.min(0.2, (avail - 0.3) / n * 0.7), gap = Math.min(0.1, (avail - 0.3) / n * 0.3);
+  const x0 = LC.x + 0.25, top = TOP + 0.4, tt = [];
+  ttl(s, "적층 방향 온도 — " + n + "단 (열은 위로 빠져나간다)", LC.x, TOP - 0.04, 4.3);
+  const tMin = p.tTop || 95, tMax = tMin + dT * (n - 1);
+  for (let i = 0; i < n; i++) {
+    const Ti = tMin + dT * i; tt.push(Ti);
+    const yy = top + i * (dieH + gap);
+    R(s, x0, yy, 2.45, dieH, hotc((Ti - tMin) / Math.max(1e-6, tMax - tMin + 1e-6)), { lw: 0.7, text: (i === n - 1 ? "base die" : "core " + (n - 1 - i)) + "   " + Ti.toFixed(1) + " °C", fs: 8 });
+    if (i < n - 1) R(s, x0, yy + dieH, 2.45, gap, MX.ncf, { lw: 0.35 });
+  }
+  R(s, x0 - 0.1, top - 0.26, 2.65, 0.24, MX.cold, { lw: 0.9, text: "TIM / lid (방열)", fs: 8 });
+  A(s, x0 + 2.62, top + n * (dieH + gap) - 0.1, x0 + 2.62, top - 0.08, K.rust, 1.5);
+  pill(s, x0 + 2.7, top + n * (dieH + gap) / 2, "열 흐름", { fs: 8, fill: K.orange, align: "left" });
+  
+  const rows = [["층", "두께 (µm)", "k (W/mK)", "R (m²K/W)"]]
+    .concat(layers.map((l) => [l[0], String(l[1]), String(l[2]), ((l[1] * 1e-6) / l[2]).toExponential(2)]))
+    .concat([["합계", "", "", Rth.toExponential(2)]]);
+  table(s, rows, RC.x, TOP, RC.w, rows.length - 1);
+  pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.34, "q = " + q + " W/mm² → ΔT " + dT.toFixed(2) + " K", { fs: 8, fill: K.orange, align: "left", maxW: RC.w });
+  pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.81, "base die " + tt[n - 1].toFixed(1) + " °C · 상한 " + (p.limit || 85) + " °C", { fs: 8, fill: tt[n - 1] > (p.limit || 85) ? K.pink : K.mint, align: "left", maxW: RC.w });
+  pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 1.28, "간극 수는 die 수보다 하나 적다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || "1D 정상상태 · 측면 확산 무시 · 물성은 문항 제시값");
+}
+
+// ========== T10. FA 기법 결과 ==========
+function f_fa(s, p) {
+  const t = p.tech || "lit";
+  if (t === "lit" || t === "obirch") {
+    const x0 = LC.x + 0.2, y0 = TOP + 0.3;
+    ttl(s, t === "lit" ? "Lock-in Thermography (LIT) amplitude map" : "OBIRCH 저항 변화 map", LC.x, TOP - 0.04, 4.3);
+    R(s, x0, y0, 2.9, 2.2, "FFFBF4", { lw: 0.9 });
+    for (let i = 1; i < 6; i++) { L(s, x0 + 2.9 * i / 6, y0, x0 + 2.9 * i / 6, y0 + 2.2, K.lineSoft, 0.4); L(s, x0, y0 + 2.2 * i / 6, x0 + 2.9, y0 + 2.2 * i / 6, K.lineSoft, 0.4); }
+    const hx = x0 + 2.9 * ((p.hot && p.hot[0]) || 0.62), hy = y0 + 2.2 * ((p.hot && p.hot[1]) || 0.4);
+    [[0.44, "F7DC8C"], [0.29, "F4B98A"], [0.16, "D0683A"]].forEach((q) => E(s, hx - q[0], hy - q[0], q[0] * 2, q[0] * 2, q[1], { line: null, tr: 25 }));
+    E(s, hx - 0.05, hy - 0.05, 0.1, 0.1, K.alert, { line: null });
+    lead(s, hx + 0.1, hy - 0.08, x0 + 2.95, y0 + 0.1, t === "lit" ? "신호 최대점" : "저항 변화점", { fill: K.pink });
+    dimH(s, x0, x0 + 2.9, y0 + 2.42, "시야 " + (p.fov_um || 2000) + " µm");
+    const g = axes(s, RC.x + 0.68, TOP + 0.6, 2.85, 1.9, {
+      xmin: 0, xmax: 10, xticks: [0, 2.5, 5, 7.5, 10], ymin: 0, ymax: 100, yticks: [0, 25, 50, 75, 100],
+      xlab: t === "lit" ? "lock-in 주파수 (Hz)" : "선 주사 위치 (µm)", ylab: t === "lit" ? "phase shift (°)" : "ΔR 신호 (a.u.)",
+    });
+    const pts = [];
+    for (let i = 0; i <= 40; i++) { const f = i / 4, v = t === "lit" ? 90 * (1 - Math.exp(-f * (p.depth ? 3 / p.depth : 0.5))) : 100 * Math.exp(-Math.pow((f - 5) / 1.2, 2)); pts.push([g.X(f), g.Y(Math.min(100, v))]); }
+    curve(s, pts, K.rust, 1.6);
+    pill(s, RC.x, TOP + 3.2, t === "lit" ? "amplitude 는 세기, phase 는 깊이" : "OBIRCH 는 전류 경로의 저항 변화", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+    const ix = RC.x, iy = TOP + 3.3;
+    R(s, ix, iy, 2.9, 0.86, MX.si, { lw: 0.8 });
+    for (let i = 0; i < 4; i++) R(s, ix, iy + i * 0.215, 2.9, 0.215, i === 2 ? MX.lowk : MX.ox, { lw: 0.4, tr: 30 });
+    E(s, ix + 1.45, iy + 0.48, 0.1, 0.1, K.alert, { line: null });
+    lead(s, ix + 1.5, iy + 0.52, ix + 2.88, iy + 1.0, "추정 깊이 " + (p.depth || 20) + " µm", { fill: K.pink, align: "right" });
+  } else if (t === "eotpr") {
+    ttl(s, "EOTPR 반사 파형 → 전기 길이로 결함 위치 추정", LC.x, TOP - 0.04, 5.0);
+    const g = axes(s, LC.x + 0.74, TOP + 0.7, 3.55, 2.00, {
+      xmin: 0, xmax: 120, xticks: [0, 30, 60, 90, 120], ymin: -40, ymax: 60, yticks: [-40, -20, 0, 20, 40, 60],
+      xlab: "지연 시간 (ps)", ylab: "반사 진폭 (mV)",
+    });
+    const feats = p.feats || [[22, 28, "C4 bump"], [48, -24, "TSV 진입"], [86, 52, "open 결함"]];
+    const pts = []; for (let i = 0; i <= 120; i++) { let v = 0; feats.forEach((f) => { v += f[1] * Math.exp(-Math.pow((i - f[0]) / 4.5, 2)); }); pts.push([g.X(i), g.Y(Math.max(-40, Math.min(60, v)))]); }
+    curve(s, pts, K.rust, 1.6);
+    feats.forEach((f, i) => { L(s, g.X(f[0]), g.Y(-40), g.X(f[0]), g.Y(60), K.edge, 0.7, { dash: 1 }); pill(s, Math.min(g.X(f[0]), LC.x + 3.9), g.Y(60) + 0.17 + (i % 2) * 0.24, f[2], { fs: 8, fill: K.yellow }); });
+    annot(s, 0, "패키지 내부 경로에는 TDR 이 아니라 EOTPR 을 쓴다", K.violet);
+    ttl(s, "구조 대응", RC.x, TOP - 0.04, 2.0);
+    const Q = OBL(RC.x + 0.15, TOP + 3.0, 0.1);
+    oblBox(s, Q, 0, 0, 0, 30, 5, 2, M.sub, { lw: 0.7, text: "substrate", fs: 8 });
+    oblBox(s, Q, 2, 0, 2, 26, 5, 1.4, M.inter, { lw: 0.7, text: "interposer", fs: 8 });
+    oblBox(s, Q, 4, 0, 3.4, 9, 5, 6, M.dram, { lw: 0.7, text: "HBM", fs: 8 });
+    oblBox(s, Q, 17, 0, 3.4, 10, 5, 6, M.xpu, { lw: 0.7, text: "XPU", fs: 8 });
+    const a1 = Q(8, 0, 9.4); lead(s, a1[0], a1[1], RC.x + 0.05, TOP + 3.95, "신호 주입점 (probe)", { fill: K.cream, align: "left" });
+    pill(s, RC.x, TOP + 3.5, "반사 극성: open 은 +, short 는 −", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  } else {
+    ttl(s, "X-ray tomography (XRM) 단층 slice", LC.x, TOP - 0.04, 4.3);
+    const x0 = LC.x + 0.15, y0 = TOP + 0.35;
+    for (let k = 0; k < 3; k++) {
+      const bx = x0 + k * 1.4;
+      R(s, bx, y0, 1.25, 1.25, "FFFBF4", { lw: 0.8 });
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) E(s, bx + 0.15 + i * 0.27, y0 + 0.15 + j * 0.27, 0.18, 0.18, (k === 1 && i === 2 && j === 1) ? MX.bare : MX.cu, { lw: 0.5 });
+      pill(s, bx, y0 + 1.42, "slice " + (k + 1) + " · z " + (k * (p.dz || 15)) + " µm", { fs: 8, fill: k === 1 ? K.pink : K.cream, align: "left", maxW: 1.3 });
+    }
+    pill(s, LC.x, y0 + 2.05, "void는 특정 slice에서만 보인다 → z 위치 확정 가능", { fs: 8, fill: K.violet, align: "left" });
+    pill(s, LC.x, y0 + 2.75, "분해능 한계: 수백 nm급 미접합은 구분 불가", { fs: 8, fill: K.card2, align: "left", maxW: LC.w });
+    const g = axes(s, RC.x + 0.68, TOP + 0.65, 2.85, 2.4, {
+      xmin: 0, xmax: 45, xticks: [0, 15, 30, 45], ymin: 0, ymax: 100, yticks: [0, 25, 50, 75, 100],
+      xlab: "z 위치 (µm)", ylab: "void 면적비 (%)",
+    });
+    const pts = []; for (let z = 0; z <= 45; z++) pts.push([g.X(z), g.Y(100 * Math.exp(-Math.pow((z - (p.zpeak || 15)) / 6, 2)))]);
+    curve(s, pts, K.rust, 1.6);
+    L(s, g.X(p.zpeak || 15), g.Y(0), g.X(p.zpeak || 15), g.Y(100), K.edge, 0.9, { dash: 1 });
+    pill(s, clampX(g.X(p.zpeak || 15), 0.7), g.Y(100) + 0.26, "z = " + (p.zpeak || 15) + " µm", { fs: 8, fill: K.yellow });
+  }
+  flagOf(s, p); cap(s, p.note || "map · 파형은 설명용 모델 · 실측 데이터 아님");
+}
+
+// ========== T11. 신뢰성 시험 순서 ==========
+function f_rel(s, p) {
+  const x0 = LC.x + 0.1, y0 = TOP + 0.3;
+  const seq = p.seq || [["J-STD-020", "MSL preconditioning", "260 °C peak × 3회"], ["JESD22-A104", "Temperature Cycling", "-55 / +125 °C, 1000 cycle"], ["JESD22-A118", "uHAST", "130 °C / 85% RH, 96 h"], ["JESD22-A103", "HTS", "150 °C, 1000 h"]];
+  ttl(s, "시험 순서 (preconditioning이 먼저)", LC.x, TOP - 0.04, 4.3);
+  seq.forEach((r, i) => {
+    const yy = y0 + i * 0.85;
+    R(s, x0, yy, 4.2, 0.72, i === (p.cur == null ? -1 : p.cur) ? K.green : K.card, { lw: i === p.cur ? 1.3 : 0.8, round: 0.25 });
+    T(s, r[0], x0 + 0.12, yy + 0.08, 1.6, 0.26, { fs: 8, bold: true, color: K.rust });
+    T(s, r[1], x0 + 1.85, yy + 0.06, 2.2, 0.26, { fs: 8, bold: true });
+    T(s, r[2], x0 + 1.85, yy + 0.38, 2.2, 0.26, { fs: 8, color: K.muted });
+    if (i < seq.length - 1) A(s, x0 + 0.8, yy + 0.72, x0 + 0.8, yy + 0.84, K.edge, 1.1);
+  });
+  pill(s, LC.x, y0 + seq.length * 0.85 + 0.25, p.hint || "precondition 생략 시 실장 열이력 미반영", { fs: 8, fill: K.violet, align: "left" });
+  const g = axes(s, RC.x + 0.68, TOP + 0.7, 2.85, 2.35, {
+    xmin: 0, xmax: 1000, xticks: [0, 250, 500, 750, 1000], ymin: 0, ymax: 10, yticks: [0, 2.5, 5, 7.5, 10],
+    xlab: "TC cycle 수", ylab: "누적 고장률 (%)",
+  });
+  const fails = p.fails || [[250, 0.2], [500, 0.9], [750, 2.6], [1000, 6.4]];
+  curve(s, [[g.X(0), g.Y(0)]].concat(fails.map((f) => [g.X(f[0]), g.Y(f[1])])), K.rust, 1.7);
+  fails.forEach((f, i) => { E(s, g.X(f[0]) - 0.05, g.Y(f[1]) - 0.05, 0.1, 0.1, K.rust, { line: null }); pill(s, g.X(f[0]) - (i === fails.length - 1 ? 0.3 : 0), g.Y(f[1]) - 0.22 - (i % 2) * 0.34, f[1] + "%", { fs: 8, fill: K.cream }); });
+  L(s, g.X(0), g.Y(p.crit || 1), g.X(1000), g.Y(p.crit || 1), "4D6B35", 1.1, { dash: 1 });
+  pill(s, g.X(0) + 0.08, g.Y(10) + 0.22, "판정 기준선 " + (p.crit || 1) + "%", { fs: 8, fill: K.green, align: "left" });
+  if (p.bullet) pill(s, RC.x, TOP + 4.15, p.bullet, { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || "고장률 곡선은 문항 제시값 · 조건은 각 JESD 문서 기준");
+}
+
+// ========== T12. 전체 stack isometric ==========
+function f_stack(s, p) {
+  const n = p.n || 12, u = 0.12;
+  const P = ISO(LC.x + 1.5, TOP + 2.1, u, 1.0);
+  const dieT = 13.5 / (n * 1.5), gapT = dieT * 0.5;
+  isoBox(s, P, 0, 0, 0, 11, 12.8, 0.5, p.highlight === "base" ? K.pink : M.base, { lw: p.highlight === "base" ? 1.3 : 0.9 });
+  let z = 0.5;
+  for (let i = 0; i < n; i++) {
+    const hl = (p.highlight === "topcore" && i === n - 1) ||
+               (p.highlight === "midcore" && i === Math.floor(n / 2));
+    isoBox(s, P, 0, 0, z, 11, 12.8, gapT, hl ? K.pink : MX.ncf, { lw: 0.4 }); z += gapT;
+    isoBox(s, P, 0, 0, z, 11, 12.8, dieT, hl ? K.pink : M.dram, { lw: hl ? 1.3 : 0.5 }); z += dieT;
+  }
+  let a = P(11, 6, z); lead(s, a[0], a[1], LC.x + 2.6, TOP + 0.02, "core die " + n + "장", { fill: p.highlight === "topcore" ? K.pink : M.dram });
+  a = P(11, 6, 0.25); lead(s, a[0], a[1], LC.x + 2.7, TOP + 2.9, "base die 1장", { fill: M.base });
+  a = P(0, 12.8, 0.5 + gapT / 2); annotTo(s, a[0], a[1], 0, "접합 간극 " + n + "개 · 각 " + (p.gap_um || 7) + " µm", MX.ncf);
+  if (p.highlight === "topcore") annot(s, 1, "최상단 core die 에는 backside pad 가 없다", K.pink);
+  else if (p.highlight === "midcore") annot(s, 1, "중간 core die 는 위아래를 모두 이어야 한다", K.pink);
+  else if (p.highlight === "gap") annot(s, 1, "접합 간극은 die 수보다 하나 적다", MX.ncf);
+  else if (p.highlight === "base") annot(s, 1, "base die 가 외부 인터페이스를 담당한다", M.base);
+  else if (p.highlight === "height") annot(s, 1, "전체 높이 = die 두께 합 + 간극 합", K.violet);
+  const rows = [["항목", "수량", "산식"],
+    ["die 총 장수", (n + 1) + "장", "core " + n + " + base 1"],
+    ["접합 간극", n + "개", "die 수 − 1"],
+    ["backside pad 보유 die", n + "장", "top core 제외"],
+    ["스택 높이", (p.h_um || (n * 50 + 100)) + " µm", "die 두께 × 장수 + 간극"]];
+  table(s, rows, RC.x, TOP, RC.w, null);
+  pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.32, "패키지 높이 상한 " + (p.limit_um || 775) + " µm", { fs: 8, fill: (p.h_um || 0) > (p.limit_um || 775) ? K.pink : K.mint, align: "left", maxW: RC.w });
+  if (p.bullet) pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.84, p.bullet, { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례");
+}
+
+// ========== T13. HCB 정렬 / dishing ==========
+function f_hcb(s, p) {
+  const x0 = LC.x + 0.3, y0 = TOP + 0.5, pitch = 0.72;
+  ttl(s, "상면 overlay — 실선: 상부 die pad, 점선: 하부 die pad", LC.x, TOP - 0.04, 4.4);
+  const off = Math.min(0.5, (p.off_nm || 150) / 1000 * 1.2);
+  for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) {
+    const cx = x0 + 0.35 + i * pitch, cy = y0 + 0.35 + j * pitch;
+    E(s, cx - 0.2, cy - 0.2, 0.4, 0.4, MX.cu, { lw: 0.9 });
+    E(s, cx - 0.2 + off, cy - 0.2 + off * 0.5, 0.4, 0.4, null, { lw: 0.9, dash: 1 });
+  }
+  const cx0 = x0 + 0.35 + pitch, cy0 = y0 + 0.35 + pitch;
+  A(s, cx0, cy0, cx0 + off, cy0 + off * 0.5, K.alert, 1.5);
+  lead(s, cx0 + off, cy0 + off * 0.5, x0 + 2.75, y0 + 0.05, "overlay 오차 " + (p.off_nm || 150) + " nm", { fill: K.pink });
+  dimH(s, cx0, cx0 + pitch, y0 + 2.5, "pad pitch " + (p.pitch_um || 6) + " µm");
+  const tx = x0 + 0.55, ty = y0 + 3.3;
+  E(s, tx - 0.38, ty - 0.38, 0.76, 0.76, K.mint, { lw: 0.9, dash: 1 });
+  E(s, tx - 0.05, ty - 0.05, 0.1, 0.1, K.edge, { line: null });
+  E(s, tx - 0.05 + off * 0.8, ty - 0.05 + off * 0.4, 0.1, 0.1, K.alert, { line: null });
+  pill(s, tx + 0.5, ty, "허용 ±" + (p.tol_nm || 100) + " nm → " + ((p.off_nm || 150) > (p.tol_nm || 100) ? "초과" : "이내"), { fs: 8, fill: (p.off_nm || 150) > (p.tol_nm || 100) ? K.pink : K.mint, align: "left" });
+  ttl(s, "단면: CMP dishing이 접합을 막는다", RC.x, TOP - 0.04, 3.6);
+  const ix = RC.x + 0.1, iy = TOP + 0.55;
+  R(s, ix, iy, 2.9, 0.5, MX.si, { lw: 0.9, text: "upper die", fs: 8 });
+  R(s, ix, iy + 0.95, 2.9, 0.5, MX.si, { lw: 0.9, text: "lower die", fs: 8 });
+  R(s, ix, iy + 0.5, 2.9, 0.45, MX.ox, { lw: 0.8 });
+  for (let i = 0; i < 4; i++) {
+    const px = ix + 0.4 + i * 0.7, bad = i === 2;
+    R(s, px - 0.16, iy + 0.5, 0.32, 0.45, MX.cu, { lw: 0.7 });
+    if (bad) R(s, px - 0.16, iy + 0.5, 0.32, Math.min(0.2, (p.dish_nm || 8) * 0.012), MX.bare, { lw: 0.6 });
+  }
+  lead(s, ix + 1.8, iy + 0.56, ix + 2.88, iy + 1.68, "dishing " + (p.dish_nm || 8) + " nm → 미접합", { fill: K.pink, align: "right" });
+  lead(s, ix + 0.15, iy + 0.72, ix + 0.05, iy + 1.72, "SiCN 유전막 접합면", { fill: MX.ox });
+  pill(s, RC.x, iy + 2.3, "dishing > Cu 팽창량이면 미접합", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  pill(s, RC.x, iy + 2.75, p.bullet || "particle 1개가 수 µm 범위 미접합을 만든다", { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || "변위 · 단차는 과장 표시");
+}
+
+// ========== T14. 일반 2축 그래프 ==========
+function f_plot(s, p) {
+  const g = axes(s, LC.x + 0.86, TOP + 0.7, 3.50, 4.0, {
+    xmin: p.x.min, xmax: p.x.max, xticks: p.x.ticks, ymin: p.y.min, ymax: p.y.max, yticks: p.y.ticks,
+    xlab: p.x.lab, ylab: p.y.lab,
+  });
+  (p.series || []).forEach((se) => {
+    curve(s, se.pts.map((q) => [g.X(q[0]), g.Y(q[1])]), se.color || K.rust, 1.7, se.dash ? { dash: 1 } : {});
+    se.pts.forEach((q) => E(s, g.X(q[0]) - 0.045, g.Y(q[1]) - 0.045, 0.09, 0.09, se.color || K.rust, { line: null }));
+  });
+  const PX0 = LC.x + 0.86, PW = 3.50;          // 그래프 영역 좌우 끝
+  (p.marks || []).forEach((mk) => {
+    L(s, g.X(mk[0]), g.Y(p.y.min), g.X(mk[0]), g.Y(p.y.max), K.edge, 0.9, { dash: 1 });
+    // 표식 라벨이 오른쪽 열(범례·설명)로 넘어가지 않도록 그래프 영역 안으로 가둔다
+    const lx = Math.min(Math.max(g.X(mk[0]), PX0 + 0.50), PX0 + PW - 0.50);
+    pill(s, lx, g.Y(p.y.max) + 0.3, mk[1], { fs: 8, fill: K.yellow, maxW: PW - 0.2 });
+  });
+  ttl(s, p.title || "조건별 경향", RC.x, TOP - 0.04, 3.6);
+  legend(s, RC.x, TOP + 0.45, (p.series || []).map((se) => [se.color || K.rust, se.name]), { cols: 1, cw: 3.6 });
+  let by = TOP + 0.6 + (p.series || []).length * 0.27 + 0.3;
+  (p.bullets || []).forEach((t, i) => {
+    const raw = tw(t, 8 * 1.52) * 1.08 + 0.40, ln = Math.max(1, Math.ceil(raw / RC.w));
+    const hh = 0.24 * 1.52 * (1 + 0.84 * (ln - 1));
+    pill(s, RC.x, by + hh / 2, t, { fs: 8, fill: i === 0 ? K.violet : K.card2, align: "left", maxW: RC.w });
+    by += hh + 0.14;
+  });
+  flagOf(s, p); cap(s, p.note || "곡선은 문항 제시 조건의 경향선");
+}
+
+// ========== T15. 막 적층 단면 ==========
+function f_film(s, p) {
+  const x0 = LC.x + 0.3, w = 3.2, top = TOP + 0.4, H = 4.4;
+  const layers = p.layers || [], tot = layers.reduce((a, l) => a + l[1], 0);
+  let y = top;
+  layers.forEach((l, i) => {
+    const hh = Math.max(0.38, H * l[1] / tot);
+    R(s, x0, y, w, hh, l[2], { lw: 0.8, text: l[0], fs: 8 });
+    
+    (p.flags || []).forEach((f) => { if (f[0] === i) pill(s, x0 + w / 2, y + hh / 2, f[1], { fill: K.pink, fs: 8 }); });
+    y += hh;
+  });
+  if (p.roles) table(s, [["층", "두께", "역할"]].concat(p.roles), RC.x, TOP, RC.w, null);
+  let fy = TOP + 0.32 + ((p.roles || []).length + 1) * 0.60 + 0.30;
+  (p.bullets || []).forEach((t, i) => {
+    const raw = tw(t, 8 * 1.52) * 1.08 + 0.40, ln = Math.max(1, Math.ceil(raw / RC.w));
+    const hh = 0.24 * 1.52 * (1 + 0.84 * (ln - 1));
+    pill(s, RC.x, fy + hh / 2, t, { fs: 8, fill: i === 0 ? K.violet : K.card2, align: "left", maxW: RC.w });
+    fy += hh + 0.14;
+  });
+  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 비례 아님");
+}
+
+
+// ── 그림이 필요 없는 주제: 핵심 개념 카드 ──────────────────────────────
+// p:{title, points:[문장...], ask, flag}
+function f_note(s, p) {
+  const pts = (p.points || []).slice(0, 4);
+  const W = DG.w - 0.30, X = DG.x + 0.15;
+  const askT = p.ask ? "묻는 것 — " + p.ask : "";
+  const askW = askT ? Math.min(3.9, tw(askT, 8 * 1.52) * 1.08 + 0.40) : 0;
+  ttl(s, p.title || "핵심 개념 정리", X, TOP + 0.10, Math.max(2.2, W - askW - 0.35));
+  if (askT) pill(s, DG.x + DG.w - 0.15, TOP + 0.18, askT,
+                 { fs: 8, fill: K.cream, align: "right", nogut: true, maxW: 3.9 });
+  const cols = [K.mint, K.violet, K.cream, K.blue], num = ["①", "②", "③", "④"];
+  let y = TOP + 0.75;
+  pts.forEach((t, i) => {
+    const h = 0.46;
+    R(s, X, y, W, h, cols[i % 4], { round: 1, lw: 1, line: K.edge });
+    T(s, num[i] + "  " + t, X + 0.22, y + h / 2 - 0.105, W - 0.40, 0.21,
+      { fs: 8, bold: true, color: K.ink, align: "left" });
+    y += h + 0.18;
+  });
+  T(s, "이 문항은 구조 단면이 아니라 판단 과정을 묻습니다 · 위 요점을 근거로 보기를 비교하십시오",
+    X + 0.02, y + 0.14, W, 0.17, { fs: 8, color: K.muted });
+}
+
+
+module.exports = { f_bond, f_warp, f_sip, f_therm, f_fa, f_rel, f_stack, f_hcb, f_plot, f_film, f_note };
+MODS["./fig2.js"] = module.exports; })({ exports: {} });
+
+const F = Object.assign({}, MODS["./fig1.js"], MODS["./fig2.js"]);
+/* 동기식 raw-DEFLATE 해제기 (문항 데이터 내장 압축용).
+   브라우저 기능에 의존하지 않고 top-level 동기 코드로 동작한다. */
+function INFLATE_RAW(src, outLen) {
+  const LBITS = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0];
+  const LBASE = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59,
+                 67, 83, 99, 115, 131, 163, 195, 227, 258];
+  const DBITS = [0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13];
+  const DBASE = [1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769,
+                 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577];
+  const CLCIDX = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
+
+  let sp = 0, buf = 0, cnt = 0;
+  const out = new Uint8Array(outLen);
+  let dp = 0;
+
+  function bit() {
+    if (!cnt) { buf = src[sp++]; cnt = 8; }
+    const b = buf & 1; buf >>>= 1; cnt--; return b;
+  }
+  function bits(n) {
+    if (!n) return 0;
+    while (cnt < n) { buf |= src[sp++] << cnt; cnt += 8; }
+    const v = buf & ((1 << n) - 1);
+    buf >>>= n; cnt -= n; return v;
+  }
+
+  function Tree() { this.counts = new Uint16Array(16); this.symbols = new Uint16Array(288); }
+  function build(t, lens, off, num) {
+    t.counts.fill(0);
+    for (let i = 0; i < num; i++) t.counts[lens[off + i]]++;
+    t.counts[0] = 0;
+    const offs = new Uint16Array(16);
+    let sum = 0;
+    for (let i = 1; i < 16; i++) { offs[i] = sum; sum += t.counts[i]; }
+    for (let i = 0; i < num; i++) if (lens[off + i]) t.symbols[offs[lens[off + i]]++] = i;
+  }
+  function sym(t) {
+    let sum = 0, cur = 0, len = 0;
+    do { cur = 2 * cur + bit(); len++; sum += t.counts[len]; cur -= t.counts[len]; } while (cur >= 0);
+    return t.symbols[sum + cur];
+  }
+
+  const slt = new Tree(), sdt = new Tree();
+  (function () {
+    const l = new Uint8Array(288);
+    for (let i = 0; i < 144; i++) l[i] = 8;
+    for (let i = 144; i < 256; i++) l[i] = 9;
+    for (let i = 256; i < 280; i++) l[i] = 7;
+    for (let i = 280; i < 288; i++) l[i] = 8;
+    build(slt, l, 0, 288);
+    const d = new Uint8Array(30).fill(5);
+    build(sdt, d, 0, 30);
+  })();
+
+  const lt = new Tree(), dt = new Tree(), ct = new Tree();
+  const lens = new Uint8Array(320);
+
+  function trees() {
+    const hlit = bits(5) + 257, hdist = bits(5) + 1, hclen = bits(4) + 4;
+    const cl = new Uint8Array(19);
+    for (let i = 0; i < hclen; i++) cl[CLCIDX[i]] = bits(3);
+    build(ct, cl, 0, 19);
+    let n = 0;
+    while (n < hlit + hdist) {
+      const s = sym(ct);
+      if (s < 16) lens[n++] = s;
+      else if (s === 16) { const p = lens[n - 1]; let r = bits(2) + 3; while (r--) lens[n++] = p; }
+      else if (s === 17) { let r = bits(3) + 3; while (r--) lens[n++] = 0; }
+      else { let r = bits(7) + 11; while (r--) lens[n++] = 0; }
+    }
+    build(lt, lens, 0, hlit);
+    build(dt, lens, hlit, hdist);
+  }
+
+  function data(l, d) {
+    for (;;) {
+      let s = sym(l);
+      if (s === 256) return;
+      if (s < 256) { out[dp++] = s; continue; }
+      s -= 257;
+      const len = bits(LBITS[s]) + LBASE[s];
+      const ds = sym(d);
+      const dist = bits(DBITS[ds]) + DBASE[ds];
+      let o = dp - dist;
+      for (let i = 0; i < len; i++) out[dp++] = out[o++];
+    }
+  }
+
+  let final;
+  do {
+    final = bit();
+    const type = bits(2);
+    if (type === 0) {
+      buf = 0; cnt = 0;
+      const n = src[sp] | (src[sp + 1] << 8); sp += 4;
+      for (let i = 0; i < n; i++) out[dp++] = src[sp++];
+    } else if (type === 1) data(slt, sdt);
+    else if (type === 2) { trees(); data(lt, dt); }
+    else throw new Error("deflate: bad block type");
+  } while (!final);
+  return out;
+}
+
+function UNPACK(b64, outLen) {
+  const bin = atob(b64);
+  const src = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) src[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(INFLATE_RAW(src, outLen));
+}
+
+const DB = JSON.parse(UNPACK("__DB_B64__", __DB_LEN__));
+const BANK = DB.q, CTXA = DB.ctx, CTXJ = DB.join;
+BANK.forEach(q=>{ q.fig = DB.figs[q.f]; q.metrics = q.m.map(i=>DB.mets[i]); q.dom = DB.doms[q.d]; q.figkind = q.k ? 'case' : 'topic'; });
+const stemOf = q => (q.stem != null ? q.stem : (CTXA[q.c] + CTXJ[q.j || 0] + q.qt));
+
+/* ── 상태 ── */
+const LVNAME = {B:"초급", I:"중급", A:"고급"};
+const ALLDOMS = [...new Set(BANK.map(q=>q.dom))];
+const DCOL = ["#cfe3b2","#fcdcbd","#e2d6f3","#dff0de","#cfe0f5","#f7dc8c","#f6d3d0","#bfe3da"];
+const esc = t => String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const store = (()=>{ try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); return localStorage; }
+  catch(e){ const m={}; return {getItem:k=>k in m?m[k]:null,setItem:(k,v)=>{m[k]=String(v)},removeItem:k=>{delete m[k]}}; } })();
+const rd = (k,d)=>{ try{ const v=store.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } };
+const wr = (k,v)=>{ try{ store.setItem(k, JSON.stringify(v)); }catch(e){} };
+
+let cfg      = rd("hbmq-cfg", {lv:"ALL", count:"ALL", doms:ALLDOMS.slice(), shuffle:true});
+// 새로 열 때마다 진행 중/완료된 시험 상태는 비운다. 응시 이력·출제 이력·설정만 유지한다.
+let exam     = null;                           // 출제된 문항 index 배열 (null = 미시작)
+let answers  = {};
+let graded   = false;
+let history  = rd("hbmq-hist", []);
+const history0 = window.history;
+if (!Array.isArray(cfg.doms) || !cfg.doms.length) cfg.doms = ALLDOMS.slice();
+
+function saveAll(){ wr("hbmq-cfg",cfg); wr("hbmq-exam",exam); wr("hbmq-ans",answers); wr("hbmq-graded",graded); wr("hbmq-start",startAt); }
+function pool(){ return BANK.map((q,i)=>({q,i})).filter(o => (cfg.lv==="ALL"||o.q.lv===cfg.lv) && cfg.doms.indexOf(o.q.dom)>=0); }
+function active(){ return (exam||[]).map(i=>({q:BANK[i], i})); }
+function domains(){ const m=new Map(); active().forEach(o=>{ if(!m.has(o.q.dom)) m.set(o.q.dom,[]); m.get(o.q.dom).push(o); }); return [...m]; }
+function domColor(dom){ return DCOL[ALLDOMS.indexOf(dom)%8]; }
+
+let seen = rd("hbmq-seen", []);              // 최근 출제 이력 (오래된 것이 앞)
+const PER_Q_MS = 90000;                      // 문항당 1.5분
+let startAt = rd("hbmq-start", 0), timerId = null;
+function limitMs(){ return (exam ? exam.length : 0) * PER_Q_MS; }
+function leftMs(){ return startAt ? Math.max(0, startAt + limitMs() - Date.now()) : limitMs(); }
+function mmss(ms){ const t = Math.max(0, Math.round(ms / 1000));
+  if (t >= 3600) { const h = Math.floor(t / 3600); return h + "시간 " + String(Math.floor((t % 3600) / 60)).padStart(2, "0") + "분"; }
+  return String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0"); }
+function stopTimer(){ if (timerId) { clearInterval(timerId); timerId = null; } }
+function paintTimer(){
+  const el = document.getElementById("clock"); if (!el) return;
+  if (!exam || !exam.length || !startAt) { el.textContent = "—"; el.style.background = "var(--card)"; return; }
+  if (graded) { el.textContent = "종료"; el.style.background = "var(--card2)"; return; }
+  const L = leftMs(); el.textContent = "남은 시간 " + mmss(L);
+  el.style.background = L < limitMs() * 0.1 ? "var(--pink)" : (L < limitMs() * 0.25 ? "var(--orange)" : "var(--mint)");
+  el.style.fontWeight = L < limitMs() * 0.1 ? "800" : "600";
+}
+function startTimer(){
+  stopTimer(); paintTimer();
+  if (!exam || !exam.length || graded || !startAt) return;
+  timerId = setInterval(()=>{ if (graded) { stopTimer(); paintTimer(); return; }
+    if (leftMs() <= 0) { stopTimer(); doGrade(true); } else paintTimer(); }, 1000);
+}
+function buildExam(){
+  let p = pool();
+  const n = cfg.count==="ALL" ? p.length : Math.min(+cfg.count, p.length);
+  if (cfg.shuffle){
+    // 미출제 문항을 먼저, 모자라면 가장 오래전에 출제된 순으로 채운다
+    const rank = new Map(); seen.forEach((v,k)=>rank.set(v,k));
+    const fresh = p.filter(o=>!rank.has(o.i)), used = p.filter(o=>rank.has(o.i));
+    for(let i=fresh.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [fresh[i],fresh[j]]=[fresh[j],fresh[i]]; }
+    used.sort((a,b)=>rank.get(a.i)-rank.get(b.i));
+    p = fresh.concat(used).slice(0, n);
+    for(let i=p.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [p[i],p[j]]=[p[j],p[i]]; }
+  } else {
+    p = p.slice(0, n); p.sort((a,b)=>a.i-b.i);
+  }
+  exam = p.map(o=>o.i);
+  startAt = Date.now(); wr("hbmq-start", startAt);
+  seen = seen.filter(i=>exam.indexOf(i)<0).concat(exam);
+  if (seen.length > BANK.length) seen = seen.slice(seen.length - BANK.length);
+  wr("hbmq-seen", seen);
+  answers = {}; graded = false; saveAll();
+}
+
+/* ── 상황도 ── */
+function svgFor(q){
+  const s = { out: [], n: 0 };
+  s.addTable = (rows, o) => {
+    const html = rows.map((r, ri) => "<tr>" + r.map((c, ci) => {
+      const tag = ri === 0 || ci === 0 ? "th" : "td", op = c.options || {};
+      return `<${tag} class="${op.color === "C8372D" ? "w" : ""}" style="${ci === 0 ? "width:29%" : ""}">${esc(c.text)}</${tag}>`;
+    }).join("") + "</tr>").join("");
+    s.out.push(`<foreignObject x="${o.x*100}" y="${o.y*100}" width="${o.w*100}" height="${(o.h||1.9)*100}"><div xmlns="http://www.w3.org/1999/xhtml" style="height:100%"><table class="mtable">${html}</table></div></foreignObject>`);
+  };
+  const fn = F[q.fig[0]];
+  if (fn) { try { fn(s, q.fig[1]); } catch(e) { return `<svg class="stage" viewBox="50 230 860 592"><text x="80" y="300" fill="#c8372d" font-size="16">상황도 오류: ${esc(e.message)}</text></svg>`; } }
+  return `<svg class="stage" viewBox="50 230 860 592" role="img" aria-label="${esc(q.title)} 상황도">${s.out.join("")}</svg>`;
+}
+
+/* ── 차트 (양 축 눈금 표기) ── */
+function barChart(items){
+  const tick = [0,25,50,75,100];
+  return `<div class="bars">
+    <div class="bgrid">${tick.map(t=>`<span style="left:${t}%"></span>`).join("")}</div>
+    ${items.map(it=>`<div class="brow">
+        <div class="blab">${esc(it[0])}</div>
+        <div class="btrack"><div class="bfill" style="width:${Math.max(0.6, it[1]).toFixed(1)}%;background:${it[2]||"#cfe3b2"}"></div></div>
+        <div class="bval">${it[1].toFixed(0)}% <span>(${it[3]})</span></div>
+      </div>`).join("")}
+    <div class="baxis">${tick.map(t=>`<span style="left:${t}%">${t}</span>`).join("")}</div>
+    <div class="btitle">정답률 (%)</div>
+  </div>`;
+}
+function lineChart(pts){
+  const W=860,H=240,L=62,R=24,T=20,B=52, cw=W-L-R, ch=H-T-B;
+  const nx=Math.max(2, pts.length), X=i=>L+cw*(nx===1?0.5:i/(nx-1)), Y=v=>T+ch-ch*v/100;
+  let g=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="회차별 득점률">`;
+  for(let t=0;t<=100;t+=25){ g+=`<line x1="${L}" y1="${Y(t)}" x2="${L+cw}" y2="${Y(t)}" stroke="#c6bbac" stroke-width="0.8" stroke-dasharray="4 3"/>`;
+    g+=`<text x="${L-9}" y="${Y(t)+4}" font-size="11" fill="#6f6961" text-anchor="end" font-family="JetBrains Mono,monospace">${t}</text>`; }
+  pts.forEach((p,i)=>{ g+=`<text x="${X(i)}" y="${T+ch+18}" font-size="11" fill="#6f6961" text-anchor="middle" font-family="JetBrains Mono,monospace">${i+1}</text>`; });
+  g+=`<line x1="${L}" y1="${T}" x2="${L}" y2="${T+ch}" stroke="#3a3530" stroke-width="1.4"/>`;
+  g+=`<line x1="${L}" y1="${T+ch}" x2="${L+cw}" y2="${T+ch}" stroke="#3a3530" stroke-width="1.4"/>`;
+  g+=`<text x="${L+cw/2}" y="${T+ch+40}" font-size="12" fill="#34302b" text-anchor="middle" font-weight="700">회차</text>`;
+  g+=`<text x="${L-52}" y="${T-6}" font-size="12" fill="#34302b" font-weight="700">득점률 (%)</text>`;
+  if(pts.length){ let d=""; pts.forEach((p,i)=>{ d += (i?"L":"M")+X(i)+","+Y(p.pct); });
+    g+=`<path d="${d}" fill="none" stroke="#c8552a" stroke-width="2.4" stroke-linejoin="round"/>`;
+    pts.forEach((p,i)=>{ g+=`<circle cx="${X(i)}" cy="${Y(p.pct)}" r="4.5" fill="#c8552a"/>`;
+      g+=`<text x="${X(i)}" y="${Y(p.pct)-11}" font-size="11" fill="#34302b" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700">${p.pct.toFixed(0)}</text>`; }); }
+  return g+"</svg>";
+}
+
+/* ══════════ 시작(시험 구성) 화면 ══════════ */
+function renderStart(){
+  stopTimer(); document.body.classList.add("scrollable"); document.documentElement.classList.add("sc");
+  const p = pool(), maxN = p.length;
+  const byLv = ["B","I","A"].map(lv=>p.filter(o=>o.q.lv===lv).length);
+  const counts = [10, 20, 30, 50].filter(n=>n<maxN);
+  const n = cfg.count==="ALL" ? maxN : Math.min(+cfg.count, maxN);
+  document.getElementById("app").innerHTML = `
+  <div class="startwrap" style="grid-column:1 / -1">
+    <section class="card setup">
+      <div class="crumb">시험 구성</div>
+      <h1 style="margin:4px 0 6px">응시 조건을 고르고 시험을 시작하십시오</h1>
+      <p class="lead">출제 범위 ${ALLDOMS.length}개 영역 · 전체 ${BANK.length.toLocaleString()}문항. 선택한 조건으로 문항이 출제되며,
+        <b>문항당 1.5분</b>이 주어지며, 제한 시간이 끝나면 그때까지의 답안으로 자동 채점됩니다 (미응답은 오답).
+        답을 고른 뒤 <b>다음 문항</b>을 눌러야 넘어갑니다. 먼저 끝내면 마지막 문항에서 바로 채점할 수 있습니다.<br>
+        그림은 두 종류입니다 — <b>상황도</b> ${BANK.filter(q=>q.figkind==="case").length.toLocaleString()}문항은 그 문항의 치수·결함·계산 조건이 그림에 그대로 반영되고,
+        <b>주제 개념도</b> ${BANK.filter(q=>q.figkind!=="case"&&q.fig[0]!=="f_note").length.toLocaleString()}문항은 해당 공정을 이해하기 위한 참고 그림으로 문항의 수치를 담지 않습니다.
+        구조 단면보다 판단 과정을 묻는 ${BANK.filter(q=>q.fig[0]==="f_note").length.toLocaleString()}문항에는 그림 대신 <b>핵심 개념 카드</b>가 제시됩니다.
+        배경설명과 그림은 문항 본문에서 판정한 세부 주제 ${49}종을 따라 붙으며, 제시 조건의 '세부 주제' 항목에 그 이름이 표시됩니다.</p>
+
+      <div class="summary">
+        <div class="b"><div class="l">선택 가능</div><div class="v">${maxN.toLocaleString()}</div></div>
+        <div class="b"><div class="l">출제 문항</div><div class="v">${n}</div></div>
+        <div class="b"><div class="l">제한 시간</div><div class="v">${mmss(n * PER_Q_MS)}</div></div>
+        <div class="b"><div class="l">영역</div><div class="v">${cfg.doms.length} / ${ALLDOMS.length}</div></div>
+        <div class="b"><div class="l">미출제</div><div class="v">${p.filter(o=>seen.indexOf(o.i)<0).length.toLocaleString()}</div></div>
+        <div class="b"><div class="l">응시 회차</div><div class="v">${history.length}</div></div>
+      </div>
+      <p class="note" style="margin:-10px 0 18px">출제 이력을 기억해 아직 나오지 않은 문항을 먼저 뽑습니다.
+        미출제가 모자라면 가장 오래전에 나온 문항부터 다시 사용합니다.
+        <button class="iconbtn" type="button" id="clrSeen" style="margin-left:6px">출제 이력 비우기</button></p>
+
+      <div class="fld"><label>난이도</label>
+        <div class="seg" id="segLv">${["ALL","B","I","A"].map((v,k)=>`<button type="button" data-lv="${v}" aria-pressed="${cfg.lv===v}">${v==="ALL"?`전체 (${BANK.length})`:`${LVNAME[v]} (${BANK.filter(q=>q.lv===v).length})`}</button>`).join("")}</div>
+        <p class="note">선택한 난이도 안에서 — 초급 ${byLv[0]} · 중급 ${byLv[1]} · 고급 ${byLv[2]}문항이 현재 영역 선택에 포함되어 있습니다.</p>
+      </div>
+
+      <div class="fld"><label>문항 수</label>
+        <div class="seg" id="segCnt">${counts.map(c=>`<button type="button" data-cnt="${c}" aria-pressed="${String(cfg.count)===String(c)}">${c}문항</button>`).join("")
+          }<button type="button" data-cnt="ALL" aria-pressed="${cfg.count==="ALL"}">전체 ${maxN}문항</button></div>
+      </div>
+
+      <div class="fld"><label>출제 순서</label>
+        <div class="seg" id="segSh">
+          <button type="button" data-sh="1" aria-pressed="${!!cfg.shuffle}">무작위로 섞기</button>
+          <button type="button" data-sh="0" aria-pressed="${!cfg.shuffle}">영역 순서대로</button></div>
+      </div>
+
+      <div class="fld"><label>출제 영역 — 눌러서 켜고 끕니다</label>
+        <div class="domgrid" id="domGrid">${ALLDOMS.map((d,i)=>{
+          const on = cfg.doms.indexOf(d)>=0, tot = BANK.filter(q=>q.dom===d).length;
+          return `<button type="button" data-dom="${esc(d)}" aria-pressed="${on}"><span class="bx" style="background:${DCOL[i%8]}">${on?"✓":""}</span><span>${esc(d)}</span><span class="c">${tot}</span></button>`;
+        }).join("")}</div>
+        <p class="note">영역을 모두 끄면 시험을 시작할 수 없습니다. <button class="iconbtn" type="button" id="domAll" style="margin-left:4px">전체 선택</button>
+          <button class="iconbtn" type="button" id="domNone">전체 해제</button></p>
+      </div>
+
+      <div class="startbar">
+        <button class="startbtn" type="button" id="goStart" ${maxN?"":"disabled"}>${maxN? `${n}문항으로 시험 시작` : "선택된 문항이 없습니다"}</button>
+        ${exam&&exam.length&&!graded?`<button class="iconbtn" type="button" id="resume">진행 중인 시험 이어하기 (${Object.keys(answers).length}/${exam.length})</button>`:""}
+        ${history.length?`<button class="iconbtn" type="button" id="toRes">지난 결과 보기</button>`:""}
+      </div>
+      <p class="hint2">시험을 시작하면 이전 답안은 지워집니다. 창을 새로 열거나 새로고침하면 항상 이 화면에서 다시 시작하며,
+        응시 이력과 출제 이력만 남습니다 (아래 버튼으로 비울 수 있습니다).</p>
+    </section>
+  </div>`;
+  const seg=(id,attr,fn)=>document.getElementById(id).querySelectorAll("["+attr+"]").forEach(b=>b.onclick=()=>{fn(b.getAttribute(attr)); wr("hbmq-cfg",cfg); renderStart();});
+  seg("segLv","data-lv", v=>{cfg.lv=v;});
+  seg("segCnt","data-cnt", v=>{cfg.count = v==="ALL"?"ALL":+v;});
+  seg("segSh","data-sh", v=>{cfg.shuffle = v==="1";});
+  document.getElementById("domGrid").querySelectorAll("[data-dom]").forEach(b=>b.onclick=()=>{
+    const d=b.getAttribute("data-dom"), k=cfg.doms.indexOf(d);
+    if(k>=0) cfg.doms.splice(k,1); else cfg.doms.push(d);
+    wr("hbmq-cfg",cfg); renderStart(); });
+  document.getElementById("domAll").onclick=()=>{cfg.doms=ALLDOMS.slice(); wr("hbmq-cfg",cfg); renderStart();};
+  document.getElementById("domNone").onclick=()=>{cfg.doms=[]; wr("hbmq-cfg",cfg); renderStart();};
+  const cs=document.getElementById("clrSeen"); if(cs) cs.onclick=()=>{ seen=[]; wr("hbmq-seen",[]); renderStart(); };
+  document.getElementById("goStart").onclick=()=>{ if(!pool().length) return; buildExam(); location.hash="q"+exam[0]; render(); };
+  const rb=document.getElementById("resume"); if(rb) rb.onclick=()=>{ location.hash="q"+exam[0]; render(); };
+  const tr=document.getElementById("toRes"); if(tr) tr.onclick=()=>{ location.hash="result"; render(); };
+  document.getElementById("topProg").textContent = `${maxN}문항 선택 가능`;
+  document.getElementById("modeChip").textContent = "시험 구성";
+  document.getElementById("modeChip").style.background = "var(--violet)";
+}
+
+/* ══════════ 좌측 tree ══════════ */
+function sideHTML(curIdx){
+  const doms = domains(), tot = active().length, done = active().filter(o=>answers[o.i]!=null).length;
+  const lst = active(), gate = lst.findIndex(o=>answers[o.i]==null);
+  const locked = (i)=> !graded && gate >= 0 && lst.findIndex(o=>o.i===i) > gate;
+  let h = `<h3><span>출제 범위</span><span>${doms.length}개 영역 · ${tot}문항</span></h3>`;
+  doms.forEach(([dom, list])=>{
+    const n = list.filter(o=>answers[o.i]!=null).length, open = list.some(o=>o.i===curIdx);
+    h += `<div class="les${open?" open":""}"><button type="button" data-go="q${list[0].i}"><span class="sq" style="background:${domColor(dom)}"></span>${esc(dom)}<span class="cnt${n===list.length?" done":""}">${n}/${list.length}</span></button>
+      <ul class="steps">${list.map((o,k)=>{
+        const a=answers[o.i], mark = graded ? (a===o.q.a?"✓":"✕") : (a!=null?"●":"·");
+        const lk = locked(o.i);
+        return `<li><button type="button" ${lk?'disabled style="opacity:.42;cursor:default"':`data-go="q${o.i}"`}${o.i===curIdx?' aria-current="step"':''}><span class="ck${a!=null?" a":""}">${lk?"·":mark}</span><span>${k+1}. ${esc(o.q.title)}</span></button></li>`;}).join("")}</ul></div>`;
+  });
+  h += `<button class="refbtn" type="button" data-go="result">결과 보기</button>
+        <button class="refbtn" type="button" data-go="start">시험 구성 다시 하기</button>
+        <div class="prog"><span>응답</span><span>${done} / ${tot}</span></div>`;
+  document.getElementById("topProg").textContent = `${done} / ${tot} 문항`;
+  document.getElementById("modeChip").textContent = graded ? "채점 완료" : "응시 중";
+  document.getElementById("modeChip").style.background = graded ? "var(--orange)" : "var(--green)";
+  return h;
+}
+
+/* ══════════ 문항 화면 ══════════ */
+function render(){
+  const h = location.hash.replace("#","");
+  if (h === "result"){ renderResult(); return; }          // 진행 중인 시험이 없으면 응시 이력 화면으로 넘어간다
+  if (h === "start" || !exam || !exam.length){ renderStart(); return; }
+  const list = active();
+  let k = list.findIndex(o => "q"+o.i === h); if (k < 0) k = 0;
+  const cur = list[k], q = cur.q, idx = cur.i;
+  const doms = domains(), di = doms.findIndex(d=>d[0]===q.dom), sib = doms[di][1], si = sib.findIndex(o=>o.i===idx);
+  const a = answers[idx], prev = list[k-1], next = list[k+1];
+  const remain = list.filter(o=>answers[o.i]==null).length;
+  const answered = a != null;
+  const gate = list.findIndex(o=>answers[o.i]==null);   // 첫 미응답 위치 (없으면 -1)
+
+  document.getElementById("app").innerHTML = `
+  <aside class="card side" id="side" aria-label="출제 범위">${sideHTML(idx)}</aside>
+  <main id="main">
+    <div class="crumb">${esc(q.dom)}  /  이 영역 ${sib.length}문항 중 ${si+1}번</div>
+    <div class="hd"><h1>${esc(q.title)}</h1><div class="chips"><span class="lvchip lv-${q.lv}">${LVNAME[q.lv]}</span><span class="chip">${k+1} / ${list.length}</span></div></div>
+    <section class="card stemcard">
+      <p class="stem">${esc(stemOf(q))}</p>
+      <div class="qhdr" style="margin:0 0 5px">제시 조건</div>
+      <div class="metrics">${q.metrics.map(m=>`<div class="metric"><div class="l">${esc(m[0])}  ${esc(m[1])}</div><div class="v">${esc(m[2])}</div></div>`).join("")}</div>
+    </section>
+    <section class="card canvas" id="figRow">
+      <div class="hd" style="align-items:center;gap:8px">
+        <div class="qhdr" style="margin:0">${q.figkind==="case" ? "상황도 — 이 문항의 조건이 반영된 그림" : (q.fig[0]==="f_note" ? "핵심 개념 — 판단의 근거가 되는 사실" : "주제 개념도 — 문항의 수치와는 무관한 참고 그림")}${(q.fig[1]&&q.fig[1].flag) ? `<span class="figflag">${esc(q.fig[1].flag)}</span>` : ""}</div>
+        <div class="tools" style="margin:0"><button class="iconbtn" type="button" id="zoom">⤢ 크게 보기</button><button class="iconbtn" type="button" id="replay">↻ 다시 그리기</button></div>
+      </div>
+      <div class="stage-wrap" id="stage">${svgFor(q)}</div>
+    </section>
+  </main>
+  <aside id="panelCol"><div class="card panel">
+    <div class="ph"><span>문항 ${k+1} / ${list.length}</span>${graded ? `<span class="verdict ${a===q.a?"v-ok":"v-no"}">${a===q.a?"정답":"오답"}</span>` : `<span class="lvchip lv-${q.lv}">${LVNAME[q.lv]}</span>`}</div>
+    <h2>${esc(q.title)}</h2>
+    <div class="qhdr">보기 — 하나를 고르십시오</div>
+    <div class="opts">${q.opts.map((o,j)=>{
+      let cls="opt"; if (graded){ if(j===q.a) cls+=" ok"; else if(j===a) cls+=" no"; } else if (j===a) cls+=" sel";
+      return `<button type="button" class="${cls}" data-ans="${j}"><span class="n">${"①②③④"[j]}</span><span>${esc(o)}</span></button>`;
+    }).join("")}</div>
+    ${graded ? `<div class="exp"><span class="k">해설</span><p>${esc(q.exp)}</p></div>` : ""}
+    <div class="gradebar"><button class="big" type="button" id="gradeBtn" ${graded||remain?"disabled":""}>${graded?"채점 완료":(remain?`채점 (남은 문항 ${remain}개)`:"전체 채점하기")}</button></div>
+    <div class="nav"><button type="button" ${prev?`data-go="q${prev.i}"`:"disabled"}>← 이전</button>
+      ${graded
+        ? `<button type="button" class="nx" data-go="${next?`q${next.i}`:"result"}">${next?"다음 문항 →":"결과 보기 →"}</button>`
+        : (!answered
+            ? `<button type="button" class="nx" disabled>답을 선택해야 넘어갑니다</button>`
+            : (next
+                ? `<button type="button" class="nx" data-go="q${next.i}">다음 문항 →</button>`
+                : `<button type="button" class="nx" id="finBtn">채점하고 결과 보기 →</button>`))}</div>
+    <div class="hint2">${graded ? "채점 완료 — 해설을 확인하십시오" : "답을 고른 뒤 <b>다음 문항</b>을 눌러야 넘어갑니다"} · <kbd>1</kbd>–<kbd>4</kbd> 보기 · <kbd>Z</kbd> 그림 확대</div>
+  </div></aside>`;
+
+  fitStage(document.getElementById("figRow"));
+  document.getElementById("replay").onclick = ()=>{ const w=document.getElementById("stage"); const t=w.innerHTML; w.innerHTML=""; void w.offsetWidth; w.innerHTML=t; fitStage(document.getElementById("figRow")); };
+  document.getElementById("zoom").onclick = ()=>openLB(q);
+  document.querySelectorAll("[data-ans]").forEach(b=> b.onclick = ()=>{
+    if (graded) return;
+    answers[idx] = +b.dataset.ans; saveAll(); render();
+  });
+  const gb = document.getElementById("gradeBtn"); if (gb) gb.onclick = ()=>doGrade(false);
+  const fb = document.getElementById("finBtn"); if (fb) fb.onclick = ()=>doGrade(false);
+  document.body.classList.remove("scrollable"); document.documentElement.classList.remove("sc");
+  startTimer();
+}
+
+function fitStage(root){
+  const sv = (root||document).querySelector("svg.stage"); if(!sv) return;
+  try{
+    const bb = sv.getBBox();
+    if(!bb || !isFinite(bb.width) || bb.width < 20 || bb.height < 20) return;
+    const pad = 8;
+    sv.setAttribute("viewBox", (bb.x-pad)+" "+(bb.y-pad)+" "+(bb.width+pad*2)+" "+(bb.height+pad*2));
+  }catch(e){}
+}
+
+function openLB(q){ document.getElementById("lbT").textContent = q.title + (q.figkind==="case" ? " — 상황도 (문항 조건 반영)" : (q.fig[0]==="f_note" ? " — 핵심 개념 카드" : " — 주제 개념도 (문항 수치와 무관)"));
+  document.getElementById("lbB").innerHTML = `<div class="stage-wrap">${svgFor(q)}</div>`;
+  document.getElementById("lb").hidden = false; fitStage(document.getElementById("lbB")); }
+document.getElementById("lbX").onclick = ()=>{ document.getElementById("lb").hidden = true; };
+document.getElementById("lb").onclick = e=>{ if(e.target.id==="lb") document.getElementById("lb").hidden = true; };
+
+function doGrade(force){
+  const list = active();
+  if (!list.length) return;
+  if (!force && !list.every(o=>answers[o.i]!=null)) return;
+  stopTimer();
+  graded = true;
+  const right = list.filter(o=>answers[o.i]===o.q.a).length;
+  const unans = list.filter(o=>answers[o.i]==null).length;
+  const used = startAt ? Math.min(Date.now()-startAt, limitMs()) : 0;
+  history.push({ t: Date.now(), lv: cfg.lv, n: list.length, right, pct: right/list.length*100,
+                 unans, used, limit: limitMs(), timeout: !!force });
+  if (history.length > 40) history = history.slice(-40);
+  wr("hbmq-hist", history); saveAll();
+  location.hash = "result"; render();
+}
+
+/* ══════════ 결과 화면 ══════════ */
+function renderResult(){
+  stopTimer(); document.body.classList.add("scrollable"); document.documentElement.classList.add("sc"); paintTimer();
+  const list = active();
+  if (!list.length) { renderHistory(); return; }
+  const answered = list.filter(o=>answers[o.i]!=null).length;
+  const right = list.filter(o=>answers[o.i]===o.q.a).length;
+  const pct = list.length ? right/list.length*100 : 0;
+  const byLv = ["B","I","A"].map((lv,i)=>{ const s=list.filter(o=>o.q.lv===lv);
+    const r=s.filter(o=>answers[o.i]===o.q.a).length; return [LVNAME[lv], s.length?r/s.length*100:0, ["#dff0de","#cfe0f5","#f6d3d0"][i], `${r}/${s.length}`]; }).filter(x=>x[3]!=="0/0");
+  const byDom = domains().map(([dom,l])=>{ const r=l.filter(o=>answers[o.i]===o.q.a).length;
+    return [dom, l.length?r/l.length*100:0, domColor(dom), `${r}/${l.length}`]; });
+  const wrong = list.filter(o=>graded && answers[o.i]!==o.q.a);
+  const lastRun = history.length ? history[history.length-1] : null;
+  document.getElementById("app").innerHTML = `
+  <aside class="card side" id="side">${sideHTML(-1)}</aside>
+  <main id="main" style="grid-column:2 / 4;grid-row:1">
+    <div class="crumb">결과</div>
+    <div class="hd"><h1>${graded?"채점 결과":"진행 상황"}</h1><div class="chips"><span class="chip">${cfg.lv==="ALL"?"전체":LVNAME[cfg.lv]}</span><span class="chip">${list.length}문항</span></div></div>
+    <p class="sub">${graded?"오답 문항을 눌러 해설과 상황도를 다시 확인할 수 있습니다.":"모든 문항에 답하면 자동으로 채점됩니다."}</p>
+    <section class="card res">
+      <div class="score">
+        <div class="b"><div class="l">득점률</div><div class="v">${graded?pct.toFixed(0)+"%":"–"}</div></div>
+        <div class="b"><div class="l">정답 / 문항</div><div class="v">${graded?right:"–"} / ${list.length}</div></div>
+        <div class="b"><div class="l">응답</div><div class="v">${answered} / ${list.length}</div></div>
+        <div class="b"><div class="l">소요 / 제한</div><div class="v">${lastRun ? mmss(lastRun.used) : "–"} <span style="font-size:13px;color:var(--muted)">/ ${mmss(limitMs())}</span></div></div>
+        <div class="b"><div class="l">응시 회차</div><div class="v">${history.length}</div></div>
+      </div>
+      ${lastRun && lastRun.timeout ? `<p class="sub" style="color:var(--rust);font-weight:700;margin:-6px 0 10px">제한 시간이 끝나 자동 채점되었습니다 — 미응답 ${lastRun.unans}문항은 오답으로 처리했습니다.</p>` : ""}
+      <h4>난이도별 정답률</h4>${graded?barChart(byLv):"<p class='sub'>채점 후 표시됩니다.</p>"}
+      <h4>영역별 정답률</h4>${graded?barChart(byDom):"<p class='sub'>채점 후 표시됩니다.</p>"}
+      <h4>회차별 득점률 변화</h4>${history.length?lineChart(history):"<p class='sub'>아직 기록이 없습니다.</p>"}
+      ${wrong.length?`<h4>오답 ${wrong.length}문항</h4><ul class="wrongs">${wrong.map(o=>`<li><b>${LVNAME[o.q.lv]}</b><span>${esc(o.q.title)}</span><button type="button" data-go="q${o.i}">다시 보기</button></li>`).join("")}</ul>`:(graded?"<h4>오답 없음</h4>":"")}
+    </section>
+  </main>
+  <aside id="panelCol" style="grid-column:2 / 4;grid-row:2;position:static"><div class="card panel">
+    <div class="ph"><span>다음 단계</span><span>${list.length}문항</span></div>
+    <h2>다시 응시하기</h2>
+    <p class="stem">조건을 바꾸어 새로 출제하거나, 같은 문항을 처음부터 다시 풀 수 있습니다.
+      오답만 다시 보려면 아래 목록에서 해당 문항으로 이동하십시오.</p>
+    <div class="toolbar">
+      <button class="iconbtn" type="button" data-go="start">조건 바꿔 새로 출제</button>
+      <button class="iconbtn" type="button" id="retry">같은 문항 다시 풀기</button>
+      <button class="iconbtn" type="button" id="clearHist">이력 초기화</button>
+    </div>
+    <div class="nav"><button type="button" data-go="q${list.length?list[0].i:0}">← 첫 문항</button>
+      <button type="button" class="nx" data-go="q${wrong.length?wrong[0].i:(list.length?list[0].i:0)}">${wrong.length?"첫 오답으로 →":"처음부터 →"}</button></div>
+  </div></aside>`;
+  document.getElementById("retry").onclick = ()=>{ answers={}; graded=false; saveAll(); location.hash="q"+exam[0]; render(); };
+  document.getElementById("clearHist").onclick = ()=>{ history=[]; wr("hbmq-hist",[]); render(); };
+}
+
+/* ── 응시 이력 화면 (진행 중인 시험이 없을 때) ── */
+function renderHistory(){
+  const LVN = { ALL:"전체", B:"초급", I:"중급", A:"고급" };
+  const rows = history.slice().reverse();
+  document.getElementById("app").innerHTML = `
+  <main id="main" style="grid-column:1 / -1;grid-row:1">
+    <div class="crumb">응시 이력</div>
+    <div class="hd"><h1>지난 응시 이력</h1><div class="chips"><span class="chip">${history.length}회</span></div></div>
+    <p class="sub">진행 중인 시험이 없어 지난 기록만 보여 줍니다. 새 시험은 상단 [시험 구성] 에서 시작하십시오.</p>
+    <section class="card res">
+      ${history.length ? `
+      <div class="score">
+        <div class="b"><div class="l">응시 회차</div><div class="v">${history.length}</div></div>
+        <div class="b"><div class="l">최근 득점률</div><div class="v">${history[history.length-1].pct.toFixed(0)}%</div></div>
+        <div class="b"><div class="l">평균 득점률</div><div class="v">${(history.reduce((a,x)=>a+x.pct,0)/history.length).toFixed(0)}%</div></div>
+        <div class="b"><div class="l">최고 득점률</div><div class="v">${Math.max(...history.map(x=>x.pct)).toFixed(0)}%</div></div>
+      </div>
+      <h4>회차별 득점률 변화</h4>${lineChart(history)}
+      <h4>회차 기록</h4>
+      <table class="histtab"><tr><th>회차</th><th>일시</th><th>난이도</th><th>문항</th><th>정답</th><th>득점률</th><th>소요 / 제한</th><th>비고</th></tr>
+      ${rows.map((h,ri)=>{ const no = history.length - ri; const d = new Date(h.t);
+        const dt = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+        return `<tr><td>${no}</td><td>${dt}</td><td>${LVN[h.lv]||h.lv||"전체"}</td><td>${h.n}</td><td>${h.right}</td>
+          <td><b>${h.pct.toFixed(0)}%</b></td><td>${h.used!=null?mmss(h.used):"–"} / ${h.limit!=null?mmss(h.limit):"–"}</td>
+          <td>${h.timeout?`<span style="color:var(--rust);font-weight:700">시간 초과 · 미응답 ${h.unans||0}</span>`:"완주"}</td></tr>`;
+      }).join("")}</table>` : "<p class='sub'>아직 응시 기록이 없습니다.</p>"}
+      <div class="toolbar" style="margin-top:16px">
+        <button class="iconbtn" type="button" data-go="start">시험 구성으로</button>
+        <button class="iconbtn" type="button" id="clearHist2">이력 초기화</button>
+      </div>
+    </section>
+  </main>`;
+  const c = document.getElementById("clearHist2"); if (c) c.onclick = ()=>{ history=[]; wr("hbmq-hist",[]); renderHistory(); };
+  document.getElementById("topProg").textContent = `${history.length}회 기록`;
+  document.getElementById("modeChip").textContent = "응시 이력";
+  document.getElementById("modeChip").style.background = "var(--violet)";
+}
+
+/* ── 전역 이벤트 ── */
+document.addEventListener("click", e=>{ const b=e.target.closest("[data-go]"); if(b){ e.preventDefault();
+  if(location.hash === "#"+b.dataset.go) render(); else location.hash = b.dataset.go; window.scrollTo({top:0}); } });
+document.addEventListener("keydown", e=>{
+  if (e.target.closest("input,textarea")) return;
+  if (e.key === "Escape"){ document.getElementById("lb").hidden = true; return; }
+  const list = active(), h = location.hash.replace("#","");
+  let k = list.findIndex(o=>"q"+o.i===h);
+  if (e.key === "ArrowRight" && k>=0 && list[k+1] && (graded || answers[list[k].i]!=null)) location.hash = "q"+list[k+1].i;
+  else if (e.key === "ArrowLeft" && k>0) location.hash = "q"+list[k-1].i;
+  else if ((e.key==="z"||e.key==="Z") && k>=0) openLB(list[k].q);
+  else if (["1","2","3","4"].indexOf(e.key)>=0 && k>=0 && !graded){ const b=document.querySelector(`[data-ans="${+e.key-1}"]`); if(b) b.click(); }
+});
+document.getElementById("themeBtn").onclick = ()=>{ const r=document.documentElement,
+  dark = r.dataset.theme ? r.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark"; };
+document.getElementById("resBtn").onclick = ()=>{ location.hash="result"; render(); };
+document.getElementById("startBtn").onclick = ()=>{ location.hash="start"; render(); };
+document.getElementById("navBtn").onclick = ()=>{ document.body.classList.toggle("nav-off"); };
+window.addEventListener("hashchange", render);
+// 기동 시 저장된 진행 상태 제거 → 항상 '시험 구성' 화면에서 시작
+wr("hbmq-exam", null); wr("hbmq-ans", {}); wr("hbmq-graded", false); wr("hbmq-start", 0);
+startAt = 0;
+if (location.hash !== "#start") { try { history0.replaceState(null, "", location.pathname + location.search + "#start"); } catch(e) { location.hash = "start"; } }
+render();
+</script>
