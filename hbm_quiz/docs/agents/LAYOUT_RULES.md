@@ -20,7 +20,7 @@
 - **계산식**: 한글이 끼지 않은 구간에 `=`, `≈`, `×`, `÷` 와 숫자가 있으면 고정폭 수식으로 표시되고, 그 문장은 점선 "계산" 상자가 된다. 수식은 한글과 **띄어서** 쓴다: `Δα = 16.5 − 2.7 = 13.8 ppm/K 이므로` (O) / `Δα=16.5−2.7=13.8ppm/K이므로` (X — 한 덩어리로 묶이지 않음).
 - 지수: `2.07e-03`, `13.8e-6` 은 자동으로 `2.07×10⁻³` 로 바뀐다. 직접 `×10^` 을 쓰지 말 것.
 - 보기 참조 `①②③④` 는 강조색으로 표시된다(현재 보기 순서와 일치해야 함 — STANDARDS 3.4).
-- 출처는 본문 뒤에 ` [근거] …` 로 붙이면 회색 각주로 분리된다. `[근거]` 는 한 번만.
+- 출처: 레코드에 `src` (문자열 · 배열 · `{title, doc, year, url, note}`) 가 있으면 해설 아래 회색 "근거" 각주로 표시되고 **`src` 가 우선**한다. 없으면 본문 끝 ` [근거] …` 꼬리표를 각주로 분리한다(Phase 2 에서 꼬리표 제거 예정). ※ `src` 가 화면에 나오려면 `tools/build.py` 가 `src` 를 DB 에 넣어야 한다(현재 미반영 — 오케스트레이터 확인 대기).
 - 문장 끝은 `. ` (마침표+공백). 소수점 뒤에는 공백을 두지 않는다(문장 분리 기준).
 
 ## 3. 그림 공통 (fig params)
@@ -63,7 +63,7 @@
 | `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` **1–8**, **`lines`** (예 1024, 2048 — 생략 시 "HBM I/O 배선"), `bullet` |
 | `f_therm` | **`core`** (core die 수, 권장 — n = core+1 로 계산) 또는 `n` (base 포함 총 die 수) 4–21, `q_Wmm2` 0.01–1, `tTop`, `limit`, `layers` ≤ 5행 (이름 ≤ 10자), `hideResult`. core 12 초과 시 die 라벨이 작아진다 |
 | `f_fa` | `tech`: lit·obirch·eotpr·xrm · `hot` [0–1, 0–1], `fov_um`, `depth` 5–50, `feats` ≤ 4 (라벨 ≤ 10자), `dz` 5–30, `zpeak` 0–45 |
-| `f_rel` | `seq` ≤ 4행 [문서 ≤ 12자, 시험명 ≤ 20자, 조건 ≤ 16자], `cur`, `fails` ≤ 5점 (x ≤ `xmax`, y ≤ `ymax`), **`xlab`** (기본 "TC cycle 수"), **`xmax`** (기본 1000), **`ymax`** (기본 10 %), `crit`, `hint`, `bullet` |
+| `f_rel` | `seq` ≤ 4행 [문서 ≤ 12자, 시험명 ≤ 20자, 조건 ≤ 16자], `cur`, `fails` ≤ 5점 (x ≤ `xmax`, y ≤ `ymax`), **`xlab`** (기본 "TC cycle 수"), **`xmax`** (기본 1000), **`ymax`** (기본 10 %), **`tcCycles`** (기본 700 — 기본 seq 의 JESD22-A104 cond. B 행과, TC 축일 때 "규격 N cycle" 점선에 쓰임), `crit`, `hint`, `bullet` |
 | `f_stack` | `n` (core die 수) 4–24, `highlight`: height·midcore·base·gap·topcore, `gap_um`, `h_um`, `limit_um`, `bullet`, `hideResult` |
 | `f_hcb` | `pitch_um` 1–10, `tol_nm` 20–300, `off_nm` 0–420 (그림 변위 상한 0.5 in), `dish_nm` 1–16, `bullet`, `hideResult` |
 | `f_plot` | `title`, `x`/`y` {min, max, ticks ≤ 6개 (라벨 ≤ 5자), lab ≤ 24자}, `series` ≤ 4 {name ≤ 22자, color "RRGGBB", pts ≤ 12, dash}, `marks` ≤ 3 [x, 라벨 ≤ 12자], `bullets` ≤ 3 |

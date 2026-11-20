@@ -1071,7 +1071,7 @@ function f_fa(s, p) {
 // ========== T11. 신뢰성 시험 순서 ==========
 function f_rel(s, p) {
   const x0 = LC.x + 0.1, y0 = TOP + 0.3;
-  const seq = p.seq || [["JESD22-A113", "MSL preconditioning", "J-STD-020 리플로 × 3회"], ["JESD22-A104", "Temperature Cycling", "cond. B −55/+125 °C, " + (p.tcCycles || 700) + " cycle"], ["JESD22-A118", "uHAST", "130 °C / 85% RH, 96 h"], ["JESD22-A103", "HTS", "150 °C, 1000 h"]];
+  const seq = p.seq || [["JESD22-A113", "MSL preconditioning", "J-STD-020 리플로 × 3회"], ["JESD22-A104", "Temperature Cycling", "cond. B (−55/+125 °C) × " + (p.tcCycles || 700)], ["JESD22-A118", "uHAST", "130 °C / 85% RH, 96 h"], ["JESD22-A103", "HTS", "150 °C, 1000 h"]];
   ttl(s, "시험 순서 (preconditioning이 먼저)", LC.x, TOP - 0.04, 4.3);
   seq.forEach((r, i) => {
     const yy = y0 + i * 0.85;
