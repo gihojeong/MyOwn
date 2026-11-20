@@ -9,6 +9,8 @@ TSV_BAND = (1.0, 10.0, 5.9, 6.9)   # x0,x1,y0,y1 : 중앙 TSV/µbump band
 PHY = (0.25, 1.75, 0.6, 12.2)      # base die PHY (GPU측 edge)
 T_BASE, T_BOND, T_CORE = 0.060, 0.015, 0.050
 
+SCOPE = "TCB"                # [규칙] 해석 대상은 TCB(TC-NCF) 공법만. 기준 = B_TCNCF, DOE/신규 변형은 bond="NCF"
+BASELINE = "B_TCNCF"
 H_PKG = 0.720                # [규칙] 총 높이 720 μm 고정: 두께 변경분은 항상 top die(Core_Die_8)가 흡수
 VARIANTS = {
     # name: bonding, mid-die(Core 1~7) 두께, EMC cap  → top die 두께는 H_PKG에서 자동 산출
@@ -16,7 +18,10 @@ VARIANTS = {
     "B_TCNCF":      dict(bond="NCF", t_core=0.050, cap=0.000),   # top 190 μm
     "C_MRMUF_CAP":  dict(bond="MUF", t_core=0.050, cap=0.090),   # top 100 μm
     "D_MID47":      dict(bond="MUF", t_core=0.047, cap=0.000),   # mid -3 μm → top 211 μm
+    # ---- TCB 범위 (기준 B_TCNCF) ----
+    "E_TCNCF_MID47": dict(bond="NCF", t_core=0.047, cap=0.000),  # B 대비 mid -3 μm → top 211 μm
 }
+REFERENCE_ONLY = ("A_MRMUF", "C_MRMUF_CAP", "D_MID47")         # MR-MUF: 참고용, DOE 대상 아님
 def t_top(v):
     c = VARIANTS[v]; return H_PKG - T_BASE - 8*T_BOND - 7*c["t_core"] - c["cap"]
 
