@@ -1,6 +1,7 @@
 # HBM 이해도 평가 — 문항 품질 기준서 (STANDARDS)
 
 - 소유: EA (Editor-in-chief Agent) · 적용 대상: `data/NN_CODE.json` 전 문항 · 자동 검사: `tools/validate.py`
+- 변경 이력: 2026-11-20 W0.5 — WARP 를 WARP(Warpage 와 기계적 응력)·THERM(열 설계와 방열, `data/13_THERM.json`, legacy_prefix WARP)으로 분할. Smile/Cry 규약 확정.
 - 이 문서는 **모든 분야 에이전트의 공통 헌장**이다. 분야 브리프(`docs/agents/briefs/CODE.md`)는 이 문서를 전제로 쓴다.
 - 판정 순서: ① 기술적 사실 → ② 정답 유일성 → ③ 난이도 적합성 → ④ 오답 품질 → ⑤ 해설 → ⑥ 그림·지표 일치 → ⑦ 문체.
   앞 단계가 틀리면 뒤 단계는 의미가 없다. 사용자는 반도체 패키징 실무·연구 수준의 전문가다. **"그럴듯한 문장"이 아니라 "현업 전문가가 검토해도 반박할 수 없는 문항"이 기준**이다.
@@ -66,7 +67,7 @@
 ### 2.5 용어 규약 (분야 간 통일 — 위반은 교차분야 검사에서 E)
 - **N단 (N-Hi)** = core DRAM die N 장 + base die 1 장. 접합 계면(간극) 수 = **N** (base–core1 포함). "die 수" 라고 쓸 때는 base 포함 여부를 지문에 적는다. "12단 → 간극 11 개" 처럼 base 를 빼고 세는 서술은 금지.
 - **스택 높이** = base die + N × (core die + 간극) (+ 최상단 mold 가 있으면 따로 명시). 최상단 core die 두께가 다르면 따로 준다.
-- **Warpage 명칭(Smile / Cry)**: 이 문항집은 **"측정 자세를 그대로 둔 채 위에서 내려다본 형상"** 으로 부른다. 중앙이 기준면(chuck)에서 멀어진 볼록(∩) = **Cry (convex)**, 중앙이 기준면에 가까워진 오목(∪) = **Smile (concave)**. 자세(bump 면 아래 / BEOL 면 위)는 반드시 지문에 적고, die 자체의 휨 방향을 물을 때는 "BEOL 면 기준 볼록/오목" 으로 따로 묻는다. (그림 `f_warp` 의 현재 표는 다른 규약이므로 DA 수정 전까지 이 표를 근거로 출제하지 않는다 — `EA_to_DA.md` §1)
+- **Warpage 명칭(Smile / Cry)**: 이 문항집은 **"측정 자세를 그대로 둔 채 위에서 내려다본 형상"** 으로 부른다. 중앙이 기준면(chuck)에서 멀어진 볼록(∩) = **Cry (convex)**, 중앙이 기준면에 가까워진 오목(∪) = **Smile (concave)**. 자세(bump 면 아래 / BEOL 면 위)는 반드시 지문에 적고, die 자체의 휨 방향을 물을 때는 "BEOL 면 기준 볼록/오목" 으로 따로 묻는다. **(2026-11-20 오케스트레이터 승인으로 확정.)** 그림 `f_warp` 의 현재 표는 반대 규약이므로 DA 수정 전까지 이 표를 근거로 출제하지 않는다 — `EA_to_DA.md` §1.
 - 공법 명칭: **TC-NCF**, **MR-MUF**, **HCB (hybrid copper bonding, Cu–Cu hybrid bonding)**. "TCB" 는 장비 방식(열압착) 이름이고 NCF/NCP/MUF 와 결합해 쓴다.
 - 단위 표기: µm (U+00B5), °C, Gb/s(핀 속도), GB/s(대역폭), W/m·K, m²·K/W, kA/cm². 숫자와 단위 사이 한 칸("5 µm"). 곱셈 ×, 나눗셈 ÷, 근사 ≈.
 

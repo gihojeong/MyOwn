@@ -10,9 +10,9 @@
 | 단계 | 누가 | 무엇을 | 산출물 | 선행 조건 |
 |---|---|---|---|---|
 | **W0** (완료) | EA | 기준서·검사기·브리프·편성안 | 본 문서들, `docs/reviews/_auto_baseline.md` | — |
-| **W0.5** | EA | (승인 시) WARP → WARP + THERM 파일 분할 | `data/13_THERM.json` (`legacy_prefix: ["WARP"]`) | 오케스트레이터 승인 + DA 의 14 분야 UI 확인 |
+| **W0.5** (완료) | EA | WARP → WARP + THERM 파일 분할 (승인됨) | `data/13_THERM.json` (`legacy_prefix: ["WARP"]`), 이관 id `docs/reviews/_w05_split_moved_ids.json` | build·smoke 통과(14 분야) |
 | **W1** (병렬, 읽기 전용) | NUM, FACT, XD | 계산 재검증 · 사실 검증 · 교차분야 사전 점검 | `docs/reviews/num/CODE.md`, `docs/reviews/_facts.md`, `docs/reviews/xd/CODE.md` | W0 |
-| **W2** (병렬) | 분야 에이전트 13(+1) | 자기 파일 재편집 + 신규 출제 | `data/NN_CODE.json`, `docs/reviews/CODE.md` | W1 산출물 (늦으면 W2 를 먼저 시작하고 도착 시 반영) |
+| **W2** (병렬) | 분야 에이전트 14 | 자기 파일 재편집 + 신규 출제 | `data/NN_CODE.json`, `docs/reviews/CODE.md` | W1 산출물 (늦으면 W2 를 먼저 시작하고 도착 시 반영) |
 | **W3** | XD | 교차분야 사후 점검(중복·용어·사실 충돌) | `docs/reviews/_xd_post.md` → 해당 분야 에이전트가 수정 | W2 전 분야 게이트 통과 |
 | **W4** | EA | Phase 2 기계적 일괄 처리(§6) + 최종 표본 QA | `docs/reviews/_auto_final.md`, `docs/reviews/EA_final.md` | W3 반영 완료 |
 
@@ -29,8 +29,8 @@ DA(디자인)는 전 단계에 걸쳐 `template.html` 을 소유하며 EA 와 `E
 | **BUMP** | `data/02_BUMP.json` | 80/160/165 | 164 | 15/25/30 | 비현실 전류밀도, full-IMC·Ni 계 IMC·Black 식 |
 | **SAW** | `data/03_SAW.json` | 69/**52**/59 | 32 | 15/**35**/30 | 중급 공백(stem 2개), seal ring·SDBG·HCB 청정도·molded cube |
 | **COW** | `data/04_COW.json` | 117/245/193 | 146 | 10/30/40 | **배율 오차 28문항 정답 오류**, HCB 설정 오류, 공법 다변수 비교 |
-| **WARP** (기계) | `data/05_WARP.json` | 154/326/283 | 211 | 15/35/45 | Smile/Cry 규약 통일, shadow moiré·reflow 동적 휨 |
-| **THERM** (분할 시) | `data/13_THERM.json` | (WARP 에서 약 480 이관) | (WARP 에 포함) | (WARP 목표 중 열 관련) | 비현실 온도 결과, N단↔간극 수 규약, 1D 모델 한계 |
+| **WARP** (기계) | `data/05_WARP.json` | 70/92/64 (분할 후 226) | 가족 일부 | 15/30/40 | 확정 Smile/Cry 규약으로 명명 가족 재작성, shadow moiré·reflow 동적 휨, 몰딩 일반론 정리 |
+| **THERM** (신설) | `data/13_THERM.json` | 84/234/219 (537, id 는 WARP-* 유지) | 대부분(열 계산 가족) | 10/25/40 | 비현실 온도 결과, N단↔간극 수 규약, 1D 모델 한계, 미검증 열유속 주장 |
 | **SIP** | `data/06_SIP.json` | 175/172/190 | 152 | 10/30/30 | 그림 정답 노출 170, PDN·SI·L/S·package warpage 공백 |
 | **FA** | `data/07_FA.json` | 120/115/139 | 37 | 10/30/40 | JESD47 판정 오용, 가속계수·Weibull 공백, 이중 사실 묶음 |
 | **PROD** | `data/08_PROD.json` | 135/**61**/**54** | 22 | 10/**35**/**45** | 업체 소문형 사실, 일반론 고급, JEDEC 표 기반 재구성 |
@@ -39,10 +39,10 @@ DA(디자인)는 전 단계에 걸쳐 `template.html` 을 소유하며 EA 와 `E
 | **MIX** | `data/11_MIX.json` | 44/70/103 | — | 15/40/**80** | **분야 재구축**(사례 세트형), 기존 ≤ 60 만 재작성 유지 |
 | **FEOL** | `data/12_FEOL.json` | 72/74/**37** | — | 15/35/**45** | 일반 상식 → DRAM·HBM 맥락, 고급 보강, 타 분야 이관 |
 
-### WARP 분할 제안 (권장)
-- WARP 763 문항은 성격이 다른 두 덩어리다: **warpage·기계 응력**(f_warp·f_bond·f_sip 그림, 약 280) 과 **열 설계**(f_therm 477 + 열 키워드, 약 480). 필요한 전문성이 다르고 가족 초과 211 중 대부분이 열 계산이다.
-- 방식: EA 가 W0.5 에서 열 문항을 `data/13_THERM.json`(code `THERM`, domain "열 설계와 방열")으로 **id 를 유지한 채** 옮기고 파일에 `"legacy_prefix": ["WARP"]` 를 둔다(검사기 지원 완료). 새 열 문항은 `THERM-LV-9xxx`. 05 의 domain 이름은 "Warpage 와 기계적 응력" 으로 바꾼다.
-- 영향: 화면의 분야가 14 개가 된다 → **DA 확인 필요**(`EA_to_DA.md` §7). 승인되지 않으면 WARP 에이전트 1명이 전체를 맡되 작업 시간 1.5 배를 배정하고, 열 계산 가족 정리를 NUM 결과에 크게 의존한다.
+### WARP 분할 (W0.5 완료, 2026-11-20)
+- 기준: 지문·보기에 열 키워드(열저항·열유속·TIM·방열·냉각·refresh 등)가 있고 warpage 키워드(warpage·휨·Smile/Cry·Tg·CTE·EMC 등)가 없는 문항, 그리고 키워드 없는 `f_therm` 문항 → THERM 537. 나머지(경계 문항 포함) → WARP 226.
+- THERM 파일은 `"legacy_prefix": ["WARP"]` 로 기존 id 를 유지한다. 새 문항은 `THERM-LV-9xxx`. 05 의 domain 은 "Warpage 와 기계적 응력", 13 은 "열 설계와 방열"(`_meta.json` doms 도 갱신).
+- 경계 문항이 잘못 갔으면 소유 에이전트가 `mv` 로 제안(EA Phase 2 이동). 원본 백업은 EA scratchpad.
 
 ### 병합은 제안하지 않음
 - SAW(180)·FEOL(183)·MIX(217)는 작지만 성격이 독립적이고 보강 대상이므로 병합하지 않는다. 대신 신규 목표를 크게 잡았다.
@@ -57,6 +57,7 @@ DA(디자인)는 전 단계에 걸쳐 `template.html` 을 소유하며 EA 와 `E
 | **FACT** (사실 검증) | 세대·표준·업체 수치 주장 검증. `I_FACT_WATCH` 350건 + 업체 고유 주장(HBM4E 속도, iHBM ICE, 열유속 15–25 W/cm², HCB die 휨 100 nm, CoWoS 별 HBM 탑재 수, base die 공정 노드 등) | 검사기 `--codes I_FACT_WATCH` 출력, 각 브리프 §2 의 "사실 검증 필요" | `docs/reviews/_facts.md`: 주장 · 판정(확인/정정/출처 없음→사용 금지) · 출처 등급 [S]/[V]/[R] · 해당 id | 표준 문서·제조사 공식 자료 우선. [R] 만 있는 주장은 "사용 금지" 로 판정 |
 | **XD** (교차분야 일관성) | ① 용어 규약(N단↔간극 수, Smile/Cry, 공법명) 위반 목록 ② 분야 간 중복·근중복(`W_NEAR_DUP_X` + 개념 수준 중복) → 소유 분야 판정 ③ 오분류 문항 이관 제안 ④ 분야 간 사실 충돌(같은 수치를 다르게 쓰는 경우) | 전 data, 기준서 2.5 | W1: `docs/reviews/xd/CODE.md` (분야별 지시) · W3: `docs/reviews/_xd_post.md` | 기계 탐색(정규식·n-gram) + 판독. 이관 판정은 "어느 분야 학습 목표에 더 필요한가" 기준 |
 
+- 분야 코드는 14개(TSV, BSP, BUMP, SAW, COW, WARP, SIP, FA, PROD, DRAM, MET, MIX, FEOL, THERM). NUM·XD 의 분야별 산출물도 THERM 을 포함한다.
 - 지원 에이전트의 판정과 분야 에이전트의 판단이 다르면 분야 에이전트가 근거를 리뷰 보고서에 적고 EA 가 최종 판정한다.
 
 ---
