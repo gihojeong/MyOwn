@@ -1,0 +1,124 @@
+# PROD 분야 브리프 — HBM 제품과 구조
+
+- 소유 파일: `data/08_PROD.json` · 기준: `docs/agents/STANDARDS.md` · 자동 검사: `python3 tools/validate.py --domain PROD`
+- 작성: EA (Phase 1, 2026-11-20) · 기준선 리포트: `docs/reviews/_auto_baseline.md`
+
+## 0. 현황
+
+| 난이도 | 문항 | stem 단일형 | ctx 조립형 | 정답 위치 ①/②/③/④ |
+|---|---|---|---|---|
+| 초급 | 135 | 26 | 109 | 39 / 31 / 31 / 34 |
+| 중급 | 61 | 27 | 34 | 19 / 13 / 15 / 14 |
+| 고급 | 54 | 15 | 39 | 18 / 14 / 15 / 7 |
+| 합계 | 250 | 68 | 182 | |
+
+- k=1 상황도 68 · k=0 주제도 182 · 그림 사용: f_stack 129, f_plot 98, f_note 22, f_sip 1
+- **차단 E 이슈가 있는 문항: 207 / 250** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
+
+## 1. 자동 검사 요약 (기준선)
+
+| 코드 | 건수 | 예시 id |
+|---|---|---|
+| `E_META_METRICS` | 182 | PROD-A-0016, PROD-A-0017, PROD-A-0018, PROD-A-0019 |
+| `E_JOSA_CIRC` | 167 | PROD-A-0016, PROD-A-0017, PROD-A-0018, PROD-A-0021 |
+| `E_STYLE_PLAIN` | 149 | PROD-A-0016, PROD-A-0017, PROD-A-0018, PROD-A-0019 |
+| `E_TITLE_TRUNC` | 130 | PROD-A-0016, PROD-A-0017, PROD-A-0018, PROD-A-0019 |
+| `E_EXP_SHORT` | 127 | PROD-A-0022, PROD-A-0023, PROD-A-0025, PROD-A-0026 |
+| `E_JOSA_EN` | 85 | PROD-A-0018, PROD-A-0022, PROD-A-0026, PROD-A-0028 |
+| `E_EXP_ONLY_REFS` | 82 | PROD-A-0022, PROD-A-0023, PROD-A-0025, PROD-A-0026 |
+| `E_FAMILY_OVER` | 22 | PROD-A-0011, PROD-A-0012, PROD-A-0013, PROD-A-0014 |
+| `E_CALC_NO_WORK` | 14 | PROD-B-0099, PROD-B-0100, PROD-B-0101, PROD-B-0110 |
+| `E_DOUBLE_Q` | 7 | PROD-B-0042, PROD-B-0076, PROD-B-0095, PROD-B-0097 |
+| `E_DUP_EXACT` | 2 | PROD-B-0061, PROD-I-0044 |
+| `E_K1_FIG_NUM` | 1 | PROD-A-0002 |
+| `W_TITLE_COPY` | 182 | PROD-A-0016, PROD-A-0017, PROD-A-0018, PROD-A-0019 |
+| `W_K1_FIG_EXTRA` | 61 | PROD-A-0001, PROD-A-0002, PROD-A-0004, PROD-A-0005 |
+| `W_OPT_ODD_END` | 60 | PROD-A-0021, PROD-A-0023, PROD-A-0025, PROD-A-0033 |
+| `W_TITLE_QUESTION` | 47 | PROD-A-0026, PROD-A-0027, PROD-A-0038, PROD-A-0046 |
+| `W_NEAR_DUP` | 47 | PROD-A-0008, PROD-A-0011, PROD-A-0012, PROD-A-0013 |
+| `W_OPT_WEAK` | 38 | PROD-A-0022, PROD-A-0023, PROD-A-0025, PROD-A-0026 |
+| `W_EXP_DISTRACTORS` | 35 | PROD-A-0001, PROD-A-0002, PROD-A-0003, PROD-A-0004 |
+| `W_META_METRICS` | 12 | PROD-A-0001, PROD-A-0003, PROD-A-0004, PROD-B-0001 |
+| `W_OPT_LONGEST` | 11 | PROD-A-0001, PROD-A-0004, PROD-A-0019, PROD-A-0041 |
+| `W_TITLE_LEAK` | 8 | PROD-B-0006, PROD-B-0012, PROD-B-0018, PROD-B-0024 |
+| `W_OPT_ABSOLUTE` | 4 | PROD-A-0036, PROD-A-0039, PROD-A-0040, PROD-I-0005 |
+| `W_K1_METRIC_NUM` | 3 | PROD-B-0003, PROD-I-0003, PROD-I-0004 |
+| `W_OPT_STEM_ECHO` | 2 | PROD-A-0003, PROD-B-0094 |
+| `W_EXP_OFFTOPIC` | 2 | PROD-B-0062, PROD-B-0107 |
+| `W_FIG_LEAK` | 1 | PROD-I-0001 |
+| `W_EXP_REF_MISMATCH` | 1 | PROD-I-0030 |
+| `I_EXP_SRC_TAG` | 68 | PROD-A-0001, PROD-A-0002, PROD-A-0003, PROD-A-0004 |
+| `I_FACT_WATCH` | 14 | PROD-A-0001, PROD-A-0002, PROD-B-0001, PROD-B-0002 |
+
+(참고: `I_JOSA_SPACE` 224 · `I_TEMPLATE_JOIN` 182 — 새로 쓰는 문장은 조사를 붙여 쓰고, ctx 조립형은 STANDARDS 3.1 에 따라 정리)
+
+## 2. 표본 조사로 확인한 대표 결함 (EA 직접 판독: 난이도별 10문항 이상)
+
+- **업체 소문형 사실**: "SK하이닉스가 샘플을 공급한 HBM4E 의 핀당 최대 속도 16 Gbps"(PROD-B-0130) — [R] 등급 이하, 정답 근거 불가. 업체 고유 수치 문항 전수 재검증(FACT 에이전트 결과 반영).
+- **고급이 기술 내용 없음**: "학회 발표 수치를 자사 조건에 적용할 때 확인할 전제"(PROD-A-0037, -0050 중복), "차세대 구조를 검토할 때 설계·공정·열을 함께 보아야 하는 이유"(PROD-A-0053) — 일반론. 고급 54 중 39가 ctx 조립형.
+- **용량 계산 가족**(PROD-B-0013 계열): 초·중·고급에 같은 식이 반복(16 Gb × 8 ÷ 8). 고급에 단순 용량 계산(PROD-A-0008, -0015) 배치.
+- **터무니없는 오답**: "패키지 전체 두께를 10 mm 이상으로"(PROD-B-0094), "셀 용량 10배".
+- 맞는 내용(유지 가치): HBM3E 1,024 bit·16 채널·32 PC(PROD-I-0004), HBM4 의 PHY 연결 수 변화로 인한 컨트롤러 비호환(PROD-I-0003), base die 로직 공정 이전(PROD-A-0004 — 업체별 공정은 [V] 출처로 확인).
+
+## 3. 핵심 개념 체크리스트와 현재 커버리지
+
+키워드 기반 근사치(지문·보기·해설에서 해당 주제가 다뤄진 문항 수). 0–4 = **공백**, 5–14 = 부족, 15+ = 있음(질은 별도 판단).
+
+| 주제 | 초급 | 중급 | 고급 | 판정 |
+|---|---|---|---|---|
+| HBM 세대별 I/O 폭·채널(HBM2E→HBM4) | 10 | 6 | 1 | 있음 |
+| 핀 속도·대역폭 | 9 | 2 | 0 | 부족 |
+| 용량·die 밀도(24/32 Gb) | 42 | 33 | 12 | 있음 |
+| stack height 4/8/12/16-Hi | 60 | 39 | 35 | 있음 |
+| 패키지 높이 720/775 µm | 1 | 0 | 2 | **공백** |
+| base die(로직 공정·custom HBM) | 40 | 24 | 16 | 있음 |
+| 전압 VDD/VDDQ·전력 효율 pJ/bit | 6 | 2 | 3 | 부족 |
+| footprint·ball map | 0 | 0 | 0 | **공백** |
+| HBM vs GDDR/LPDDR 비교 | 0 | 0 | 0 | **공백** |
+| RAS·ECC·repair | 0 | 1 | 0 | **공백** |
+| JEDEC 표준 문서(JESD238/270-4) | 1 | 0 | 0 | **공백** |
+| 제품 로드맵(HBM3E 12H, HBM4 16H) | 29 | 6 | 5 | 있음 |
+
+**우선 보강 공백**: JEDEC 세대별 핵심 사양 비교(STANDARDS 2.2 표 범위), 패키지 높이 720 → 775 µm 의 의미, footprint/ball map, HBM vs GDDR7/LPDDR5X(대역폭·전력·비용) 비교, RAS(ECC·repair·DRFM), 전력 효율(pJ/bit) 계산, 단수·die 밀도·용량 조합 설계, custom HBM(cHBM) 의 base die 기능 분담
+
+## 4. 작업 지시 (우선순위 순)
+
+1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/PROD.md`, `docs/reviews/_facts.md`)를 반영한다.
+2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
+3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
+4. **해설 재작성**: `E_EXP_SHORT`·`E_EXP_ONLY_REFS`·`E_STYLE_PLAIN`·`W_EXP_DISTRACTORS` — 정답 근거 + 오답 3개 각각의 오류 + (계산) 식·대입·결과. 일괄 `[근거]` 꼬리표는 고친 해설에서 뺀다.
+5. **제목·지표·그림**: `E_TITLE_TRUNC`·`W_TITLE_*` 제목 재작성, `E_META_METRICS` 지표를 지문 조건으로 교체, `E_K1_FIG_NUM`·`E_FIG_ANSWER_LEAK`·`E_FIG_INTERNAL`·`W_FIG_*` 그림 params 정정.
+6. **난이도 재배치**: 단순 대입 계산·용어 문항이 고급이면 lv 를 내린다. lv 가 바뀌면 id 의 LV 도 달라져야 하므로 **새 id(`CODE-LV-9xxx`)를 발급하고 `"prev": "옛 id"` 필드를 남긴다**(보고서에 old→new 기록). 고급은 STANDARDS §1 기준으로 채운다.
+7. **신규 출제**(§5) — 공백 주제 위주. 새 id 는 `PROD-LV-9001` 부터.
+8. 타 분야 문항은 고쳐서 `"mv": "CODE"` 로 이관 제안(EA 가 Phase 2 에서 이동) 하거나 자기 분야 관점으로 재작성.
+
+## 5. 추가 출제 목표
+
+| | 초급 | 중급 | 고급 | 합계 |
+|---|---|---|---|---|
+| 신규 최소 | 10 | 35 | 45 | 90 |
+
+- 가족 초과로 정리될 문항 약 22 건은 위 신규로 대체한다(수량 유지보다 질 우선, 최종 분야 규모는 ±10 % 허용).
+- 최종 난이도 비율 권장: 초급 25–30 % · 중급 35–40 % · 고급 30–35 %.
+
+- 고급: 목표 용량·대역폭·전력 예산을 동시에 만족하는 세대·단수·스택 수 선택(4변수), pJ/bit 와 대역폭으로 I/O 전력 추정 후 열 예산과 대조, 16-Hi 를 775 µm 에 넣는 두께 예산과 접합 방식 선택, base die 로직 공정 이전에 따른 기능·비용·열 트레이드오프
+- 중급: 세대 간 채널·PC 구조 변화와 컨트롤러 영향, 용량 단위 환산, 패키지 높이 규격 변화의 공정 함의
+
+## 6. 사용할 그림 템플릿과 params
+
+| 템플릿 | params | 제약 · 주의 |
+|---|---|---|
+| `f_stack` | `n`(**core die 수**), `highlight`: null·height·midcore·base·gap·topcore, `gap_um`, `h_um`, `limit_um`, `bullet` | 표에 die n+1, 간극 n, 높이 h_um 표시 → 계산 답을 h_um/n 에 넣지 말 것 |
+| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
+| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
+| `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` 1–4, `bullet` | "2,048선" 라벨 고정(HBM3E 문항과 모순 주의) |
+
+
+- 수치는 STANDARDS 2.2 표 범위 안에서만 '확정 사실'로 쓴다. 업체 값은 `src` 에 [V] 출처를 남긴다.
+- 데이터 해석형 고급에 표가 필요하면 `f_plot`(그래프)으로 우선 해결하고, 표 템플릿(`f_table`)은 DA 에 요청 중(`EA_to_DA.md`). 확정 전에는 표 데이터를 지문 안 문장으로 쓴다.
+
+## 7. 완료 조건
+
+- `python3 tools/validate.py --domain PROD --gate` 통과(차단 E 0). 남는 W 는 수정 또는 `vx` + 사유.
+- `python3 tools/build.py` · `node tools/smoke.js dist/HBM_quiz.html` 오류 없음.
+- 보고서 `docs/reviews/PROD.md` (형식: ROSTER §4).
