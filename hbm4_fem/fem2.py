@@ -42,7 +42,8 @@ def build(name, c, temps=TEMPS, elprint=(25, 230)):
         if not len(e): continue
         s.append(f"*ELSET, ELSET=E_{k}"); s += [",".join(map(str, e[i:i+16])) for i in range(0, len(e), 16)]
         p = S.props(k, c); eps = S.eps_free(k, np.array(Tt, float), c)
-        s += [f"*MATERIAL, NAME={k}", "*ELASTIC", f"{p['E']:.3f},{p['nu']:.4f}", "*EXPANSION, ZERO=0."]
+        Ev = S.E_of(k, np.array(Tt, float), c)
+        s += [f"*MATERIAL, NAME={k}", "*ELASTIC"] + [f"{e:.3f},{p['nu']:.4f},{t:.1f}" for e, t in zip(Ev, Tt)] + ["*EXPANSION, ZERO=0."]
         s += [f"{ep/t:.6e},{t:.1f}" for ep, t in zip(eps, Tt)] + ["0.,400."]
         s += [f"*SOLID SECTION, ELSET=E_{k}, MATERIAL={k}"]
     xs = ids[np.isclose(xyz[:, 0], 0)]; ys = ids[np.isclose(xyz[:, 1], 0)]

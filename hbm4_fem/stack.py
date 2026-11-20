@@ -63,10 +63,27 @@ def _alpha(kind, T, c):
     if kind == "beol": return c["mA"]*np.ones_like(T)
     if kind == "gap":
         aN = np.where(T < c.get("ncf_tg", m["ncf"]["tg"]), c.get("ncf_a1", m["ncf"]["a1"]), c.get("ncf_a2", m["ncf"]["a2"]))
-        Ms, Mn = m["snag"]["M"], c.get("ncf_M", m["ncf"]["M"]); v = c["vf"]
+        Ms, Mn = m["snag"]["M"], poly_M("ncf", T, c); v = c["vf"]
         return (v*Ms*m["snag"]["a"] + (1-v)*Mn*aN)/(v*Ms+(1-v)*Mn)
     if kind == "emc":
         return np.where(T < c.get("emc_tg", m["emc"]["tg"]), c.get("emc_a1", m["emc"]["a1"]), c.get("emc_a2", m["emc"]["a2"]))
+SOFT = dict(ncf=0.3e3/0.70, emc=1.0e3, w=8.0)   # Tg 이상 고무영역 M [MPa] (c["soft"]=True 일 때)
+def _tanh(T, lo, hi, Tg, w): return lo + (hi-lo)*0.5*(1+np.tanh((T-Tg)/w))
+def poly_M(name, T, c):
+    m = MAT[name]; Mg = c.get(f"{name}_M", m["M"]); T = np.asarray(T, float)
+    if not c.get("soft"): return Mg*np.ones_like(T)
+    return _tanh(T, Mg, c.get(f"{name}_Mr", SOFT[name]), c.get(f"{name}_tg", m["tg"]), SOFT["w"])
+def E_of(kind, T, c):
+    """온도 의존 E [MPa] (soft=False 이면 상수)"""
+    p = props(kind, c); T = np.asarray(T, float)
+    if kind == "gap":
+        v = c["vf"]; Mf, Mm = MAT["snag"]["M"], poly_M("ncf", T, c)
+        if c.get("soft"):   # 면내: 고립 기둥(bump) + 연질 기지 → Halpin-Tsai (ξ=2)
+            eta = (Mf/Mm-1)/(Mf/Mm+2); M = Mm*(1+2*eta*v)/(1-eta*v)
+        else: M = v*Mf + (1-v)*Mm          # viewer 규약 (Voigt)
+        return M*(1-p["nu"])
+    if kind == "emc": return poly_M("emc", T, c)*(1-p["nu"])
+    return p["E"]*np.ones_like(T)
 def props(kind, c):
     m = MAT
     if kind in ("si", "si_top"):

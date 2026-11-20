@@ -1,0 +1,4 @@
+V_micron_viewer: w_dram 25°C +11.56  230°C +4.46  (CLT +11.51 / +4.60)
+V_design_int250: w_dram 25°C +14.59  230°C +1.05  (CLT +14.51 / +1.15)
+V_design_int400: w_dram 25°C +21.79  230°C +8.25  (CLT +21.69 / +8.34)
+V_design_viewer: w_dram 25°C +20.80  230°C +8.25  (CLT +20.72 / +8.34)
