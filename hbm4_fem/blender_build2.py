@@ -10,7 +10,7 @@ def mat(n, rgb, metal=0., rough=.4):
     m = bpy.data.materials.new(n); m.use_nodes = True; b = m.node_tree.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*rgb, 1); b.inputs["Metallic"].default_value = metal; b.inputs["Roughness"].default_value = rough
     return m
-M = {"si": mat("Si", (.20, .23, .32), .45, .3), "si_top": mat("Si_top", (.20, .23, .32), .45, .3),
+M = {"si": mat("Si", (.20, .23, .32), .45, .3), "si_base": mat("Si_base", (.14, .17, .25), .45, .3), "si_top": mat("Si_top", (.20, .23, .32), .45, .3),
      "beol": mat("BEOL", (.80, .45, .20), .9, .3), "gap": mat("NCF", (.25, .65, .40), 0, .5), "emc": mat("EMC", (.03, .03, .035), 0, .35)}
 root = bpy.data.objects.new("HBM", None); sc.collection.objects.link(root)
 def box(n, x0, x1, y0, y1, z0, z1, m):

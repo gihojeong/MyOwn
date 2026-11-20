@@ -41,11 +41,11 @@ def top_si(c):
     return c["tot"] - (c["lm"] + c["lsi"] + (c["nh"]-1)*(c["nc"]+c["mm"]+c["ms"]) + c["nc"] + c["tm"])
 
 def layers(c):
-    """bottom→top: (name, kind, z0, z1, half_span)  kind ∈ beol_b, si_b, gap, beol, si, emc_ring"""
+    """bottom→top: (name, kind, z0, z1, half_span)  kind ∈ beol, si_base(순수 Si), gap, si(mid, BS-ONO 혼합), si_top, emc"""
     L, z = [], 0.0; hl, hd = L_LOGIC/2, L_DRAM/2
     def add(n, k, t, h):
         nonlocal z; L.append((n, k, z, z+t, h)); z += t
-    add("Base_BEOL", "beol", c["lm"], hl); add("Base_Si", "si", c["lsi"], hl)
+    add("Base_BEOL", "beol", c["lm"], hl); add("Base_Si", "si_base", c["lsi"], hl)
     zr0 = z
     for i in range(1, c["nh"]+1):
         add(f"Gap_{i}", "gap", c["nc"], hd)
@@ -61,7 +61,7 @@ def layers(c):
 # ---- 물성 / 자유 열변형률 ε_F(T) (각 재료 자기 무응력 온도 기준) ----
 def _alpha(kind, T, c):
     m = MAT
-    if kind in ("si", "si_top"):
+    if kind in ("si", "si_top", "si_base"):
         if kind == "si":     # mid core Si 안의 BS-ONO 를 M 가중 혼합 (동일 T0b)
             ts = c["ms"]; fo, fn = c["oxT"]/ts, c["nxT"]/ts; fs = 1-fo-fn
             M = fs*m["si"]["M"]+fo*m["ox"]["M"]+fn*m["nx"]["M"]
@@ -93,7 +93,7 @@ def E_of(kind, T, c):
     return p["E"]*np.ones_like(T)
 def props(kind, c):
     m = MAT
-    if kind in ("si", "si_top"):
+    if kind in ("si", "si_top", "si_base"):
         if kind == "si":
             ts = c["ms"]; fo, fn = c["oxT"]/ts, c["nxT"]/ts; M = (1-fo-fn)*m["si"]["M"]+fo*m["ox"]["M"]+fn*m["nx"]["M"]
         else: M = m["si"]["M"]

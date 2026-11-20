@@ -7,7 +7,7 @@ from frd import read_frd, read_elprint
 OUT = "out2"; os.makedirs(OUT, exist_ok=True)
 TEMPS = [25, 100, 150, 175, 200, 217, 230, 260]
 H_IN, N_RING, N_TOP = 0.192, 4, 6
-KINDS = ["beol", "si", "si_top", "gap", "emc"]
+KINDS = ["beol", "si_base", "si", "si_top", "gap", "emc"]
 
 def axis(a, b, n): return np.linspace(a, b, n+1)
 def build(name, c, temps=TEMPS, elprint=(25, 230)):
@@ -89,7 +89,7 @@ def stresses(name, temps_printed=(25, 230)):
         ne = kf.size; se = np.zeros((ne, 6)); np.add.at(se, a[:, 0].astype(int)-1, a[:, 2:]); se /= 8
         Tn = np.zeros((ne, 3, 3)); Tn[:, 0, 0], Tn[:, 1, 1], Tn[:, 2, 2] = se[:, 0], se[:, 1], se[:, 2]
         Tn[:, 0, 1] = Tn[:, 1, 0] = se[:, 3]; Tn[:, 0, 2] = Tn[:, 2, 0] = se[:, 4]; Tn[:, 1, 2] = Tn[:, 2, 1] = se[:, 5]
-        s1 = np.linalg.eigvalsh(Tn)[:, -1]; si = np.isin(kf, ["si", "si_top"]); g = kf == "gap"
+        s1 = np.linalg.eigvalsh(Tn)[:, -1]; si = np.isin(kf, ["si", "si_top", "si_base"]); g = kf == "gap"
         out[T] = dict(si_s1=float(s1[si].max()), si_s3=float(np.linalg.eigvalsh(Tn[si])[:, 0].min()),
                       gap_peel=float(se[g, 2].max()), gap_shear=float(np.hypot(se[g, 4], se[g, 5]).max()),
                       emc_s1=float(s1[kf == "emc"].max()), beol_s1=float(s1[kf == "beol"].max()))
