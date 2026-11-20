@@ -9,4 +9,4 @@ out2/*
 !out2/*.blend
 !out2/*.json
 !out2/*.csv
-!out2/*.log
+!out2/validate.log
