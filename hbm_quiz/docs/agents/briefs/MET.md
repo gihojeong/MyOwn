@@ -13,7 +13,7 @@
 | 합계 | 377 | 173 | 204 | |
 
 - k=1 상황도 173 · k=0 주제도 204 · 그림 사용: f_note 141, f_plot 121, f_stack 111, f_rel 3, f_bs 1
-- **차단 E 이슈가 있는 문항: 268 / 377** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
+- **차단 E 이슈가 있는 문항: 302 / 377** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
 
 ## 1. 자동 검사 요약 (기준선)
 
@@ -26,6 +26,7 @@
 | `E_TITLE_TRUNC` | 142 | MET-A-0061, MET-A-0062, MET-A-0063, MET-A-0064 |
 | `E_EXP_ONLY_REFS` | 116 | MET-A-0071, MET-A-0080, MET-A-0082, MET-A-0090 |
 | `E_FAMILY_OVER` | 64 | MET-A-0020, MET-A-0021, MET-A-0022, MET-A-0023 |
+| `E_FIG_HIDE_RESULT` | 55 | MET-A-0039, MET-A-0040, MET-A-0041, MET-A-0042 |
 | `E_JOSA_EN` | 6 | MET-B-0026, MET-B-0049, MET-B-0064, MET-I-0095 |
 | `E_CALC_NO_WORK` | 3 | MET-A-0104, MET-B-0036, MET-I-0123 |
 | `E_DOUBLE_Q` | 2 | MET-B-0065, MET-B-0068 |
@@ -40,6 +41,8 @@
 | `W_OPT_WEAK` | 30 | MET-A-0004, MET-A-0071, MET-A-0081, MET-A-0091 |
 | `W_OPT_LONGEST` | 12 | MET-A-0002, MET-A-0003, MET-A-0004, MET-A-0005 |
 | `W_OPT_ABSOLUTE` | 9 | MET-A-0003, MET-A-0093, MET-A-0104, MET-B-0030 |
+| `W_OPT_LEN` | 3 | MET-A-0001, MET-A-0002, MET-I-0002 |
+| `W_METRIC_LEN` | 2 | MET-A-0002, MET-A-0003 |
 | `W_EXP_OFFTOPIC` | 2 | MET-B-0038, MET-B-0040 |
 | `W_EXP_REF_MISMATCH` | 1 | MET-A-0081 |
 | `I_EXP_SRC_TAG` | 173 | MET-A-0001, MET-A-0002, MET-A-0003, MET-A-0004 |
@@ -77,6 +80,7 @@
 
 ## 4. 작업 지시 (우선순위 순)
 
+0. **[최우선] 메타 지표 제거 — 377건** (`E_META_METRICS` 204, `W_META_METRICS` 173). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
 1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/MET.md`, `docs/reviews/_facts.md`)를 반영한다.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
@@ -85,6 +89,14 @@
 6. **난이도 재배치**: 단순 대입 계산·용어 문항이 고급이면 lv 를 내린다. lv 가 바뀌면 id 의 LV 도 달라져야 하므로 **새 id(`CODE-LV-9xxx`)를 발급하고 `"prev": "옛 id"` 필드를 남긴다**(보고서에 old→new 기록). 고급은 STANDARDS §1 기준으로 채운다.
 7. **신규 출제**(§5) — 공백 주제 위주. 새 id 는 `MET-LV-9001` 부터.
 8. 타 분야 문항은 고쳐서 `"mv": "CODE"` 로 이관 제안(EA 가 Phase 2 에서 이동) 하거나 자기 분야 관점으로 재작성.
+
+## 4A. DA Phase 1 템플릿 변경으로 손봐야 할 기존 문항
+
+템플릿 기본값·규약이 바뀌어(LAYOUT_RULES §3–4, STANDARDS 부록 A) 아래 문항은 params 를 고치지 않으면 그림이 지문과 어긋나거나 답을 보여 준다.
+
+- `E_FIG_HIDE_RESULT` **55건** — `hideResult: true` 추가 (그림이 계산·판정 결과를 표시). 입력 params 자체가 답이면(예: f_stack.n = 최대 단수) k=0 으로: MET-A-0039, MET-A-0040, MET-A-0041, MET-A-0042, MET-A-0043, MET-A-0044, MET-A-0045, MET-A-0046, MET-A-0047, MET-A-0048, MET-A-0049, MET-A-0050, MET-A-0051, MET-A-0052, MET-A-0053, MET-A-0054, MET-A-0055, MET-A-0056, MET-A-0057, MET-A-0058, MET-A-0059, MET-A-0060, MET-I-0001, MET-I-0060, MET-I-0061, MET-I-0062, MET-I-0063, MET-I-0064, MET-I-0065, MET-I-0066, MET-I-0067, MET-I-0068, MET-I-0069, MET-I-0070, MET-I-0071, MET-I-0072, MET-I-0073, MET-I-0074, MET-I-0075, MET-I-0076, MET-I-0077, MET-I-0078, MET-I-0079, MET-I-0080, MET-I-0081, MET-I-0082, MET-I-0083, MET-I-0084, MET-I-0085, MET-I-0086, MET-I-0087, MET-I-0088, MET-I-0089, MET-I-0090, MET-I-0091
+- `W_METRIC_LEN` **2건** — 지표 label ≤ 12자 · value ≤ 16자: MET-A-0002, MET-A-0003
+- `W_OPT_LEN` **3건** — 보기 60자 이하로: MET-A-0001, MET-A-0002, MET-I-0002
 
 ## 5. 추가 출제 목표
 
@@ -102,14 +114,14 @@
 
 | 템플릿 | params | 제약 · 주의 |
 |---|---|---|
-| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
-| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
-| `f_stack` | `n`(**core die 수**), `highlight`: null·height·midcore·base·gap·topcore, `gap_um`, `h_um`, `limit_um`, `bullet` | 표에 die n+1, 간극 n, 높이 h_um 표시 → 계산 답을 h_um/n 에 넣지 말 것 |
-| `f_rel` | `seq`[[문서, 시험명, 조건], …], `cur`(강조 행), `fails`[[cycle, %], …], `crit`(%), `hint`, `bullet` | x축 "TC cycle 수" 0–1000 고정, y 0–10 % |
+| `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
+| `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
+| `f_stack` | `n`(core die 수), `highlight`, `gap_um`, `h_um`, `limit_um`, `bullet`, `hideResult` | 계산 답을 `n`/`h_um` 에 넣지 말 것 |
+| `f_rel` | `seq` ≤ 4행, `cur`, `fails` ≤ 5점, `xlab`, `xmax`, `ymax`, `crit`, `hint`, `bullet` | 기본 seq 첫 행은 JESD22-A113 preconditioning. HTOL·HTS 는 `xlab`/`xmax` 를 시간 축으로 |
 
 
 - 장비 일반 상식 문항(진공·도금 교반·식각 압력)은 FEOL 로 `mv` 제안하거나 계측 관점으로 재작성.
-- 데이터 해석형 고급에 표가 필요하면 `f_plot`(그래프)으로 우선 해결하고, 표 템플릿(`f_table`)은 DA 에 요청 중(`EA_to_DA.md`). 확정 전에는 표 데이터를 지문 안 문장으로 쓴다.
+- 데이터 해석형 고급에는 `f_table`(표)·`f_wafermap`(맵)·`f_plot`(그래프)을 쓴다(DA Phase 1 신설, 예시는 LAYOUT_RULES §4). 결과를 그림이 계산하는 템플릿은 `hideResult` 의무(STANDARDS 부록 A.1).
 
 ## 7. 완료 조건
 

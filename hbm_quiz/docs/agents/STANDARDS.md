@@ -1,6 +1,7 @@
 # HBM 이해도 평가 — 문항 품질 기준서 (STANDARDS)
 
 - 소유: EA (Editor-in-chief Agent) · 적용 대상: `data/NN_CODE.json` 전 문항 · 자동 검사: `tools/validate.py`
+- 변경 이력: 2026-11-20 DA Phase 1 반영 — 부록 A 를 LAYOUT_RULES §3–4 와 일치(hideResult 의무, f_bond `dish` opt-in, f_sip `lines`, f_therm `core`, f_table·f_wafermap), 질문 마지막 문장 ≤ 90자, 수식 띄어쓰기, `metrics: []` 키 유지.
 - 변경 이력: 2026-11-20 W0.5 — WARP 를 WARP(Warpage 와 기계적 응력)·THERM(열 설계와 방열, `data/13_THERM.json`, legacy_prefix WARP)으로 분할. Smile/Cry 규약 확정.
 - 이 문서는 **모든 분야 에이전트의 공통 헌장**이다. 분야 브리프(`docs/agents/briefs/CODE.md`)는 이 문서를 전제로 쓴다.
 - 판정 순서: ① 기술적 사실 → ② 정답 유일성 → ③ 난이도 적합성 → ④ 오답 품질 → ⑤ 해설 → ⑥ 그림·지표 일치 → ⑦ 문체.
@@ -67,7 +68,7 @@
 ### 2.5 용어 규약 (분야 간 통일 — 위반은 교차분야 검사에서 E)
 - **N단 (N-Hi)** = core DRAM die N 장 + base die 1 장. 접합 계면(간극) 수 = **N** (base–core1 포함). "die 수" 라고 쓸 때는 base 포함 여부를 지문에 적는다. "12단 → 간극 11 개" 처럼 base 를 빼고 세는 서술은 금지.
 - **스택 높이** = base die + N × (core die + 간극) (+ 최상단 mold 가 있으면 따로 명시). 최상단 core die 두께가 다르면 따로 준다.
-- **Warpage 명칭(Smile / Cry)**: 이 문항집은 **"측정 자세를 그대로 둔 채 위에서 내려다본 형상"** 으로 부른다. 중앙이 기준면(chuck)에서 멀어진 볼록(∩) = **Cry (convex)**, 중앙이 기준면에 가까워진 오목(∪) = **Smile (concave)**. 자세(bump 면 아래 / BEOL 면 위)는 반드시 지문에 적고, die 자체의 휨 방향을 물을 때는 "BEOL 면 기준 볼록/오목" 으로 따로 묻는다. **(2026-11-20 오케스트레이터 승인으로 확정.)** 그림 `f_warp` 의 현재 표는 반대 규약이므로 DA 수정 전까지 이 표를 근거로 출제하지 않는다 — `EA_to_DA.md` §1.
+- **Warpage 명칭(Smile / Cry)**: 이 문항집은 **"측정 자세를 그대로 둔 채 위에서 내려다본 형상"** 으로 부른다. 중앙이 기준면(chuck)에서 멀어진 볼록(∩) = **Cry (convex)**, 중앙이 기준면에 가까워진 오목(∪) = **Smile (concave)**. 자세(bump 면 아래 / BEOL 면 위)는 반드시 지문에 적고, die 자체의 휨 방향을 물을 때는 "BEOL 면 기준 볼록/오목" 으로 따로 묻는다. **(2026-11-20 오케스트레이터 승인으로 확정.)** 그림 `f_warp` 표는 DA Phase 1 에서 이 규약으로 교체되었다(sign 1 = ∩ = Cry).
 - 공법 명칭: **TC-NCF**, **MR-MUF**, **HCB (hybrid copper bonding, Cu–Cu hybrid bonding)**. "TCB" 는 장비 방식(열압착) 이름이고 NCF/NCP/MUF 와 결합해 쓴다.
 - 단위 표기: µm (U+00B5), °C, Gb/s(핀 속도), GB/s(대역폭), W/m·K, m²·K/W, kA/cm². 숫자와 단위 사이 한 칸("5 µm"). 곱셈 ×, 나눗셈 ÷, 근사 ≈.
 
@@ -76,6 +77,7 @@
 ## 3. 문항 요건
 
 ### 3.1 지문 (stem / ctx+qt)
+- **질문은 지문(또는 qt)의 마지막 한 문장**에 두고 **90자 이하**로 쓴다(화면 패널 머리에 "묻는 것" 으로 다시 표시됨, `W_QT_LONG`). 지문 전체는 권장 450자, 상한 520자(MIX 사례 ctx 700자).
 - 하나의 문항은 **하나의 판단**을 묻는다. 두 독립 사실을 "A 이고 B 이다" 로 묶지 않는다.
 - 묻는 문장은 하나이며 "…무엇입니까? / 얼마입니까? / 옳은 것은 무엇입니까?" 로 끝난다. **이중 의문형 금지**: "…무엇이라 하는가 무엇입니까", "…인가 무엇입니까".
 - 부정형 발문("옳지 않은 것은")은 꼭 필요할 때만 쓰고 **'않은'** 을 지문 안에서 강조하지 않는다(화면 강조 불가) → 가급적 긍정형으로 바꾼다.
@@ -96,13 +98,15 @@
   - 오답 3개는 "…때문" 인데 정답만 "…해서/…시점" 처럼 **어미가 다른 것 금지**. 마침표 유무도 통일.
   - 절대어(항상·전혀·반드시·오직)가 오답에만 있는 패턴 금지.
   - 정답만 지문 어휘를 그대로 반복하는 연상 단서 금지.
+- 보기 길이 권장 40자, 상한 60자, 네 보기 길이를 비슷하게.
 - 수치 보기는 오름차순 정렬을 권장한다(정답 위치는 EA 가 Phase 2 에서 조정하므로 신경 쓰지 않아도 된다).
 
 ### 3.4 해설 (exp)
 - 구조: **① 정답 근거(원리·식) → ② 각 오답이 틀린 이유(번호 또는 내용으로 3개 모두) → ③ (선택) 실무 함의 1문장**.
 - 계산 문항: **식 → 값 대입(단위 포함) → 결과(반올림 규칙)** 를 그대로 보이고, 각 오답 값이 어떤 실수에서 나오는지 적는다.
 - ①–④ 참조는 **현재 보기 순서**와 일치해야 한다. 조사 규칙: ①은 ②는 ③은 ④는 / ①이 ②가 ③이 ④가 / ①을 ②를 ③을 ④를 / ①과 ②와 ③과 ④와. 묶음 참조("②③④는")는 마지막 번호에 맞춘다.
-- 길이 80–400 자. "②①④은 기술적 근거가 아니다" 식 번호 나열 해설은 금지.
+- 길이 80–400 자(상한 600). "②①④은 기술적 근거가 아니다" 식 번호 나열 해설은 금지.
+- **수식 표기**(화면이 수식 구간을 고정폭 "계산" 상자로 꾸민다 — LAYOUT_RULES §2): 수식과 한글을 **띄어 쓴다**(`Δα = 16.5 − 2.7 = 13.8 ppm/K 이므로`). 지수는 `2.07e-03` 표기(자동 변환), `×10^` 금지. 문장 끝은 `. `, 소수점 뒤 공백 금지.
 - 해설에서 처음 등장하는 새 사실(지문에 없는 수치·주장)은 2.1 의 출처 등급을 따른다.
 
 ### 3.5 제목 (title)
@@ -112,6 +116,7 @@
 
 ### 3.6 그림 (fig) — `[템플릿 이름, params]`
 - **k = 1 (상황도)**: 그림이 지문의 상황을 그린다. 그림에 표시되는 모든 수치(params 의 치수·온도·개수)는 **지문 수치와 동일**해야 하며, 지문에 없는 수치를 그림에만 두지 않는다(필요하면 지문에 추가). 기본값이 그려지는 키를 빠뜨리지 않는다(부록 A).
+- 결과를 스스로 계산·판정해 그리는 템플릿(f_stack·f_therm·f_hcb·f_tsv)으로 그 결과를 묻는 k=1 문항은 **`hideResult: true` 필수**(부록 A.1).
 - **그림은 정답을 보여 주면 안 된다.** 계산 문항에서 결과값(최대 단수, 높이, IMC 두께, 변위)을 params 에 넣으면 그림이 답을 알려 준다 → 결과값 대신 입력 조건만 그린다(예: `f_stack.n` 에 답인 최대 단수를 넣지 말 것; 필요하면 k=0 주제도로 바꾼다).
 - **k = 0 (주제도)**: 주제의 일반 구조만 그린다. 문항과 무관한 결함(void, pinch, undercut)이나 지문과 다른 공법·기법 분기(LIT 문항에 OBIRCH 그림)를 그리지 않는다. `flag` 는 "주제: …".
 - 지문이 "그림" 을 지칭하면 k=1 이어야 하며 그림이 실제로 그 내용을 보여야 한다.
@@ -119,7 +124,9 @@
 - 템플릿별 params 형식·제약은 부록 A. 새 템플릿이 필요하면 브리프에 적고 EA 가 DA 와 조율한다.
 
 ### 3.7 지표 (metrics) — `[[아이콘, 라벨, 값], …]`
-- 지문의 **조건·관측값**을 2–4 개 요약한다. 값은 지문과 **동일한 수치·단위**.
+- 지문의 **조건·관측값**을 2–4 개 요약한다. 값은 지문과 **동일한 수치·단위**. label ≤ 12자, value ≤ 16자.
+- 요약할 조건이 없으면 **`"metrics": []`** 로 둔다(화면의 "제시 조건" 띠가 숨는다). **키 자체는 지우지 않는다** — build 가 이 키를 읽는다.
+- 메타 지표는 화면 "제시 조건" 띠에 "난이도: 고급", "묻는 것: 해당 항목" 처럼 그대로 보인다 → **최우선 수정 대상**.
 - 메타 정보 금지: "난이도 · 초급", "묻는 것 · 이유", "세부 주제", "핵심어". (현재 2,580 문항이 이 형태 — 전부 교체)
 - 계산 결과·정답을 지표에 넣지 않는다. 개념 문항이라 요약할 조건이 없으면 지문의 핵심 전제(예: "측정 자세 · bump 면 아래")를 쓴다.
 
@@ -166,25 +173,42 @@
 
 ---
 
-## 부록 A. 그림 템플릿 params (template.html 기준, 2026-11-20)
+## 부록 A. 그림 템플릿 params (template.html DA Phase 1 이후, 2026-11-20 갱신)
 
-공통: `flag` (카드 머리말 조건 표시. k=0 이면 "주제: …"), `note` (캡션 교체). 표시 숫자는 k=1 이면 지문과 같아야 한다.
+허용 범위·글자 수 상한의 **원본은 `docs/agents/LAYOUT_RULES.md` §3–4** 이다(DA 소유). 아래는 그 사양에 **내용 규칙**을 더한 것이며, 둘이 다르면 LAYOUT_RULES 의 범위·상한을 따른다.
 
-| 템플릿 | params | 제약 · 주의 |
+공통: `flag`(≤ 20자, k=0 이면 "주제: …"), `note`(캡션 교체 ≤ 40자), `bullet`/`hint`(≤ 44자). k=1 이면 그림의 모든 숫자는 지문과 같아야 한다.
+
+### A.1 `hideResult: true` — 의무 조건
+그림이 계산·판정 결과를 스스로 표시하는 템플릿은 **그 결과를 묻는 k=1 문항에서 반드시 `hideResult: true`** 를 넣는다(검사기 `E_FIG_HIDE_RESULT`).
+| 템플릿 | 숨겨지는 것 | 의무가 되는 문항 |
 |---|---|---|
-| `f_tsv` | `dia_um`, `depth_um`, `ar`, `fill`: good·void·seam·pinch, `scallop`: 0·1, `scallopPitch`(µm), `scallopDepth`(nm), `barrier`: bool, `overburden`: bool, `taper`(하단/상단 폭 비, 기본 0.82) | `ar` = depth/dia (소수 1자리). scallop 수치는 scallop=0 이어도 오른쪽에 표시됨(DA 수정 요청 중) → k=1 이면 지문과 맞추거나 생략 시 기본 0.35 µm·60 nm 가 그려짐 |
-| `f_cmp` | `densA`, `densB`(%), `dish_nm`, `erosion_nm`, `nA`, `nB`(격자 수, 시각용) | 오른쪽 그래프는 고정 경향선(x축 0–60 %) |
-| `f_bs` | `step` 0–7 (0 reveal, 1 SiO₂, 2 SiN, 3 희생 SiO₂, 4 CMP(SiN stop), 5 Ti/Cu seed, 6 Ni plating, 7 seed etching), `defect`: none·undercut·residue(step 7 에서만), `ox1`, `sin`, `ox2`(nm), `ni_um` | 공정 흐름은 고정 8단계 |
-| `f_bump` | `pillar_um`, `solder_um`, `imc_um`, `niBarrier`, `kirkendall`, `em`(+`j_kA`), `temp`(°C), `k`(µm/√h), `hours`, `bullet` | IMC 라벨이 Ni 여부와 무관하게 Cu₆Sn₅/Cu₃Sn (DA 요청 중). 그래프 0–1000 h, 0–8 µm 고정 |
-| `f_saw` | `method`: blade·lg·stealth·plasma·deeplaser·dbg, `kerf_um`, `haz_um`(lg·deeplaser), `chip_um`(blade), `bullet` | 비교표 값 고정(plasma kerf 5–15 µm 등) → params 와 모순되지 않게 |
-| `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um`, `gap_um`, `voids` 0–3, `filler_trap`(ncf), `nonwet`, `bullet` | hcb 분기는 항상 dishing 미접합 pad 를 그리고 "gap" 치수를 표시(DA 요청 중) → hcb 에 bump 간극 수치를 주지 말 것 |
-| `f_warp` | `ref`: bump-down·beol-up, `sign`: 1(중앙이 기준면에서 멂)·−1(가까움), `mag_um`, `tg`, `temp` | 명명 표가 본 기준서 2.5 와 다름 → 수정 전 Smile/Cry 명칭 판정 문항에 쓰지 말 것 |
-| `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` 1–4, `bullet` | "2,048선" 라벨 고정(HBM3E 문항과 모순 주의) |
-| `f_therm` | `n`(**base 포함 총 die 수**), `q_Wmm2`, `tTop`(°C), `limit`(°C), `layers`: [[이름, 두께 µm, k W/m·K], …] (간극 1개를 지나는 층) | 그림이 ΔT = q·ΣR, base = tTop + ΔT·(n−1) 을 계산해 표시 → 지문의 N단(core 수)과 n 관계 주의: N단이면 n = N+1 |
-| `f_fa` | `tech`: lit·obirch·eotpr·xrm · lit/obirch: `hot`[x,y](0–1), `fov_um`, `depth` · eotpr: `feats`[[ps, mV, 라벨], …] · xrm: `dz`, `zpeak`(µm) | 지문 기법과 tech 일치 |
-| `f_rel` | `seq`[[문서, 시험명, 조건], …], `cur`(강조 행), `fails`[[cycle, %], …], `crit`(%), `hint`, `bullet` | x축 "TC cycle 수" 0–1000 고정, y 0–10 % |
-| `f_stack` | `n`(**core die 수**), `highlight`: null·height·midcore·base·gap·topcore, `gap_um`, `h_um`, `limit_um`, `bullet` | 표에 die n+1, 간극 n, 높이 h_um 표시 → 계산 답을 h_um/n 에 넣지 말 것 |
-| `f_hcb` | `pitch_um`, `tol_nm`, `off_nm`, `dish_nm`, `bullet` | 허용치 대비 초과/이내를 그림이 판정해 표시 → 판정이 답이면 정답 노출 |
-| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
-| `f_film` | `layers`[[이름, 상대두께, 색]], `roles`[[층, 두께, 역할]], `bullets`, `flags`[[층 index, 표시]] | |
-| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
+| `f_stack` | die 총 장수·간극 수·pad die 수·스택 높이·상한 판정색 | 높이·최대 단수·간극 수·상한 판정을 묻는 문항 |
+| `f_therm` | core/base 온도(최상단 `tTop` 만 표시), R·ΔT·상한 판정색 | 온도·ΔT·상한 판정을 묻는 문항 |
+| `f_hcb` | 허용치 "초과/이내" 판정 | overlay 판정을 묻는 문항 |
+| `f_tsv` | aspect ratio 값 | AR 을 묻는 문항 |
+`hideResult` 를 써도 **입력 params 에 정답 값을 넣으면 여전히 노출**이다(예: 최대 단수 문항에서 `f_stack.n` = 답). 그런 문항은 k=0 주제도로 바꾼다.
+
+### A.2 템플릿별 params 와 내용 규칙
+| 템플릿 | params (범위는 LAYOUT_RULES §4) | 내용 규칙 · 주의 |
+|---|---|---|
+| `f_tsv` | `dia_um`, `depth_um`, `ar`(생략 시 depth/dia 자동 — **생략 권장**), `fill`: good·void·seam·pinch, `scallop` 0·1, `scallopPitch`, `scallopDepth`, `barrier`, `overburden`, `taper`, `hideResult` | `ar` 을 주면 depth/dia 와 일치(E_FIG_INTERNAL). `scallop: 0` 이면 scallop 치수 미표시. k=0 은 `fill: "good"` |
+| `f_cmp` | `densA`, `densB`(%, 그래프에 A/B 표식), `dish_nm`, `erosion_nm`, `nA`, `nB` | 경향 그래프는 설명용 |
+| `f_bs` | `step` 0–7 (0 reveal … 7 seed etching), `defect`: none·undercut·residue(step 7), `ox1`, `sin`, `ox2`(nm), `ni_um` | 공정 흐름 고정 8단계 — "이 공정 흐름에서는" 으로 한정 |
+| `f_bump` | `pillar_um`, `solder_um`, `imc_um`, `niBarrier`(라벨 Ni₃Sn₄/(Cu,Ni)₆Sn₅), `kirkendall`, `em`+`j_kA`, `temp`, `k`, `hours`, `tmax`, `ymax`, `bullet` | 계산 결과를 `imc_um` 에 넣지 말 것(측정값만) |
+| `f_saw` | `method`: blade·lg·stealth·plasma·deeplaser·dbg, `kerf_um`, `haz_um`, `chip_um`, `bullet` | 표는 "대표 범위" — kerf 는 방식별 범위 안으로 |
+| `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um`, `gap_um`, `voids` 0–3, `filler_trap`, `nonwet`, **`dish`**, `bullet` | **hcb: dishing 미접합 pad 는 `dish: true` 일 때만 그려진다(기본 없음)** — dishing 을 근거로 쓰는 hcb 문항은 `dish: true` 필수(E_FIG_DISH_OPTIN). **hcb 에 `gap_um` 금지**(표시 안 됨, HCB 는 bump 간극 없음). 결함 표식(voids·filler_trap·nonwet·dish)은 동시에 2개 이하 |
+| `f_warp` | `ref`: bump-down·beol-up, `sign` 1 = ∩ = **Cry** / −1 = ∪ = **Smile**, `mag_um`, `tg`, `temp` | 표가 확정 규약(2.5)으로 교체됨. 정답 명칭과 sign 일치(E_FIG_WARP_NAME) |
+| `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` 1–8, **`lines`**, `bullet` | **`lines` 생략 시 숫자 없는 "HBM I/O 배선"**. 지문이 1,024 / 2,048 배선을 말하면 `lines` 를 그 값으로(E_FIG_SIP_LINES). HBM3E = 1024, HBM4 = 2048 |
+| `f_therm` | **`core`**(권장, n = core+1) 또는 `n`(base 포함 총 die 수), `q_Wmm2`, `tTop`, `limit`, `layers` ≤ 5행, `hideResult` | 새 문항은 `core` 로. N단 → `core: N`. 결과 온도는 현실 범위(≈ 110 °C 이하) |
+| `f_fa` | `tech`: lit·obirch·eotpr·xrm · `hot`, `fov_um`, `depth` · `feats` ≤ 4 · `dz`, `zpeak` | 지문 기법과 tech 일치 |
+| `f_rel` | `seq` ≤ 4행, `cur`, `fails` ≤ 5점, `xlab`, `xmax`, `ymax`, `crit`, `hint`, `bullet` | 기본 seq 첫 행은 JESD22-A113 preconditioning. HTOL·HTS 는 `xlab`/`xmax` 를 시간 축으로 |
+| `f_stack` | `n`(core die 수), `highlight`, `gap_um`, `h_um`, `limit_um`, `bullet`, `hideResult` | 계산 답을 `n`/`h_um` 에 넣지 말 것 |
+| `f_hcb` | `pitch_um` ≤ 10, `tol_nm`, `off_nm`, `dish_nm`, `bullet`, `hideResult` | |
+| `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
+| `f_film` | `layers` ≤ 9, `roles` ≤ 5, `bullets` ≤ 3, `flags` ≤ 2 | |
+| `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
+| **`f_table`** | `title`, `unit`, `cols` ≤ 5, `rows` ≤ 7 × 5(셀 ≤ 14자), `hl`/`hlRow`/`hlCol`, `notes` ≤ 3 | 고급 '실측 데이터 해석' 용. 강조(hl)가 정답을 가리키지 않게 — 관측 대상만 강조 |
+| **`f_wafermap`** | `title`, `grid` 9–25, `values` 또는 `pattern`(edge·center·ring·notch·random·quadrant), `scale`, `bin`, `marks` ≤ 4, `bullets` ≤ 3, `seed` | 맵 패턴을 묻는 문항에서 bullets·marks 로 원인을 쓰지 말 것 |
+
+예시는 LAYOUT_RULES §4 참조.

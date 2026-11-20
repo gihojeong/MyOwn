@@ -13,12 +13,13 @@
 | 합계 | 537 | 419 | 118 | |
 
 - k=1 상황도 419 · k=0 주제도 118 · 그림 사용: f_therm 468, f_sip 55, f_bond 10, f_hcb 2, f_stack 1, f_note 1
-- **차단 E 이슈가 있는 문항: 452 / 537** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
+- **차단 E 이슈가 있는 문항: 489 / 537** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
 
 ## 1. 자동 검사 요약 (기준선)
 
 | 코드 | 건수 | 예시 id |
 |---|---|---|
+| `E_FIG_HIDE_RESULT` | 251 | WARP-A-0002, WARP-A-0003, WARP-A-0004, WARP-A-0005 |
 | `E_K1_FIG_NUM` | 242 | WARP-A-0002, WARP-A-0033, WARP-A-0034, WARP-A-0035 |
 | `E_FAMILY_OVER` | 189 | WARP-A-0006, WARP-A-0007, WARP-A-0008, WARP-A-0009 |
 | `E_META_METRICS` | 118 | WARP-A-0178, WARP-A-0179, WARP-A-0181, WARP-A-0194 |
@@ -45,9 +46,11 @@
 | `W_OPT_WEAK` | 15 | WARP-A-0179, WARP-A-0195, WARP-A-0220, WARP-A-0232 |
 | `W_OPT_ABSOLUTE` | 9 | WARP-A-0057, WARP-A-0220, WARP-A-0221, WARP-A-0249 |
 | `W_FIG_LEAK` | 5 | WARP-A-0002, WARP-I-0027, WARP-I-0028, WARP-I-0029 |
+| `W_OPT_LEN` | 4 | WARP-A-0055, WARP-A-0057, WARP-A-0058, WARP-I-0055 |
 | `W_EXP_OFFTOPIC` | 3 | WARP-A-0181, WARP-A-0195, WARP-B-0085 |
 | `W_FIG_TOPIC` | 1 | WARP-B-0139 |
 | `W_OPT_PUNCT` | 1 | WARP-A-0220 |
+| `W_QT_LONG` | 1 | WARP-A-0220 |
 | `I_EXP_SRC_TAG` | 341 | WARP-A-0050, WARP-A-0051, WARP-A-0052, WARP-A-0053 |
 
 (참고: `I_JOSA_SPACE` 483 · `I_TEMPLATE_JOIN` 118 — 새로 쓰는 문장은 조사를 붙여 쓰고, ctx 조립형은 STANDARDS 3.1 에 따라 정리)
@@ -85,6 +88,7 @@
 
 ## 4. 작업 지시 (우선순위 순)
 
+0. **[최우선] 메타 지표 제거 — 428건** (`E_META_METRICS` 118, `W_META_METRICS` 310). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
 1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/THERM.md`, `docs/reviews/_facts.md`)를 반영한다.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
@@ -93,6 +97,14 @@
 6. **난이도 재배치**: 단순 대입 계산·용어 문항이 고급이면 lv 를 내린다. lv 가 바뀌면 id 의 LV 도 달라져야 하므로 **새 id(`CODE-LV-9xxx`)를 발급하고 `"prev": "옛 id"` 필드를 남긴다**(보고서에 old→new 기록). 고급은 STANDARDS §1 기준으로 채운다.
 7. **신규 출제**(§5) — 공백 주제 위주. 새 id 는 `THERM-LV-9001` 부터.
 8. 타 분야 문항은 고쳐서 `"mv": "CODE"` 로 이관 제안(EA 가 Phase 2 에서 이동) 하거나 자기 분야 관점으로 재작성.
+
+## 4A. DA Phase 1 템플릿 변경으로 손봐야 할 기존 문항
+
+템플릿 기본값·규약이 바뀌어(LAYOUT_RULES §3–4, STANDARDS 부록 A) 아래 문항은 params 를 고치지 않으면 그림이 지문과 어긋나거나 답을 보여 준다.
+
+- `E_FIG_HIDE_RESULT` **251건** — `hideResult: true` 추가 (그림이 계산·판정 결과를 표시). 입력 params 자체가 답이면(예: f_stack.n = 최대 단수) k=0 으로: WARP-A-0002, WARP-A-0003, WARP-A-0004, WARP-A-0005, WARP-A-0006, WARP-A-0007, WARP-A-0008, WARP-A-0009, WARP-A-0010, WARP-A-0011, WARP-A-0012, WARP-A-0013, WARP-A-0014, WARP-A-0015, WARP-A-0016, WARP-A-0017, WARP-A-0018, WARP-A-0019, WARP-A-0020, WARP-A-0021, WARP-A-0022, WARP-A-0023, WARP-A-0024, WARP-A-0025, WARP-A-0026, WARP-A-0027, WARP-A-0028, WARP-A-0029, WARP-A-0030, WARP-A-0031, WARP-A-0032, WARP-A-0051, WARP-A-0052, WARP-A-0057, WARP-A-0059, WARP-A-0060, WARP-A-0061, WARP-A-0062, WARP-A-0063, WARP-A-0064, WARP-A-0065, WARP-A-0066, WARP-A-0067, WARP-A-0068, WARP-A-0069, WARP-A-0070, WARP-A-0071, WARP-A-0072, WARP-A-0073, WARP-A-0074, WARP-A-0075, WARP-A-0076, WARP-A-0077, WARP-A-0078, WARP-A-0079, WARP-A-0080, WARP-A-0081, WARP-A-0082, WARP-A-0083, WARP-A-0084, WARP-A-0085, WARP-A-0086, WARP-A-0087, WARP-A-0088, WARP-A-0089, WARP-A-0090, WARP-A-0091, WARP-A-0092, WARP-A-0093, WARP-A-0094, WARP-A-0095, WARP-A-0096, WARP-A-0097, WARP-A-0098, WARP-A-0099, WARP-A-0100, WARP-A-0101, WARP-A-0102, WARP-A-0113, WARP-A-0114, WARP-A-0115, WARP-A-0116, WARP-A-0117, WARP-A-0118, WARP-A-0119, WARP-A-0120, WARP-A-0121, WARP-A-0122, WARP-A-0123, WARP-A-0124, WARP-A-0125, WARP-A-0126, WARP-A-0127, WARP-A-0128, WARP-A-0129, WARP-A-0130, WARP-A-0131, WARP-A-0132, WARP-A-0133, WARP-A-0134, WARP-A-0145, WARP-A-0146, WARP-A-0147, WARP-A-0148, WARP-A-0149, WARP-A-0150, WARP-A-0151, WARP-A-0152, WARP-A-0153, WARP-A-0154, WARP-A-0155, WARP-A-0156, WARP-A-0157, WARP-A-0158, WARP-A-0159, WARP-A-0160, WARP-A-0161, WARP-A-0162, WARP-A-0163, WARP-A-0164, WARP-A-0165, WARP-A-0166, WARP-I-0057, WARP-I-0063, WARP-I-0064, WARP-I-0065, WARP-I-0066, WARP-I-0067, WARP-I-0068, WARP-I-0069, WARP-I-0070, WARP-I-0071, WARP-I-0072, WARP-I-0073, WARP-I-0074, WARP-I-0075, WARP-I-0076, WARP-I-0077, WARP-I-0078, WARP-I-0079, WARP-I-0080, WARP-I-0081, WARP-I-0082, WARP-I-0083, WARP-I-0084, WARP-I-0085, WARP-I-0086, WARP-I-0087, WARP-I-0088, WARP-I-0089, WARP-I-0090, WARP-I-0091, WARP-I-0092, WARP-I-0093, WARP-I-0094, WARP-I-0095, WARP-I-0096, WARP-I-0097, WARP-I-0098, WARP-I-0099, WARP-I-0100, WARP-I-0101, WARP-I-0102, WARP-I-0103, WARP-I-0104, WARP-I-0105, WARP-I-0106, WARP-I-0107, WARP-I-0108, WARP-I-0109, WARP-I-0110, WARP-I-0111, WARP-I-0112, WARP-I-0113, WARP-I-0114, WARP-I-0115, WARP-I-0116, WARP-I-0117, WARP-I-0118, WARP-I-0119, WARP-I-0120, WARP-I-0121, WARP-I-0122, WARP-I-0123, WARP-I-0124, WARP-I-0125, WARP-I-0126, WARP-I-0149, WARP-I-0150, WARP-I-0151, WARP-I-0152, WARP-I-0153, WARP-I-0154, WARP-I-0155, WARP-I-0156, WARP-I-0157, WARP-I-0158, WARP-I-0159, WARP-I-0160, WARP-I-0161, WARP-I-0162, WARP-I-0163, WARP-I-0164, WARP-I-0165, WARP-I-0166, WARP-I-0167, WARP-I-0168, WARP-I-0169, WARP-I-0170, WARP-I-0171, WARP-I-0172, WARP-I-0173, WARP-I-0174, WARP-I-0175, WARP-I-0176, WARP-I-0177, WARP-I-0178, WARP-I-0179, WARP-I-0180, WARP-I-0203, WARP-I-0204, WARP-I-0205, WARP-I-0206, WARP-I-0207, WARP-I-0208, WARP-I-0209, WARP-I-0210, WARP-I-0211, WARP-I-0212, WARP-I-0213, WARP-I-0214, WARP-I-0215, WARP-I-0216, WARP-I-0217, WARP-I-0218, WARP-I-0219, WARP-I-0220, WARP-I-0221, WARP-I-0222, WARP-I-0223, WARP-I-0224, WARP-I-0225, WARP-I-0226, WARP-I-0227, WARP-I-0228, WARP-I-0229, WARP-I-0230, WARP-I-0231, WARP-I-0232, WARP-I-0233, WARP-I-0234
+- `W_QT_LONG` **1건** — 질문 마지막 문장 90자 이하로: WARP-A-0220
+- `W_OPT_LEN` **4건** — 보기 60자 이하로: WARP-A-0055, WARP-A-0057, WARP-A-0058, WARP-I-0055
 
 ## 5. 추가 출제 목표
 
@@ -110,17 +122,17 @@
 
 | 템플릿 | params | 제약 · 주의 |
 |---|---|---|
-| `f_therm` | `n`(**base 포함 총 die 수**), `q_Wmm2`, `tTop`(°C), `limit`(°C), `layers`: [[이름, 두께 µm, k W/m·K], …] (간극 1개를 지나는 층) | 그림이 ΔT = q·ΣR, base = tTop + ΔT·(n−1) 을 계산해 표시 → 지문의 N단(core 수)과 n 관계 주의: N단이면 n = N+1 |
-| `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` 1–4, `bullet` | "2,048선" 라벨 고정(HBM3E 문항과 모순 주의) |
-| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
-| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
-| `f_stack` | `n`(**core die 수**), `highlight`: null·height·midcore·base·gap·topcore, `gap_um`, `h_um`, `limit_um`, `bullet` | 표에 die n+1, 간극 n, 높이 h_um 표시 → 계산 답을 h_um/n 에 넣지 말 것 |
+| `f_therm` | **`core`**(권장, n = core+1) 또는 `n`(base 포함 총 die 수), `q_Wmm2`, `tTop`, `limit`, `layers` ≤ 5행, `hideResult` | 새 문항은 `core` 로. N단 → `core: N`. 결과 온도는 현실 범위(≈ 110 °C 이하) |
+| `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` 1–8, **`lines`**, `bullet` | **`lines` 생략 시 숫자 없는 "HBM I/O 배선"**. 지문이 1,024 / 2,048 배선을 말하면 `lines` 를 그 값으로(E_FIG_SIP_LINES). HBM3E = 1024, HBM4 = 2048 |
+| `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
+| `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
+| `f_stack` | `n`(core die 수), `highlight`, `gap_um`, `h_um`, `limit_um`, `bullet`, `hideResult` | 계산 답을 `n`/`h_um` 에 넣지 말 것 |
 
 
 
-- `f_therm.n` = base 포함 총 die 수(N단 → n = N+1), `layers` 는 지문의 층 두께·열전도율과 정확히 일치. 결과 온도(base die)는 그림이 계산해 표시하므로 그 온도를 묻는 문항은 DA 의 결과 숨김 옵션 도입 전까지 k=0 으로.
+- `f_therm.n` = base 포함 총 die 수(N단 → n = N+1), `layers` 는 지문의 층 두께·열전도율과 정확히 일치. 결과 온도(base die)는 그림이 계산해 표시하므로 그 온도를 묻는 문항은 `hideResult: true` 필수(§4A). 새 문항은 `n` 대신 `core`(= N단의 N).
 - 가족은 유형별 3개(1D 누적 / 총 발열 / 단위 환산 / TIM / 계면 ΔT / 냉각 예산 …), 나머지는 위 공백 주제로 대체.
-- 데이터 해석형 고급에 표가 필요하면 `f_plot`(그래프)으로 우선 해결하고, 표 템플릿(`f_table`)은 DA 에 요청 중(`EA_to_DA.md`). 확정 전에는 표 데이터를 지문 안 문장으로 쓴다.
+- 데이터 해석형 고급에는 `f_table`(표)·`f_wafermap`(맵)·`f_plot`(그래프)을 쓴다(DA Phase 1 신설, 예시는 LAYOUT_RULES §4). 결과를 그림이 계산하는 템플릿은 `hideResult` 의무(STANDARDS 부록 A.1).
 
 ## 7. 완료 조건
 

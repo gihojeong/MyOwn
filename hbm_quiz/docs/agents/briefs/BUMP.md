@@ -84,6 +84,7 @@
 
 ## 4. 작업 지시 (우선순위 순)
 
+0. **[최우선] 메타 지표 제거 — 283건** (`E_META_METRICS` 145, `W_META_METRICS` 138). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
 1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/BUMP.md`, `docs/reviews/_facts.md`)를 반영한다.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
@@ -92,6 +93,10 @@
 6. **난이도 재배치**: 단순 대입 계산·용어 문항이 고급이면 lv 를 내린다. lv 가 바뀌면 id 의 LV 도 달라져야 하므로 **새 id(`CODE-LV-9xxx`)를 발급하고 `"prev": "옛 id"` 필드를 남긴다**(보고서에 old→new 기록). 고급은 STANDARDS §1 기준으로 채운다.
 7. **신규 출제**(§5) — 공백 주제 위주. 새 id 는 `BUMP-LV-9001` 부터.
 8. 타 분야 문항은 고쳐서 `"mv": "CODE"` 로 이관 제안(EA 가 Phase 2 에서 이동) 하거나 자기 분야 관점으로 재작성.
+
+## 4A. DA Phase 1 템플릿 변경으로 손봐야 할 기존 문항
+
+- 해당 문항 없음(검사기 기준). 새 문항은 STANDARDS 부록 A 를 따른다.
 
 ## 5. 추가 출제 목표
 
@@ -109,13 +114,13 @@
 
 | 템플릿 | params | 제약 · 주의 |
 |---|---|---|
-| `f_bump` | `pillar_um`, `solder_um`, `imc_um`, `niBarrier`, `kirkendall`, `em`(+`j_kA`), `temp`(°C), `k`(µm/√h), `hours`, `bullet` | IMC 라벨이 Ni 여부와 무관하게 Cu₆Sn₅/Cu₃Sn (DA 요청 중). 그래프 0–1000 h, 0–8 µm 고정 |
-| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
-| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
+| `f_bump` | `pillar_um`, `solder_um`, `imc_um`, `niBarrier`(라벨 Ni₃Sn₄/(Cu,Ni)₆Sn₅), `kirkendall`, `em`+`j_kA`, `temp`, `k`, `hours`, `tmax`, `ymax`, `bullet` | 계산 결과를 `imc_um` 에 넣지 말 것(측정값만) |
+| `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
+| `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
 
 
 - `em: true` 문항의 `j_kA` 는 지문 전류밀도와 같게, 현실 범위(수~수십 kA/cm²) 안으로. 계산 결과를 `imc_um` 에 넣지 말 것(측정값만).
-- 데이터 해석형 고급에 표가 필요하면 `f_plot`(그래프)으로 우선 해결하고, 표 템플릿(`f_table`)은 DA 에 요청 중(`EA_to_DA.md`). 확정 전에는 표 데이터를 지문 안 문장으로 쓴다.
+- 데이터 해석형 고급에는 `f_table`(표)·`f_wafermap`(맵)·`f_plot`(그래프)을 쓴다(DA Phase 1 신설, 예시는 LAYOUT_RULES §4). 결과를 그림이 계산하는 템플릿은 `hideResult` 의무(STANDARDS 부록 A.1).
 
 ## 7. 완료 조건
 

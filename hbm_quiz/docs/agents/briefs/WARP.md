@@ -13,7 +13,7 @@
 | 합계 | 226 | 43 | 183 | |
 
 - k=1 상황도 43 · k=0 주제도 183 · 그림 사용: f_bond 120, f_warp 97, f_therm 9
-- **차단 E 이슈가 있는 문항: 210 / 226** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
+- **차단 E 이슈가 있는 문항: 216 / 226** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
 
 ## 1. 자동 검사 요약 (기준선)
 
@@ -28,6 +28,7 @@
 | `E_EXP_ONLY_REFS` | 82 | WARP-A-0218, WARP-A-0222, WARP-A-0224, WARP-A-0225 |
 | `E_FAMILY_OVER` | 22 | WARP-B-0006, WARP-B-0007, WARP-B-0011, WARP-B-0012 |
 | `E_K1_FIG_NUM` | 13 | WARP-B-0002, WARP-B-0003, WARP-B-0004, WARP-B-0005 |
+| `E_FIG_WARP_NAME` | 12 | WARP-I-0003, WARP-I-0005, WARP-I-0007, WARP-I-0008 |
 | `E_EXP_REF_ANSWER` | 2 | WARP-B-0100, WARP-I-0289 |
 | `E_DOUBLE_Q` | 1 | WARP-B-0132 |
 | `W_TITLE_COPY` | 183 | WARP-A-0167, WARP-A-0168, WARP-A-0169, WARP-A-0170 |
@@ -43,7 +44,9 @@
 | `W_EXP_OFFTOPIC` | 5 | WARP-B-0070, WARP-B-0073, WARP-I-0248, WARP-I-0252 |
 | `W_EXP_REF_MISMATCH` | 2 | WARP-A-0173, WARP-A-0192 |
 | `W_K1_METRIC_NUM` | 1 | WARP-B-0002 |
+| `W_METRIC_LEN` | 1 | WARP-I-0001 |
 | `W_OPT_PUNCT` | 1 | WARP-A-0219 |
+| `W_QT_LONG` | 1 | WARP-A-0219 |
 | `W_FIG_TOPIC` | 1 | WARP-A-0235 |
 | `W_NEAR_DUP_X` | 1 | WARP-B-0147 |
 
@@ -52,7 +55,7 @@
 ## 2. 표본 조사로 확인한 대표 결함 (EA 직접 판독: 난이도별 10문항 이상)
 
 - **W0.5 분할(2026-11-20)**: 원래 763문항 중 열 설계 537문항을 `data/13_THERM.json`(THERM 에이전트 소유)으로 옮겼다. 이 파일에는 warpage·몰딩·기계 응력 226문항이 남았다(이관 id 목록: `docs/reviews/_w05_split_moved_ids.json`). 열·warpage 가 섞인 경계 문항(TIM 두께 편차 + lid 평탄도 등 약 20)은 이 파일에 남겼다 — 열이 주제면 `"mv": "THERM"` 으로 제안.
-- **Smile/Cry 규약 확정**(오케스트레이터 승인): 측정 자세 그대로 **위에서 본 형상 — ∩ = Cry(convex), ∪ = Smile(concave)**. 현재 `f_warp` 표와 이 파일의 명명 판정 가족(WARP-I-0003~0006 등, "Bump 면이 아래 + 중앙이 멂 → Smile")은 **확정 규약과 반대이므로 전부 재작성**. DA 가 표를 고치기 전에는 그림 표를 정답 근거로 쓰지 말고, 지문에 측정 자세와 형상을 문장으로 명시한다.
+- **Smile/Cry 규약 확정**(오케스트레이터 승인): 측정 자세 그대로 **위에서 본 형상 — ∩ = Cry(convex), ∪ = Smile(concave)**. DA 가 `f_warp` 표를 이 규약으로 교체했다(sign 1 = ∩ = Cry). 이 파일의 명명 판정 가족(WARP-I-0003~0006 등, "Bump 면이 아래 + 중앙이 멂 → Smile")은 **옛 규약으로 쓰여 있어 이제 그림과 정답이 반대** — 전부 재작성(§4A `E_FIG_WARP_NAME`). 지문에 측정 자세와 형상을 문장으로도 명시한다.
 - 명명 판정 가족, Tg 거동 가족(WARP-B-0003 계열 10, -0008 계열 6)이 초·중급의 큰 비중 — 가족당 3개.
 - **ctx 조립형(몰딩·EMC 일반 상식)**: "진공 상태에서 molding 하는 이유", "유동성이 중요한 이유" 등 일반론과 빈약 오답("수축이 힘을 만듦" vs "색상이 변하기 때문", WARP-B-0094).
 - **타 분야 혼재**: 연삭 냉각수(WARP-I-0283 → BSP), 낱개 접합 과제(WARP-B-0138 → COW), 접합층 두께 축소 이유(WARP-B-0102 → COW/PROD), molded wafer 연삭 단차(WARP-I-0240 → BSP). `mv` 로 이관 제안.
@@ -79,6 +82,7 @@
 
 ## 4. 작업 지시 (우선순위 순)
 
+0. **[최우선] 메타 지표 제거 — 207건** (`E_META_METRICS` 183, `W_META_METRICS` 24). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
 1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/WARP.md`, `docs/reviews/_facts.md`)를 반영한다.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
@@ -87,6 +91,14 @@
 6. **난이도 재배치**: 단순 대입 계산·용어 문항이 고급이면 lv 를 내린다. lv 가 바뀌면 id 의 LV 도 달라져야 하므로 **새 id(`CODE-LV-9xxx`)를 발급하고 `"prev": "옛 id"` 필드를 남긴다**(보고서에 old→new 기록). 고급은 STANDARDS §1 기준으로 채운다.
 7. **신규 출제**(§5) — 공백 주제 위주. 새 id 는 `WARP-LV-9001` 부터.
 8. 타 분야 문항은 고쳐서 `"mv": "CODE"` 로 이관 제안(EA 가 Phase 2 에서 이동) 하거나 자기 분야 관점으로 재작성.
+
+## 4A. DA Phase 1 템플릿 변경으로 손봐야 할 기존 문항
+
+템플릿 기본값·규약이 바뀌어(LAYOUT_RULES §3–4, STANDARDS 부록 A) 아래 문항은 params 를 고치지 않으면 그림이 지문과 어긋나거나 답을 보여 준다.
+
+- `E_FIG_WARP_NAME` **12건** — `f_warp` 표가 확정 규약(sign 1 = ∩ = Cry)으로 바뀌어 정답 명칭과 그림이 반대 — 문항 재작성: WARP-I-0003, WARP-I-0005, WARP-I-0007, WARP-I-0008, WARP-I-0009, WARP-I-0010, WARP-I-0011, WARP-I-0013, WARP-I-0021, WARP-I-0022, WARP-I-0024, WARP-I-0025
+- `W_QT_LONG` **1건** — 질문 마지막 문장 90자 이하로: WARP-A-0219
+- `W_METRIC_LEN` **1건** — 지표 label ≤ 12자 · value ≤ 16자: WARP-I-0001
 
 ## 5. 추가 출제 목표
 
@@ -104,16 +116,16 @@
 
 | 템플릿 | params | 제약 · 주의 |
 |---|---|---|
-| `f_warp` | `ref`: bump-down·beol-up, `sign`: 1(중앙이 기준면에서 멂)·−1(가까움), `mag_um`, `tg`, `temp` | 명명 표가 본 기준서 2.5 와 다름 → 수정 전 Smile/Cry 명칭 판정 문항에 쓰지 말 것 |
-| `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um`, `gap_um`, `voids` 0–3, `filler_trap`(ncf), `nonwet`, `bullet` | hcb 분기는 항상 dishing 미접합 pad 를 그리고 "gap" 치수를 표시(DA 요청 중) → hcb 에 bump 간극 수치를 주지 말 것 |
-| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
-| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
+| `f_warp` | `ref`: bump-down·beol-up, `sign` 1 = ∩ = **Cry** / −1 = ∪ = **Smile**, `mag_um`, `tg`, `temp` | 표가 확정 규약(2.5)으로 교체됨. 정답 명칭과 sign 일치(E_FIG_WARP_NAME) |
+| `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um`, `gap_um`, `voids` 0–3, `filler_trap`, `nonwet`, **`dish`**, `bullet` | **hcb: dishing 미접합 pad 는 `dish: true` 일 때만 그려진다(기본 없음)** — dishing 을 근거로 쓰는 hcb 문항은 `dish: true` 필수(E_FIG_DISH_OPTIN). **hcb 에 `gap_um` 금지**(표시 안 됨, HCB 는 bump 간극 없음). 결함 표식(voids·filler_trap·nonwet·dish)은 동시에 2개 이하 |
+| `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
+| `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
 
 
 
-- `f_warp` 의 `ref`·`sign`·`mag_um`·`tg`·`temp` 는 지문과 일치. 명명 표는 DA 수정 대기 → 수정 후 확인.
+- `f_warp` 의 `ref`·`sign`·`mag_um`·`tg`·`temp` 는 지문과 일치. 명명 표는 확정 규약으로 교체 완료(sign 1 = Cry).
 - 이 파일에 남은 `f_therm` 9문항은 주제를 확인해 `mv: THERM` 또는 그림 교체.
-- 데이터 해석형 고급에 표가 필요하면 `f_plot`(그래프)으로 우선 해결하고, 표 템플릿(`f_table`)은 DA 에 요청 중(`EA_to_DA.md`). 확정 전에는 표 데이터를 지문 안 문장으로 쓴다.
+- 데이터 해석형 고급에는 `f_table`(표)·`f_wafermap`(맵)·`f_plot`(그래프)을 쓴다(DA Phase 1 신설, 예시는 LAYOUT_RULES §4). 결과를 그림이 계산하는 템플릿은 `hideResult` 의무(STANDARDS 부록 A.1).
 
 ## 7. 완료 조건
 

@@ -46,6 +46,7 @@
 | `W_OPT_ABSOLUTE` | 3 | DRAM-A-0080, DRAM-B-0139, DRAM-I-0125 |
 | `W_EXP_OFFTOPIC` | 2 | DRAM-B-0085, DRAM-I-0100 |
 | `W_OPT_PUNCT` | 2 | DRAM-A-0057, DRAM-I-0101 |
+| `W_QT_LONG` | 2 | DRAM-A-0057, DRAM-I-0101 |
 | `I_EXP_SRC_TAG` | 220 | DRAM-A-0001, DRAM-A-0002, DRAM-A-0003, DRAM-A-0004 |
 | `I_FACT_WATCH` | 57 | DRAM-A-0002, DRAM-A-0003, DRAM-A-0004, DRAM-A-0005 |
 
@@ -84,6 +85,7 @@
 
 ## 4. 작업 지시 (우선순위 순)
 
+0. **[최우선] 메타 지표 제거 — 304건** (`E_META_METRICS` 193, `W_META_METRICS` 111). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
 1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/DRAM.md`, `docs/reviews/_facts.md`)를 반영한다.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
@@ -92,6 +94,12 @@
 6. **난이도 재배치**: 단순 대입 계산·용어 문항이 고급이면 lv 를 내린다. lv 가 바뀌면 id 의 LV 도 달라져야 하므로 **새 id(`CODE-LV-9xxx`)를 발급하고 `"prev": "옛 id"` 필드를 남긴다**(보고서에 old→new 기록). 고급은 STANDARDS §1 기준으로 채운다.
 7. **신규 출제**(§5) — 공백 주제 위주. 새 id 는 `DRAM-LV-9001` 부터.
 8. 타 분야 문항은 고쳐서 `"mv": "CODE"` 로 이관 제안(EA 가 Phase 2 에서 이동) 하거나 자기 분야 관점으로 재작성.
+
+## 4A. DA Phase 1 템플릿 변경으로 손봐야 할 기존 문항
+
+템플릿 기본값·규약이 바뀌어(LAYOUT_RULES §3–4, STANDARDS 부록 A) 아래 문항은 params 를 고치지 않으면 그림이 지문과 어긋나거나 답을 보여 준다.
+
+- `W_QT_LONG` **2건** — 질문 마지막 문장 90자 이하로: DRAM-A-0057, DRAM-I-0101
 
 ## 5. 추가 출제 목표
 
@@ -109,13 +117,13 @@
 
 | 템플릿 | params | 제약 · 주의 |
 |---|---|---|
-| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
-| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
-| `f_therm` | `n`(**base 포함 총 die 수**), `q_Wmm2`, `tTop`(°C), `limit`(°C), `layers`: [[이름, 두께 µm, k W/m·K], …] (간극 1개를 지나는 층) | 그림이 ΔT = q·ΣR, base = tTop + ΔT·(n−1) 을 계산해 표시 → 지문의 N단(core 수)과 n 관계 주의: N단이면 n = N+1 |
+| `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
+| `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
+| `f_therm` | **`core`**(권장, n = core+1) 또는 `n`(base 포함 총 die 수), `q_Wmm2`, `tTop`, `limit`, `layers` ≤ 5행, `hideResult` | 새 문항은 `core` 로. N단 → `core: N`. 결과 온도는 현실 범위(≈ 110 °C 이하) |
 
 
 - 대역폭·채널 가족은 실제 세대(HBM3/3E/4) 구성으로 각 1개만 유지.
-- 데이터 해석형 고급에 표가 필요하면 `f_plot`(그래프)으로 우선 해결하고, 표 템플릿(`f_table`)은 DA 에 요청 중(`EA_to_DA.md`). 확정 전에는 표 데이터를 지문 안 문장으로 쓴다.
+- 데이터 해석형 고급에는 `f_table`(표)·`f_wafermap`(맵)·`f_plot`(그래프)을 쓴다(DA Phase 1 신설, 예시는 LAYOUT_RULES §4). 결과를 그림이 계산하는 템플릿은 `hideResult` 의무(STANDARDS 부록 A.1).
 
 ## 7. 완료 조건
 

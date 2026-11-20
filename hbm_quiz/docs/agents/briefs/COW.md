@@ -13,7 +13,7 @@
 | 합계 | 555 | 339 | 216 | |
 
 - k=1 상황도 339 · k=0 주제도 216 · 그림 사용: f_hcb 306, f_bond 247, f_note 1, f_saw 1
-- **차단 E 이슈가 있는 문항: 415 / 555** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
+- **차단 E 이슈가 있는 문항: 418 / 555** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
 
 ## 1. 자동 검사 요약 (기준선)
 
@@ -27,6 +27,7 @@
 | `E_TITLE_TRUNC` | 129 | COW-A-0152, COW-A-0153, COW-A-0154, COW-A-0155 |
 | `E_K1_FIG_NUM` | 104 | COW-A-0001, COW-A-0043, COW-A-0044, COW-A-0045 |
 | `E_EXP_ONLY_REFS` | 98 | COW-A-0178, COW-A-0180, COW-A-0181, COW-A-0183 |
+| `E_FIG_HIDE_RESULT` | 52 | COW-A-0003, COW-A-0004, COW-A-0005, COW-A-0006 |
 | `E_JOSA_EN` | 28 | COW-A-0077, COW-A-0155, COW-A-0164, COW-A-0174 |
 | `E_CALC_NO_WORK` | 5 | COW-B-0072, COW-B-0076, COW-I-0212, COW-I-0241 |
 | `E_FIG_ANSWER_LEAK` | 4 | COW-A-0082, COW-A-0085, COW-I-0036, COW-I-0044 |
@@ -45,9 +46,13 @@
 | `W_FIG_LEAK` | 17 | COW-A-0001, COW-A-0027, COW-A-0028, COW-A-0029 |
 | `W_OPT_ABSOLUTE` | 12 | COW-A-0074, COW-A-0076, COW-A-0174, COW-A-0175 |
 | `W_OPT_WEAK` | 11 | COW-A-0076, COW-B-0062, COW-B-0078, COW-B-0085 |
+| `W_OPT_LEN` | 9 | COW-A-0074, COW-A-0075, COW-A-0076, COW-A-0077 |
 | `W_EXP_OFFTOPIC` | 9 | COW-B-0052, COW-B-0062, COW-B-0063, COW-I-0141 |
+| `W_FIG_PARAM` | 8 | COW-B-0003, COW-B-0005, COW-B-0006, COW-B-0007 |
 | `W_FIG_TOPIC` | 5 | COW-A-0184, COW-A-0189, COW-B-0090, COW-B-0095 |
 | `W_OPT_PUNCT` | 2 | COW-A-0174, COW-I-0187 |
+| `W_QT_LONG` | 2 | COW-A-0174, COW-I-0187 |
+| `W_METRIC_LEN` | 1 | COW-I-0021 |
 | `W_OPT_STEM_ECHO` | 1 | COW-A-0077 |
 | `W_NEAR_DUP_X` | 1 | COW-A-0160 |
 | `I_EXP_SRC_TAG` | 223 | COW-A-0071, COW-A-0072, COW-A-0073, COW-A-0074 |
@@ -87,6 +92,7 @@
 
 ## 4. 작업 지시 (우선순위 순)
 
+0. **[최우선] 메타 지표 제거 — 437건** (`E_META_METRICS` 216, `W_META_METRICS` 221). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
 1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/COW.md`, `docs/reviews/_facts.md`)를 반영한다.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
@@ -95,6 +101,16 @@
 6. **난이도 재배치**: 단순 대입 계산·용어 문항이 고급이면 lv 를 내린다. lv 가 바뀌면 id 의 LV 도 달라져야 하므로 **새 id(`CODE-LV-9xxx`)를 발급하고 `"prev": "옛 id"` 필드를 남긴다**(보고서에 old→new 기록). 고급은 STANDARDS §1 기준으로 채운다.
 7. **신규 출제**(§5) — 공백 주제 위주. 새 id 는 `COW-LV-9001` 부터.
 8. 타 분야 문항은 고쳐서 `"mv": "CODE"` 로 이관 제안(EA 가 Phase 2 에서 이동) 하거나 자기 분야 관점으로 재작성.
+
+## 4A. DA Phase 1 템플릿 변경으로 손봐야 할 기존 문항
+
+템플릿 기본값·규약이 바뀌어(LAYOUT_RULES §3–4, STANDARDS 부록 A) 아래 문항은 params 를 고치지 않으면 그림이 지문과 어긋나거나 답을 보여 준다.
+
+- `E_FIG_HIDE_RESULT` **52건** — `hideResult: true` 추가 (그림이 계산·판정 결과를 표시). 입력 params 자체가 답이면(예: f_stack.n = 최대 단수) k=0 으로: COW-A-0003, COW-A-0004, COW-A-0005, COW-A-0006, COW-A-0007, COW-A-0008, COW-A-0009, COW-A-0010, COW-A-0011, COW-A-0012, COW-A-0013, COW-A-0014, COW-A-0015, COW-A-0016, COW-A-0017, COW-A-0018, COW-A-0019, COW-A-0020, COW-A-0021, COW-A-0022, COW-A-0023, COW-A-0024, COW-A-0025, COW-A-0026, COW-A-0043, COW-A-0044, COW-A-0045, COW-A-0046, COW-A-0047, COW-A-0048, COW-A-0049, COW-A-0050, COW-A-0051, COW-A-0052, COW-A-0053, COW-A-0054, COW-A-0055, COW-A-0056, COW-A-0057, COW-A-0058, COW-A-0059, COW-A-0060, COW-A-0061, COW-A-0062, COW-A-0063, COW-A-0064, COW-A-0065, COW-A-0066, COW-A-0067, COW-A-0068, COW-A-0069, COW-A-0070
+- `W_FIG_PARAM` **8건** — `f_bond` hcb 의 `gap_um` 제거(표시 안 됨; HCB 는 bump 간극 없음) 등 params 정리: COW-B-0003, COW-B-0005, COW-B-0006, COW-B-0007, COW-B-0008, COW-B-0015, COW-B-0023, COW-B-0025
+- `W_QT_LONG` **2건** — 질문 마지막 문장 90자 이하로: COW-A-0174, COW-I-0187
+- `W_METRIC_LEN` **1건** — 지표 label ≤ 12자 · value ≤ 16자: COW-I-0021
+- `W_OPT_LEN` **9건** — 보기 60자 이하로: COW-A-0074, COW-A-0075, COW-A-0076, COW-A-0077, COW-A-0078, COW-A-0174, COW-I-0021, COW-I-0022, COW-I-0023
 
 ## 5. 추가 출제 목표
 
@@ -112,14 +128,14 @@
 
 | 템플릿 | params | 제약 · 주의 |
 |---|---|---|
-| `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um`, `gap_um`, `voids` 0–3, `filler_trap`(ncf), `nonwet`, `bullet` | hcb 분기는 항상 dishing 미접합 pad 를 그리고 "gap" 치수를 표시(DA 요청 중) → hcb 에 bump 간극 수치를 주지 말 것 |
-| `f_hcb` | `pitch_um`, `tol_nm`, `off_nm`, `dish_nm`, `bullet` | 허용치 대비 초과/이내를 그림이 판정해 표시 → 판정이 답이면 정답 노출 |
-| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
-| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
+| `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um`, `gap_um`, `voids` 0–3, `filler_trap`, `nonwet`, **`dish`**, `bullet` | **hcb: dishing 미접합 pad 는 `dish: true` 일 때만 그려진다(기본 없음)** — dishing 을 근거로 쓰는 hcb 문항은 `dish: true` 필수(E_FIG_DISH_OPTIN). **hcb 에 `gap_um` 금지**(표시 안 됨, HCB 는 bump 간극 없음). 결함 표식(voids·filler_trap·nonwet·dish)은 동시에 2개 이하 |
+| `f_hcb` | `pitch_um` ≤ 10, `tol_nm`, `off_nm`, `dish_nm`, `bullet`, `hideResult` | |
+| `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
+| `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
 
 
 - `f_bond` hcb 분기는 bump 간극을 그리므로 HCB 상황도에는 `f_hcb` 를 쓴다. `f_hcb` 의 허용 초과/이내 표시는 판정형 문항의 답을 노출하므로 그 경우 k=0 으로.
-- 데이터 해석형 고급에 표가 필요하면 `f_plot`(그래프)으로 우선 해결하고, 표 템플릿(`f_table`)은 DA 에 요청 중(`EA_to_DA.md`). 확정 전에는 표 데이터를 지문 안 문장으로 쓴다.
+- 데이터 해석형 고급에는 `f_table`(표)·`f_wafermap`(맵)·`f_plot`(그래프)을 쓴다(DA Phase 1 신설, 예시는 LAYOUT_RULES §4). 결과를 그림이 계산하는 템플릿은 `hideResult` 의무(STANDARDS 부록 A.1).
 
 ## 7. 완료 조건
 

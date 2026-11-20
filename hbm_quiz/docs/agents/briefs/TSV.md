@@ -13,7 +13,7 @@
 | 합계 | 492 | 265 | 227 | |
 
 - k=1 상황도 265 · k=0 주제도 227 · 그림 사용: f_tsv 354, f_cmp 82, f_warp 54, f_plot 1, f_bump 1
-- **차단 E 이슈가 있는 문항: 360 / 492** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
+- **차단 E 이슈가 있는 문항: 367 / 492** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
 
 ## 1. 자동 검사 요약 (기준선)
 
@@ -28,6 +28,7 @@
 | `E_EXP_SHORT` | 117 | TSV-A-0118, TSV-A-0121, TSV-A-0122, TSV-A-0136 |
 | `E_EXP_ONLY_REFS` | 76 | TSV-A-0136, TSV-A-0141, TSV-A-0147, TSV-A-0148 |
 | `E_JOSA_EN` | 42 | TSV-A-0094, TSV-A-0095, TSV-A-0112, TSV-A-0114 |
+| `E_FIG_HIDE_RESULT` | 31 | TSV-B-0002, TSV-B-0003, TSV-B-0004, TSV-B-0005 |
 | `E_K1_FIG_NUM` | 15 | TSV-I-0013, TSV-I-0015, TSV-I-0016, TSV-I-0017 |
 | `E_DOUBLE_Q` | 5 | TSV-B-0061, TSV-B-0075, TSV-B-0076, TSV-B-0077 |
 | `E_OPT_DUP` | 3 | TSV-A-0021, TSV-A-0031, TSV-A-0044 |
@@ -42,14 +43,17 @@
 | `W_OPT_ODD_END` | 58 | TSV-A-0101, TSV-A-0102, TSV-A-0103, TSV-A-0123 |
 | `W_TITLE_QUESTION` | 35 | TSV-A-0170, TSV-B-0054, TSV-B-0055, TSV-B-0056 |
 | `W_TITLE_LEN` | 32 | TSV-A-0048, TSV-A-0055, TSV-A-0056, TSV-A-0057 |
+| `W_METRIC_LEN` | 28 | TSV-A-0045, TSV-A-0046, TSV-A-0055, TSV-A-0056 |
 | `W_OPT_LONGEST` | 21 | TSV-A-0045, TSV-A-0046, TSV-A-0047, TSV-A-0121 |
 | `W_FIG_K0_DEFECT` | 14 | TSV-A-0102, TSV-A-0110, TSV-A-0125, TSV-A-0153 |
 | `W_OPT_ABSOLUTE` | 11 | TSV-A-0100, TSV-A-0108, TSV-A-0115, TSV-A-0122 |
 | `W_OPT_WEAK` | 10 | TSV-A-0046, TSV-A-0101, TSV-A-0106, TSV-A-0135 |
+| `W_OPT_LEN` | 5 | TSV-A-0045, TSV-A-0046, TSV-A-0095, TSV-A-0096 |
 | `W_EXP_OFFTOPIC` | 3 | TSV-B-0062, TSV-B-0082, TSV-I-0156 |
 | `W_EXP_REF_MISMATCH` | 2 | TSV-A-0128, TSV-I-0125 |
 | `W_OPT_STEM_ECHO` | 1 | TSV-A-0114 |
 | `W_OPT_PUNCT` | 1 | TSV-A-0132 |
+| `W_QT_LONG` | 1 | TSV-A-0132 |
 | `I_EXP_SRC_TAG` | 115 | TSV-A-0045, TSV-A-0046, TSV-A-0047, TSV-A-0048 |
 
 (참고: `I_JOSA_SPACE` 485 · `I_TEMPLATE_JOIN` 227 — 새로 쓰는 문장은 조사를 붙여 쓰고, ctx 조립형은 STANDARDS 3.1 에 따라 정리)
@@ -87,6 +91,7 @@
 
 ## 4. 작업 지시 (우선순위 순)
 
+0. **[최우선] 메타 지표 제거 — 318건** (`E_META_METRICS` 227, `W_META_METRICS` 91). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
 1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/TSV.md`, `docs/reviews/_facts.md`)를 반영한다.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
@@ -95,6 +100,15 @@
 6. **난이도 재배치**: 단순 대입 계산·용어 문항이 고급이면 lv 를 내린다. lv 가 바뀌면 id 의 LV 도 달라져야 하므로 **새 id(`CODE-LV-9xxx`)를 발급하고 `"prev": "옛 id"` 필드를 남긴다**(보고서에 old→new 기록). 고급은 STANDARDS §1 기준으로 채운다.
 7. **신규 출제**(§5) — 공백 주제 위주. 새 id 는 `TSV-LV-9001` 부터.
 8. 타 분야 문항은 고쳐서 `"mv": "CODE"` 로 이관 제안(EA 가 Phase 2 에서 이동) 하거나 자기 분야 관점으로 재작성.
+
+## 4A. DA Phase 1 템플릿 변경으로 손봐야 할 기존 문항
+
+템플릿 기본값·규약이 바뀌어(LAYOUT_RULES §3–4, STANDARDS 부록 A) 아래 문항은 params 를 고치지 않으면 그림이 지문과 어긋나거나 답을 보여 준다.
+
+- `E_FIG_HIDE_RESULT` **31건** — `hideResult: true` 추가 (그림이 계산·판정 결과를 표시). 입력 params 자체가 답이면(예: f_stack.n = 최대 단수) k=0 으로: TSV-B-0002, TSV-B-0003, TSV-B-0004, TSV-B-0005, TSV-B-0006, TSV-B-0007, TSV-B-0008, TSV-B-0009, TSV-B-0010, TSV-B-0011, TSV-B-0012, TSV-B-0013, TSV-B-0014, TSV-B-0015, TSV-B-0016, TSV-B-0017, TSV-B-0018, TSV-B-0019, TSV-B-0020, TSV-B-0021, TSV-B-0022, TSV-B-0023, TSV-B-0024, TSV-B-0025, TSV-B-0026, TSV-B-0027, TSV-B-0028, TSV-B-0029, TSV-B-0030, TSV-B-0031, TSV-B-0032
+- `W_QT_LONG` **1건** — 질문 마지막 문장 90자 이하로: TSV-A-0132
+- `W_METRIC_LEN` **28건** — 지표 label ≤ 12자 · value ≤ 16자: TSV-A-0045, TSV-A-0046, TSV-A-0055, TSV-A-0056, TSV-A-0057, TSV-A-0058, TSV-A-0059, TSV-A-0060, TSV-B-0035, TSV-B-0037, TSV-B-0042, TSV-B-0045, TSV-B-0046, TSV-B-0049, TSV-I-0004, TSV-I-0005, TSV-I-0006, TSV-I-0008, TSV-I-0068, TSV-I-0069, TSV-I-0070, TSV-I-0071, TSV-I-0072, TSV-I-0073, TSV-I-0074, TSV-I-0075, TSV-I-0076, TSV-I-0077
+- `W_OPT_LEN` **5건** — 보기 60자 이하로: TSV-A-0045, TSV-A-0046, TSV-A-0095, TSV-A-0096, TSV-I-0055
 
 ## 5. 추가 출제 목표
 
@@ -112,17 +126,17 @@
 
 | 템플릿 | params | 제약 · 주의 |
 |---|---|---|
-| `f_tsv` | `dia_um`, `depth_um`, `ar`, `fill`: good·void·seam·pinch, `scallop`: 0·1, `scallopPitch`(µm), `scallopDepth`(nm), `barrier`: bool, `overburden`: bool, `taper`(하단/상단 폭 비, 기본 0.82) | `ar` = depth/dia (소수 1자리). scallop 수치는 scallop=0 이어도 오른쪽에 표시됨(DA 수정 요청 중) → k=1 이면 지문과 맞추거나 생략 시 기본 0.35 µm·60 nm 가 그려짐 |
-| `f_cmp` | `densA`, `densB`(%), `dish_nm`, `erosion_nm`, `nA`, `nB`(격자 수, 시각용) | 오른쪽 그래프는 고정 경향선(x축 0–60 %) |
-| `f_warp` | `ref`: bump-down·beol-up, `sign`: 1(중앙이 기준면에서 멂)·−1(가까움), `mag_um`, `tg`, `temp` | 명명 표가 본 기준서 2.5 와 다름 → 수정 전 Smile/Cry 명칭 판정 문항에 쓰지 말 것 |
-| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
-| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
+| `f_tsv` | `dia_um`, `depth_um`, `ar`(생략 시 depth/dia 자동 — **생략 권장**), `fill`: good·void·seam·pinch, `scallop` 0·1, `scallopPitch`, `scallopDepth`, `barrier`, `overburden`, `taper`, `hideResult` | `ar` 을 주면 depth/dia 와 일치(E_FIG_INTERNAL). `scallop: 0` 이면 scallop 치수 미표시. k=0 은 `fill: "good"` |
+| `f_cmp` | `densA`, `densB`(%, 그래프에 A/B 표식), `dish_nm`, `erosion_nm`, `nA`, `nB` | 경향 그래프는 설명용 |
+| `f_warp` | `ref`: bump-down·beol-up, `sign` 1 = ∩ = **Cry** / −1 = ∪ = **Smile**, `mag_um`, `tg`, `temp` | 표가 확정 규약(2.5)으로 교체됨. 정답 명칭과 sign 일치(E_FIG_WARP_NAME) |
+| `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
+| `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
 
 - 비고: f_warp(열팽창 계산 문항 — 부적합, 교체 권장)
 
 - `f_tsv` 의 `ar` 은 반드시 depth/dia (소수 1자리)로 맞춘다. k=0 주제도는 `fill: "good"`, `scallop: 0` 으로 중립화.
 - 저항 가족은 3개만 남기고(초·중·고 각 1, 고급은 barrier·계면 저항까지 포함한 다단 추정으로 재작성), 나머지 삭제.
-- 데이터 해석형 고급에 표가 필요하면 `f_plot`(그래프)으로 우선 해결하고, 표 템플릿(`f_table`)은 DA 에 요청 중(`EA_to_DA.md`). 확정 전에는 표 데이터를 지문 안 문장으로 쓴다.
+- 데이터 해석형 고급에는 `f_table`(표)·`f_wafermap`(맵)·`f_plot`(그래프)을 쓴다(DA Phase 1 신설, 예시는 LAYOUT_RULES §4). 결과를 그림이 계산하는 템플릿은 `hideResult` 의무(STANDARDS 부록 A.1).
 
 ## 7. 완료 조건
 

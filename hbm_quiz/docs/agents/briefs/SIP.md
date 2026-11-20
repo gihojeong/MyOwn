@@ -13,12 +13,13 @@
 | 합계 | 537 | 332 | 205 | |
 
 - k=1 상황도 332 · k=0 주제도 205 · 그림 사용: f_stack 297, f_sip 236, f_warp 1, f_cmp 1, f_film 1, f_note 1
-- **차단 E 이슈가 있는 문항: 437 / 537** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
+- **차단 E 이슈가 있는 문항: 494 / 537** (E_JOSA_CIRC 는 EA Phase 2 일괄 처리라 제외)
 
 ## 1. 자동 검사 요약 (기준선)
 
 | 코드 | 건수 | 예시 id |
 |---|---|---|
+| `E_FIG_HIDE_RESULT` | 235 | SIP-A-0002, SIP-A-0003, SIP-A-0004, SIP-A-0005 |
 | `E_META_METRICS` | 205 | SIP-A-0142, SIP-A-0143, SIP-A-0144, SIP-A-0145 |
 | `E_FIG_ANSWER_LEAK` | 170 | SIP-A-0009, SIP-A-0013, SIP-A-0014, SIP-A-0015 |
 | `E_STYLE_PLAIN` | 170 | SIP-A-0142, SIP-A-0143, SIP-A-0144, SIP-A-0145 |
@@ -29,6 +30,7 @@
 | `E_EXP_ONLY_REFS` | 116 | SIP-A-0149, SIP-A-0153, SIP-A-0155, SIP-A-0156 |
 | `E_K1_FIG_NUM` | 94 | SIP-A-0002, SIP-A-0003, SIP-A-0004, SIP-A-0005 |
 | `E_JOSA_EN` | 38 | SIP-A-0003, SIP-A-0004, SIP-A-0005, SIP-A-0006 |
+| `E_FIG_SIP_LINES` | 31 | SIP-B-0001, SIP-B-0003, SIP-B-0004, SIP-B-0005 |
 | `E_DOUBLE_Q` | 8 | SIP-B-0067, SIP-B-0078, SIP-B-0129, SIP-B-0134 |
 | `E_OPT_DUP` | 4 | SIP-A-0047, SIP-A-0064, SIP-A-0069, SIP-A-0070 |
 | `E_EXP_REF_ANSWER` | 4 | SIP-A-0152, SIP-B-0133, SIP-I-0138, SIP-I-0161 |
@@ -44,14 +46,17 @@
 | `W_OPT_WEAK` | 28 | SIP-A-0144, SIP-A-0146, SIP-A-0149, SIP-A-0156 |
 | `W_OPT_LONGEST` | 16 | SIP-A-0073, SIP-A-0074, SIP-A-0075, SIP-A-0076 |
 | `W_FIG_LEAK` | 10 | SIP-A-0003, SIP-A-0004, SIP-A-0005, SIP-A-0006 |
+| `W_METRIC_LEN` | 8 | SIP-I-0003, SIP-I-0004, SIP-I-0007, SIP-I-0008 |
 | `W_OPT_ABSOLUTE` | 7 | SIP-A-0150, SIP-A-0151, SIP-A-0163, SIP-A-0178 |
 | `W_TITLE_LEN` | 6 | SIP-I-0007, SIP-I-0008, SIP-I-0009, SIP-I-0010 |
 | `W_FIG_TOPIC` | 4 | SIP-A-0174, SIP-B-0135, SIP-I-0143, SIP-I-0146 |
 | `W_OPT_STEM_ECHO` | 3 | SIP-I-0002, SIP-I-0005, SIP-I-0006 |
 | `W_K1_METRIC_NUM` | 2 | SIP-A-0002, SIP-I-0014 |
+| `W_OPT_LEN` | 2 | SIP-A-0073, SIP-A-0075 |
 | `W_EXP_OFFTOPIC` | 2 | SIP-B-0094, SIP-B-0095 |
 | `W_STEM_NO_QMARK` | 1 | SIP-B-0132 |
 | `W_EXP_REF_MISMATCH` | 1 | SIP-B-0141 |
+| `W_QT_LONG` | 1 | SIP-I-0136 |
 | `I_FACT_WATCH` | 230 | SIP-A-0002, SIP-A-0013, SIP-A-0014, SIP-A-0015 |
 | `I_EXP_SRC_TAG` | 226 | SIP-A-0073, SIP-A-0074, SIP-A-0075, SIP-A-0076 |
 
@@ -90,6 +95,7 @@
 
 ## 4. 작업 지시 (우선순위 순)
 
+0. **[최우선] 메타 지표 제거 — 317건** (`E_META_METRICS` 205, `W_META_METRICS` 112). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
 1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/SIP.md`, `docs/reviews/_facts.md`)를 반영한다.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
@@ -98,6 +104,16 @@
 6. **난이도 재배치**: 단순 대입 계산·용어 문항이 고급이면 lv 를 내린다. lv 가 바뀌면 id 의 LV 도 달라져야 하므로 **새 id(`CODE-LV-9xxx`)를 발급하고 `"prev": "옛 id"` 필드를 남긴다**(보고서에 old→new 기록). 고급은 STANDARDS §1 기준으로 채운다.
 7. **신규 출제**(§5) — 공백 주제 위주. 새 id 는 `SIP-LV-9001` 부터.
 8. 타 분야 문항은 고쳐서 `"mv": "CODE"` 로 이관 제안(EA 가 Phase 2 에서 이동) 하거나 자기 분야 관점으로 재작성.
+
+## 4A. DA Phase 1 템플릿 변경으로 손봐야 할 기존 문항
+
+템플릿 기본값·규약이 바뀌어(LAYOUT_RULES §3–4, STANDARDS 부록 A) 아래 문항은 params 를 고치지 않으면 그림이 지문과 어긋나거나 답을 보여 준다.
+
+- `E_FIG_HIDE_RESULT` **235건** — `hideResult: true` 추가 (그림이 계산·판정 결과를 표시). 입력 params 자체가 답이면(예: f_stack.n = 최대 단수) k=0 으로: SIP-A-0002, SIP-A-0003, SIP-A-0004, SIP-A-0005, SIP-A-0006, SIP-A-0007, SIP-A-0008, SIP-A-0009, SIP-A-0010, SIP-A-0011, SIP-A-0012, SIP-A-0013, SIP-A-0014, SIP-A-0015, SIP-A-0016, SIP-A-0017, SIP-A-0018, SIP-A-0019, SIP-A-0020, SIP-A-0021, SIP-A-0022, SIP-A-0023, SIP-A-0024, SIP-A-0025, SIP-A-0026, SIP-A-0027, SIP-A-0028, SIP-A-0029, SIP-A-0030, SIP-A-0031, SIP-A-0032, SIP-A-0033, SIP-A-0034, SIP-A-0035, SIP-A-0036, SIP-A-0037, SIP-A-0038, SIP-A-0039, SIP-A-0040, SIP-A-0041, SIP-A-0042, SIP-A-0043, SIP-A-0044, SIP-A-0045, SIP-A-0046, SIP-A-0047, SIP-A-0048, SIP-A-0049, SIP-A-0050, SIP-A-0051, SIP-A-0052, SIP-A-0053, SIP-A-0054, SIP-A-0055, SIP-A-0056, SIP-A-0057, SIP-A-0058, SIP-A-0059, SIP-A-0060, SIP-A-0061, SIP-A-0062, SIP-A-0063, SIP-A-0064, SIP-A-0065, SIP-A-0066, SIP-A-0067, SIP-A-0068, SIP-A-0069, SIP-A-0070, SIP-A-0071, SIP-A-0072, SIP-A-0078, SIP-A-0079, SIP-A-0080, SIP-A-0081, SIP-A-0082, SIP-A-0083, SIP-A-0084, SIP-A-0085, SIP-A-0086, SIP-A-0087, SIP-A-0088, SIP-A-0089, SIP-A-0090, SIP-A-0091, SIP-A-0092, SIP-A-0093, SIP-A-0094, SIP-A-0095, SIP-A-0096, SIP-A-0097, SIP-A-0098, SIP-A-0099, SIP-A-0100, SIP-A-0101, SIP-A-0102, SIP-A-0103, SIP-A-0104, SIP-A-0105, SIP-A-0106, SIP-A-0107, SIP-A-0108, SIP-A-0109, SIP-A-0110, SIP-A-0111, SIP-A-0112, SIP-A-0113, SIP-A-0114, SIP-A-0115, SIP-A-0116, SIP-A-0117, SIP-A-0118, SIP-A-0119, SIP-A-0120, SIP-A-0121, SIP-A-0132, SIP-A-0133, SIP-A-0134, SIP-A-0135, SIP-A-0136, SIP-A-0137, SIP-A-0138, SIP-A-0139, SIP-A-0140, SIP-A-0141, SIP-B-0045, SIP-B-0046, SIP-B-0047, SIP-B-0048, SIP-B-0049, SIP-B-0050, SIP-B-0051, SIP-B-0052, SIP-B-0053, SIP-B-0054, SIP-B-0055, SIP-B-0056, SIP-B-0057, SIP-B-0058, SIP-B-0059, SIP-B-0060, SIP-B-0061, SIP-B-0062, SIP-B-0063, SIP-B-0064, SIP-B-0065, SIP-B-0066, SIP-I-0016, SIP-I-0017, SIP-I-0018, SIP-I-0019, SIP-I-0020, SIP-I-0021, SIP-I-0022, SIP-I-0023, SIP-I-0024, SIP-I-0025, SIP-I-0026, SIP-I-0027, SIP-I-0028, SIP-I-0029, SIP-I-0030, SIP-I-0031, SIP-I-0032, SIP-I-0033, SIP-I-0034, SIP-I-0035, SIP-I-0036, SIP-I-0037, SIP-I-0038, SIP-I-0039, SIP-I-0040, SIP-I-0041, SIP-I-0042, SIP-I-0043, SIP-I-0044, SIP-I-0045, SIP-I-0046, SIP-I-0047, SIP-I-0048, SIP-I-0049, SIP-I-0050, SIP-I-0051, SIP-I-0052, SIP-I-0053, SIP-I-0054, SIP-I-0055, SIP-I-0056, SIP-I-0057, SIP-I-0058, SIP-I-0059, SIP-I-0060, SIP-I-0061, SIP-I-0062, SIP-I-0063, SIP-I-0064, SIP-I-0065, SIP-I-0066, SIP-I-0067, SIP-I-0068, SIP-I-0069, SIP-I-0070, SIP-I-0071, SIP-I-0072, SIP-I-0073, SIP-I-0074, SIP-I-0075, SIP-I-0076, SIP-I-0077, SIP-I-0078, SIP-I-0079, SIP-I-0080, SIP-I-0081, SIP-I-0104, SIP-I-0105, SIP-I-0106, SIP-I-0107, SIP-I-0108, SIP-I-0109, SIP-I-0110, SIP-I-0111, SIP-I-0112, SIP-I-0113, SIP-I-0114, SIP-I-0115, SIP-I-0116, SIP-I-0117, SIP-I-0118, SIP-I-0119, SIP-I-0120, SIP-I-0121, SIP-I-0122, SIP-I-0123, SIP-I-0124, SIP-I-0125
+- `E_FIG_SIP_LINES` **31건** — `f_sip` 에 `lines` 추가 (기본값이 '숫자 없는 HBM I/O 배선' 으로 바뀜; 지문의 1,024/2,048 과 일치): SIP-B-0001, SIP-B-0003, SIP-B-0004, SIP-B-0005, SIP-B-0006, SIP-B-0007, SIP-B-0008, SIP-B-0009, SIP-B-0010, SIP-B-0011, SIP-B-0012, SIP-B-0013, SIP-B-0014, SIP-B-0015, SIP-B-0016, SIP-B-0017, SIP-B-0018, SIP-B-0019, SIP-B-0020, SIP-B-0021, SIP-B-0022, SIP-I-0003, SIP-I-0004, SIP-I-0005, SIP-I-0006, SIP-I-0007, SIP-I-0008, SIP-I-0009, SIP-I-0010, SIP-I-0011, SIP-I-0012
+- `W_QT_LONG` **1건** — 질문 마지막 문장 90자 이하로: SIP-I-0136
+- `W_METRIC_LEN` **8건** — 지표 label ≤ 12자 · value ≤ 16자: SIP-I-0003, SIP-I-0004, SIP-I-0007, SIP-I-0008, SIP-I-0009, SIP-I-0010, SIP-I-0011, SIP-I-0012
+- `W_OPT_LEN` **2건** — 보기 60자 이하로: SIP-A-0073, SIP-A-0075
 
 ## 5. 추가 출제 목표
 
@@ -115,14 +131,14 @@
 
 | 템플릿 | params | 제약 · 주의 |
 |---|---|---|
-| `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` 1–4, `bullet` | "2,048선" 라벨 고정(HBM3E 문항과 모순 주의) |
-| `f_stack` | `n`(**core die 수**), `highlight`: null·height·midcore·base·gap·topcore, `gap_um`, `h_um`, `limit_um`, `bullet` | 표에 die n+1, 간극 n, 높이 h_um 표시 → 계산 답을 h_um/n 에 넣지 말 것 |
-| `f_plot` | `title`, `x`{min,max,ticks,lab}, `y`{…}, `series`[{name, color(“RRGGBB”), pts[[x,y]], dash}], `marks`[[x, 라벨]], `bullets`[…] | 데이터 해석형 고급 문항의 주력 템플릿 |
-| `f_note` | `title`, `points`(≤ 4), `ask` | 정답 문장 금지 |
+| `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` 1–8, **`lines`**, `bullet` | **`lines` 생략 시 숫자 없는 "HBM I/O 배선"**. 지문이 1,024 / 2,048 배선을 말하면 `lines` 를 그 값으로(E_FIG_SIP_LINES). HBM3E = 1024, HBM4 = 2048 |
+| `f_stack` | `n`(core die 수), `highlight`, `gap_um`, `h_um`, `limit_um`, `bullet`, `hideResult` | 계산 답을 `n`/`h_um` 에 넣지 말 것 |
+| `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
+| `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
 
 
 - 높이 계산은 **입력 조건만 그림에** (n·h_um 에 답 금지). 높이 가족은 3개만 유지하고 나머지는 위 공백 주제로 대체.
-- 데이터 해석형 고급에 표가 필요하면 `f_plot`(그래프)으로 우선 해결하고, 표 템플릿(`f_table`)은 DA 에 요청 중(`EA_to_DA.md`). 확정 전에는 표 데이터를 지문 안 문장으로 쓴다.
+- 데이터 해석형 고급에는 `f_table`(표)·`f_wafermap`(맵)·`f_plot`(그래프)을 쓴다(DA Phase 1 신설, 예시는 LAYOUT_RULES §4). 결과를 그림이 계산하는 템플릿은 `hideResult` 의무(STANDARDS 부록 A.1).
 
 ## 7. 완료 조건
 

@@ -30,3 +30,4 @@
 5. **기존 hcb 문항**: `f_bond` hcb 의 dishing 이 opt-in 으로 바뀌었다 — dishing 을 근거로 쓰는 hcb 문항에는 `dish: true` 를 추가해야 한다. 마찬가지로 `f_sip` 에서 2,048 을 근거로 쓰던 문항은 `lines: 2048` 필요.
 6. **f_therm `n` 값**: 기존 문항은 `n` 그대로 동작한다. 새 문항은 `core` 로 쓰는 것을 권장.
 7. 남은 그림 결함 1건: `COW-I-0191` (`f_bond`, ncf + filler_trap + nonwet + voids 동시) — pill 두 개가 겹침. 결함 표식을 2개 이하로 줄이면 해결.
+- DECISION(orchestrator): 일괄 [근거] 꼬리표는 Phase 2 에서 제거. 문항별 출처는 src 필드에 두고, DA Phase 2 에서 src 가 있으면 해설 하단 회색 각주로 표시.

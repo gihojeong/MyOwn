@@ -31,31 +31,34 @@ WAIVABLE_E = {"E_K1_FIG_NUM", "E_FAMILY_OVER", "E_CALC_NO_WORK", "E_STYLE_PLAIN"
 # ───────────────────────── 그림 템플릿 스키마 ─────────────────────────
 # keys: template.html 이 읽는 params. q: 그림에 수치로 그려지는 키(k=1 이면 지문과 일치해야 함)
 FIG = {
-    "f_tsv": dict(keys="ar depth_um dia_um fill scallop scallopPitch scallopDepth barrier overburden taper note flag",
+    "f_tsv": dict(keys="ar depth_um dia_um fill scallop scallopPitch scallopDepth barrier overburden taper hideResult note flag",
                   q="ar depth_um dia_um", enums={"fill": ["good", "void", "seam", "pinch"]}),
     "f_cmp": dict(keys="nA nB densA densB dish_nm erosion_nm note flag", q="densA densB dish_nm erosion_nm"),
     "f_bs": dict(keys="step defect ox1 sin ox2 ni_um note flag", q="ox1 sin ox2",
                  enums={"defect": ["none", "undercut", "residue"], "step": list(range(8))}),
-    "f_bump": dict(keys="imc_um pillar_um solder_um niBarrier kirkendall em j_kA temp k hours bullet note flag",
+    "f_bump": dict(keys="imc_um pillar_um solder_um niBarrier kirkendall em j_kA temp k hours tmax ymax bullet note flag",
                    q="imc_um pillar_um solder_um temp"),
     "f_saw": dict(keys="method kerf_um haz_um chip_um bullet note flag", q="kerf_um",
                   enums={"method": ["blade", "lg", "stealth", "plasma", "deeplaser", "dbg"]}),
-    "f_bond": dict(keys="method pitch_um gap_um voids filler_trap nonwet bullet note flag", q="pitch_um gap_um",
+    "f_bond": dict(keys="method pitch_um gap_um voids filler_trap nonwet dish bullet note flag", q="pitch_um gap_um",
                    enums={"method": ["ncf", "mrmuf", "hcb"]}),
     "f_warp": dict(keys="ref sign mag_um temp tg note flag", q="mag_um tg",
                    enums={"ref": ["bump-down", "beol-up"], "sign": [1, -1]}),
-    "f_sip": dict(keys="type nHBM bullet note flag", q="nHBM",
-                  enums={"type": ["cowos-s", "cowos-r", "cowos-l", "emib", "emib-t"], "nHBM": [1, 2, 3, 4]}),
-    "f_therm": dict(keys="n q_Wmm2 tTop limit layers note flag", q="n q_Wmm2 tTop limit"),
+    "f_sip": dict(keys="type nHBM lines bullet note flag", q="nHBM",
+                  enums={"type": ["cowos-s", "cowos-r", "cowos-l", "emib", "emib-t"], "nHBM": [1, 2, 3, 4, 5, 6, 7, 8]}),
+    "f_therm": dict(keys="n core q_Wmm2 tTop limit layers hideResult note flag", q="n q_Wmm2 tTop limit"),
     "f_fa": dict(keys="tech depth hot fov_um dz zpeak feats note flag", q="",
                  enums={"tech": ["lit", "obirch", "eotpr", "xrm"]}),
-    "f_rel": dict(keys="seq cur fails crit hint bullet note flag", q="crit"),
-    "f_stack": dict(keys="n highlight gap_um h_um limit_um bullet note flag", q="n gap_um h_um limit_um",
+    "f_rel": dict(keys="seq cur fails crit hint xlab xmax ymax bullet note flag", q="crit"),
+    "f_stack": dict(keys="n highlight gap_um h_um limit_um hideResult bullet note flag", q="n gap_um h_um limit_um",
                     enums={"highlight": [None, "height", "midcore", "base", "gap", "topcore"]}),
-    "f_hcb": dict(keys="pitch_um tol_nm off_nm dish_nm bullet note flag", q="pitch_um tol_nm off_nm dish_nm"),
+    "f_hcb": dict(keys="pitch_um tol_nm off_nm dish_nm hideResult bullet note flag", q="pitch_um tol_nm off_nm dish_nm"),
     "f_plot": dict(keys="title x y series marks bullets note flag", q=""),
     "f_film": dict(keys="layers roles bullets flags note flag", q=""),
     "f_note": dict(keys="title points ask flag", q=""),
+    "f_table": dict(keys="title unit cols rows hl hlRow hlCol notes note flag", q=""),
+    "f_wafermap": dict(keys="title grid values pattern scale bin marks bullets seed note flag", q="",
+                       enums={"pattern": ["edge", "center", "ring", "notch", "random", "quadrant"]}),
 }
 for v in FIG.values():
     v["keys"] = set(v["keys"].split())
@@ -409,8 +412,11 @@ def check_item(q, code, join, issues, legacy=()):
             add("E_FIG_PARAM", "f_therm.layers = [[이름, 두께µm, k], ...]")
     if name == "f_note" and len(p.get("points") or []) > 4:
         add("W_FIG_PARAM", "f_note.points 는 4개까지만 그려짐")
-    if name == "f_sip" and isinstance(p.get("nHBM"), int) and p["nHBM"] > 4:
-        add("E_FIG_ENUM", "f_sip.nHBM ≤ 4")
+    if name == "f_table":
+        if len(p.get("cols") or []) > 5 or len(p.get("rows") or []) > 7 or any(len(r) > 5 for r in (p.get("rows") or [])):
+            add("E_FIG_PARAM", "f_table ≤ 7행 × 5열")
+    if name == "f_therm" and p.get("layers") and len(p["layers"]) > 5:
+        add("E_FIG_PARAM", "f_therm.layers ≤ 5행")
     if name == "f_stack" and isinstance(p.get("n"), int) and p.get("h_um") and p.get("limit_um"):
         pass
     figtext = " ".join(str(x) for x in leaves(p) if isinstance(x, str))
@@ -434,6 +440,55 @@ def check_item(q, code, join, issues, legacy=()):
     # k=1 수치 일치
     sn = nums(stem)
     ansn = nums(ans) - sn
+    hide = bool(p.get("hideResult"))
+    # ── LAYOUT_RULES §3–4 연동 규칙 (DA Phase 1 기본값 변경) ──
+    txt = stem + " " + " ".join(opts) + " " + exp
+    if name == "f_bond" and p.get("method") == "hcb":
+        if re.search(r"dishing|디싱|recess|함몰", stem + " " + " ".join(opts) + " " + exp, re.I) and p.get("dish") is not True:
+            add("E_FIG_DISH_OPTIN", "hcb 상황도가 dishing 을 다루는데 dish:true 없음 (DA 기본값 변경: dishing 은 opt-in)")
+        if "gap_um" in p:
+            add("W_FIG_PARAM", "f_bond hcb 에는 gap_um 을 주지 않는다(표시 안 함)")
+    if name == "f_sip":
+        mm = re.search(r"(2,?048|1,?024)\s?(개|선|bit|비트)", stem + " " + " ".join(opts))
+        if mm and p.get("lines") != int(mm.group(1).replace(",", "")):
+            add("E_FIG_SIP_LINES", f"지문의 {mm.group(1)} 배선을 그림에 표시하려면 lines:{mm.group(1).replace(',', '')} 필요(기본은 숫자 없음)")
+    if name == "f_warp" and p.get("sign") in (1, -1):
+        names = {"Cry": 1, "Smile": -1}
+        for nm_, sg in names.items():
+            if re.search(nm_, ans, re.I) and not re.search("Cry" if nm_ == "Smile" else "Smile", ans, re.I) and p["sign"] != sg and q["k"] == 1:
+                add("E_FIG_WARP_NAME", f"확정 규약: sign {p['sign']} 은 {'Cry(∩)' if p['sign'] == 1 else 'Smile(∪)'} 인데 정답은 {nm_}")
+    if q["k"] == 1 and name in ("f_stack", "f_therm", "f_hcb", "f_tsv") and not hide:
+        need = False
+        if name == "f_stack" and (CALC_Q.search(core) or re.search(r"높이|단수|장수|간극 수|판정", core)) and re.search(r"(µm|장|단|개|초과|넘)", ans):
+            need = True
+        if name == "f_therm" and re.search(r"°C|K\b|온도|ΔT", ans):
+            need = True
+        if name == "f_hcb" and re.search(r"초과|이내|벗어|허용", ans):
+            need = True
+        if name == "f_tsv" and re.search(r"aspect|AR", core) and re.search(r"\d\s?:\s?1", ans):
+            need = True
+        if need:
+            add("E_FIG_HIDE_RESULT", f"{name} 가 계산·판정 결과를 그림에 표시 → hideResult:true 필요")
+    # 텍스트 길이 (LAYOUT_RULES §1)
+    lastq = [x for x in re.split(r"(?<=[.?])\s+", (q.get("qt") or stem).strip()) if x.strip()]
+    if lastq and len(lastq[-1]) > 90:
+        add("W_QT_LONG", f"질문(마지막 문장) {len(lastq[-1])}자 > 90")
+    lim = 700 if code == "MIX" and q.get("ctx") else 520
+    if len(stem) > lim:
+        add("W_STEM_LEN", f"지문 {len(stem)}자 > {lim}")
+    if any(len(o) > 60 for o in opts):
+        add("W_OPT_LEN", "보기 60자 초과")
+    if len(exp) > 600:
+        add("W_EXP_LEN", f"해설 {len(exp)}자 > 600")
+    for x in q["metrics"]:
+        if len(x[1]) > 12 or len(x[2]) > 16:
+            add("W_METRIC_LEN", f"지표 label ≤12 / value ≤16: {x[1]}={x[2]}")
+            break
+    mm = re.search(r"[=≈×÷]\s?[-−]?[\d.,]+(?:e-?\d+)?(?:\s?[A-Za-zµ°%/²³·]+)?(?<!\s)(?![개장단배회번분초시층행열곳])[가-힣]", exp)
+    if mm:
+        add("W_EXP_FORMULA_SPACE", f"수식과 한글을 띄어 쓸 것: '{mm.group(0)}'")
+    if re.search(r"×\s?10\^", exp):
+        add("W_EXP_FORMULA_SPACE", "지수는 e-3 표기(×10^ 금지)")
     if q["k"] == 1:
         bad, extra, leak = [], [], []
         for kk in spec["q"]:
@@ -451,7 +506,8 @@ def check_item(q, code, join, issues, legacy=()):
             if rv in sn:
                 continue
             if rv in ansn:
-                leak.append(f"{kk}={v}")
+                if not (hide and (name, kk) in (("f_stack", "h_um"), ("f_tsv", "ar"))):
+                    leak.append(f"{kk}={v}")
             elif ctx_rx and re.search(ctx_rx, stem, re.I):
                 bad.append(f"{kk}={v}")
             else:
@@ -699,6 +755,12 @@ CODE_DOC = {
     "E_GRAMMAR_TRUNC": "'…층을입니다' 처럼 문장을 잘라 붙인 흔적",
     "W_OPT_WEAK": "규정·비용·장비 일정·색상 등 기술적으로 무의미해 바로 소거되는 오답",
     "W_EXP_OFFTOPIC": "해설 첫 문장이 문항과 무관 (다른 문항 해설 혼입 의심)",
+    "E_FIG_HIDE_RESULT": "k=1 계산·판정 문항인데 f_stack/f_therm/f_hcb/f_tsv 에 hideResult:true 없음 (LAYOUT_RULES §3)",
+    "E_FIG_DISH_OPTIN": "f_bond hcb 상황도가 dishing 을 다루는데 dish:true 없음 (DA 기본값 변경)",
+    "E_FIG_SIP_LINES": "f_sip 지문이 1,024/2,048 배선을 말하는데 lines 값 없음·불일치 (DA 기본값 변경)",
+    "E_FIG_WARP_NAME": "f_warp sign 과 정답 명칭 불일치 (확정 규약: sign 1 = ∩ = Cry, −1 = ∪ = Smile)",
+    "W_QT_LONG / W_STEM_LEN / W_OPT_LEN / W_EXP_LEN / W_METRIC_LEN": "LAYOUT_RULES §1 길이 상한 (질문 마지막 문장 90, 지문 520(MIX ctx 700), 보기 60, 해설 600, 지표 label 12·value 16)",
+    "W_EXP_FORMULA_SPACE": "해설 수식 뒤 한글을 붙여 씀 / ×10^ 사용 (LAYOUT_RULES §2)",
     "W_OPT_PUNCT / W_OPT_FORM_MIX": "정답만 마침표 유무가 다름 / 보기 종결 형식 혼재",
     "I_EXP_SRC_TAG": "일괄 부착된 '[근거] …' 꼬리표 — EA Phase 2 에서 제거",
     "E_DUP_EXACT": "핵심 텍스트+보기 동일 문항",
