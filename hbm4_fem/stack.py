@@ -20,10 +20,11 @@ MAT = dict(
     beol_nu=0.34,
 )
 VF_VIEWER = np.pi/4*(25/45)**2          # viewer 기본 D25/P45 → 0.2424 (참고)
+A_DRAM = {"hbm3e": 10.0*10.0, "hbm4": 11.9*10.1}     # DRAM die 면적 [mm²] (HBM4: SA 추정 11.9×10.1)
 BUMP = dict(D=0.015, N={"hbm3e": 200_000, "hbm4": 250_000}, N_tsv=25_000)   # 총 개수(TSV 포함), 직경 15 μm
 def bump_vf(gen):
     """vf = N·πD²/4 / A_DRAM  (TSV·dummy 동일 pitch 가정) → HBM3E 0.353, HBM4 0.442"""
-    return BUMP["N"][gen]*np.pi/4*BUMP["D"]**2/L_DRAM**2
+    return BUMP["N"][gen]*np.pi/4*BUMP["D"]**2/(A_DRAM.get(gen, L_DRAM**2))
 def tsv_band(gen):
     """TSV 영역 면적 = N_tsv/N · A_DRAM (같은 pitch) → 중앙 band 폭 [mm] (길이 = L_DRAM)"""
     return BUMP["N_tsv"]/BUMP["N"][gen]*L_DRAM
@@ -40,9 +41,16 @@ def case(gen="hbm3e", nh=12, set_="design", **over):
 def top_si(c):
     return c["tot"] - (c["lm"] + c["lsi"] + (c["nh"]-1)*(c["nc"]+c["mm"]+c["ms"]) + c["nc"] + c["tm"])
 
+def Ls(c): return c.get("L_logic", L_LOGIC), c.get("L_dram", L_DRAM)     # 제품별 die 변 [mm] (기본 viewer 11.5/10.0), x 방향
+def Lxy(c):
+    """직사각 die 지원: (logic x, logic y, dram x, dram y) [mm]. y 값 미지정 시 x 와 동일(정사각)."""
+    lx, dx = Ls(c); return lx, c.get("L_logic_y", lx), dx, c.get("L_dram_y", dx)
+def half_y(c, hx):
+    """layers() 의 half_span(=x 반폭) → 같은 층의 y 반폭"""
+    lx, ly, dx, dy = Lxy(c); return ly/2 if abs(hx-lx/2) < 1e-9 else dy/2
 def layers(c):
     """bottom→top: (name, kind, z0, z1, half_span)  kind ∈ beol, si_base(순수 Si), gap, si(mid, BS-ONO 혼합), si_top, emc"""
-    L, z = [], 0.0; hl, hd = L_LOGIC/2, L_DRAM/2
+    L, z = [], 0.0; hl, hd = Ls(c)[0]/2, Ls(c)[1]/2
     def add(n, k, t, h):
         nonlocal z; L.append((n, k, z, z+t, h)); z += t
     add("Base_BEOL", "beol", c["lm"], hl); add("Base_Si", "si_base", c["lsi"], hl)
@@ -116,19 +124,19 @@ def eps_free(kind, T, c):
 
 def clt_warp(c, T):
     """viewer 방식 CLT 검산: 구면 곡률 → DRAM vertex warp (중앙−vertex, μm). 측면 EMC 는 면적혼합 F_eff=0.85."""
-    F = 1-0.615*(1-(L_DRAM/L_LOGIC)**2); z = [0.0]; Ls = []
+    Ll, Ld = Ls(c); lx, ly, dx, dy = Lxy(c); F = 1-0.615*(1-(dx*dy)/(lx*ly)); z = [0.0]; LL = []
     Me, eE = props("emc", c)["E"]/(1-props("emc", c)["nu"]), eps_free("emc", T, c)[0]
     for (n, k, z0, z1, h) in layers(c):
         if k == "emc": continue
         p = props(k, c); M = p["E"]/(1-p["nu"]); e = eps_free(k, T, c)[0]
-        if h < L_LOGIC/2:  # DRAM 레벨: EMC 와 면적 혼합
+        if h < Ll/2:  # DRAM 레벨: EMC 와 면적 혼합
             Mm = F*M+(1-F)*Me; e = (F*M*e+(1-F)*Me*eE)/Mm; M = Mm
-        Ls.append((z1-z0, M, e))
-    zz = np.cumsum([0]+[l[0] for l in Ls]); zm = zz[-1]/2; A = B = D = N = Mt = 0
-    for (t, M, e), z0, z1 in zip(Ls, zz[:-1]-zm, zz[1:]-zm):
+        LL.append((z1-z0, M, e))
+    zz = np.cumsum([0]+[l[0] for l in LL]); zm = zz[-1]/2; A = B = D = N = Mt = 0
+    for (t, M, e), z0, z1 in zip(LL, zz[:-1]-zm, zz[1:]-zm):
         A += M*(z1-z0); B += M*(z1**2-z0**2)/2; D += M*(z1**3-z0**3)/3; N += M*e*(z1-z0); Mt += M*e*(z1**2-z0**2)/2
     k = (A*Mt-B*N)/(A*D-B*B)                       # 1/mm, w = −½κr² 규약 → 중앙−vertex = +½κ r²
-    return 0.5*k*(L_DRAM/np.sqrt(2))**2*1e3
+    return 0.5*k*((dx/2)**2+(dy/2)**2)*1e3
 
 # ---- 보정 결과 (validate2/calib2, HBM3E-12H 실측 25/230 °C) ----
 #  viewer 규약(상수 E, Voigt gap)  : 25→230 °C 변화폭 13.5 μm (실측 5.5) → T0b 로는 보정 불가

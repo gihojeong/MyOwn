@@ -12,7 +12,7 @@ KINDS = ["beol", "si_base", "si", "si_top", "gap", "emc"]
 
 def axis(a, b, n): return np.linspace(a, b, n+1)
 def build(name, c, temps=TEMPS, elprint=(25, 230)):
-    L = S.layers(c); hd, hl = S.L_DRAM/2, S.L_LOGIC/2
+    L = S.layers(c); hl, hd = S.Ls(c)[0]/2, S.Ls(c)[1]/2
     X = np.r_[axis(0, hd, int(round(hd/H_IN))), axis(hd, hl, N_RING)[1:]]; Y = X.copy()
     Z = [0.0]
     for (n, k, z0, z1, h) in L:
@@ -66,7 +66,7 @@ def solve(name):
 
 def warp(name, c, temps=TEMPS):
     m = np.load(f"{OUT}/{name}_mesh.npz"); X, Y, Z = m["X"], m["Y"], m["Z"]; nx, ny, nz = len(X), len(Y), len(Z)
-    st = read_frd(f"{OUT}/{name}.frd"); hd = S.L_DRAM/2
+    st = read_frd(f"{OUT}/{name}.frd"); hd = S.Ls(c)[1]/2
     iD = int(np.argmin(abs(X-hd)))
     R = {}
     for T, s in zip(temps, st):
