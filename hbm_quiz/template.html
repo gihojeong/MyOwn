@@ -650,10 +650,13 @@ function f_cmp(s, p) {
   annotTo(s, x0 + 0.9, cy + 0.12, 0, "dishing " + (p.dish_nm || 90) + " nm — 넓은 Cu 가 국부로 파인다", K.pink);
   annotTo(s, x0 + 2.5, cy + 0.2, 1, "erosion " + (p.erosion_nm || 40) + " nm — 고밀도 영역이 함께 내려간다", K.pink);
   const g = axes(s, RC.x + 0.72, TOP + 0.75, 2.8, 2.9, {
-    xmin: 0, xmax: 60, xticks: [0, 15, 30, 45, 60], ymin: 0, ymax: 160, yticks: [0, 40, 80, 120, 160],
+    xmin: 0, xmax: 80, xticks: [0, 20, 40, 60, 80], ymin: 0, ymax: 200, yticks: [0, 50, 100, 150, 200],
     xlab: "pattern density (%)", ylab: "표면 단차 (nm)",
   });
-  const dd = [[5, 25], [15, 55], [30, 95], [45, 125], [60, 150]], ee = [[5, 10], [15, 22], [30, 38], [45, 52], [60, 62]];
+  const dd = [[5, 25], [15, 55], [30, 95], [45, 125], [60, 150], [75, 172]], ee = [[5, 10], [15, 22], [30, 38], [45, 52], [60, 62], [75, 71]];
+  // 이 문항의 두 영역 밀도를 표식으로 (A, B)
+  [["A", p.densA || 15, K.blue], ["B", p.densB || 55, K.orange]].forEach(([nm, d, c]) => { const xx = g.X(Math.min(80, d));
+    L(s, xx, g.Y(0), xx, g.Y(200), K.edge, 0.8, { dash: 1 }); pill(s, xx, g.Y(200) + 0.2, nm + " " + d + "%", { fs: 7, fill: c, h: 0.2 }); });
   curve(s, dd.map(([a, b]) => [g.X(a), g.Y(b)]), K.rust, 1.6); dd.forEach(([a, b]) => E(s, g.X(a) - 0.05, g.Y(b) - 0.05, 0.1, 0.1, K.rust, { line: null }));
   curve(s, ee.map(([a, b]) => [g.X(a), g.Y(b)]), "4D6B35", 1.6, { dash: 1 }); ee.forEach(([a, b]) => E(s, g.X(a) - 0.05, g.Y(b) - 0.05, 0.1, 0.1, "4D6B35", { line: null }));
   legend(s, RC.x + 0.72, TOP + 4.22, [[K.rust, "dishing (배선 폭 의존)"], ["4D6B35", "erosion (영역 전체)"]], { cols: 1, cw: 3.0 });
@@ -810,7 +813,8 @@ function f_saw(s, p) {
     ["deep laser", "20–40 µm", "10 µm 이상", "작음"]];
   const keymap = { blade: 1, lg: 2, stealth: 3, plasma: 4, deeplaser: 5, dbg: 1 };
   table(s, rows, RC.x, TOP, RC.w, keymap[m]);
-  pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.42, p.bullet || "붉은 행이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  T(s, "표는 방식별 대표 범위 · 이 문항의 수치는 지문 기준", RC.x, TOP + 0.32 + 6 * 0.60 + 0.06, RC.w, 0.2, { fs: 7, color: K.muted });
+  pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.55, p.bullet || "붉은 행이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
 }
 
@@ -893,14 +897,15 @@ function f_warp(s, p) {
   A(s, x0 + w / 2, baseY, x0 + w / 2, midY + 0.18, K.rust, 1.3, { both: true });
   pill(s, x0 + w / 2 + 0.1, (baseY + midY) / 2, "중앙 변위 " + (p.mag_um || 80) + " µm", { fs: 8, fill: K.orange, align: "left" });
   L(s, x0, edgeY, x0 + w, edgeY, K.edge, 0.7, { dash: 1 });
-  annot(s, 0, sg > 0 ? "중앙이 기준면에서 멀어진 형상" : "중앙이 기준면에 가까워진 형상", K.pink);
+  annot(s, 0, sg > 0 ? "중앙이 기준면에서 멀어진 형상 (∩) = Cry" : "중앙이 기준면에 가까워진 형상 (∪) = Smile", K.pink);
   // 우측: 명명 규칙 표 (3행으로 압축) + 온도 곡선
   // 명칭 규약 (EA STANDARDS 2.5): 측정 자세 그대로 위에서 본 형상 — 중앙이 기준면에서 멀어짐(∩) = Cry, 가까워짐(∪) = Smile
-  const rows = [["측정 자세", "중앙이 멀어짐 (∩)", "중앙이 가까워짐 (∪)"],
-    ["bump 면이 아래", "Cry (convex)", "Smile (concave)"], ["BEOL 면이 위", "Cry (convex)", "Smile (concave)"]];
-  table(s, rows, RC.x, TOP, RC.w, bumpDown ? 1 : 2);
-  pill(s, RC.x, TOP + 0.32 + 3 * 0.60 + 0.30, "명칭은 측정 자세 그대로 위에서 본 형상", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
-  const g = axes(s, RC.x + 0.72, TOP + 3.20, 2.8, 1.55, {
+  const rows = [["측정 자세", "중앙이 기준면에서 멂 (∩)", "중앙이 기준면에 가까움 (∪)"],
+    ["위에서 본 이름", "Cry (convex)", "Smile (concave)"],
+    ["bump 면 아래 → die BEOL 면", "오목", "볼록"], ["BEOL 면 위 → die BEOL 면", "볼록", "오목"]];
+  s.addTable(rows.map((r, ri) => r.map((c) => ({ text: c, options: (ri === 1 || ri === (bumpDown ? 2 : 3)) ? { color: K.alert } : {} }))), { x: RC.x, y: TOP, w: RC.w, h: 2.5, fs: 15 });
+  pill(s, RC.x, TOP + 2.75, "자세를 밝혀야 die 의 실제 휨 방향을 알 수 있다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  const g = axes(s, RC.x + 0.72, TOP + 3.55, 2.8, 1.25, {
     xmin: 25, xmax: 260, xticks: [25, 100, 175, 260], ymin: -150, ymax: 150, yticks: [-150, -75, 0, 75, 150],
     xlab: "온도 (°C)", ylab: "warpage (µm) — 기준면 기준 부호",
   });
@@ -1064,7 +1069,7 @@ function f_fa(s, p) {
 // ========== T11. 신뢰성 시험 순서 ==========
 function f_rel(s, p) {
   const x0 = LC.x + 0.1, y0 = TOP + 0.3;
-  const seq = p.seq || [["J-STD-020", "MSL preconditioning", "260 °C peak × 3회"], ["JESD22-A104", "Temperature Cycling", "-55 / +125 °C, 1000 cycle"], ["JESD22-A118", "uHAST", "130 °C / 85% RH, 96 h"], ["JESD22-A103", "HTS", "150 °C, 1000 h"]];
+  const seq = p.seq || [["JESD22-A113", "MSL preconditioning", "J-STD-020 리플로 260 °C × 3회"], ["JESD22-A104", "Temperature Cycling", "-55 / +125 °C, 1000 cycle"], ["JESD22-A118", "uHAST", "130 °C / 85% RH, 96 h"], ["JESD22-A103", "HTS", "150 °C, 1000 h"]];
   ttl(s, "시험 순서 (preconditioning이 먼저)", LC.x, TOP - 0.04, 4.3);
   seq.forEach((r, i) => {
     const yy = y0 + i * 0.85;
@@ -1075,15 +1080,16 @@ function f_rel(s, p) {
     if (i < seq.length - 1) A(s, x0 + 0.8, yy + 0.72, x0 + 0.8, yy + 0.84, K.edge, 1.1);
   });
   pill(s, LC.x, y0 + seq.length * 0.85 + 0.25, p.hint || "precondition 생략 시 실장 열이력 미반영", { fs: 8, fill: K.violet, align: "left" });
+  const XM = p.xmax || 1000, YM = p.ymax || 10, q4 = (m) => [0, 1, 2, 3, 4].map((k) => Math.round(m * k / 4 * 100) / 100);
   const g = axes(s, RC.x + 0.68, TOP + 0.7, 2.85, 2.35, {
-    xmin: 0, xmax: 1000, xticks: [0, 250, 500, 750, 1000], ymin: 0, ymax: 10, yticks: [0, 2.5, 5, 7.5, 10],
-    xlab: "TC cycle 수", ylab: "누적 고장률 (%)",
+    xmin: 0, xmax: XM, xticks: q4(XM), ymin: 0, ymax: YM, yticks: q4(YM),
+    xlab: p.xlab || "TC cycle 수", ylab: "누적 고장률 (%)",
   });
   const fails = p.fails || [[250, 0.2], [500, 0.9], [750, 2.6], [1000, 6.4]];
   curve(s, [[g.X(0), g.Y(0)]].concat(fails.map((f) => [g.X(f[0]), g.Y(f[1])])), K.rust, 1.7);
   fails.forEach((f, i) => { E(s, g.X(f[0]) - 0.05, g.Y(f[1]) - 0.05, 0.1, 0.1, K.rust, { line: null }); pill(s, g.X(f[0]) - (i === fails.length - 1 ? 0.3 : 0), g.Y(f[1]) - 0.22 - (i % 2) * 0.34, f[1] + "%", { fs: 8, fill: K.cream }); });
-  L(s, g.X(0), g.Y(p.crit || 1), g.X(1000), g.Y(p.crit || 1), "4D6B35", 1.1, { dash: 1 });
-  pill(s, g.X(0) + 0.08, g.Y(10) + 0.22, "판정 기준선 " + (p.crit || 1) + "%", { fs: 8, fill: K.green, align: "left" });
+  L(s, g.X(0), g.Y(p.crit || 1), g.X(XM), g.Y(p.crit || 1), "4D6B35", 1.1, { dash: 1 });
+  pill(s, g.X(0) + 0.08, g.Y(YM) + 0.22, "판정 기준선 " + (p.crit || 1) + "%", { fs: 8, fill: K.green, align: "left" });
   if (p.bullet) pill(s, RC.x, TOP + 4.15, p.bullet, { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "고장률 곡선은 문항 제시값 · 조건은 각 JESD 문서 기준");
 }
@@ -1230,7 +1236,7 @@ function f_note(s, p) {
       { fs: 8, bold: true, color: K.ink, align: "left" });
     y += h + 0.18;
   });
-  T(s, "이 문항은 구조 단면이 아니라 판단 과정을 묻습니다 · 위 요점을 근거로 보기를 비교하십시오",
+  T(s, "위 항목은 판단에 쓸 관점입니다 · 각 보기를 이 관점으로 검토하십시오",
     X + 0.02, y + 0.14, W, 0.17, { fs: 8, color: K.muted });
 }
 
@@ -1383,7 +1389,8 @@ function fmtExp(raw){
   return h;
 }
 const ALLDOMS = [...new Set(BANK.map(q=>q.dom))];
-const DCOL = ["#cfe3b2","#fcdcbd","#e2d6f3","#dff0de","#cfe0f5","#f7dc8c","#f6d3d0","#bfe3da"];
+// 분야 색 — 14 분야(이상)까지 서로 다른 색. 모자라면 순환
+const DCOL = ["#cfe3b2","#fcdcbd","#e2d6f3","#bfe3da","#cfe0f5","#f7dc8c","#f6d3d0","#d9cfbf","#f2b8a2","#a9c6ec","#e8c6e0","#c9e09a","#f4cf8a","#b8d8d0","#dcd3f5","#f0d9b5"];
 const esc = t => String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const store = (()=>{ try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); return localStorage; }
   catch(e){ const m={}; return {getItem:k=>k in m?m[k]:null,setItem:(k,v)=>{m[k]=String(v)},removeItem:k=>{delete m[k]}}; } })();
@@ -1403,7 +1410,7 @@ function saveAll(){ wr("hbmq-cfg",cfg); wr("hbmq-exam",exam); wr("hbmq-ans",answ
 function pool(){ return BANK.map((q,i)=>({q,i})).filter(o => (cfg.lv==="ALL"||o.q.lv===cfg.lv) && cfg.doms.indexOf(o.q.dom)>=0); }
 function active(){ return (exam||[]).map(i=>({q:BANK[i], i})); }
 function domains(){ const m=new Map(); active().forEach(o=>{ if(!m.has(o.q.dom)) m.set(o.q.dom,[]); m.get(o.q.dom).push(o); }); return [...m]; }
-function domColor(dom){ return DCOL[ALLDOMS.indexOf(dom)%8]; }
+function domColor(dom){ return DCOL[ALLDOMS.indexOf(dom)%DCOL.length]; }
 
 let seen = rd("hbmq-seen", []);              // 최근 출제 이력 (오래된 것이 앞)
 const PER_Q_MS = 90000;                      // 문항당 1.5분
@@ -1456,9 +1463,9 @@ function svgFor(q){
   s.addTable = (rows, o) => {
     const html = rows.map((r, ri) => "<tr>" + r.map((c, ci) => {
       const tag = ri === 0 || ci === 0 ? "th" : "td", op = c.options || {};
-      return `<${tag} class="${op.color === "C8372D" ? "w" : ""}" style="${ci === 0 ? "width:29%" : ""}">${esc(c.text)}</${tag}>`;
+      return `<${tag} class="${op.color === "C8372D" ? "w" : ""}" style="${ci === 0 && !o.noFirstW ? "width:29%;" : ""}${o.fs ? `font-size:${o.fs}px;padding:5px 7px` : ""}">${esc(c.text)}</${tag}>`;
     }).join("") + "</tr>").join("");
-    s.out.push(`<foreignObject x="${o.x*100}" y="${o.y*100}" width="${o.w*100}" height="${(o.h||1.9)*100}"><div xmlns="http://www.w3.org/1999/xhtml" style="height:100%"><table class="mtable">${html}</table></div></foreignObject>`);
+    s.out.push(`<foreignObject x="${o.x*100}" y="${o.y*100}" width="${o.w*100}" height="${(o.h||1.9)*100}"><div xmlns="http://www.w3.org/1999/xhtml" style="height:100%"><table class="mtable"${o.fs ? ` style="font-size:${o.fs}px"` : ""}>${html}</table></div></foreignObject>`);
   };
   const fn = F[q.fig[0]];
   if (fn) { try { fn(s, q.fig[1]); } catch(e) { return `<svg class="stage" viewBox="50 230 860 592"><text x="80" y="300" fill="#c8372d" font-size="16">상황도 오류: ${esc(e.message)}</text></svg>`; } }
@@ -1618,7 +1625,7 @@ function renderStart(){
       <div class="fld"><label>출제 영역 — 눌러서 켜고 끕니다</label>
         <div class="domgrid" id="domGrid">${ALLDOMS.map((d,i)=>{
           const on = cfg.doms.indexOf(d)>=0, tot = BANK.filter(q=>q.dom===d).length;
-          return `<button type="button" data-dom="${esc(d)}" aria-pressed="${on}"><span class="bx" style="background:${DCOL[i%8]}">${on?"✓":""}</span><span>${esc(d)}</span><span class="c">${tot}</span></button>`;
+          return `<button type="button" data-dom="${esc(d)}" aria-pressed="${on}"><span class="bx" style="background:${DCOL[i%DCOL.length]}">${on?"✓":""}</span><span>${esc(d)}</span><span class="c">${tot}</span></button>`;
         }).join("")}</div>
         <p class="note">영역을 모두 끄면 시험을 시작할 수 없습니다. <button class="iconbtn" type="button" id="domAll" style="margin-left:4px">전체 선택</button>
           <button class="iconbtn" type="button" id="domNone">전체 해제</button></p>
@@ -1697,8 +1704,8 @@ function render(){
     <div class="hd"><h1>${esc(q.title)}</h1><div class="chips">${lvChip(q.lv)}<span class="chip num">${k+1} / ${list.length}</span></div></div>
     <section class="card stemcard" aria-label="지문">
       <p class="stem">${esc(stemOf(q))}</p>
-      <div class="qhdr">제시 조건</div>
-      <div class="metrics">${q.metrics.map(m=>`<div class="metric"><div class="l"><span class="ic" aria-hidden="true">${esc(m[0])}</span><span>${esc(m[1])}</span></div><div class="v">${esc(m[2])}</div></div>`).join("")}</div>
+      ${q.metrics.length ? `<div class="qhdr">제시 조건</div>
+      <div class="metrics">${q.metrics.map(m=>`<div class="metric"><div class="l"><span class="ic" aria-hidden="true">${esc(m[0])}</span><span>${esc(m[1])}</span></div><div class="v">${esc(m[2])}</div></div>`).join("")}</div>` : ""}
     </section>
     <section class="card canvas" id="figRow" aria-label="그림">
       <div class="fighd">
