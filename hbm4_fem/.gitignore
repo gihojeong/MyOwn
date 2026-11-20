@@ -4,3 +4,9 @@ out/*
 !out/geometry_*.json
 !out/summary_*.json
 __pycache__/
+out2/*
+!out2/*.png
+!out2/*.blend
+!out2/*.json
+!out2/*.csv
+!out2/*.log
