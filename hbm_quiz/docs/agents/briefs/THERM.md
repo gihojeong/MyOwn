@@ -55,6 +55,16 @@
 
 (참고: `I_JOSA_SPACE` 483 · `I_TEMPLATE_JOIN` 118 — 새로 쓰는 문장은 조사를 붙여 쓰고, ctx 조립형은 STANDARDS 3.1 에 따라 정리)
 
+## 1A. W1 입력 (지원 에이전트 결과 — 작업 1순위)
+
+- **NUM** `docs/reviews/num/THERM.md`: 검증 401 · 산술 일치 401 · **정답 오류 확정 0** · **비현실 설정 45** · 그림·지표 정답 노출 45 · 간극 규약 위반 47 · 근접 오답(<3 %) 6 · 회상형(FACT 이관) 2. 문항별 올바른 값·식은 해당 파일. solver: `tools/num/`.
+- **FACT** `docs/reviews/_facts.md` — 이 분야 관련 주장 3건 (판정은 §1–7 표, 문항 id 는 §8):
+  - **F15** [정정] 해설 꼬리표 "Hot Chips 2026 SK hynix 발표 정리 (775 µm 한계 — 3문항: WARP-A-0055, WARP-A-0056, WARP-I-0059
+  - **F25** [확인] SK hynix iHBM: ICE(전기 절연·고열전도 Si 계 소재)를 D2D PHY  — 7문항: WARP-A-0056, WARP-B-0149, WARP-B-0150, WARP-B-0151, WARP-B-0152, WARP-B-0153, WARP-B-0154
+  - **F44** [사용 금지] "보고된 HBM 스택의 열유속 범위 15–25 W/cm²" — 55문항: WARP-A-0103, WARP-A-0104, WARP-A-0105, WARP-A-0106, WARP-A-0107, WARP-A-0108, WARP-A-0109, WARP-A-0110, WARP-A-0111, WARP-A-0112, WARP-B-0019, WARP-B-0020 …
+- **XD** `docs/reviews/xd/THERM.md` — 용어 규약 위반·교차 중복(보유/삭제)·이관(mv)·사실 충돌 지시. 요약은 `docs/reviews/xd/_index.md`.
+- 처리 원칙: NUM 정답 오류·FACT '정정'/'사용 금지' 판정 → 해당 문항을 **가장 먼저** 고치거나 삭제. FACT '조건부' 는 지문 표현을 고치면 유지(예: "JEDEC 규격 상한 775 µm" → "높이 상한(설계 조건) 775 µm"). 판정과 다르게 처리하면 보고서에 근거.
+
 ## 2. 표본 조사로 확인한 대표 결함 (EA 직접 판독: 난이도별 10문항 이상)
 
 - **W0.5 분할로 신설**: `data/05_WARP.json` 에서 537문항 이관(id 는 `WARP-LV-NNNN` 그대로 유지, 파일의 `legacy_prefix: ["WARP"]`). **새 문항은 `THERM-LV-9001` 부터.**
@@ -89,7 +99,7 @@
 ## 4. 작업 지시 (우선순위 순)
 
 0. **[최우선] 메타 지표 제거 — 428건** (`E_META_METRICS` 118, `W_META_METRICS` 310). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
-1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/THERM.md`, `docs/reviews/_facts.md`)를 반영한다.
+1. **정답 오류·사실 정정 (W1 입력 §1A)**: NUM 정답 오류 확정·비현실 설정·그림 노출(`docs/reviews/num/THERM.md`), FACT 정정·사용 금지·조건부 주장(§1A 의 F 번호), XD 용어·중복·이관 지시(`docs/reviews/xd/THERM.md`), §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증). 메타 지표 제거(0번)와 함께 가장 먼저.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
 4. **해설 재작성**: `E_EXP_SHORT`·`E_EXP_ONLY_REFS`·`E_STYLE_PLAIN`·`W_EXP_DISTRACTORS` — 정답 근거 + 오답 3개 각각의 오류 + (계산) 식·대입·결과. 일괄 `[근거]` 꼬리표는 고친 해설에서 뺀다.

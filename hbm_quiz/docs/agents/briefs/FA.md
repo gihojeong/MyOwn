@@ -52,6 +52,17 @@
 
 (참고: `I_JOSA_SPACE` 189 · `I_TEMPLATE_JOIN` 281 — 새로 쓰는 문장은 조사를 붙여 쓰고, ctx 조립형은 STANDARDS 3.1 에 따라 정리)
 
+## 1A. W1 입력 (지원 에이전트 결과 — 작업 1순위)
+
+- **NUM** `docs/reviews/num/FA.md`: 검증 18 · 산술 일치 18 · **정답 오류 확정 0** · **비현실 설정 0** · 그림·지표 정답 노출 0 · 간극 규약 위반 0 · 근접 오답(<3 %) 0 · 회상형(FACT 이관) 3. 문항별 올바른 값·식은 해당 파일. solver: `tools/num/`.
+- **FACT** `docs/reviews/_facts.md` — 이 분야 관련 주장 4건 (판정은 §1–7 표, 문항 id 는 §8):
+  - **F39** [확인] 시험 번호 대응: A101 THB · A103 HTS(HTSL) · A104 TC ·  — 49문항: FA-A-0002, FA-A-0003, FA-A-0004, FA-A-0005, FA-A-0006, FA-A-0007, FA-A-0008, FA-A-0009, FA-A-0010, FA-A-0011, FA-A-0012, FA-A-0013 …
+  - **F40** [정정] "MSL preconditioning 의 규격 번호는 J-STD-020" — 5문항: FA-A-0033, FA-B-0043, FA-B-0044, FA-B-0045, FA-B-0046
+  - **F42** [정정] `f_rel` 그림 기본 seq 의 "JESD22-A104 · −55 / +125 °C — 137문항: FA-A-0002, FA-A-0003, FA-A-0004, FA-A-0005, FA-A-0006, FA-A-0007, FA-A-0008, FA-A-0009, FA-A-0010, FA-A-0011, FA-A-0012, FA-A-0013 …
+  - **F43** [확인 불가] TC 판정 기준 "1,000 cycle 누적 고장률 n % 이하" — 19문항: FA-A-0002, FA-A-0003, FA-A-0004, FA-A-0005, FA-A-0006, FA-A-0007, FA-A-0008, FA-A-0009, FA-A-0010, FA-A-0011, FA-A-0012, FA-A-0013 …
+- **XD** `docs/reviews/xd/FA.md` — 용어 규약 위반·교차 중복(보유/삭제)·이관(mv)·사실 충돌 지시. 요약은 `docs/reviews/xd/_index.md`.
+- 처리 원칙: NUM 정답 오류·FACT '정정'/'사용 금지' 판정 → 해당 문항을 **가장 먼저** 고치거나 삭제. FACT '조건부' 는 지문 표현을 고치면 유지(예: "JEDEC 규격 상한 775 µm" → "높이 상한(설계 조건) 775 µm"). 판정과 다르게 처리하면 보고서에 근거.
+
 ## 2. 표본 조사로 확인한 대표 결함 (EA 직접 판독: 난이도별 10문항 이상)
 
 - **이중 사실 묶음 고급**: "기준을 만족했으며, 전압을 걸지 않는 고온 보관은 HTS 이다"(FA-A-0003 계열 18) — 고장률 판정과 용어 구분을 한 보기에 묶음. 또 "누적 고장률 5 % 이하" 판정은 JEDEC(JESD47: 3 lot × 77, 0 fail) 방식이 아님 → 사내 기준임을 명시하거나 재설계.
@@ -87,7 +98,7 @@
 ## 4. 작업 지시 (우선순위 순)
 
 0. **[최우선] 메타 지표 제거 — 350건** (`E_META_METRICS` 281, `W_META_METRICS` 69). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
-1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/FA.md`, `docs/reviews/_facts.md`)를 반영한다.
+1. **정답 오류·사실 정정 (W1 입력 §1A)**: NUM 정답 오류 확정·비현실 설정·그림 노출(`docs/reviews/num/FA.md`), FACT 정정·사용 금지·조건부 주장(§1A 의 F 번호), XD 용어·중복·이관 지시(`docs/reviews/xd/FA.md`), §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증). 메타 지표 제거(0번)와 함께 가장 먼저.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
 4. **해설 재작성**: `E_EXP_SHORT`·`E_EXP_ONLY_REFS`·`E_STYLE_PLAIN`·`W_EXP_DISTRACTORS` — 정답 근거 + 오답 3개 각각의 오류 + (계산) 식·대입·결과. 일괄 `[근거]` 꼬리표는 고친 해설에서 뺀다.
@@ -120,7 +131,7 @@
 | 템플릿 | params | 제약 · 주의 |
 |---|---|---|
 | `f_fa` | `tech`: lit·obirch·eotpr·xrm · `hot`, `fov_um`, `depth` · `feats` ≤ 4 · `dz`, `zpeak` | 지문 기법과 tech 일치 |
-| `f_rel` | `seq` ≤ 4행, `cur`, `fails` ≤ 5점, `xlab`, `xmax`, `ymax`, `crit`, `hint`, `bullet` | 기본 seq 첫 행은 JESD22-A113 preconditioning. HTOL·HTS 는 `xlab`/`xmax` 를 시간 축으로 |
+| `f_rel` | `seq` ≤ 4행, `cur`, `fails` ≤ 5점, `xlab`, `xmax`, `ymax`, `crit`, `hint`, `bullet` | 기본 seq 첫 행은 JESD22-A113 preconditioning. 기본 seq 의 TC "1000 cycle" 은 JESD47(condition B 700 cycle)과 다르다 — JEDEC 자격 시험을 묻는 문항은 `seq` 를 직접 준다(DA 수정 요청 중). HTOL·HTS 는 `xlab`/`xmax` 를 시간 축으로 |
 | `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
 | `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
 

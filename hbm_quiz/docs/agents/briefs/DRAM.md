@@ -52,6 +52,18 @@
 
 (참고: `I_JOSA_SPACE` 346 · `I_TEMPLATE_JOIN` 193 — 새로 쓰는 문장은 조사를 붙여 쓰고, ctx 조립형은 STANDARDS 3.1 에 따라 정리)
 
+## 1A. W1 입력 (지원 에이전트 결과 — 작업 1순위)
+
+- **NUM** `docs/reviews/num/DRAM.md`: 검증 218 · 산술 일치 218 · **정답 오류 확정 0** · **비현실 설정 52** · 그림·지표 정답 노출 0 · 간극 규약 위반 0 · 근접 오답(<3 %) 2 · 회상형(FACT 이관) 1. 문항별 올바른 값·식은 해당 파일. solver: `tools/num/`.
+- **FACT** `docs/reviews/_facts.md` — 이 분야 관련 주장 5건 (판정은 §1–7 표, 문항 id 는 §8):
+  - **F01** [확인] HBM4 = 2,048 bit/스택, 독립 채널 32 × 64 bit, 채널당 pseu — 26문항: DRAM-A-0008, DRAM-A-0009, DRAM-A-0010, DRAM-A-0011, DRAM-A-0012, DRAM-B-0013, DRAM-B-0014, DRAM-B-0015, DRAM-B-0016, DRAM-B-0017, DRAM-B-0018, DRAM-B-0019 …
+  - **F02** [확인] HBM4 JEDEC 최대 8 Gb/s, 스택 ≈ 2 TB/s — 5문항: DRAM-A-0010, DRAM-A-0057, DRAM-I-0001, DRAM-I-0018, DRAM-I-0019
+  - **F07** [확인] HBM3E 는 별도 JEDEC 세대가 아님; 업체 핀 속도 9.2(Micron)·9.6 — 30문항: DRAM-A-0002, DRAM-A-0003, DRAM-A-0004, DRAM-A-0005, DRAM-A-0006, DRAM-A-0007, DRAM-B-0001, DRAM-B-0002, DRAM-B-0003, DRAM-B-0004, DRAM-B-0005, DRAM-B-0006 …
+  - **F08** [정정] "HBM3E 계열" 1,024 bit 스택이 5.6·6.4·7.2 Gb/s 또는 10. — 21문항: DRAM-A-0002, DRAM-A-0005, DRAM-A-0006, DRAM-A-0007, DRAM-B-0001, DRAM-B-0002, DRAM-B-0003, DRAM-B-0004, DRAM-B-0009, DRAM-B-0010, DRAM-B-0011, DRAM-B-0012 …
+  - **F09** [정정] "HBM 스택" 이 512·4,096 bit, 또는 2,048 bit × 4/8/16/ — 49문항: DRAM-A-0013, DRAM-A-0014, DRAM-A-0015, DRAM-A-0017, DRAM-A-0018, DRAM-A-0019, DRAM-A-0020, DRAM-A-0021, DRAM-A-0022, DRAM-A-0023, DRAM-B-0023, DRAM-B-0024 …
+- **XD** `docs/reviews/xd/DRAM.md` — 용어 규약 위반·교차 중복(보유/삭제)·이관(mv)·사실 충돌 지시. 요약은 `docs/reviews/xd/_index.md`.
+- 처리 원칙: NUM 정답 오류·FACT '정정'/'사용 금지' 판정 → 해당 문항을 **가장 먼저** 고치거나 삭제. FACT '조건부' 는 지문 표현을 고치면 유지(예: "JEDEC 규격 상한 775 µm" → "높이 상한(설계 조건) 775 µm"). 판정과 다르게 처리하면 보고서에 근거.
+
 ## 2. 표본 조사로 확인한 대표 결함 (EA 직접 판독: 난이도별 10문항 이상)
 
 - **비실재 구성으로 'HBM' 계산**: "512 bit · 4 채널"(DRAM-B-0043), "4,096 bit · 32 채널"(DRAM-B-0039), "256 bit · 16 채널 · PC 4개"(DRAM-B-0025), "1,024 bit · 16 채널 · PC 4개"(DRAM-A-0016), "1,024 bit × 11.2 Gb/s"(DRAM-I-0010) — 실제 세대 구성을 쓰거나 가상 인터페이스임을 밝힐 것(STANDARDS 2.2).
@@ -86,7 +98,7 @@
 ## 4. 작업 지시 (우선순위 순)
 
 0. **[최우선] 메타 지표 제거 — 304건** (`E_META_METRICS` 193, `W_META_METRICS` 111). 화면 '제시 조건' 띠에 "난이도: 고급", "묻는 것: 해당 항목", "세부 주제", "핵심어" 가 그대로 보인다(DA 스크린샷 확인). 지문 조건 2–4개로 바꾸거나, 요약할 조건이 없으면 `"metrics": []`(키는 유지). 정답 오류 수정과 같은 1순위로 처리한다.
-1. **사실 오류·정답 오류 먼저**: §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증), NUM·FACT 에이전트 결과(`docs/reviews/num/DRAM.md`, `docs/reviews/_facts.md`)를 반영한다.
+1. **정답 오류·사실 정정 (W1 입력 §1A)**: NUM 정답 오류 확정·비현실 설정·그림 노출(`docs/reviews/num/DRAM.md`), FACT 정정·사용 금지·조건부 주장(§1A 의 F 번호), XD 용어·중복·이관 지시(`docs/reviews/xd/DRAM.md`), §2 의 기술 정정 후보, `E_EXP_REF_ANSWER`(정답 키 재검증). 메타 지표 제거(0번)와 함께 가장 먼저.
 2. **템플릿 가족 정리**: `E_FAMILY_OVER` 대상은 가족당 3개(가능하면 난이도별 1개)만 남기고 삭제하거나 다른 판단을 묻도록 재작성. 근중복(`W_NEAR_DUP`)도 정리.
 3. **ctx 조립형 정리**: ctx 가 qt 풀이에 필요 없으면 stem 단일형으로 변환. 기술 외 사유 오답·타 분야 오답(`W_OPT_WEAK`) 교체, 형식 단서(`W_OPT_ODD_END`, `W_OPT_LONGEST`, `W_OPT_ABSOLUTE`) 제거.
 4. **해설 재작성**: `E_EXP_SHORT`·`E_EXP_ONLY_REFS`·`E_STYLE_PLAIN`·`W_EXP_DISTRACTORS` — 정답 근거 + 오답 3개 각각의 오류 + (계산) 식·대입·결과. 일괄 `[근거]` 꼬리표는 고친 해설에서 뺀다.
