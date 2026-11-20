@@ -20,8 +20,8 @@ def lenth(e):
     a = np.abs(e); s0 = 1.5*np.median(a); pse = 1.5*np.median(a[a < 2.5*s0]); d = len(e)/3
     g = (1+0.95**(1/len(e)))/2
     return pse, stats.t.ppf(.975, d)*pse, stats.t.ppf(g, d)*pse
-md = ["# HBM4-8H TCB DOE (2⁴ 완전요인 + 중심점)", "",
-      f"기준: HBM4-8H 775 μm, S 설계두께, Tg 연화, T0b {doe.CAL['t0b']:.0f} °C, bump vf {doe.case_of(F[0]['x'])['vf']:.3f}, 1/4 대칭 C3D8I.", "",
+md = [f"# {doe.PROD.upper()} TCB DOE (2⁴ 완전요인 + 중심점)", "",
+      f"기준: {doe.PROD.upper()} {doe.case_of(F[0]['x'])['tot']*1e3:.0f} μm, S 설계두께, Tg 연화, T0b {doe.CAL['t0b']:.0f} °C, bump vf {doe.case_of(F[0]['x'])['vf']:.3f}, 1/4 대칭 C3D8I.", "",
       "| 요인 | − | 0 | + |", "|---|---|---|---|"]
 for k in K:
     nm, key, lo, hi, sc, u = doe.FAC[k]; md.append(f"| {k}: {nm} | {lo*sc:g} {u} | {(lo+hi)/2*sc:g} | {hi*sc:g} {u} |")
@@ -64,7 +64,7 @@ for q, (lab, note) in RESP.items():
     ax[2].axhline(yb, color=GRAY, lw=.8); ax[2].set_xticks([3*i+.5 for i in range(len(K))]); ax[2].set_xticklabels([FN[k] for k in K], fontsize=8)
     ax[2].set_ylabel(lab); ax[2].set_title("주효과 (- → +)")
     fig.suptitle(f"{lab} — {note}   평균={yb:.3g}, 곡률(중심-평균)={curv:+.3g}, 축소모형 R²={r2:.4f}", fontsize=11); fig.tight_layout()
-    fig.savefig(f"figs/doe_{q}_effects.png", dpi=140); plt.close(fig)
+    fig.savefig(f"{doe.FIGP}_{q}_effects.png", dpi=140); plt.close(fig)
     # ---- fig 2: 2인자 교호작용 ----
     pairs = list(itertools.combinations(K, 2)); fig, ax = plt.subplots(1, len(pairs), figsize=(16, 3.4), sharey=True)
     for a_, (p1, p2) in zip(ax, pairs):
@@ -74,7 +74,7 @@ for q, (lab, note) in RESP.items():
         e_ = eff[names.index(p1+p2)]; a_.set_title(f"{p1}×{p2}  효과 {e_:+.3g}" + (" *" if abs(e_) >= THR[q] else ""), fontsize=9)
         a_.set_xticks([-1, 1]); a_.set_xticklabels([f"{p1}-", f"{p1}+"]); a_.legend(frameon=False, fontsize=8)
     ax[0].set_ylabel(lab); fig.suptitle(f"{lab}: 2인자 교호작용 (평행 = 교호작용 없음, * = |효과|≥실용 임계)", fontsize=11); fig.tight_layout()
-    fig.savefig(f"figs/doe_{q}_interactions.png", dpi=140); plt.close(fig)
+    fig.savefig(f"{doe.FIGP}_{q}_interactions.png", dpi=140); plt.close(fig)
     md += ["", f"## {lab}", "", f"ȳ = {yb:.4g}, 중심점 = {summary[q]['center']:.4g}, 곡률(중심-평균) = {curv:+.3g}, 실용 임계 = {THR[q]:g}, 수치잡음(3·4차 최대) = {noise:.1e}", "",
            "| 항 | 효과 | 계수(coded) | 기여도 %SS | 판정 |", "|---|---|---|---|---|"]
     for i in np.argsort(-np.abs(eff)):
@@ -89,6 +89,6 @@ ax.set_xticks(range(len(names))); ax.set_xticklabels(names); ax.set_yticks(range
 for i in range(Z.shape[0]):
     for j in range(Z.shape[1]): ax.text(j, i, (f"{Z[i,j]:.1f}" if abs(Z[i,j]) >= .05 else "·"), ha="center", va="center", fontsize=7, color="k" if abs(Z[i, j]) < .6*lim else "w")
 fig.colorbar(im, ax=ax, label="부호 × 기여도 %SS"); ax.set_title("응답별 요인 기여도 (%SS, 색 = 효과 부호: 빨강 + / 파랑 -)")
-fig.tight_layout(); fig.savefig("figs/doe_overview.png", dpi=140)
+fig.tight_layout(); fig.savefig(f"{doe.FIGP}_overview.png", dpi=140)
 open(f"{doe.OUTD}/report.md", "w").write("\n".join(md)+"\n"); json.dump(summary, open(f"{doe.OUTD}/summary.json", "w"), indent=1)
 print("\n".join(md[-40:]))
