@@ -1093,7 +1093,7 @@ function f_rel(s, p) {
   L(s, g.X(0), g.Y(p.crit || 1), g.X(XM), g.Y(p.crit || 1), "4D6B35", 1.1, { dash: 1 });
   // TC 축일 때 규격 cycle 수(기본 JESD22-A104 cond. B 700 cycle)를 세로 점선으로
   const tcC = p.tcCycles || 700;
-  if (!p.xlab && tcC <= XM) { L(s, g.X(tcC), g.Y(0), g.X(tcC), g.Y(YM), K.edge, 0.9, { dash: 1 }); T(s, "규격 " + tcC, g.X(tcC) - 0.4, g.Y(0) - 0.24, 0.8, 0.2, { fs: 7, align: "center", color: K.muted }); }
+  if (!p.xlab && tcC <= XM) { L(s, g.X(tcC), g.Y(0), g.X(tcC), g.Y(YM), K.edge, 0.9, { dash: 1 }); pill(s, g.X(tcC), g.Y(YM * 0.62), "규격 " + tcC + " cycle", { fs: 7, h: 0.2, fill: K.cream, axis: "y" }); }
   pill(s, g.X(0) + 0.08, g.Y(YM) + 0.22, "판정 기준선 " + (p.crit || 1) + "%", { fs: 8, fill: K.green, align: "left" });
   if (p.bullet) pill(s, RC.x, TOP + 4.15, p.bullet, { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "고장률 곡선은 문항 제시값 · 조건은 각 JESD 문서 기준");

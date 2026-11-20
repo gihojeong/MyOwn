@@ -11,7 +11,7 @@
 |---|---|---|---|---|
 | **W0** (완료) | EA | 기준서·검사기·브리프·편성안 | 본 문서들, `docs/reviews/_auto_baseline.md` | — |
 | **W0.5** (완료) | EA | WARP → WARP + THERM 파일 분할 (승인됨) | `data/13_THERM.json` (`legacy_prefix: ["WARP"]`), 이관 id `docs/reviews/_w05_split_moved_ids.json` | build·smoke 통과(14 분야) |
-| **W1** (병렬, 읽기 전용) | NUM, FACT, XD | 계산 재검증 · 사실 검증 · 교차분야 사전 점검 | `docs/reviews/num/CODE.md`, `docs/reviews/_facts.md`, `docs/reviews/xd/CODE.md` | W0 |
+| **W1** (완료) (병렬, 읽기 전용) | NUM, FACT, XD | 계산 재검증 · 사실 검증 · 교차분야 사전 점검 | `docs/reviews/num/CODE.md`, `docs/reviews/_facts.md`, `docs/reviews/xd/CODE.md` | W0 |
 | **W2** (병렬) | 분야 에이전트 14 | 자기 파일 재편집 + 신규 출제 | `data/NN_CODE.json`, `docs/reviews/CODE.md` | W1 산출물 (늦으면 W2 를 먼저 시작하고 도착 시 반영) |
 | **W3** | XD | 교차분야 사후 점검(중복·용어·사실 충돌) | `docs/reviews/_xd_post.md` → 해당 분야 에이전트가 수정 | W2 전 분야 게이트 통과 |
 | **W4** | EA | Phase 2 기계적 일괄 처리(§6) + 최종 표본 QA | `docs/reviews/_auto_final.md`, `docs/reviews/EA_final.md` | W3 반영 완료 |
@@ -129,7 +129,8 @@ DA(디자인)는 전 단계에 걸쳐 `template.html` 을 소유하며 EA 와 `E
    - 검증: `E_EXP_REF_ANSWER` 0 건 유지, `W_EXP_REF_MISMATCH` 증가 없음, 정답 텍스트(보기 문자열) 집합이 문항별로 불변임을 스크립트로 확인.
    - 난수 시드 고정, 변경 전후 매핑을 `docs/reviews/_phase2_positions.json` 에 저장(되돌리기 가능).
 3. **`E_JOSA_CIRC` 일괄 수정**: ①③ → 은/이/을/과/으로, ②④ → 는/가/를/와/로.
-4. **`[근거] …` 꼬리표 제거**(`I_EXP_SRC_TAG`): 해설 끝의 일괄 부착 출처 문자열 삭제. 분야 에이전트가 `src` 로 옮긴 것만 남는다.
+4. **`[근거] …` 꼬리표 제거**(`I_EXP_SRC_TAG`, 기준선 1,479 문항): 해설 끝의 일괄 부착 출처 문자열 삭제 — FACT **F15**("Hot Chips 2026 … 775 µm 한계" 오기 꼬리표, **282 문항**: COW 112·SIP 164·WARP/THERM 3·PROD 3) 전부 포함. FACT 판정상 꼬리표 출처는 [R] 이므로 `src` 로도 옮기지 않는다. 분야 에이전트가 W2 에서 고친 해설은 이미 꼬리표가 없어야 하며, Phase 2 는 남은 것을 일괄 제거한다. 화면의 `[근거]` 각주 서식(LAYOUT_RULES §2)은 쓰지 않는다.
+   - 구분: 꼬리표가 아니라 **지문·보기·정답이 "JEDEC 규격 775 µm" 을 근거로 쓰는 문항(F12·F13, 우선 대상 51)** 은 기계 치환하지 않는다 — 분야 에이전트(SIP·PROD)가 W2 에서 "높이 상한(설계 조건)" 으로 고친다(브리프 §1A). Phase 2 에서 `JEDEC|규격` 과 `720|775 µm` 동시 출현을 다시 검색해 잔존 0 건을 확인한다.
 5. **조사 띄어쓰기 정규화**(`I_JOSA_SPACE`): `영문/숫자/단위 + 공백 + 조사(가·는·은·를·을·의·에·와·과·로·으로·에서·에는·에도·까지·부터·보다·처럼·만·도)` 의 공백 제거. 관형사와 구별되지 않는 **'이'** 는 자동 처리하지 않고 목록만 뽑아 수작업 확인.
 6. **단위 표기 통일**: μ(U+03BC) → µ(U+00B5), "um" → "µm", "W/mK" → "W/m·K".
 7. **최종 확인**: 전체 `validate`(목표: 차단 E 0, W 는 사유 있는 것만), `build`, `smoke`, DA 의 `layout_check` 실행. 분야당 20문항(난이도별 6–7) 무작위 표본 EA 판독 → `docs/reviews/EA_final.md`. 표본 불합격률이 10 % 를 넘는 분야는 해당 에이전트 재작업.
