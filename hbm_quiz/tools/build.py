@@ -52,6 +52,8 @@ def pack(meta, doms, per):
             r["d"] = di
             r["k"] = q.get("k", 0)
             r["id"] = q["id"]
+            if q.get("src"):
+                r["src"] = q["src"]
             out.append(r)
     return {"ctx": ctx, "join": join, "q": out, "figs": figs, "mets": mets, "doms": doms}
 
