@@ -19,14 +19,21 @@ MAT = dict(
     ox=dict(M=86.7e3, a=0.5e-6), nx=dict(M=333e3, a=3.2e-6),
     beol_nu=0.34,
 )
-VF = np.pi/4*(25/45)**2                 # core μbump D25/P45 → 0.2424
+VF_VIEWER = np.pi/4*(25/45)**2          # viewer 기본 D25/P45 → 0.2424 (참고)
+BUMP = dict(D=0.015, N={"hbm3e": 200_000, "hbm4": 250_000}, N_tsv=25_000)   # 총 개수(TSV 포함), 직경 15 μm
+def bump_vf(gen):
+    """vf = N·πD²/4 / A_DRAM  (TSV·dummy 동일 pitch 가정) → HBM3E 0.353, HBM4 0.442"""
+    return BUMP["N"][gen]*np.pi/4*BUMP["D"]**2/L_DRAM**2
+def tsv_band(gen):
+    """TSV 영역 면적 = N_tsv/N · A_DRAM (같은 pitch) → 중앙 band 폭 [mm] (길이 = L_DRAM)"""
+    return BUMP["N_tsv"]/BUMP["N"][gen]*L_DRAM
 T0 = dict(b=400., j=217., m=175.)       # 무응력: Si·BEOL(T0b) / NCF+SnAg(T0j) / EMC(T0m)
 MEAS = dict(w25=-7.6, w230=-2.1)        # HBM3E-12H 실측 (중앙−vertex, μm)
 
 def case(gen="hbm3e", nh=12, set_="design", **over):
     """케이스 dict. over 로 임의 값 덮어쓰기 (예: ms=0.0326, nc=0.0080, t0b=300, ncf_a1=40e-6 ...)"""
     S = dict(DESIGN if set_ == "design" else MICRON); S["ms"] = S["ms"][nh]
-    c = dict(gen=gen, nh=nh, set=set_, tot=GEN_TOT[gen], vf=VF, t0b=T0["b"], t0j=T0["j"], t0m=T0["m"],
+    c = dict(gen=gen, nh=nh, set=set_, tot=GEN_TOT[gen], vf=bump_vf(gen), t0b=T0["b"], t0j=T0["j"], t0m=T0["m"],
              cte_mode="integral", **S)
     c.update(over); return c
 
@@ -127,4 +134,4 @@ def clt_warp(c, T):
 #  viewer 규약(상수 E, Voigt gap)  : 25→230 °C 변화폭 13.5 μm (실측 5.5) → T0b 로는 보정 불가
 #  Tg 연화 + Halpin-Tsai, Micron 실측두께 세트: 변화폭 5.42 μm, T0b=284 °C → |w25| 7.6, |w230| 1.67 (실측 2.1)
 #  설계 두께 세트는 같은 물성으로 변화폭 10.6 μm → 실측과 불일치 (두께·BEOL 물성 차이가 지배)
-CALIB = dict(soft=True, t0b=284.)
+CALIB_VF024 = dict(soft=True, t0b=284.)   # vf 0.242 기준 (구)

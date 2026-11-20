@@ -80,3 +80,17 @@ def run(name, c, temps=TEMPS, elprint=(25, 230)):
     build(name, c, temps, elprint); solve(name); R = warp(name, c, temps)
     json.dump(dict(case=c, warp={str(k): v for k, v in R.items()}), open(f"{OUT}/{name}.json", "w"), indent=1)
     return R
+
+def stresses(name, temps_printed=(25, 230)):
+    """EL PRINT(적분점) → 요소 평균 → 재료별 지표 [MPa]"""
+    m = np.load(f"{OUT}/{name}_mesh.npz"); kf = m["kind"].ravel(order="F")
+    out = {}
+    for T, a in zip(temps_printed, read_elprint(f"{OUT}/{name}.dat")):
+        ne = kf.size; se = np.zeros((ne, 6)); np.add.at(se, a[:, 0].astype(int)-1, a[:, 2:]); se /= 8
+        Tn = np.zeros((ne, 3, 3)); Tn[:, 0, 0], Tn[:, 1, 1], Tn[:, 2, 2] = se[:, 0], se[:, 1], se[:, 2]
+        Tn[:, 0, 1] = Tn[:, 1, 0] = se[:, 3]; Tn[:, 0, 2] = Tn[:, 2, 0] = se[:, 4]; Tn[:, 1, 2] = Tn[:, 2, 1] = se[:, 5]
+        s1 = np.linalg.eigvalsh(Tn)[:, -1]; si = np.isin(kf, ["si", "si_top"]); g = kf == "gap"
+        out[T] = dict(si_s1=float(s1[si].max()), si_s3=float(np.linalg.eigvalsh(Tn[si])[:, 0].min()),
+                      gap_peel=float(se[g, 2].max()), gap_shear=float(np.hypot(se[g, 4], se[g, 5]).max()),
+                      emc_s1=float(s1[kf == "emc"].max()), beol_s1=float(s1[kf == "beol"].max()))
+    return out
