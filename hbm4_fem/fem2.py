@@ -7,6 +7,7 @@ from frd import read_frd, read_elprint
 OUT = "out2"; os.makedirs(OUT, exist_ok=True)
 TEMPS = [25, 100, 150, 175, 200, 217, 230, 260]
 H_IN, N_RING, N_TOP = 0.192, 4, 6
+N_THIN = 1          # 얇은 층(BEOL·gap·mid Si·base BEOL) 두께방향 요소 수 (수렴 시험용)
 KINDS = ["beol", "si_base", "si", "si_top", "gap", "emc"]
 
 def axis(a, b, n): return np.linspace(a, b, n+1)
@@ -16,7 +17,7 @@ def build(name, c, temps=TEMPS, elprint=(25, 230)):
     Z = [0.0]
     for (n, k, z0, z1, h) in L:
         if k == "emc": continue
-        nz = N_TOP if k == "si_top" else (2 if n == "Base_Si" else 1)
+        nz = N_TOP if k == "si_top" else (2*N_THIN if n == "Base_Si" else N_THIN)
         Z += list(np.linspace(z0, z1, nz+1)[1:])
     Z = np.round(np.array(Z), 7); nx, ny, nz = len(X), len(Y), len(Z)
     xc, yc, zc = (X[:-1]+X[1:])/2, (Y[:-1]+Y[1:])/2, (Z[:-1]+Z[1:])/2
