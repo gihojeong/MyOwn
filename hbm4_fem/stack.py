@@ -122,3 +122,9 @@ def clt_warp(c, T):
         A += M*(z1-z0); B += M*(z1**2-z0**2)/2; D += M*(z1**3-z0**3)/3; N += M*e*(z1-z0); Mt += M*e*(z1**2-z0**2)/2
     k = (A*Mt-B*N)/(A*D-B*B)                       # 1/mm, w = −½κr² 규약 → 중앙−vertex = +½κ r²
     return 0.5*k*(L_DRAM/np.sqrt(2))**2*1e3
+
+# ---- 보정 결과 (validate2/calib2, HBM3E-12H 실측 25/230 °C) ----
+#  viewer 규약(상수 E, Voigt gap)  : 25→230 °C 변화폭 13.5 μm (실측 5.5) → T0b 로는 보정 불가
+#  Tg 연화 + Halpin-Tsai, Micron 실측두께 세트: 변화폭 5.42 μm, T0b=284 °C → |w25| 7.6, |w230| 1.67 (실측 2.1)
+#  설계 두께 세트는 같은 물성으로 변화폭 10.6 μm → 실측과 불일치 (두께·BEOL 물성 차이가 지배)
+CALIB = dict(soft=True, t0b=284.)
