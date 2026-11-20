@@ -9,12 +9,16 @@ TSV_BAND = (1.0, 10.0, 5.9, 6.9)   # x0,x1,y0,y1 : 중앙 TSV/µbump band
 PHY = (0.25, 1.75, 0.6, 12.2)      # base die PHY (GPU측 edge)
 T_BASE, T_BOND, T_CORE = 0.060, 0.015, 0.050
 
+H_PKG = 0.720                # [규칙] 총 높이 720 μm 고정: 두께 변경분은 항상 top die(Core_Die_8)가 흡수
 VARIANTS = {
-    # name: bonding, top die thickness, EMC cap
-    "A_MRMUF":      dict(bond="MUF", t_top=0.190, cap=0.000),
-    "B_TCNCF":      dict(bond="NCF", t_top=0.190, cap=0.000),
-    "C_MRMUF_CAP":  dict(bond="MUF", t_top=0.100, cap=0.090),
+    # name: bonding, mid-die(Core 1~7) 두께, EMC cap  → top die 두께는 H_PKG에서 자동 산출
+    "A_MRMUF":      dict(bond="MUF", t_core=0.050, cap=0.000),   # top 190 μm
+    "B_TCNCF":      dict(bond="NCF", t_core=0.050, cap=0.000),   # top 190 μm
+    "C_MRMUF_CAP":  dict(bond="MUF", t_core=0.050, cap=0.090),   # top 100 μm
+    "D_MID47":      dict(bond="MUF", t_core=0.047, cap=0.000),   # mid -3 μm → top 211 μm
 }
+def t_top(v):
+    c = VARIANTS[v]; return H_PKG - T_BASE - 8*T_BOND - 7*c["t_core"] - c["cap"]
 
 def layers(v):
     """bottom→top layer list: (name, kind, z0, z1, footprint)"""
@@ -23,10 +27,11 @@ def layers(v):
     L.append(("Base_Die", "base", z, z+T_BASE, full)); z += T_BASE
     for k in range(1, 9):
         L.append((f"Bond_{k}", "bond", z, z+T_BOND, core)); z += T_BOND
-        t = cfg["t_top"] if k == 8 else T_CORE
+        t = t_top(v) if k == 8 else cfg["t_core"]
         L.append((f"Core_Die_{k}", "core", z, z+t, core)); z += t
     if cfg["cap"] > 0:
         L.append(("EMC_Cap", "emc", z, z+cfg["cap"], full)); z += cfg["cap"]
+    assert abs(z-H_PKG) < 1e-9
     return L, z
 
 # ---------------- 열 하중/경계 ----------------

@@ -16,8 +16,10 @@ by = [v for l in Ls for v in l["y"]] + [P.TSV_BAND[2], P.TSV_BAND[3], P.PHY[2], 
 X, Y = axis(bx, HMAX), axis(by, HMAX)
 zb = sorted(set(r6(np.array([v for l in Ls for v in l["z"]]))))
 Z = [zb[0]]
+ztop0 = [l["z"][0] for l in Ls if l["name"] == "Core_Die_8"][0]
 for a, b in zip(zb[:-1], zb[1:]):
     n = max(1, int(np.ceil((b-a)/0.035 - 1e-9))) if b-a > 0.02 else 1
+    if abs(a-ztop0) < 1e-6 and P.VARIANTS[V]["cap"] == 0: n = 6     # top die 분할 고정 → 두께 비교 시 동일 격자 topology
     Z += list(np.linspace(a, b, n+1)[1:])
 Z = r6(np.array(Z)); nx, ny, nz = len(X), len(Y), len(Z)
 nid = lambda i, j, k: 1 + i + nx*(j + ny*k)

@@ -4,8 +4,8 @@ matplotlib.use("Agg"); import matplotlib.pyplot as plt
 import params as P
 plt.rcParams.update({"font.family": "NanumGothic", "axes.unicode_minus": False, "font.size": 10,
                      "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "grid.alpha": .25})
-COL = {"A_MRMUF": "#2a78d6", "B_TCNCF": "#eb6834", "C_MRMUF_CAP": "#1baf7a"}
-NAME = {"A_MRMUF": "A: MR-MUF (top Si 노출)", "B_TCNCF": "B: TC-NCF", "C_MRMUF_CAP": "C: MR-MUF + EMC cap 90μm"}
+COL = {"A_MRMUF": "#2a78d6", "B_TCNCF": "#eb6834", "C_MRMUF_CAP": "#1baf7a", "D_MID47": "#eda100"}
+NAME = {"A_MRMUF": "A: MR-MUF (top Si 노출)", "B_TCNCF": "B: TC-NCF", "C_MRMUF_CAP": "C: MR-MUF + EMC cap 90μm", "D_MID47": "D: MR-MUF, mid 47μm (top 211μm)"}
 Rs = {json.load(open(f))["variant"]: json.load(open(f)) for f in sorted(glob.glob("out/summary_*.json"))}
 fig, axs = plt.subplots(1, 2, figsize=(13, 4.8))
 for v, R in Rs.items():
