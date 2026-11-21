@@ -761,7 +761,7 @@ function f_bump(s, p) {
   pill(s, g.X(TM * 0.62), g.Y(YM * 0.91), "x = k · t^0.5", { fs: 8, fill: K.cream });
   if (p.hours) L(s, g.X(Math.min(TM, p.hours)), g.Y(0), g.X(Math.min(TM, p.hours)), g.Y(YM), K.edge, 1.0, { dash: 1 });
   pill(s, RC.x, TOP + 3.95, p.bullet || "IMC 가 두꺼울수록 계면 파괴 확률 증가", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
-  flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 그래프는 확산 지배 가정의 경향선");
+  flagOf(s, p); cap(s, p.note || (p.k != null ? "두께 방향 확대 표시 · 그래프는 확산 지배 가정의 경향선" : "두께 방향 확대 표시 · 성장 곡선은 k 가 주어질 때만 표시"));
 }
 
 // ========== T5. Sawing / dicing 단면 ==========

@@ -1,7 +1,7 @@
 # 레이아웃 규칙 (LAYOUT_RULES) — 문항·그림 작성 시 지킬 화면 제약
 
 - 소유: DA (Design Agent) · 기준: `template.html` (2026-11-20, Phase 1) · 내용 기준은 EA 의 `STANDARDS.md`, 이 문서는 **화면에 들어가는가**만 다룬다.
-- 검사: `python3 tools/build.py && node tools/smoke.js && node tools/layout_check.js` — 결함 문항 수가 기준선(`docs/reviews/_layout_baseline.json`)보다 늘면 실패(exit 1). 결과는 `docs/reviews/_layout_latest.md`.
+- 검사: `python3 tools/build.py --out <scratch>/q.html && node tools/smoke.js <scratch>/q.html && node tools/layout_check.js --html <scratch>/q.html --out <scratch>/layout` — 결함 문항 수가 기준선(`docs/reviews/_layout_baseline.json`)보다 늘면 실패(exit 1). `--help` 로 옵션 확인. 결과 기본 위치는 `$TMPDIR/hbm_layout_check/`; 공용 `docs/reviews/_layout_latest.*` 는 **`--publish` 를 줄 때만** 갱신된다(DA·오케스트레이터 전용).
 - 글자 수는 **한글 1자 = 1, 영문·숫자·기호 1자 ≈ 0.6** 으로 센 "폭" 기준이다(그림 안 라벨). 화면 텍스트(제목·보기·지문)는 그냥 글자 수.
 
 ## 1. 문항 텍스트
@@ -58,7 +58,7 @@
 | `f_cmp` | `densA` 5–40, `densB` 30–80 (x축 0–80 %, 두 값이 A/B 표식으로 그려짐), `dish_nm` 5–150, `erosion_nm` 10–80, `nA` 3–5, `nB` 6–10 |
 | `f_bs` | `step` 0–7, `defect`: none·undercut·residue (step 7 에서만), `ox1` 100–500, `sin` 100–300, `ox2` 300–800 nm, `ni_um` 1–5 |
 | `f_bump` | `pillar_um` 10–60, `solder_um` 5–25, `imc_um` 0.5–6, `niBarrier` (IMC 라벨이 Ni₃Sn₄ / (Cu,Ni)₆Sn₅ 로 바뀜), `kirkendall`, `em` + `j_kA` (≤ 4자리), `temp`, `k`, `hours` ≤ `tmax`, **`tmax`** (기본 1000 h), **`ymax`** (기본 8 µm), **`hideLabels`** (Kirkendall·EM 결함 라벨을 "관찰된 void (A)"·"결함 위치 (B)" 로, IMC 상 이름 생략 — 명칭·기구를 묻는 문항용, `hideResult` 도 같은 효과), `bullet`. **`k` 가 없으면 성장 곡선을 그리지 않는다**(축·식 라벨만) |
-| `f_saw` | `method`: blade·lg·stealth·plasma·deeplaser·dbg, `kerf_um` 0–60, `haz_um` 2–20, `chip_um` 5–30, `bullet` (표는 "대표 범위" 캡션 표시) |
+| `f_saw` | `method`: blade·lg·stealth·plasma·deeplaser·dbg (비교표에 **DBG 행**이 따로 있고 dbg 면 그 행이 강조됨), `kerf_um` 0–60, `haz_um` 2–20, `chip_um` 5–30, **`notes: false`** (개념 주석·기본 bullet 을 끄고 지시선 라벨을 "관찰 부위 (A/B)" 로 — 개념을 묻는 문항용), `bullet` (표는 "대표 범위" 캡션 표시) |
 | `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um` 5–60, `gap_um` 3–15 (**hcb 에는 주지 말 것 — 표시 안 함**), `voids` 0–3, `filler_trap`, `nonwet`, **`dish: true`** (hcb 에서 dishing 미접합 pad 를 그릴 때만), `bullet` |
 | `f_warp` | `ref`: bump-down·beol-up, `sign` ±1 (1 = 중앙이 기준면에서 멂 ∩ = **Cry**, −1 = 가까움 ∪ = **Smile**), `mag_um` 10–200, `tg` 50–240, `temp` 25–260 |
 | `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` **1–8**, **`lines`** (예 1024, 2048 — 생략 시 "HBM I/O 배선"), **`msg`** (오른쪽 요점 pill 교체, ≤ 44자), `bullet` |
@@ -109,3 +109,6 @@
 이 문구를 정답 근거로 쓰던 문항은 지문·해설을 새 문구에 맞춰야 한다(특히 CoWoS-R 전원 경로, "reticle 이 상한", "12단 → 간극 11개").
 | `f_bump` (2026-11-21) | `k` 미지정 시 기본 k = 0.22 곡선 | `k` 없으면 곡선 생략 | 문항에 없는 성장 속도를 그림이 만들어 내지 않도록 |
 | `f_bump` (2026-11-21) | 결함 라벨 항상 명칭 표기 | `hideLabels` / `hideResult` 로 일반 표기 | 정답 노출 방지 (BUMP 요청) |
+| `f_saw` (2026-11-21) | dbg 면 blade 행 강조, 개념 주석 항상 표시 | DBG 행 추가·강조, `notes: false` 로 주석 끔 | 정답 노출 방지 (SAW 요청) |
+| `f_therm` (2026-11-21) | `hideResult` 에도 "간극 수 = core die 수 (N개)" 표시 | `hideResult` 면 이 pill 생략 | 정답 노출 방지 (THERM 요청) |
+| 축 눈금 (공통) | 붙어 있는 x 눈금 글자가 겹침 | 0.34 in 미만으로 붙은 눈금 글자는 생략(눈금선은 유지) | DRAM-A-9019 겹침 |
