@@ -17,9 +17,14 @@
    "exp": "취성이 큰 low-k와 연성 금속이 섞인 상부막은 blade의 기계적 충격에 가장 약한 부분입니다. laser로 이 막을 blade 폭보다 넓게 먼저 걷어 내면 blade는 Si만 자르게 되어 상부막 chipping과 박리가 줄어듭니다. ①은 grooving이 상부막 깊이까지만 가공하므로 틀립니다. ②는 Si를 무르게 만드는 효과가 아니라 오히려 HAZ라는 부작용이 남습니다. ③은 홈이 넓은 것은 blade가 막에 닿지 않게 하려는 결과일 뿐 정렬 목적이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_note",
     {
-     "method": "lg",
+     "title": "상부막과 절단 순서",
+     "points": [
+      "상부막은 어떤 재료들로 이루어져 있는가",
+      "기계적 충격에 가장 약한 층은 어디인가",
+      "laser 가공은 어느 깊이까지 하는가"
+     ],
      "flag": "주제: LG + blade"
     }
    ],
@@ -69,10 +74,16 @@
    "exp": "앞면에서 홈을 먼저 내고 연삭으로 분리를 완결하는 순서가 DBG(dicing before grinding)입니다. ②의 SDBG는 홈 대신 레이저로 Si 내부에 개질층을 만든 뒤 연삭하므로 blade half-cut이 없습니다. ③은 연삭이 끝난 얇은 wafer를 상부막 홈 가공 후 blade로 끝까지 자르는 방식입니다. ④의 step cut은 두 날이 깊이를 나눠 끝까지 자르는 기법으로 연삭 분리가 없습니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_note",
     {
-     "method": "dbg",
-     "flag": "주제: half-cut 후 연삭"
+     "title": "개별화 순서 구분",
+     "points": [
+      "홈을 내는 도구는 무엇인가",
+      "홈은 두꺼운 상태에서 내는가, 얇은 상태에서 내는가",
+      "분리를 완결하는 단계는 무엇인가"
+     ],
+     "flag": "주제: half-cut 후 연삭",
+     "ask": "방식 이름"
     }
    ],
    "metrics": [
@@ -114,7 +125,8 @@
      "flag": "주제: plasma dicing"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "플라즈마_공정모듈 §확보한 수치 근거"
   },
   {
    "id": "SAW-B-0031",
@@ -154,10 +166,16 @@
    "exp": "절단 가장자리에서 Si나 상부막 조각이 떨어져 나간 결함을 chipping이라 하며, 앞면에 생기면 top-side, 뒷면에 생기면 back-side chipping이라 부릅니다. ②의 delamination은 막과 막 사이 계면이 벌어지는 결함으로 조각 이탈과 구분됩니다. ③의 dishing은 CMP에서 넓은 금속 패턴 가운데가 오목하게 파이는 현상입니다. ④의 void는 재료 내부나 접합부에 생긴 빈 공간입니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_note",
     {
-     "method": "blade",
-     "flag": "주제: blade 절단 결함"
+     "title": "절단 가장자리 결함",
+     "points": [
+      "재료가 빠져나갔는가, 계면만 벌어졌는가",
+      "결함이 생긴 위치는 어디인가",
+      "어느 공정에서 생기는 결함인가"
+     ],
+     "flag": "주제: blade 절단 결함",
+     "ask": "결함 이름"
     }
    ],
    "metrics": []
@@ -188,7 +206,8 @@
      "flag": "주제: molded cube"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §최상단 다이가 139 µm — 일반 다이의 4.1배"
   },
   {
    "id": "SAW-B-0037",
@@ -234,9 +253,14 @@
    "exp": "blade는 날 두께만큼 재료를 깎아 내므로 kerf 손실이 크고, 접촉 응력 때문에 앞뒤 가장자리에 chipping과 측벽 미세 crack을 남깁니다. ①은 stealth dicing에서 개질층을 연삭으로 없애지 않았을 때의 문제입니다. ③은 Si만 식각하는 plasma dicing의 제약이며 blade는 금속도 함께 자릅니다. ④도 plasma dicing에 따르는 공정 부담입니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_note",
     {
-     "method": "blade",
+     "title": "blade dicing 특성",
+     "points": [
+      "재료를 무엇으로 어떻게 제거하는가",
+      "제거되는 폭은 무엇이 정하는가",
+      "가공 중 die 가장자리가 받는 하중은 무엇인가"
+     ],
      "flag": "주제: blade dicing"
     }
    ],
@@ -257,10 +281,16 @@
    "exp": "절단으로 재료가 제거된 폭을 kerf라 하며 blade dicing에서는 날 두께보다 수 µm 넓게 나옵니다. ①의 scribe lane은 die 사이에 절단용으로 비워 둔 설계 영역으로, kerf에 chipping과 위치 오차 여유를 더한 폭입니다. ③의 bevel은 wafer 가장자리의 경사 가공면입니다. ④의 scallop은 Bosch 식각 측벽에 남는 물결 모양 요철입니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_note",
     {
-     "method": "blade",
-     "flag": "주제: 절단 폭"
+     "title": "절단 폭 관련 용어",
+     "points": [
+      "설계로 비워 둔 폭인가, 실제로 제거된 폭인가",
+      "날 두께와 비교하면 어떠한가",
+      "가장자리·측벽 형상 용어와 구분되는가"
+     ],
+     "flag": "주제: 절단 폭",
+     "ask": "용어"
     }
    ],
    "metrics": []
@@ -342,7 +372,8 @@
      "flag": "주제: low-k 와 blade"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §FA/분석기술 교육체계 연결 (12장) · DRAM_기술발전방향 §분석기술 교육체계 연결"
   },
   {
    "id": "SAW-B-0045",
@@ -382,9 +413,14 @@
    "exp": "레이저는 내부에 개질층과 짧은 균열만 만들 뿐이며, tape 확장이 가하는 인장 응력이 이 균열을 앞뒷면까지 전파시켜야 die가 분리됩니다. ②는 stealth dicing이 재료를 증발시켜 제거하지 않는다는 점에서 틀립니다. ①의 세정은 분리를 일으키지 않으며 stealth dicing은 본래 건식 공정입니다. ④는 이미 분리된 die를 옮기는 단계이며, 분리가 덜 된 상태에서 집으면 die가 깨집니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_note",
     {
-     "method": "stealth",
+     "title": "stealth dicing 단계",
+     "points": [
+      "레이저는 Si 안에 무엇을 만드는가",
+      "레이저 조사 직후 die는 붙어 있는가",
+      "균열이 앞뒷면까지 이어지려면 무엇이 필요한가"
+     ],
      "flag": "주제: stealth dicing"
     }
    ],
@@ -408,7 +444,8 @@
     "f_saw",
     {
      "method": "stealth",
-     "flag": "주제: stealth dicing"
+     "flag": "주제: stealth dicing",
+     "notes": false
     }
    ],
    "metrics": []
@@ -417,7 +454,7 @@
    "id": "SAW-B-0048",
    "lv": "B",
    "title": "DBG가 얇은 die에 유리한 까닭",
-   "stem": "목표 두께 30–50 µm의 얇은 core die를 만들 때, 먼저 얇게 연삭한 wafer를 blade로 자르면 얇아진 wafer의 취급 파손과 뒷면 chipping이 커집니다. DBG는 두꺼운 상태에서 half-cut을 넣고 연삭으로 분리합니다. DBG가 얇은 die에 유리한 주된 이유는 무엇입니까?",
+   "stem": "HBM core die 수준(35 µm 안팎)의 얇은 die를 만들 때, 먼저 얇게 연삭한 wafer를 blade로 자르면 얇아진 wafer의 취급 파손과 뒷면 chipping이 커집니다. DBG는 두꺼운 상태에서 half-cut을 넣고 연삭으로 분리합니다. DBG가 얇은 die에 유리한 주된 이유는 무엇입니까?",
    "opts": [
     "연삭이 측벽의 개질층을 녹여 없애기 때문",
     "연삭 중 blade가 함께 돌아 절단 시간이 줄기 때문",
@@ -434,7 +471,8 @@
      "flag": "주제: DBG"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §스택 높이 구성"
   },
   {
    "id": "SAW-B-0049",
@@ -451,9 +489,14 @@
    "exp": "plasma dicing은 접촉 없이 화학적으로 Si를 제거하므로 chipping과 기계 손상이 없고, 마스크 개구 폭만큼만 식각되어 kerf를 10 µm 안팎까지 줄일 수 있습니다. ②는 die 영역을 덮는 마스크가 반드시 필요하다는 점에서 틀립니다. ③은 Si용 식각 화학이 금속을 거의 식각하지 못해 금속을 따로 제거해야 합니다. ④는 식각 깊이가 두께에 비례하므로 두꺼울수록 시간이 늘어납니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_note",
     {
-     "method": "plasma",
+     "title": "plasma dicing 특성",
+     "points": [
+      "Si를 제거하는 수단은 무엇인가",
+      "절단 폭은 무엇이 정하는가",
+      "공정에 추가로 필요한 준비물은 무엇인가"
+     ],
      "flag": "주제: plasma dicing"
     }
    ],
@@ -531,7 +574,8 @@
      "flag": "주제: molded wafer 절단"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §EMC 조성 (④)"
   },
   {
    "id": "SAW-B-0055",
@@ -813,7 +857,8 @@
      "flag": "주제: die 강도 분포"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M5 §9.1"
   },
   {
    "id": "SAW-B-9005",
@@ -953,7 +998,8 @@
     "f_saw",
     {
      "method": "blade",
-     "flag": "주제: blade 절단 결함"
+     "flag": "주제: blade 절단 결함",
+     "notes": false
     }
    ],
    "metrics": []
@@ -973,10 +1019,16 @@
    "exp": "레이저 열이 퍼져 재료가 녹았다 굳거나 성질이 바뀐 가공 주변 영역을 열영향부(HAZ, heat affected zone)라 합니다. ②의 kerf는 재료가 제거되어 없어진 폭 자체입니다. ③의 개질층은 stealth dicing에서 Si 내부 초점에 일부러 만든 층으로 표면 가공 주변 영역과 다릅니다. ④의 scallop은 Bosch 식각 측벽의 물결 요철입니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_note",
     {
-     "method": "lg",
-     "flag": "주제: 레이저 가공 손상"
+     "title": "레이저 가공 단면",
+     "points": [
+      "제거된 폭과 그 바깥 영역은 같은가",
+      "바깥 영역의 변화는 무엇 때문인가",
+      "내부 개질층·식각 흔적과 구분되는가"
+     ],
+     "flag": "주제: 레이저 가공 손상",
+     "ask": "영역 이름"
     }
    ],
    "metrics": []
@@ -1036,7 +1088,7 @@
    "id": "SAW-B-9014",
    "lv": "B",
    "title": "얇은 die pick-up 때의 파손 원인",
-   "stem": "두께 40 µm의 core die를 tape에서 떼어 낼 때, 아래에서 바늘(needle)로 die 중앙을 밀어 올리고 위에서 collet으로 흡착합니다. 그런데 die 두께가 얇아지면서 pick-up 중 die가 깨지는 일이 늘었습니다. 가장 직접적인 원인은 무엇입니까?",
+   "stem": "두께 35 µm의 core die를 tape에서 떼어 낼 때, 아래에서 바늘(needle)로 die 중앙을 밀어 올리고 위에서 collet으로 흡착합니다. 그런데 die 두께가 얇아지면서 pick-up 중 die가 깨지는 일이 늘었습니다. 가장 직접적인 원인은 무엇입니까?",
    "opts": [
     "얇은 die일수록 tape 접착력이 저절로 사라진다",
     "얇은 die가 바늘 끝에서 크게 굽어 국부 굽힘 응력이 커진다",
@@ -1069,7 +1121,8 @@
      "분리 방식",
      "needle + collet"
     ]
-   ]
+   ],
+   "src": "HBM_단면실측 §스택 높이 구성"
   },
   {
    "id": "SAW-B-9015",
@@ -1166,9 +1219,14 @@
    "exp": "회전하는 날은 미세한 축 방향 흔들림과 입자 돌출이 있어 실제로 깎이는 폭(kerf)이 날 두께보다 수 µm 넓게 나오며, 날이 닳거나 휘면 더 달라집니다. ①은 흔들림과 입자 돌출을 무시했습니다. ③은 날이 지나간 자리보다 좁게 깎일 수 없다는 점에서 틀립니다. ④는 lane 폭이 kerf에 여유를 더해 설계한 값이라 kerf와 같지 않습니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_note",
     {
-     "method": "blade",
+     "title": "kerf 와 blade 두께",
+     "points": [
+      "회전하는 날은 완전히 고정되어 있는가",
+      "날 표면의 입자는 어떻게 돌출되어 있는가",
+      "lane 폭은 무엇들의 합으로 정하는가"
+     ],
      "flag": "주제: kerf"
     }
    ],
