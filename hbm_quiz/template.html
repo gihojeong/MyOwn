@@ -1178,7 +1178,7 @@ function f_hcb(s, p) {
   const over = (p.off_nm || 0) > p.tol_nm;
   pill(s, tx + 0.5, ty, "허용 ±" + p.tol_nm + " nm → " + (p.hideResult ? "?" : (over ? "초과" : "이내")), { fs: 8, fill: p.hideResult ? K.cream : (over ? K.pink : K.mint), align: "left" });
   }
-  ttl(s, hasDish ? "단면: CMP dishing이 접합을 막는다" : "단면: Cu–Cu · 유전막 접합", RC.x, TOP - 0.04, 3.6);
+  ttl(s, hasDish && !p.hideResult ? "단면: CMP dishing이 접합을 막는다" : "단면: Cu–Cu · 유전막 접합", RC.x, TOP - 0.04, 3.6);
   const ix = RC.x + 0.1, iy = TOP + 0.55;
   R(s, ix, iy, 2.9, 0.5, MX.si, { lw: 0.9, text: "upper die", fs: 8 });
   R(s, ix, iy + 0.95, 2.9, 0.5, MX.si, { lw: 0.9, text: "lower die", fs: 8 });
