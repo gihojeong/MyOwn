@@ -73,7 +73,7 @@ XD 지시 중 TSV-I-0161 은 mv 대신 삭제(A-0123 과 중복), TSV-I-0189·A-
 - 고급 28 (A-9001–9028): 16-Hi 신호선 부하와 충방전 에너지, 커패시턴스 목표 → 최소 liner 두께와 저항 대가, C–V 곡선 해석(기판 도핑), thermal TSV 대 접합층 열저항(0.07 %), HBM4 TSV 2배 → pitch·KOZ 판정, ARDE + reveal 데이터, 소자별 KOZ 표 판정, EM + IR 로 전원 TSV 수, seed 박화 → terminal effect 맵, prewet 기록 → 무작위 구형 void, Bosch 레시피 3조건 선택, taper TSV 득실, repair 없는/있는 스택 수율, Black 식 EM 수명, 온도 계수로 Cu 외 저항 분리, 16-Hi 높이 상한(설계 조건 775 µm) → 최소 TSV 직경, 열응력 대 항복, 응력장 중첩, liner·barrier 증착 방식 선택(표), 도금액 사용량 대 void, anneal 온도(돌출·누설), 중간 정지 단면 → 최종 결함, 통합 방식 선택, 직경(저항·돌출), thermal TSV + dummy bump 실험, Bosch 단계 시간(피복·처리량).
 - 계산 문항은 scratchpad 에서 python 으로 재계산해 정답과 오답 값의 유래를 확인했습니다. 업체 고유 수치는 쓰지 않았고, HBM 수치는 STANDARDS 2.2(I/O 폭·핀 속도)와 2.4(높이 상한은 "설계 조건")만 썼으며 그 밖의 수치는 모두 지문에 "설정값"으로 줬습니다.
 
-- 고급 보강 16 (A-9029–9044): 이동도 허용치 → pMOS KOZ 반경 역산, BTS 방향·barrier 유무별 ΔVFB(Cu⁺ 이동 특정), liner 절연파괴 2모드(고유 120 V 대 국부 30 nm 박화), Si 열 컨덕턴스 2배에 필요한 Cu 면적(50 %), 열공정 반복 누적 돌출과 공정 순서, 충전 시간 단축 + 고AR seam → 가속제 과다, liner 두께로 맞추는 16-Hi 지연(τ 126 → 48 ps), anneal 온도와 KOZ 상충(µ-Raman 표), 가장자리 누설 맵(liner·scallop 중첩), AR별 전류밀도 창, pitch 의 결합·면적 동시 조건, 평탄제 부족 → CMP dishing 경로, KOZ 반경 축소 면적(0.74 mm²), HF/LF C–V 중 신호 부하 선택, CVS 정상인데 입구 void → Cl⁻, thermal TSV 열저항 병목(liner 175 대 Cu 축 6,530 K/W). 모든 계산은 python 으로 재검증했고, 설정값은 지문에 가정으로 명시했습니다.
+- 고급 보강 16 (A-9029–9044): 이동도 허용치 → pMOS KOZ 반경 역산, BTS 방향·barrier 유무별 ΔVFB(Cu⁺ 이동 특정), liner 절연파괴 2모드(고유 120 V 대 국부 30 nm 박화), Si 열 컨덕턴스 2배에 필요한 Cu 면적(50 %), 열공정 반복 누적 돌출과 공정 순서, 충전 시간 단축 + 고AR seam → 가속제 과다, liner 두께로 맞추는 16-Hi 지연(τ 126 → 48 ps), anneal 온도와 KOZ 상충(µ-Raman 표), 가장자리 누설 맵(liner·scallop 중첩), AR별 전류밀도 창, pitch 의 결합·면적 동시 조건, 평탄제 부족 → CMP dishing 경로, KOZ 반경 축소 면적(0.74 mm²), HF/LF C–V 중 신호 부하 선택, CVS 정상인데 입구 void → Cl⁻, thermal TSV 열저항 병목(liner 175 K/W ≪ Cu 축 6,530 K/W → 병목은 Cu 단면). 모든 계산은 python 으로 재검증했고, 설정값은 지문에 가정으로 명시했습니다.
 - 보강분 면제: A-9032(W_OPT_ODD_END·W_OPT_ABSOLUTE — 수치 + 판단형 보기라 어미·"전체" 단어가 단서 아님), A-9033(W_FIG_LEAK — 표 판독형), A-9038(W_OPT_LONGEST), A-9041(W_OPT_STEM_ECHO — 정답에 지문 대가를 언급해야 하는 판단형), A-9042(W_EXP_REF_MISMATCH 오탐).
 
 ## 남은 우려 · EA/DA 에 요청
@@ -486,3 +486,16 @@ XD 지시 중 TSV-I-0161 은 mv 대신 삭제(A-0123 과 중복), TSV-I-0189·A-
 | TSV-A-0169 | 타 분야: Kirkendall void 와 가스 포집 구분(BUMP 소관) |
 | TSV-A-0170 | 근중복: TSV-B-0033(seam 명칭)·TSV-I-0123 과 같은 개념, 고급 부적합 |
 | TSV-A-0171 | 근중복: TSV-I-0002(dishing·erosion 구분) 와 같은 개념, 고급 부적합 |
+
+## W3 수정 (FIX 배치 5 · 2026-11-21)
+
+근거: `docs/reviews/EA_audit/TSV.md`(합격, 경미 1), `docs/reviews/xd3/TSV.md`(조치 문항 없음, 보유 9건). mv 판정은 EA Phase 2 몫으로 손대지 않음.
+
+| 출처 | id | 반영 |
+|---|---|---|
+| EA 경미 | TSV-A-9044 | 오답 ④ "liner 가 열을 완전히 막는다"(3.3 금지 오답)를 특정 계산 실수형으로 교체: liner 를 Cu 단면 위 0.2 µm 평판으로 보고 0.2e-6 ÷ (1.4 × π × (2.5e-6)²) = 7,276 ≈ 7,300 K/W → "병목은 liner" (측면 원통 열 유입 무시, 유입 면적 약 40배 과소). 해설 ④ 대응 문장 교체. 정답 ① 불변(liner 175 K/W, Cu 축 6,530 K/W, python 재계산 확인) |
+| EA 경미 | 보고서 문구 | 신규 출제 요약의 "liner 175 대 Cu 축 6,530" → "liner 175 K/W ≪ Cu 축 6,530 K/W → 병목은 Cu 단면" |
+| XD 보유 | TSV-A-9007·A-9029·A-9041·B-0060·B-0061·B-0076·B-9004·B-9006·A-9020 | 상대(FEOL) 쪽 정리, TSV 는 그대로 유지. KOZ 개념 잔존 확인: 정의(B-0060), 직경 의존(B-9007), n/pMOS 차이(I-9014), 국부 응력 계측(I-9003), 면적(A-0047·A-9041), 역산(A-9029), 소자별 판정(A-9007), anneal 상충(A-9036) — FEOL 정리 후에도 KOZ 는 TSV 에서 충분히 다룸 |
+
+- 삭제·하향·신규: 없음(EA 보강 불필요 판정).
+- 남은 우려: A-0047(응력 감쇠 KOZ 면적)과 A-9041(KOZ 반경 축소 면적)은 같은 π(r₂² − r₁²) 계열이나 묻는 판단(추정 vs 축소 이득)이 달라 유지. EA 다음 차수 후보(신호/전원 TSV liner 의 C–V bias 의존)는 미출제.
