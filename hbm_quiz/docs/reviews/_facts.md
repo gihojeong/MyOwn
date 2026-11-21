@@ -225,3 +225,23 @@
   - Yin & Borgesen 2011: https://www.cambridge.org/core/journals/journal-of-materials-research/article/on-the-root-cause-of-kirkendall-voiding-in-cu3sn/48EBDB5EACFF374A02D5529E9952745C
   - Kim & Tu 1996: https://link.aps.org/doi/10.1103/PhysRevB.53.16027
   - Huang & Yang 2014: https://www.nature.com/articles/srep07117
+
+### 12-2. W2 추가 검증 — DRAM (data/09_DRAM.json 의 src 와 표준 수치)
+
+※ 이 절의 DDR4·DDR5 규격 수치는 JESD79-4/79-5 **본문을 열람하지 못해** 기억 속 규격값과 업계 공개 자료로 대조했습니다. 등급은 [S] 로 적되 \"원문 미열람\" 으로 표시했습니다. EA 가 JEDEC 계정으로 원문을 확인하면 확정됩니다.
+
+| # | 문항 | 주장 | 판정 | 출처 등급 · 출처 | 비고 / 조치 |
+|---|---|---|---|---|---|
+| W2-08 | DRAM-B-9006, DRAM-I-9007, DRAM-I-0070, DRAM-I-0087, DRAM-A-0046 | DDR4: 85 °C 이하에서 64 ms 안에 8,192 번의 REF 로 전 행 refresh → tREFI 7.8 µs. 85–95 °C 확장 구간은 32 ms·tREFI 3.9 µs | **정확** | [S] JESD79-4 (원문 미열람) | retention 의 \"10 °C 마다 절반\" 은 각 문항이 \"가정\" 으로 밝히고 있어 문제없음 |
+| W2-09 | DRAM-I-9007, DRAM-I-9008, DRAM-A-9005 | DDR4 tRFC1 은 8 Gb 350 ns, 16 Gb 550 ns. REF 는 최대 8개까지 미룰 수 있음 | **정확** | [S] JESD79-4 tRFC1 표(2 Gb 160 · 4 Gb 260 · 8 Gb 350 · 16 Gb 550 ns), REF postpone 최대 8 (원문 미열람) | DRAM-A-9005 지문의 \"DRAM 규격\" 은 \"DDR4 규격\" 으로 특정할 것. 세대마다 postpone 한도가 다름 |
+| W2-10 | DRAM-I-0047 | DDR5 on-die ECC = 데이터 128 bit + 패리티 8 bit, SEC(단일 정정, 이중 검출 없음) | **정확** | [S] JESD79-5 (원문 미열람) · 부호 이론 | 해설의 Hamming 한계식(k = 128 → r = 8, k = 64 → r = 7 + DED 1 bit)도 정확 |
+| W2-11 | DRAM-I-9015 | PRAC(per-row activation counting)가 JESD79-5C(2024)에 추가됨. 행별 카운터가 기준을 넘으면 alert 로 처리 시간을 요청하고, 카운터 갱신 때문에 precharge 계열 시간(tRP·tRC)이 늘며 행별 카운터 bit 로 면적이 늘어남 | **정확** | [S] JEDEC JESD79-5C(2024-04, PRAC·Alert Back-Off 도입 — 원문 미열람, 발표 기준) | — |
+| W2-12 | DRAM-I-9030 | HBM2(JESD235): legacy 모드(128 bit 채널) BL2, pseudo channel 모드(64 bit) BL4 → 둘 다 32 byte | **정확(조건부)** | [S] JESD235 계열(원문 미열람). Intel HBM2E IP 문서 \"pseudo-channel mode requires burst length of 4\" [V] | legacy 모드가 BL4 도 지원했는지는 확인하지 못함. 지문이 \"legacy BL2\" 로 정해 주므로 계산 문항으로는 문제없음 |
+| W2-13 | DRAM-I-9021 | HBM3 pseudo channel 32 bit × BL8 = 32 byte | **정확** | [S] JESD238 (PC 32 bit, 발표문) · BL8 은 원문 미열람 | 지문이 \"이 문항에서는 BL8 로 둡니다\" 라고 가정으로 밝혀 문제없음 |
+| W2-14 | DRAM-B-0003, DRAM-B-0029, DRAM-I-0035, DRAM-B-0083, DRAM-I-0162 | HBM3 6.4 Gb/s·819 GB/s, 채널 64 bit, PC 32 → 64(HBM4)·폭 32 bit, I/O 1,024 bit, I/O 0.4 V low-swing(HBM2 VDDQ 1.2 V 대비) | **정확** | [S] JESD238·JESD270-4 발표문 (F01·F05) | — |
+| W2-15 | DRAM-B-0117, DRAM-A-9017 | HBM3 on-die ECC 는 symbol 기반 | **정확 · 표현 주의** | [S] JESD238 발표(\"strong, symbol-based ECC on-die\") | 발표문에는 부호 종류(Reed-Solomon)와 symbol 크기가 없음. B-0117 의 \"Reed-Solomon 계열\" 은 \"예: RS 계열\" 로 쓰고, A-9017 해설이 HBM3 의 symbol 을 \"4 bit\" 로 읽히지 않게 할 것 |
+| W2-16 | DRAM-A-0001, DRAM-I-9035, DRAM-I-0001, DRAM-I-0008 | HBM4 DRFM(컨트롤러가 행을 지목) vs RFM(컨트롤러는 bank 별 activate 수만 세고 행은 DRAM 이 고름), HBM3 컨트롤러 하위 호환, HBM4 8 Gb/s vs 업체 10 Gb/s 이상, HBM3E 9.6 Gb/s | **정확** | [S] JESD270-4 발표 · [V] SK hynix | RFM·DRFM 의 동작 구분은 DDR5 정의와 같은 개념임(W2-01 과 같은 한계: HBM4 본문 세부 미확인). DRAM-I-0001 해설의 \"JEDEC 값은 호환 기준\" 은 \"규격이 정의한 최대 속도\" 라는 뜻이 드러나게 쓸 것(F17 과 같은 문제) |
+| W2-17 | DRAM-I-9011, DRAM-I-9012, DRAM-I-9014 | row hammer 문헌: 미세화로 임계 감소(Kim et al., ISCA 2020), TRR 추적기 한계(TRRespass, IEEE S&P 2020), 거리 2 교란(Half-Double, Google 2021) | **정확** | [V] 학회 논문·Google 공식 발표 | — |
+| W2-18 | DRAM-I-9010, DRAM-A-9007 | 64 ms(32 ms) ÷ tRC 로 창 안 최대 activate 수 산출(약 128만·71만 회) | **정확(계산·가정)** | 지문 가정 | refresh 창만 줄여서는 row hammer 를 막지 못한다는 결론도 위 문헌과 일치 |
+
+- DRAM 분야에서 FACT 표 밖의 표준 수치가 정답 근거로 쓰였는데 **틀린 곳은 찾지 못했습니다**. 표현을 고칠 곳은 DRAM-A-9005, DRAM-B-0117, DRAM-A-9017, DRAM-I-0001 입니다.
