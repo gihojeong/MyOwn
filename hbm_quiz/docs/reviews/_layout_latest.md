@@ -1,6 +1,6 @@
 # 레이아웃 검사 최신 — 2026-11-21T00:40
 
-검사기: `tools/layout_check.js` · 문항 5000 · 103s · JS 오류 0
+검사기: `tools/layout_check.js` · 문항 5000 · 112s · JS 오류 0
 
 ## 상황도 (figure) 결함
 
