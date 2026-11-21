@@ -213,3 +213,7 @@
 BJ 지정(STANDARDS 2.4): core die 사이 µbump pitch 25 µm, base die 아래 면 55 µm(JEDEC). 현행 pitch 를 40 µm 로 두던 문항을 25 µm 기준으로 재설계하고 값은 스크립트로 재계산.
 - BUMP-I-9002: 25 → 20 µm, 면적당 bump 수 (25/20)² = 1.56배 (오답 0.64 역비 · 1.25 한 방향 · 1.95 세제곱)
 - BUMP-A-9023: 25 → 16 µm, s = 0.64 → EM 수명 s⁴ = 0.17배, full-IMC s² = 0.41배
+
+## 형상 기준 Micron HBM3E 12H 실측으로 통일 (2026-11-21, BJ 결정)
+core die 사이 µbump pitch 23 µm, 접합 간극 11 µm(NCP), base die 아래 면 JEDEC 48 × 55 µm. 같은 날 위 절에서 쓴 25 µm·6.5–7.5 µm 값을 이 기준으로 다시 고치고 계산을 재수행(작업 스크립트 scratchpad work/pitch).
+- BUMP-I-9002 23 → 18 µm: 1.63배(0.61·1.28·2.09) / BUMP-A-9023 23 → 15 µm: EM 0.18배·IMC 0.43배

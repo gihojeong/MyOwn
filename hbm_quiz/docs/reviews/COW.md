@@ -184,3 +184,7 @@ BJ 지정(STANDARDS 2.4): core die 사이 µbump pitch 25 µm, base die 아래 �
 - COW-A-0160: 25 → 16 µm, 체적 0.64³ = 0.26 (오답 41 % 제곱 · 64 % 선형)
 - COW-A-9029: µbump 지름 20/pitch 40 → 12.5/25 µm, 접점당 12.3 mA → 163개, 면적 0.10 mm²(HCB 2,830개와 같음), 오답 1/17 · 17배 · ×10
 - COW-A-9033: MR-MUF µbump pitch 40 → 25 µm(계산 없음)
+
+## 형상 기준 Micron HBM3E 12H 실측으로 통일 (2026-11-21, BJ 결정)
+core die 사이 µbump pitch 23 µm, 접합 간극 11 µm(NCP), base die 아래 면 JEDEC 48 × 55 µm. 같은 날 위 절에서 쓴 25 µm·6.5–7.5 µm 값을 이 기준으로 다시 고치고 계산을 재수행(작업 스크립트 scratchpad work/pitch).
+- COW-I-9001 23 → 10 µm: 5.3배(2.3·4.6·12.2) / COW-A-0074 23 → 18 µm, 간극 11 → 7 µm / COW-A-0160 23 → 15 µm: 체적 28 %(43·65) / COW-A-9029 µbump 11.5/23 µm: 193개, 0.10 mm²(1/15·15배·×10) / COW-A-9033 23 µm
