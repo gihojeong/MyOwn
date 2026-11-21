@@ -6,7 +6,7 @@
    "id": "COW-B-0001",
    "lv": "B",
    "title": "접합 수지를 필름으로 먼저 깔아 두는 방식",
-   "stem": "core die를 한 장씩 쌓는 공정에서, 비전도성 수지를 미리 필름 형태로 die 표면에 붙여 두고 die를 올린 뒤 가열과 가압을 함께 가해 solder 접합과 수지 경화를 한 번에 끝내는 방식이 있습니다. 필름에는 silica filler가 들어 있고, 이 조건에서 bump pitch는 40 µm, die 사이 간극은 9 µm입니다. 그림은 이 방식의 접합부 단면입니다. 이 방식의 이름은 무엇입니까?",
+   "stem": "core die를 한 장씩 쌓는 공정에서, 비전도성 수지를 미리 필름 형태로 die 표면에 붙여 두고 die를 올린 뒤 가열과 가압을 함께 가해 solder 접합과 수지 경화를 한 번에 끝내는 방식이 있습니다. 필름에는 silica filler가 들어 있고, 이 문항의 설정값은 bump pitch 23 µm, die 사이 간극 11 µm입니다(간극은 공법·업체마다 다를 수 있습니다). 표는 이 방식의 공정 조건입니다. 이 방식의 이름은 무엇입니까?",
    "opts": [
     "MR-MUF",
     "TC-NCF",
@@ -17,12 +17,36 @@
    "exp": "비전도성 필름(NCF)을 접합 전에 깔아 두고 열압착(thermo-compression)으로 die마다 solder 접합과 수지 경화를 함께 끝내는 방식이 TC-NCF입니다. ① MR-MUF는 die를 쌓아 일괄 reflow로 접합한 뒤 액상 EMC를 주입하므로 필름을 쓰지 않습니다. ③ capillary underfill은 접합이 끝난 뒤 액상 수지를 모세관 현상으로 흘려 넣는 일반 flip chip 방식입니다. ④ HCB는 solder와 수지 없이 Cu pad와 유전막을 직접 맞붙입니다.",
    "k": 1,
    "fig": [
-    "f_bond",
+    "f_table",
     {
-     "method": "ncf",
-     "pitch_um": 40,
-     "gap_um": 9,
-     "flag": "필름형 접합 수지"
+     "title": "접합 공정 조건",
+     "cols": [
+      "항목",
+      "조건"
+     ],
+     "rows": [
+      [
+       "수지 형태",
+       "접합 전 필름"
+      ],
+      [
+       "수지 filler",
+       "silica"
+      ],
+      [
+       "접합",
+       "die마다 가열·가압"
+      ],
+      [
+       "bump pitch",
+       "23 µm"
+      ],
+      [
+       "die 간극",
+       "11 µm (설정값)"
+      ]
+     ],
+     "flag": "조건: 필름형 접합 수지"
     }
    ],
    "metrics": [
@@ -39,20 +63,21 @@
     [
      "↔",
      "bump pitch",
-     "40 µm"
+     "23 µm"
     ],
     [
      "↕",
      "간극",
-     "9 µm"
+     "11 µm"
     ]
-   ]
+   ],
+   "src": "HBM_단면실측 §이미지에 직접 표기된 치수 · HBM_세미나v2 §v3 E. 타사 적용 한계"
   },
   {
    "id": "COW-B-0002",
    "lv": "B",
    "title": "접합을 먼저 끝내고 수지를 나중에 넣는 방식",
-   "stem": "다른 방식에서는 die를 가접합해 모두 쌓은 뒤 한 번의 reflow로 모든 solder joint를 동시에 접합하고, 그다음 액상 EMC를 흘려 넣어 die 사이 간극을 한꺼번에 채우고 경화시킵니다. die를 한 장씩 누르는 접합 압력을 쓰지 않는 것이 특징이며, 이 조건에서 bump pitch는 40 µm, 간극은 7 µm입니다. 그림은 이 방식의 접합부 단면과 수지 주입 방향입니다. 이 방식의 이름은 무엇입니까?",
+   "stem": "다른 방식에서는 die를 가접합해 모두 쌓은 뒤 한 번의 reflow로 모든 solder joint를 동시에 접합하고, 그다음 액상 EMC를 흘려 넣어 die 사이 간극을 한꺼번에 채우고 경화시킵니다. die를 한 장씩 누르는 접합 압력을 쓰지 않는 것이 특징이며, 이 문항의 설정값은 bump pitch 23 µm, 간극 11 µm입니다(간극은 공법·업체마다 다를 수 있습니다). 표는 이 방식의 공정 조건입니다. 이 방식의 이름은 무엇입니까?",
    "opts": [
     "HCB(Cu–Cu hybrid bonding)",
     "MR-MUF",
@@ -63,12 +88,36 @@
    "exp": "적층한 die를 일괄 reflow(mass reflow)로 접합한 뒤 액상 EMC(molded underfill)로 간극을 채우는 방식이 MR-MUF입니다. ① HCB는 solder와 수지를 쓰지 않고 Cu pad와 유전막을 직접 붙입니다. ③ TC-NCF는 필름을 먼저 깔고 die마다 열압착합니다. ④ W2W bonding은 wafer 두 장을 통째로 맞붙이는 방식이라 die를 골라 쌓는 HBM core 적층과 다릅니다.",
    "k": 1,
    "fig": [
-    "f_bond",
+    "f_table",
     {
-     "method": "mrmuf",
-     "pitch_um": 40,
-     "gap_um": 7,
-     "flag": "접합 후 수지 주입"
+     "title": "접합 공정 조건",
+     "cols": [
+      "항목",
+      "조건"
+     ],
+     "rows": [
+      [
+       "접합",
+       "일괄 reflow"
+      ],
+      [
+       "die별 가압",
+       "없음"
+      ],
+      [
+       "수지 투입",
+       "접합 후 액상"
+      ],
+      [
+       "bump pitch",
+       "23 µm"
+      ],
+      [
+       "die 간극",
+       "11 µm (설정값)"
+      ]
+     ],
+     "flag": "조건: 접합 후 수지 주입"
     }
    ],
    "metrics": [
@@ -85,20 +134,21 @@
     [
      "↔",
      "bump pitch",
-     "40 µm"
+     "23 µm"
     ],
     [
      "↕",
      "간극",
-     "7 µm"
+     "11 µm"
     ]
-   ]
+   ],
+   "src": "HBM_단면실측 §이미지에 직접 표기된 치수 · HBM_세미나v2 §v3 E. 타사 적용 한계"
   },
   {
    "id": "COW-B-0003",
    "lv": "B",
    "title": "solder 없이 Cu와 유전막을 맞대는 방식",
-   "stem": "세 번째 방식은 solder를 쓰지 않습니다. CMP로 평탄화한 접합면에서 pad 사이의 SiCN 유전막이 상온에서 먼저 붙고, 이후 anneal에서 Cu가 팽창해 마주 보는 Cu pad끼리 금속 접합을 완성합니다. 이 조건에서 pad pitch는 9 µm이고 die 사이에 bump가 없습니다. 그림은 이 방식의 접합부 단면입니다. 이 방식의 이름은 무엇입니까?",
+   "stem": "세 번째 방식은 solder를 쓰지 않습니다. CMP로 평탄화한 접합면에서 pad 사이의 SiCN 유전막이 상온에서 먼저 붙고, 이후 anneal에서 Cu가 팽창해 마주 보는 Cu pad끼리 금속 접합을 완성합니다. 이 조건에서 pad pitch는 9 µm이고 die 사이에 bump가 없습니다. 표는 이 방식의 접합 조건입니다. 이 방식의 이름은 무엇입니까?",
    "opts": [
     "TC-NCF",
     "MR-MUF",
@@ -109,11 +159,36 @@
    "exp": "유전막–유전막 접합과 Cu–Cu 금속 접합이 한 접합면에서 함께 이루어지는 방식이 HCB(hybrid copper bonding)입니다. solder bump가 없으므로 die 사이를 수지로 채울 공간도 없습니다. ① TC-NCF와 ② MR-MUF는 모두 solder µbump로 접합하고 간극을 수지로 채웁니다. ④ fluxless TCB는 flux 없이 산화막을 환원하는 열압착 방식일 뿐 solder 접합이라는 점은 같습니다.",
    "k": 1,
    "fig": [
-    "f_bond",
+    "f_table",
     {
-     "method": "hcb",
-     "pitch_um": 9,
-     "flag": "solder 없는 직접 접합"
+     "title": "접합 조건",
+     "cols": [
+      "항목",
+      "조건"
+     ],
+     "rows": [
+      [
+       "solder",
+       "없음"
+      ],
+      [
+       "유전막",
+       "SiCN"
+      ],
+      [
+       "상온 접합",
+       "유전막끼리"
+      ],
+      [
+       "금속 접합",
+       "anneal 중 Cu"
+      ],
+      [
+       "pad pitch",
+       "9 µm"
+      ]
+     ],
+     "flag": "조건: solder 없는 직접 접합"
     }
    ],
    "metrics": [
@@ -137,53 +212,70 @@
      "금속 접합",
      "anneal"
     ]
-   ]
+   ],
+   "src": "M1 부록 §A"
   },
   {
    "id": "COW-B-0027",
    "lv": "B",
    "title": "µbump pitch 축소와 접점 밀도",
-   "stem": "현재 µbump pitch 55 µm, 간극 10 µm로 적층하는 TC-NCF 제품을 pitch 40 µm로 줄이려 합니다. die 면적은 그대로이고 접점은 정사각 격자로 고르게 배열된다고 가정합니다. 그림은 변경 후 접합부 단면입니다. 같은 면적에 들어가는 접점 수는 대략 몇 배가 됩니까?",
+   "stem": "core die 사이 µbump pitch가 23 µm(Micron HBM3E 12H 실측)인 적층 구조에서 pitch를 18 µm(목표 설정값)로 줄이려 합니다. die 면적은 그대로이고 접점은 정사각 격자로 고르게 배열된다고 가정합니다. 표는 변경 전후 조건입니다. 같은 면적에 들어가는 접점 수는 대략 몇 배가 됩니까?",
    "opts": [
-    "약 0.53 배",
-    "약 1.38 배",
-    "약 1.89 배",
-    "약 2.60 배"
+    "약 0.61 배",
+    "약 1.28 배",
+    "약 1.63 배",
+    "약 2.09 배"
    ],
    "a": 2,
-   "exp": "정사각 격자에서 접점 하나가 차지하는 면적은 pitch²이므로 접점 수는 pitch²에 반비례합니다. (55 ÷ 40)² = 1.375² ≈ 1.89 배입니다. ② 1.38 배는 pitch 비를 제곱하지 않은 값, ④ 2.60 배는 세제곱을 취한 값, ① 0.53 배는 비를 거꾸로 넣은 값입니다.",
+   "exp": "정사각 격자에서 접점 하나가 차지하는 면적은 pitch²이므로 접점 수는 pitch²에 반비례합니다. (23 ÷ 18)² = 1.278² ≈ 1.63 배입니다. ② 1.28 배는 pitch 비를 제곱하지 않은 값(23 ÷ 18), ④ 2.09 배는 세제곱을 취한 값(1.278³), ① 0.61 배는 비를 거꾸로 넣은 값(18 ÷ 23)²입니다.",
    "k": 1,
    "fig": [
-    "f_bond",
+    "f_table",
     {
-     "method": "ncf",
-     "pitch_um": 40,
-     "gap_um": 10,
-     "flag": "pitch 55 → 40 µm"
+     "title": "µbump pitch 변경",
+     "cols": [
+      "항목",
+      "변경 전",
+      "변경 후"
+     ],
+     "rows": [
+      [
+       "µbump pitch",
+       "23 µm",
+       "18 µm"
+      ],
+      [
+       "배열",
+       "정사각 격자",
+       "정사각 격자"
+      ],
+      [
+       "die 면적",
+       "같음",
+       "같음"
+      ]
+     ],
+     "flag": "조건: pitch 23 → 18 µm"
     }
    ],
    "metrics": [
     [
      "↔",
      "현재 pitch",
-     "55 µm"
+     "23 µm"
     ],
     [
      "↔",
      "목표 pitch",
-     "40 µm"
-    ],
-    [
-     "↕",
-     "간극",
-     "10 µm"
+     "18 µm"
     ],
     [
      "▦",
      "배열",
      "정사각 격자"
     ]
-   ]
+   ],
+   "src": "HBM_단면실측 §이미지에 직접 표기된 치수"
   },
   {
    "id": "COW-B-0049",
@@ -203,7 +295,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: 수지 투입 시점"
+     "flag": "주제: 수지 투입 시점",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -238,7 +333,10 @@
     {
      "method": "mrmuf",
      "voids": 2,
-     "flag": "주제: 간극과 EMC 충전"
+     "flag": "주제: 간극과 EMC 충전",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
     }
    ],
    "metrics": [
@@ -272,7 +370,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: TC-NCF 열압착"
+     "flag": "주제: TC-NCF 열압착",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -346,7 +447,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: NCF 의 역할"
+     "flag": "주제: NCF 의 역할",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -380,8 +484,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "nonwet": true,
-     "flag": "주제: 수지 끼임 미접합"
+     "flag": "주제: 수지 끼임 미접합",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -415,7 +521,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: 순차 열압착"
+     "flag": "주제: 순차 열압착",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -484,7 +593,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: 누적 열이력"
+     "flag": "주제: 누적 열이력",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -515,22 +627,23 @@
    "exp": "MR-MUF는 mass reflow(일괄 reflow)로 모든 solder joint를 한 번에 접합하고, molded underfill(액상 EMC)로 die 사이를 채우는 방식입니다. ② 필름과 die별 열압착은 TC-NCF입니다. ① Cu–Cu 직접 접합은 HCB입니다. ④ 초음파 접합은 HBM 적층 공법으로 쓰이지 않습니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
+     "title": "적층 공법 구분 관점",
+     "points": [
+      "solder를 쓰는가",
+      "수지를 접합 전에 두는가, 뒤에 넣는가",
+      "die마다 가열하는가, 한꺼번에 가열하는가"
+     ],
+     "ask": "MR-MUF 특징",
      "flag": "주제: MR-MUF"
     }
    ],
    "metrics": [
     [
-     "⇢",
-     "수지",
-     "액상 EMC"
-    ],
-    [
-     "♨",
-     "접합",
-     "일괄 reflow"
+     "⇵",
+     "대상",
+     "MR-MUF"
     ]
    ]
   },
@@ -552,7 +665,9 @@
     "f_bond",
     {
      "method": "hcb",
-     "flag": "주제: HCB 입자 결함"
+     "flag": "주제: HCB 입자 결함",
+     "pitch_um": 9,
+     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
     }
    ],
    "metrics": [
@@ -586,7 +701,10 @@
     "f_bond",
     {
      "method": "mrmuf",
-     "flag": "주제: underfill"
+     "flag": "주제: underfill",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
     }
    ],
    "metrics": [
@@ -612,24 +730,26 @@
    "exp": "HCB의 접합면은 Cu pad와 그 사이의 유전막(SiO₂·SiCN)으로 이루어지며, 유전막끼리의 접합과 Cu끼리의 금속 접합이 같은 면에서 함께 성립합니다. 이 두 종류의 접합을 합쳐 hybrid라 부릅니다. ② HCB에는 solder와 수지가 없습니다. ③ D2W·W2W는 접합 형태(die 단위·wafer 단위)의 구분입니다. ④ 열압착과 reflow는 solder 공법의 접합 방식입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "hcb",
+     "title": "hybrid 의 뜻",
+     "points": [
+      "접합면을 이루는 재료의 종류",
+      "재료마다 생기는 결합의 종류",
+      "solder·수지 사용 여부"
+     ],
+     "ask": "이름의 유래",
      "flag": "주제: hybrid 의 뜻"
     }
    ],
    "metrics": [
     [
-     "◇",
-     "유전막",
-     "SiO₂·SiCN"
-    ],
-    [
      "■",
-     "금속",
-     "Cu pad"
+     "공법",
+     "HCB"
     ]
-   ]
+   ],
+   "src": "M1 부록 §A"
   },
   {
    "id": "COW-B-0069",
@@ -649,7 +769,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: 미세 pitch solder"
+     "flag": "주제: 미세 pitch solder",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -678,7 +801,9 @@
     "f_bond",
     {
      "method": "hcb",
-     "flag": "주제: HCB 미세 pitch"
+     "flag": "주제: HCB 미세 pitch",
+     "pitch_um": 9,
+     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
     }
    ],
    "metrics": [
@@ -704,19 +829,26 @@
    "exp": "TC-NCF·MR-MUF 스택에는 die마다 수 µm–십수 µm의 간극이 있고, 이를 채운 NCF·EMC의 열전도율(약 0.2–3 W/m·K)은 Si(120–150 W/m·K)보다 훨씬 낮아 열 경로의 병목이 됩니다. HCB는 이 간극이 없어 die끼리 거의 직접 맞닿습니다. ② 접합 온도는 동작 중 발열과 무관합니다. ③ Cu의 물성은 접합으로 바뀌지 않습니다. ① HCB는 pitch가 작아 pad 수가 오히려 늘어납니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "hcb",
+     "title": "die 사이 열 경로",
+     "points": [
+      "열 경로에 놓인 층을 차례로 적어 본다",
+      "층마다 두께와 열전도율을 비교한다",
+      "공법에 따라 달라지는 층이 무엇인가"
+     ],
+     "ask": "열 전달 이점",
      "flag": "주제: HCB 열 경로"
     }
    ],
    "metrics": [
     [
-     "↕",
-     "bump 간극",
-     "없음"
+     "◇",
+     "비교",
+     "HCB vs µbump 적층"
     ]
-   ]
+   ],
+   "src": "DRAM_기술발전방향 §열저항 (6.3절) · HBM_HotChips2026 §열 모델"
   },
   {
    "id": "COW-B-0072",
@@ -737,7 +869,9 @@
     {
      "method": "hcb",
      "dish": true,
-     "flag": "주제: HCB 표면 요구"
+     "flag": "주제: HCB 표면 요구",
+     "pitch_um": 9,
+     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
     }
    ],
    "metrics": [
@@ -771,7 +905,10 @@
     "f_bond",
     {
      "method": "mrmuf",
-     "flag": "주제: 일괄 접합"
+     "flag": "주제: 일괄 접합",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
     }
    ],
    "metrics": [
@@ -837,9 +974,15 @@
    "exp": "필름(film) 형태의 비전도성 수지를 NCF(non-conductive film)라 부릅니다. ① NCP는 같은 역할을 하는 액상(paste) 재료입니다. ② EMC는 MR-MUF 등에서 간극 충전과 성형에 쓰는 epoxy molding compound입니다. ③ ACF는 도전 입자를 넣어 두께 방향으로만 전기가 통하게 한 이방성 도전 필름이라 비전도성 수지가 아닙니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
+     "title": "접합 수지의 형태",
+     "points": [
+      "접합 전에 붙여 두는가, 나중에 넣는가",
+      "필름인가, 액상인가",
+      "전기가 통하는가"
+     ],
+     "ask": "재료 이름",
      "flag": "주제: 접합 필름"
     }
    ],
@@ -874,7 +1017,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: 액상 접합 수지"
+     "flag": "주제: 액상 접합 수지",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -908,7 +1054,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: NCF 두께"
+     "flag": "주제: NCF 두께",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -942,7 +1091,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: NCP 도포"
+     "flag": "주제: NCP 도포",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -971,7 +1123,10 @@
     "f_bond",
     {
      "method": "mrmuf",
-     "flag": "주제: MR-MUF 고단화"
+     "flag": "주제: MR-MUF 고단화",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
     }
    ],
    "metrics": [
@@ -1002,22 +1157,23 @@
    "exp": "TC-NCF는 bond head가 die 한 장마다 하중·온도 프로파일을 적용하므로 die별 공정 제어가 정밀합니다. ① 일괄 접합에 따른 높은 처리량은 MR-MUF의 강점입니다. ③ 접합 압력을 쓰지 않아 bump 수 제약이 작은 MR-MUF가 dummy bump를 더 많이 둘 수 있습니다(SK hynix 발표 기준 최대 4배). ④ 액상 수지 충전은 MR-MUF의 방식입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
+     "title": "두 공법 비교 관점",
+     "points": [
+      "접합 단위: die 한 장인가, 여러 단인가",
+      "가압 여부와 bump 수 제약",
+      "수지 투입 시점과 형태"
+     ],
+     "ask": "TC-NCF 강점",
      "flag": "주제: 두 공법 비교"
     }
    ],
    "metrics": [
     [
-     "⇵",
-     "TC-NCF",
-     "die별 제어"
-    ],
-    [
-     "♨",
-     "MR-MUF",
-     "일괄 reflow"
+     "◇",
+     "비교",
+     "TC-NCF vs MR-MUF"
     ]
    ],
    "src": "ECTC 2023 SK hynix (TC-NCF 압력과 bump 수 제약)"
@@ -1040,7 +1196,10 @@
     "f_bond",
     {
      "method": "mrmuf",
-     "flag": "주제: MR-MUF 개량형"
+     "flag": "주제: MR-MUF 개량형",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
     }
    ],
    "metrics": [
@@ -1078,7 +1237,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: 얇은 die 휨"
+     "flag": "주제: 얇은 die 휨",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -1104,9 +1266,15 @@
    "exp": "열압착 중 녹은 NCF는 bump 사이를 지나 die 가장자리로 밀려 나오며(squeeze-out), 과하면 bond head나 이웃 die를 오염시킵니다. 수지가 흐르는 동안 die가 옆으로 미끄러져 정렬이 틀어질 수도 있습니다. ② 성형 void는 몰딩 공정의 결함입니다. ① 유동 끝단 미충전은 MR-MUF의 결함입니다. ④ Cu recess 미접합은 HCB의 결함입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
+     "title": "공법별 결함 구분",
+     "points": [
+      "수지가 언제, 어떤 형태로 들어가는가",
+      "접합 중 die를 누르는가",
+      "결함이 생기는 공정 단계"
+     ],
+     "ask": "관리 현상",
      "flag": "주제: TC-NCF 결함"
     }
    ],
@@ -1138,9 +1306,14 @@
    "exp": "MR-MUF는 접합 뒤 액상 EMC를 주입해 die 사이 간극을 채우고 스택 외곽까지 성형합니다(molded underfill). ① solder paste는 접합 재료이지 간극 충전재가 아닙니다. ③ TIM은 패키지와 방열 부품 사이에 쓰는 열 계면 재료입니다. ④ NCF는 TC-NCF에서 접합 전에 깔아 두는 필름입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
+     "title": "MR-MUF 공정 순서",
+     "points": [
+      "접합은 가접합 후 일괄 reflow로 끝난다",
+      "충전은 접합 뒤에 이루어진다"
+     ],
+     "ask": "충전 재료",
      "flag": "주제: MR-MUF 충전재"
     }
    ],
@@ -1167,17 +1340,22 @@
    "exp": "TC-NCF는 die 한 장마다 가압·승온·냉각 사이클을 반복하지만, MR-MUF는 가접합으로 쌓은 뒤 일괄 reflow 한 번으로 모든 joint를 접합하므로 단수가 늘어도 접합 단계 시간이 비례해 늘지 않습니다. ② 적층 시 정렬은 두 공법 모두 필요합니다. ① die별 하중 제어는 TC-NCF의 특징입니다. ④ 검사 생략은 공법의 특성이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
-     "flag": "주제: 일괄 reflow"
+     "title": "처리량을 정하는 단계",
+     "points": [
+      "die 한 장마다 반복되는 단계가 있는가",
+      "단수가 늘 때 함께 늘어나는 시간"
+     ],
+     "ask": "처리량 이유",
+     "flag": "주제: 처리량 비교"
     }
    ],
    "metrics": [
     [
-     "♨",
-     "접합",
-     "일괄 reflow"
+     "▦",
+     "조건",
+     "같은 단수"
     ]
    ]
   },
@@ -1196,9 +1374,15 @@
    "exp": "HCB의 유전막은 CMP로 평탄화할 수 있고 상온 접합이 가능한 무기 박막이어야 하며, SiO₂나 SiCN이 쓰입니다. SiCN은 Cu 확산 차단 특성도 갖습니다. ② NCF와 ③ 에폭시 EMC는 유기 수지라 nm 수준 평탄화와 상온 직접 접합에 맞지 않습니다. ④ solder resist는 기판 배선을 덮는 유기 절연막입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "hcb",
+     "title": "HCB 접합면 구성",
+     "points": [
+      "CMP로 nm 수준 평탄화가 가능해야 한다",
+      "plasma 처리 뒤 상온에서 붙어야 한다",
+      "Cu 확산을 막아야 한다"
+     ],
+     "ask": "유전막 재료",
      "flag": "주제: HCB 유전막"
     }
    ],
@@ -1208,7 +1392,8 @@
      "위치",
      "Cu pad 사이"
     ]
-   ]
+   ],
+   "src": "M1 부록 §A"
   },
   {
    "id": "COW-B-0101",
@@ -1254,22 +1439,27 @@
    "exp": "SK hynix는 MR-MUF가 접합 압력을 쓰지 않아 TC-NCF보다 thermal dummy bump를 최대 4배 둘 수 있고, 칩 사이를 방열 특성이 높은 EMC로 채운다는 점을 근거로 들었습니다(ECTC 2023 기준 동일 조건 Tj 14 °C 낮음). ② EMC는 절연 수지입니다. ③ 접합 온도는 동작 중 발열과 무관합니다. ④ 간극은 EMC로 채워지며 공기 대류 경로가 아닙니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
+     "title": "공법별 열 경로",
+     "points": [
+      "die 사이 열은 bump와 충전재를 지난다",
+      "발표는 두 공법의 구조 차이를 근거로 든다"
+     ],
+     "ask": "발표 근거",
      "flag": "주제: MR-MUF 방열"
     }
    ],
    "metrics": [
     [
-     "▣",
-     "dummy bump",
-     "최대 4배"
+     "◇",
+     "비교",
+     "MR-MUF vs TC-NCF"
     ],
     [
-     "⇢",
-     "충전재",
-     "EMC"
+     "♨",
+     "발표",
+     "Tj 차이"
     ]
    ],
    "src": "SK hynix Newsroom; ECTC 2023 SK hynix"
@@ -1292,7 +1482,10 @@
     "f_bond",
     {
      "method": "mrmuf",
-     "flag": "주제: reflow 중 위치"
+     "flag": "주제: reflow 중 위치",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
     }
    ],
    "metrics": [
@@ -1321,7 +1514,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: 압착 하중"
+     "flag": "주제: 압착 하중",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -1351,7 +1547,10 @@
     {
      "method": "ncf",
      "voids": 1,
-     "flag": "주제: NCP 도포량"
+     "flag": "주제: NCP 도포량",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -1380,7 +1579,10 @@
     "f_bond",
     {
      "method": "mrmuf",
-     "flag": "주제: 얇은 die 와 휨"
+     "flag": "주제: 얇은 die 와 휨",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
     }
    ],
    "metrics": [
@@ -1395,7 +1597,7 @@
      "약 40 % 감소"
     ]
    ],
-   "src": "SK hynix Newsroom, MR-MUF unlocks HBM heat control"
+   "src": "SK hynix Newsroom, MR-MUF unlocks HBM heat control · HBM_HotChips2026 §Z-높이 예산"
   },
   {
    "id": "COW-B-0117",
@@ -1406,7 +1608,7 @@
     "TC-NCF 대비 열저항 약 3 % 개선",
     "TC-NCF 대비 열저항 20 % 이상 개선",
     "TC-NCF 대비 열저항 80 % 이상 개선",
-    "TC-NCF과 열저항 차이 없음"
+    "TC-NCF와 열저항 차이 없음"
    ],
    "a": 1,
    "exp": "Samsung 발표(2026-03)는 HCB가 TC 본딩(TC-NCF) 대비 열저항을 20 % 이상 개선하고 16단 이상 적층을 가능하게 한다는 내용입니다. 개선의 근거는 die 사이 수지 간극이 사라지는 데 있습니다. ① 3 %는 발표값보다 훨씬 작습니다. ③ 80 %는 스택 전체 열 경로에 Si·base die·TIM 등 다른 층이 남는 점을 무시한 과장입니다. ④ 간극 제거 효과를 부정한 서술입니다.",
@@ -1415,7 +1617,9 @@
     "f_bond",
     {
      "method": "hcb",
-     "flag": "주제: HCB 열저항"
+     "flag": "주제: HCB 열저항",
+     "pitch_um": 9,
+     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
     }
    ],
    "metrics": [
@@ -1445,7 +1649,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: fluxless 접합"
+     "flag": "주제: fluxless 접합",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -1479,7 +1686,9 @@
     "f_bond",
     {
      "method": "hcb",
-     "flag": "주제: HCB 공정 흐름"
+     "flag": "주제: HCB 공정 흐름",
+     "pitch_um": 9,
+     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
     }
    ],
    "metrics": [
@@ -1508,7 +1717,6 @@
     "f_hcb",
     {
      "pitch_um": 6,
-     "dish_nm": 5,
      "flag": "주제: Cu recess"
     }
    ],
@@ -1538,7 +1746,6 @@
     "f_hcb",
     {
      "pitch_um": 6,
-     "off_nm": 60,
      "flag": "주제: overlay 성분"
     }
    ],
@@ -1608,7 +1815,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: NCF 경화 상태"
+     "flag": "주제: NCF 경화 상태",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -1637,7 +1847,10 @@
     "f_bond",
     {
      "method": "mrmuf",
-     "flag": "주제: flux 잔사"
+     "flag": "주제: flux 잔사",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
     }
    ],
    "metrics": [
@@ -1666,7 +1879,10 @@
     "f_bond",
     {
      "method": "ncf",
-     "flag": "주제: 전기적 연결 확인"
+     "flag": "주제: 전기적 연결 확인",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
     }
    ],
    "metrics": [
@@ -1676,6 +1892,64 @@
      "joint 연결 확인"
     ]
    ]
+  },
+  {
+   "id": "COW-B-9012",
+   "lv": "B",
+   "title": "12H 단면에서 접합층의 높이 비중",
+   "stem": "Micron HBM3E 12H 스택 단면 실측에서 일반 core die는 35 µm, die 사이 접합층(µbump + NCP underfill)은 11 µm이고, 스택 전체 높이는 720 µm입니다. 표는 이 실측 치수입니다. core die 한 장과 접합층 한 층을 합친 층 피치에서 접합층이 차지하는 비율은 대략 얼마입니까?",
+   "opts": [
+    "약 18 %",
+    "약 24 %",
+    "약 31 %",
+    "약 76 %"
+   ],
+   "a": 1,
+   "exp": "층 피치 = core die + 접합층 = 35 + 11 = 46 µm 이고, 접합층 비율 = 11 ÷ 46 ≈ 0.24, 즉 약 24 %입니다. 열전도가 낮은 수지층이 층 높이의 약 1/4을 차지하므로, bump 간극을 없애는 HCB는 높이 여유와 열 경로 양쪽에서 이득을 봅니다. ① 18 %는 기준을 스택 전체로 바꾼 값(12 × 11 = 132 µm, 132 ÷ 720)입니다. ③ 31 %는 분모에 층 피치 대신 die 두께만 넣은 값(11 ÷ 35)입니다. ④ 76 %는 die가 차지하는 비율(35 ÷ 46)입니다.",
+   "k": 1,
+   "fig": [
+    "f_table",
+    {
+     "title": "12H 단면 실측 치수",
+     "cols": [
+      "항목",
+      "두께"
+     ],
+     "rows": [
+      [
+       "일반 core die",
+       "35 µm"
+      ],
+      [
+       "접합층(µbump+NCP)",
+       "11 µm"
+      ],
+      [
+       "스택 전체",
+       "720 µm"
+      ]
+     ],
+     "flag": "조건: Micron HBM3E 12H"
+    }
+   ],
+   "metrics": [
+    [
+     "▮",
+     "core die",
+     "35 µm"
+    ],
+    [
+     "↕",
+     "접합층",
+     "11 µm"
+    ],
+    [
+     "⇕",
+     "스택 높이",
+     "720 µm"
+    ]
+   ],
+   "src": "HBM_단면실측 §이미지에 직접 표기된 치수 · HBM_단면실측 §720 µm 내역"
   },
   {
    "id": "COW-I-0001",
@@ -8657,7 +8931,10 @@
     "f_bond",
     {
      "method": "mrmuf",
-     "flag": "주제: MR-MUF 충전"
+     "flag": "주제: MR-MUF 충전",
+     "pitch_um": 23,
+     "gap_um": 11,
+     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
     }
    ],
    "metrics": []
