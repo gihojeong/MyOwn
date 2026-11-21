@@ -2,7 +2,7 @@
 
 생성: `python3 tools/validate.py` · 규칙: `docs/agents/STANDARDS.md` · 심각도 E=필수 수정, W=검토, I=참고/EA 일괄
 
-- 문항 수: 2448 · 이슈: E 0 / W 0 / I 1762
+- 문항 수: 2448 · 이슈: E 0 / W 1 / I 1762
 - E 이슈가 1건 이상인 문항: 0
 
 ## 1. 분야 × 난이도 요약 (문항 수 / E 건수 / W 건수)
@@ -19,7 +19,7 @@
 | FA | 238 | 0 | 66 · 0 · 0 | 98 · 0 · 0 | 74 · 0 · 0 |
 | PROD | 164 | 0 | 58 · 0 · 0 | 59 · 0 · 0 | 47 · 0 · 0 |
 | DRAM | 198 | 0 | 64 · 0 · 0 | 70 · 0 · 0 | 64 · 0 · 0 |
-| MET | 154 | 0 | 39 · 0 · 0 | 64 · 0 · 0 | 51 · 0 · 0 |
+| MET | 154 | 0 | 39 · 0 · 1 | 64 · 0 · 0 | 51 · 0 · 0 |
 | MIX | 162 | 0 | 21 · 0 · 0 | 48 · 0 · 0 | 93 · 0 · 0 |
 | FEOL | 183 | 0 | 58 · 0 · 0 | 66 · 0 · 0 | 59 · 0 · 0 |
 | THERM | 160 | 0 | 41 · 0 · 0 | 59 · 0 · 0 | 60 · 0 · 0 |
@@ -76,6 +76,7 @@
 
 | 코드 | 합계 | TSV | BSP | BUMP | SAW | COW | WARP | SIP | FA | PROD | DRAM | MET | MIX | FEOL | THERM |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| W_FIG_NAME_LEAK | 1 | · | · | · | · | · | · | · | · | · | · | 1 | · | · | · |
 | I_FACT_WATCH | 162 | 1 | 1 | 1 | · | 4 | 4 | 8 | 20 | 52 | 30 | 1 | 37 | 2 | 1 |
 | I_JOSA_SPACE | 1463 | 170 | · | 133 | 1 | 4 | 165 | 137 | 221 | 162 | 153 | 145 | 19 | 6 | 147 |
 | I_TEMPLATE_JOIN | 137 | · | · | · | · | · | · | · | · | · | · | · | 137 | · | · |
@@ -113,6 +114,7 @@
 - `W_EXP_OFFTOPIC` — 해설 첫 문장이 문항과 무관 (다른 문항 해설 혼입 의심)
 - `E_FIG_HIDE_RESULT` — k=1 계산·판정 문항인데 f_stack/f_therm/f_hcb/f_tsv 에 hideResult:true 없음 (LAYOUT_RULES §3)
 - `E_FIG_DISH_OPTIN` — f_bond hcb 상황도가 dishing 을 다루는데 dish:true 없음 (DA 기본값 변경)
+- `W_FIG_NAME_LEAK` — 정답 명칭(Smile/Cry, Kirkendall)을 그림이 표시 — hideNames/hideLabels 필요 (DA 2026-11-21)
 - `E_FIG_SIP_LINES` — f_sip 지문이 1,024/2,048 배선을 말하는데 lines 값 없음·불일치 (DA 기본값 변경)
 - `E_FIG_WARP_NAME` — f_warp sign 과 정답 명칭 불일치 (확정 규약: sign 1 = ∩ = Cry, −1 = ∪ = Smile)
 - `W_QT_LONG / W_STEM_LEN / W_OPT_LEN / W_EXP_LEN / W_METRIC_LEN` — LAYOUT_RULES §1 길이 상한 (질문 마지막 문장 90, 지문 520(MIX ctx 700), 보기 60, 해설 600, 지표 label 12·value 16)

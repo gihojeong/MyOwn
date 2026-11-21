@@ -34,22 +34,22 @@ FIG = {
     "f_tsv": dict(keys="ar depth_um dia_um fill scallop scallopPitch scallopDepth barrier overburden taper hideResult note flag",
                   q="ar depth_um dia_um", enums={"fill": ["good", "void", "seam", "pinch"]}),
     "f_cmp": dict(keys="nA nB densA densB dish_nm erosion_nm note flag", q="densA densB dish_nm erosion_nm"),
-    "f_bs": dict(keys="step defect ox1 sin ox2 ni_um note flag", q="ox1 sin ox2",
+    "f_bs": dict(keys="step defect ox1 sin ox2 ni_um notes note flag", q="ox1 sin ox2",
                  enums={"defect": ["none", "undercut", "residue"], "step": list(range(8))}),
-    "f_bump": dict(keys="imc_um pillar_um solder_um niBarrier kirkendall em j_kA temp k hours tmax ymax bullet note flag",
+    "f_bump": dict(keys="imc_um pillar_um solder_um niBarrier kirkendall em j_kA temp k hours tmax ymax hideLabels hideResult bullet note flag",
                    q="imc_um pillar_um solder_um temp"),
-    "f_saw": dict(keys="method kerf_um haz_um chip_um bullet note flag", q="kerf_um",
+    "f_saw": dict(keys="method kerf_um haz_um chip_um notes bullet note flag", q="kerf_um",
                   enums={"method": ["blade", "lg", "stealth", "plasma", "deeplaser", "dbg"]}),
     "f_bond": dict(keys="method pitch_um gap_um voids filler_trap nonwet dish bullet note flag", q="pitch_um gap_um",
                    enums={"method": ["ncf", "mrmuf", "hcb"]}),
-    "f_warp": dict(keys="ref sign mag_um temp tg note flag", q="mag_um tg",
+    "f_warp": dict(keys="ref sign mag_um temp tg hideNames hideResult note flag", q="mag_um tg",
                    enums={"ref": ["bump-down", "beol-up"], "sign": [1, -1]}),
     "f_sip": dict(keys="type nHBM lines msg bullet note flag", q="nHBM",
                   enums={"type": ["cowos-s", "cowos-r", "cowos-l", "emib", "emib-t"], "nHBM": [1, 2, 3, 4, 5, 6, 7, 8]}),
     "f_therm": dict(keys="n core q_Wmm2 tTop limit layers hideResult note flag", q="n q_Wmm2 tTop limit"),
     "f_fa": dict(keys="tech depth hot fov_um dz zpeak feats note flag", q="",
                  enums={"tech": ["lit", "obirch", "eotpr", "xrm"]}),
-    "f_rel": dict(keys="seq cur fails crit hint xlab xmax ymax bullet note flag", q="crit"),
+    "f_rel": dict(keys="seq cur fails crit hint xlab xmax ymax tcCycles bullet note flag", q="crit"),
     "f_stack": dict(keys="n highlight gap_um h_um limit_um hideResult bullet note flag", q="n gap_um h_um limit_um",
                     enums={"highlight": [None, "height", "midcore", "base", "gap", "topcore"]}),
     "f_hcb": dict(keys="pitch_um tol_nm off_nm dish_nm hideResult bullet note flag", q="pitch_um tol_nm off_nm dish_nm"),
@@ -472,13 +472,18 @@ def check_item(q, code, join, issues, legacy=()):
         for nm_, sg in names.items():
             if re.search(nm_, ans, re.I) and not re.search("Cry" if nm_ == "Smile" else "Smile", ans, re.I) and p["sign"] != sg and q["k"] == 1:
                 add("E_FIG_WARP_NAME", f"확정 규약: sign {p['sign']} 은 {'Cry(∩)' if p['sign'] == 1 else 'Smile(∪)'} 인데 정답은 {nm_}")
+    # 이름을 스스로 표시하는 템플릿(DA 2026-11-21 opt-out): 정답이 그 이름이면 숨김 키 필요
+    if name == "f_warp" and re.search(r"Cry|Smile", ans) and not re.search(r"Cry|Smile", stem) and not (p.get("hideNames") or hide):
+        add("W_FIG_NAME_LEAK", "정답이 Smile/Cry 명칭인데 f_warp 가 이름을 표시 → hideNames:true")
+    if name == "f_bump" and p.get("kirkendall") and re.search(r"Kirkendall", ans, re.I) and not re.search(r"Kirkendall", stem, re.I) and not (p.get("hideLabels") or hide):
+        add("W_FIG_NAME_LEAK", "정답이 Kirkendall 인데 f_bump 가 결함 이름을 표시 → hideLabels:true")
     if q["k"] == 1 and name in ("f_stack", "f_therm", "f_hcb", "f_tsv") and not hide:
         need = False
         if name == "f_stack" and (CALC_Q.search(core) or re.search(r"높이|단수|장수|간극 수|판정", core)) and re.search(r"(µm|장|단|개|초과|넘)", ans):
             need = True
         if name == "f_therm" and re.search(r"°C|K\b|온도|ΔT", ans):
             need = True
-        if name == "f_hcb" and re.search(r"초과|이내|벗어|허용", ans):
+        if name == "f_hcb" and "tol_nm" in p and re.search(r"초과|이내|벗어|허용", ans):
             need = True
         if name == "f_tsv" and re.search(r"aspect|AR", core) and re.search(r"\d\s?:\s?1", ans):
             need = True
@@ -511,6 +516,8 @@ def check_item(q, code, join, issues, legacy=()):
             pq["n"] = p["core"]  # DA Phase 1: core = core die 수(n = core+1). 지문의 N단과 비교
         for kk in spec["q"]:
             ctx_rx = K1_CTX.get((name, kk))
+            if name == "f_hcb" and kk in ("off_nm", "tol_nm", "dish_nm") and kk not in pq:
+                continue  # DA 2026-11-21: f_hcb 패널은 opt-in — 키가 없으면 그리지 않는다(기본값 없음)
             if hide and (name, kk) == ("f_stack", "h_um"):
                 continue  # hideResult 면 높이 칸이 "?" 로 그려져 h_um 은 표시되지 않는다(생략·값 모두 무관)
             if kk not in pq:
@@ -777,6 +784,7 @@ CODE_DOC = {
     "W_EXP_OFFTOPIC": "해설 첫 문장이 문항과 무관 (다른 문항 해설 혼입 의심)",
     "E_FIG_HIDE_RESULT": "k=1 계산·판정 문항인데 f_stack/f_therm/f_hcb/f_tsv 에 hideResult:true 없음 (LAYOUT_RULES §3)",
     "E_FIG_DISH_OPTIN": "f_bond hcb 상황도가 dishing 을 다루는데 dish:true 없음 (DA 기본값 변경)",
+    "W_FIG_NAME_LEAK": "정답 명칭(Smile/Cry, Kirkendall)을 그림이 표시 — hideNames/hideLabels 필요 (DA 2026-11-21)",
     "E_FIG_SIP_LINES": "f_sip 지문이 1,024/2,048 배선을 말하는데 lines 값 없음·불일치 (DA 기본값 변경)",
     "E_FIG_WARP_NAME": "f_warp sign 과 정답 명칭 불일치 (확정 규약: sign 1 = ∩ = Cry, −1 = ∪ = Smile)",
     "W_QT_LONG / W_STEM_LEN / W_OPT_LEN / W_EXP_LEN / W_METRIC_LEN": "LAYOUT_RULES §1 길이 상한 (질문 마지막 문장 90, 지문 520(MIX ctx 700), 보기 60, 해설 600, 지표 label 12·value 16)",

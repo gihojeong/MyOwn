@@ -41,3 +41,8 @@ Poisson 입자 예산·3점 굽힘·Weibull·gross die·chipping 허용 폭 문�
 - 브리프 공백 해소: seal ring·crack stop 0 → 6(I-9006·9014·9031·9039, A-9002·9016), HCB 청정도 0 → 6, SDBG 고급 0 → 3(A-0015·0050·9079), molded cube 2 → 6, Weibull·강도 데이터 해석 5.
 - 비율 B31/I39/A29 % — 고급이 권장 하한 근처(A-9072 하향 시 28 %).
 - **보강 권고(다음 차수, 고급 4–5문항)**: ① chipping 분포(f_table, wafer 내 위치별) + 강도 Weibull 을 함께 읽어 blade 마모·dressing 원인 확정 1, ② tape/UV·expansion 조건과 30 µm die pick-up 파손(needle 높이·속도·접착력 3변수) 데이터형 1, ③ MR-MUF molded cube 절단 후 측벽 EMC–Si 계면 박리를 TC 후 데이터로 판정 1, ④ plasma dicing 후 Bosch scallop 측벽과 강도(4점 굽힘 vs 3점) 비교 1. 고급 31 % 수준이 됩니다.
+
+## 추가 지시 (MIX 감사에서 발견한 XD 중복)
+| id | 문제 | 지시 |
+|---|---|---|
+| SAW-A-9004 | HCB 입자 Poisson 예산 Y = exp(−D·A·N) 역산이 SAW-A-9004 · MET-A-9007 · MIX-A-9015 · COW-A-9001 네 분야에 중복 | 보유는 COW-A-9001 · MIX-A-9015. SAW-A-9004 는 이 분야 고유 판단으로 바꾸거나 삭제(SAW: 입자 출처·세정 요구, A-9086 과 겹치지 않게 / MET: 입자 검출 한계·표본 검사 검출 확률) |
