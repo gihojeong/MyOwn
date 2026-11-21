@@ -1523,7 +1523,7 @@ const store = (()=>{ try{ localStorage.setItem("__t","1"); localStorage.removeIt
 const rd = (k,d)=>{ try{ const v=store.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } };
 const wr = (k,v)=>{ try{ store.setItem(k, JSON.stringify(v)); }catch(e){} };
 
-let cfg      = rd("hbmq-cfg", {lv:"ALL", count:"ALL", doms:ALLDOMS.slice(), shuffle:true});
+let cfg      = rd("hbmq-cfg", {lv:"ALL", count:30, doms:ALLDOMS.slice(), shuffle:true});
 // 새로 열 때마다 진행 중/완료된 시험 상태는 비운다. 응시 이력·출제 이력·설정만 유지한다.
 let exam     = null;                           // 출제된 문항 index 배열 (null = 미시작)
 let answers  = {};
