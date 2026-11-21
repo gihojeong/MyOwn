@@ -174,7 +174,7 @@ h1 { font-size: clamp(17px, 1.45vw, 21px); margin: 2px 0 2px; line-height: 1.35;
 @media (prefers-reduced-motion: reduce) { .stage .el, .stage .el.flow { animation: none !important; } }
 .mtable { width: 100%; height: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 17px; line-height: 1.32; color: #34302b; table-layout: fixed; }
 .mtable th, .mtable td { border: 1px solid #c6bbac; padding: 7px 9px; vertical-align: middle; background: #fffdf8; }
-.mtable th { font-size: 17px; color: #1d1b18; background: #f6efe4; } .mtable td.w { color: #b8321f; background: #fbedea; font-weight: 700; }
+.mtable th { font-size: 17px; color: #1d1b18; background: #f6efe4; padding-left: 5px; padding-right: 5px; } .mtable td.w { color: #b8321f; background: #fbedea; font-weight: 700; }
 
 /* ── 보기 · 해설 패널 ── */
 .panel { padding: 16px 18px 14px; }
@@ -354,6 +354,9 @@ svg.chart .pv { fill: var(--ink); font-size: 11px; font-weight: 700; font-family
   .brow, .baxis { grid-template-columns: 76px minmax(0, 1fr) 74px; gap: 8px; }
   .bars { padding: 12px 10px 8px; }
   .fighd .qhdr { font-size: 11.5px; }
+  /* 폰에서는 그림 글자가 작아지므로 "크게 보기" 글자를 남기고, 그림을 눌러도 크게 보기가 열린다 */
+  #zoom .lbl { display: inline; }
+  #figRow .stage-wrap { cursor: zoom-in; }
 }
 </style>
 </head>
@@ -670,7 +673,8 @@ function f_cmp(s, p) {
 // p:{step 0..7, defect:'undercut'|'residue'|'none', ox1,sin,ox2,ni_um}
 function f_bs(s, p) {
   // notes:false → 개념 주석(희생막·CMP·최종 절연막 구성)을 끄고 결함 지시선 라벨은 "관찰 부위" 로 (f_saw 와 같은 이름)
-  const NO = p.notes === false;
+  // labels:false → 막 이름도 숨긴다(막 1·2·3 + 두께, 공정 순서도 일반 표기) — 막 구성·순서를 묻는 문항용, notes:false 를 포함 (EA_to_DA §17)
+  const NL = p.labels === false, NO = p.notes === false || NL;
   const annotTo = (s2, ax, ay, i, text, fill) => annotTo0(s2, ax, ay, i, NO && i > 0 ? "관찰 부위 (A)" : text, NO && i > 0 ? K.cream : fill);
   const annot = (s2, i, text, fill) => { if (!NO) annot0(s2, i, text, fill); };
   const step = p.step == null ? 7 : p.step;
@@ -680,7 +684,7 @@ function f_bs(s, p) {
   tsv.forEach((tx) => { R(s, tx - tw2 / 2 - 0.03, sy, tw2 + 0.06, 0.95, MX.ox, { lw: 0.4 }); R(s, tx - tw2 / 2, sy - prot, tw2, 0.95 + prot, MX.cu, { lw: 0.6 }); });
   // 절연막 적층
   let y = sy; const names = [];
-  const lay = (th, c, nm2) => { R(s, x0, y - th, w, th, c, { lw: 0.65 }); y -= th; names.push([nm2, y + th / 2, c]); };
+  const lay = (th, c, nm2) => { R(s, x0, y - th, w, th, NL ? K.card2 : c, { lw: 0.65 }); y -= th; names.push([NL ? "막 " + (names.length + 1) + " · " + nm2.replace(/^.* /, "") : nm2, y + th / 2, NL ? K.cream : c]); };
   if (step >= 1) lay(0.13, MX.ox, "SiO2 " + (p.ox1 || 300) + "nm");
   if (step >= 2) lay(0.11, MX.sin, "SiN " + (p.sin || 200) + "nm");
   if (step === 3) lay(0.20, MX.ox2, "희생 SiO2 " + (p.ox2 || 500) + "nm");
@@ -703,12 +707,13 @@ function f_bs(s, p) {
   }
   // 좌측 라벨
   names.forEach(([t, yy, c], i) => lead(s, x0 + w - 0.15, yy, x0 + w + 0.18, TOP + 0.3 + i * 0.50, t, { fill: c }));
-  if (step >= 5) lead(s, tsv[2] + 0.23, y - 0.05, x0 + w + 0.18, TOP + 0.3 + names.length * 0.50, "Ti / Cu seed", { fill: MX.ti });
-  if (step >= 6) lead(s, tsv[2] + 0.24, y - 0.2, x0 + w + 0.18, TOP + 0.3 + (names.length + 1) * 0.50, "Ni plating " + (p.ni_um || 2) + " µm", { fill: MX.ni });
+  if (step >= 5) lead(s, tsv[2] + 0.23, y - 0.05, x0 + w + 0.18, TOP + 0.3 + names.length * 0.50, NL ? "seed 층" : "Ti / Cu seed", { fill: NL ? K.cream : MX.ti });
+  if (step >= 6) lead(s, tsv[2] + 0.24, y - 0.2, x0 + w + 0.18, TOP + 0.3 + (names.length + 1) * 0.50, (NL ? "pad 도금 " : "Ni plating ") + (p.ni_um || 2) + " µm", { fill: NL ? K.cream : MX.ni });
   annotTo(s, tsv[0], sy + 0.75, 0, "TSV Cu — reveal 로 뒷면에 드러난 상태", MX.cu);
   if (step === 4) annot(s, 1, "CMP: SiN stop 으로 희생 SiO2 전량 제거", K.mint);
   // 우측: 공정 순서
-  const names2 = ["TSV reveal", "SiO2 증착", "SiN 증착", NO ? "SiO2 증착 (2차)" : "SiO2 희생막", NO ? "CMP" : "CMP (SiN stop)", "Ti / Cu seed", "Ni plating", "seed etching"];
+  const names2 = NL ? ["TSV reveal", "막 1 증착", "막 2 증착", "막 3 증착", "평탄화", "seed 증착", "pad 도금", "seed 제거"]
+    : ["TSV reveal", "SiO2 증착", "SiN 증착", NO ? "SiO2 증착 (2차)" : "SiO2 희생막", NO ? "CMP" : "CMP (SiN stop)", "Ti / Cu seed", "Ni plating", "seed etching"];
   ttl(s, "공정 순서", RC.x, TOP - 0.02, 2.0);
   names2.forEach((t, i) => {
     const cur = i === step, yy = TOP + 0.34 + i * 0.44;
@@ -933,9 +938,12 @@ function f_warp(s, p) {
   const tg = p.tg || 125, pts = [];
   for (let t = 25; t <= 260; t += 5) { const v = (t < tg ? -1.3 * (t - 25) : -1.3 * (tg - 25) + 1.9 * (t - tg)) * sg; pts.push([g.X(t), g.Y(Math.max(-150, Math.min(150, v)))]); }
   curve(s, pts, K.rust, 1.6);
+  // 세로선을 먼저 긋고 pill 은 곡선 극값의 반대쪽(곡선이 지나지 않는 쪽)에 얹는다
   L(s, g.X(tg), g.Y(-150), g.X(tg), g.Y(150), K.edge, 0.9, { dash: 1 });
-  pill(s, clampX(g.X(tg), 0.75), g.Y(150) + 0.26, "Tg " + tg + "°C", { fs: 8, fill: K.yellow });
-  if (p.temp) { L(s, g.X(p.temp), g.Y(-150), g.X(p.temp), g.Y(150), "4D6B35", 1.0); pill(s, Math.min(Math.max(g.X(p.temp), RC.x + 1.45), RC.x + 2.95), g.Y(150) + 0.72, "측정 " + p.temp + "°C", { fs: 8, fill: K.green }); }
+  if (p.temp) L(s, g.X(p.temp), g.Y(-150), g.X(p.temp), g.Y(150), "4D6B35", 1.0);
+  const yP = (d) => (sg > 0 ? g.Y(150) + d : g.Y(-150) - d);
+  pill(s, clampX(g.X(tg), 0.75), yP(0.26), "Tg " + tg + "°C", { fs: 8, fill: K.yellow });
+  if (p.temp) pill(s, Math.min(Math.max(g.X(p.temp), RC.x + 1.45), RC.x + 2.95), yP(0.72), "측정 " + p.temp + "°C", { fs: 8, fill: K.green });
   flagOf(s, p); cap(s, p.note || "변위는 과장 표시 · 곡선은 Tg 전후 경향의 설명용 모델");
 }
 
@@ -1055,21 +1063,24 @@ function f_fa(s, p) {
   } else if (t === "eotpr") {
     ttl(s, "EOTPR 반사 파형 → 전기 길이로 결함 위치 추정", LC.x, TOP - 0.04, 5.0);
     const g = axes(s, LC.x + 0.74, TOP + 0.7, 3.55, 2.00, {
-      xmin: 0, xmax: 120, xticks: [0, 30, 60, 90, 120], ymin: -40, ymax: 60, yticks: [-40, -20, 0, 20, 40, 60],
+      xmin: 0, xmax: 120, xticks: [0, 30, 60, 90, 120], ymin: -50, ymax: 100, yticks: [-50, 0, 50, 100],
       xlab: "지연 시간 (ps)", ylab: "반사 진폭 (mV)",
     });
     const feats = p.feats || [[22, 28, "C4 bump"], [48, -24, "TSV 진입"], [86, 52, "open 결함"]];
-    const pts = []; for (let i = 0; i <= 120; i++) { let v = 0; feats.forEach((f) => { v += f[1] * Math.exp(-Math.pow((i - f[0]) / 4.5, 2)); }); pts.push([g.X(i), g.Y(Math.max(-40, Math.min(60, v)))]); }
+    const pts = []; for (let i = 0; i <= 120; i++) { let v = 0; feats.forEach((f) => { v += f[1] * Math.exp(-Math.pow((i - f[0]) / 4.5, 2)); }); pts.push([g.X(i), g.Y(Math.max(-50, Math.min(100, v)))]); }
     curve(s, pts, K.rust, 1.6);
-    feats.forEach((f, i) => { L(s, g.X(f[0]), g.Y(-40), g.X(f[0]), g.Y(60), K.edge, 0.7, { dash: 1 }); pill(s, Math.min(g.X(f[0]), LC.x + 3.9), g.Y(60) + 0.17 + (i % 2) * 0.24, f[2], { fs: 8, fill: K.yellow }); });
+    // 위치 표식 점선을 먼저 모두 긋고, 이름 pill 은 파형 봉우리(≤ 60 mV) 위 빈 띠(70–100 mV)에 얹는다
+    feats.forEach((f) => L(s, g.X(f[0]), g.Y(-50), g.X(f[0]), g.Y(100), K.edge, 0.7, { dash: 1 }));
+    feats.forEach((f, i) => pill(s, Math.min(g.X(f[0]), LC.x + 3.9), g.Y(100) + 0.17 + (i % 2) * 0.24, f[2], { fs: 8, fill: K.yellow }));
     annot(s, 0, "패키지 내부 미세 경로는 분해능이 높은 EOTPR 로 본다", K.violet);
     ttl(s, "구조 대응", RC.x, TOP - 0.04, 2.0);
-    const Q = OBL(RC.x + 0.15, TOP + 3.0, 0.1);
+    // 두께 방향을 키운 단면(uz 0.16): interposer 이름이 자기 층 안에 들어간다
+    const Q = OBL(RC.x + 0.15, TOP + 3.0, 0.1, 0.16);
     oblBox(s, Q, 0, 0, 0, 30, 5, 2, M.sub, { lw: 0.7, text: "substrate", fs: 8 });
     oblBox(s, Q, 2, 0, 2, 26, 5, 1.4, M.inter, { lw: 0.7, text: "interposer", fs: 8 });
-    oblBox(s, Q, 4, 0, 3.4, 9, 5, 6, M.dram, { lw: 0.7, text: "HBM", fs: 8 });
-    oblBox(s, Q, 17, 0, 3.4, 10, 5, 6, M.xpu, { lw: 0.7, text: "XPU", fs: 8 });
-    const a1 = Q(8, 0, 9.4); lead(s, a1[0], a1[1], RC.x + 0.05, TOP + 3.95, "신호 주입점 (probe)", { fill: K.cream, align: "left" });
+    oblBox(s, Q, 4, 0, 3.4, 9, 5, 5, M.dram, { lw: 0.7, text: "HBM", fs: 8 });
+    oblBox(s, Q, 17, 0, 3.4, 10, 5, 5, M.xpu, { lw: 0.7, text: "XPU", fs: 8 });
+    const a1 = Q(8, 0, 8.4); lead(s, a1[0], a1[1], RC.x + 1.25, TOP + 0.62, "신호 주입점 (probe)", { fill: K.cream, align: "left" });
     pill(s, RC.x, TOP + 3.5, "반사 극성: open 은 +, short 는 −", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   } else {
     ttl(s, "X-ray tomography (XRM) 단층 slice", LC.x, TOP - 0.04, 4.3);
@@ -1143,7 +1154,8 @@ function f_stack(s, p) {
   let a = P(11, 6, z); lead(s, a[0], a[1], LC.x + 2.6, TOP + 0.02, "core die " + n + "장", { fill: p.highlight === "topcore" ? K.pink : M.dram });
   a = P(11, 6, 0.25); lead(s, a[0], a[1], LC.x + 2.7, TOP + 2.9, "base die 1장", { fill: M.base });
   const hid = !!p.hideResult;
-  a = P(0, 12.8, 0.5 + gapT / 2); annotTo(s, a[0], a[1], 0, "접합 간극 " + (hid ? "?" : n) + "개 · 각 " + (p.gap_um || 7) + " µm", MX.ncf);
+  // 수치는 params 에 준 것만 그린다 (EA_to_DA §16: 기본 간극 7 µm·기본 높이·기본 상한 775 µm 를 지어내지 않음)
+  a = P(0, 12.8, 0.5 + gapT / 2); annotTo(s, a[0], a[1], 0, "접합 간극 " + (hid ? "?" : n) + "개" + (p.gap_um != null ? " · 각 " + p.gap_um + " µm" : ""), MX.ncf);
   if (p.highlight === "topcore") annot(s, 1, "최상단 core die 에는 backside pad 가 없다", K.pink);
   else if (p.highlight === "midcore") annot(s, 1, "중간 core die 는 위아래를 모두 이어야 한다", K.pink);
   else if (p.highlight === "gap") annot(s, 1, hid ? "접합 간극은 어디에 몇 개 생기는가" : "접합 간극 수 = core die 수", MX.ncf);
@@ -1153,10 +1165,11 @@ function f_stack(s, p) {
     ["die 총 장수", hid ? "?" : (n + 1) + "장", "core " + n + " + base 1"],
     ["접합 간극", hid ? "?" : n + "개", "= core 수 (base–core1 포함)"],
     ["backside pad 보유 die", hid ? "?" : n + "장", "base + core, top core 제외"],
-    ["스택 높이", hid ? "?" : (p.h_um || (n * 50 + 100)) + " µm", "base + N × (core + 간극)"]];
+    ["스택 높이", hid ? "?" : (p.h_um != null ? p.h_um + " µm" : "—"), "base + N × (core + 간극)"]];
   table(s, rows, RC.x, TOP, RC.w, null);
-  pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.32, "높이 상한 (설계 조건) " + (p.limit_um || 775) + " µm", { fs: 8, fill: hid ? K.cream : ((p.h_um || 0) > (p.limit_um || 775) ? K.pink : K.mint), align: "left", maxW: RC.w });
-  if (p.bullet) pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.84, p.bullet, { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  const hasLim = p.limit_um != null;
+  if (hasLim) pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.32, "높이 상한 (설계 조건) " + p.limit_um + " µm", { fs: 8, fill: hid || p.h_um == null ? K.cream : (p.h_um > p.limit_um ? K.pink : K.mint), align: "left", maxW: RC.w });
+  if (p.bullet) pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + (hasLim ? 0.84 : 0.32), p.bullet, { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례");
 }
 
@@ -1194,10 +1207,12 @@ function f_hcb(s, p) {
     R(s, px - 0.16, iy + 0.5, 0.32, 0.45, MX.cu, { lw: 0.7 });
     if (bad) R(s, px - 0.16, iy + 0.5, 0.32, Math.min(0.2, (p.dish_nm || 8) * 0.012), MX.bare, { lw: 0.6 });
   }
-  if (hasDish) lead(s, ix + 1.8, iy + 0.56, ix + 2.88, iy + 1.68, "dishing " + p.dish_nm + " nm → " + (p.hideResult ? "?" : "미접합"), { fill: K.pink, align: "right" });
-  lead(s, ix + 0.15, iy + 0.72, ix + 0.05, iy + 1.72, "SiCN 유전막 접합면", { fill: MX.ox });
-  if (hasDish && !p.hideResult) pill(s, RC.x, iy + 2.3, "dishing > Cu 팽창량이면 미접합", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
-  pill(s, RC.x, iy + 2.75, p.bullet || "particle 1개가 자기보다 훨씬 넓은 미접합을 만든다", { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
+  // 라벨은 단면 아래에 한 줄씩 (왼쪽 overlay 칸으로 넘어가지 않게)
+  lead(s, ix + 0.15, iy + 0.72, ix + 0.18, iy + 1.72, "SiCN 유전막 접합면", { fill: MX.ox, align: "left" });
+  if (hasDish) lead(s, ix + 1.8, iy + 0.56, ix + 2.88, iy + 2.16, "dishing " + p.dish_nm + " nm → " + (p.hideResult ? "?" : "미접합"), { fill: K.pink, align: "right" });
+  const yb = hasDish ? 0.44 : 0;
+  if (hasDish && !p.hideResult) pill(s, RC.x, iy + 2.3 + yb, "dishing > Cu 팽창량이면 미접합", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  pill(s, RC.x, iy + 2.75 + yb, p.bullet || "particle 1개가 자기보다 훨씬 넓은 미접합을 만든다", { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "변위 · 단차는 과장 표시");
 }
 
@@ -1295,7 +1310,8 @@ function f_wafermap(s, p) {
     if (Math.hypot(Math.abs(mx) + cell / 2, Math.abs(my) + cell / 2) > R0 + cell * 0.15) continue;
     let v = p.values && p.values[j] ? p.values[j][i] : null;
     if (p.values && v == null) continue;
-    const f = v != null ? (v - sc.min) / ((sc.max - sc.min) || 1) : pat(rr, mx, my, i, j);
+    // bin 모드에서 scale 을 주지 않으면 values 는 0/1 (불량 = 1) 그대로 쓴다
+    const f = v != null ? (p.bin && !p.scale ? v : (v - sc.min) / ((sc.max - sc.min) || 1)) : pat(rr, mx, my, i, j);
     const fill = p.bin ? (f >= 0.5 ? "D0683A" : "CFE3B2") : ramp(f);
     R(s, x + 0.008, y + 0.008, cell - 0.016, cell - 0.016, fill, { lw: 0.3, line: "8B847A" });
   }
@@ -1331,7 +1347,7 @@ function f_note(s, p) {
   ttl(s, p.title || "핵심 개념 정리", X, TOP + 0.10, Math.max(2.2, W - askW - 0.35));
   if (askT) pill(s, DG.x + DG.w - 0.15, TOP + 0.18, askT,
                  { fs: 8, fill: K.cream, align: "right", nogut: true, maxW: 3.9 });
-  const cols = [K.mint, K.violet, K.cream, K.blue], num = ["①", "②", "③", "④"];
+  const cols = [K.mint, K.violet, K.cream, K.blue], num = ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ"];   // 보기 번호(①–④)와 헷갈리지 않게 로마 숫자
   let y = TOP + 0.75;
   pts.forEach((t, i) => {
     const h = 0.46;
@@ -1533,6 +1549,8 @@ function mmss(ms){ const t = Math.max(0, Math.round(ms / 1000));
 function stopTimer(){ if (timerId) { clearInterval(timerId); timerId = null; } }
 function paintTimer(){
   const el = document.getElementById("clock"); if (!el) return;
+  // 시험 전(구성 화면)에는 빈 "—" 칩 대신 타이머를 숨긴다
+  el.style.display = (!exam || !exam.length || !startAt) ? "none" : "";
   if (!exam || !exam.length || !startAt) { el.textContent = "—"; el.style.background = "var(--card)"; return; }
   if (graded) { el.textContent = "종료"; el.style.background = "var(--card2)"; return; }
   const L = leftMs(); el.textContent = "남은 시간 " + mmss(L);
@@ -1605,6 +1623,16 @@ function figPost(sv){
       el.setAttribute(p[1], num(el,p[1]) + dv); const sh = mode==="mid" ? dv/2 : (mode==="end" ? dv : 0); if (sh) el.setAttribute(p[0], num(el,p[0]) - sh); };
     if (oh > 1) { const m = va==="center"?"mid":(va==="flex-end"?"end":"start"); grow(fo,"y",oh+2,m); if (bg) grow(bg,"y",oh+2,m); }
     if (ow > 1) { const m = al==="center"?"mid":(al==="right"?"end":"start"); grow(fo,"x",ow+4,m); if (bg) grow(bg,"x",ow+4,m); }
+  });
+  // 1b) 글자 폭 추정이 커서 두 줄 높이로 잡힌 pill 이 실제로는 한 줄이면 높이를 되돌린다
+  sv.querySelectorAll("g.pl").forEach(g=>{
+    const fo = g.querySelector("foreignObject"), rs = [...g.querySelectorAll("rect")]; if (!fo || !rs.length) return;
+    const d = fo.firstElementChild, H = num(fo,"height"); if (!d || H < 42) return;
+    const rg = document.createRange(); rg.selectNodeContents(d); const ink = rg.getBoundingClientRect().height / sc;
+    const nh = Math.max(36.5, ink + 20); if (H - nh < 6) return;
+    const dy = (H - nh) / 2;
+    [fo, ...rs].forEach(e=>{ e.setAttribute("y", num(e,"y") + dy); e.setAttribute("height", nh); });
+    rs.forEach(e=>{ if (+e.getAttribute("rx") > nh / 2) e.setAttribute("rx", nh / 2); });
   });
   // 2) 장애물: pill 이 아닌 글자(제목·눈금·상자 안 글자·표)의 실제 잉크 영역
   const box = el => ({ l:num(el,"x"), t:num(el,"y"), r:num(el,"x")+num(el,"width"), b:num(el,"y")+num(el,"height") });
@@ -1723,13 +1751,13 @@ function lineChart(pts){
   if(pts.length){ let d=""; pts.forEach((p,i)=>{ d += (i?"L":"M")+X(i)+","+Y(p.pct); });
     g+=`<path class="ln" d="${d}"/>`;
     pts.forEach((p,i)=>{ g+=`<circle class="pt" cx="${X(i)}" cy="${Y(p.pct)}" r="4.5"/>`;
-      g+=`<text class="pv" x="${X(i)}" y="${Y(p.pct)-11}" text-anchor="middle">${p.pct.toFixed(0)}</text>`; }); }
+      g+=`<text class="pv" x="${X(i)+(i===0&&pts.length>1?8:0)}" y="${Y(p.pct)-11}" text-anchor="${i===0&&pts.length>1?"start":"middle"}">${p.pct.toFixed(0)}</text>`; }); }
   return g+"</svg>";
 }
 
 /* ══════════ 시작(시험 구성) 화면 ══════════ */
 function renderStart(){
-  stopTimer(); document.body.classList.add("scrollable"); document.documentElement.classList.add("sc");
+  stopTimer(); { const c = document.getElementById("clock"); if (c) c.style.display = "none"; }   // 구성 화면에는 타이머 칩을 두지 않는다 document.body.classList.add("scrollable"); document.documentElement.classList.add("sc");
   const p = pool(), maxN = p.length;
   const byLv = ["B","I","A"].map(lv=>p.filter(o=>o.q.lv===lv).length);
   const counts = [10, 20, 30, 50].filter(n=>n<maxN);
@@ -1749,7 +1777,7 @@ function renderStart(){
 
       <div class="summary">
         <div class="b"><div class="l">선택 가능</div><div class="v">${maxN.toLocaleString()}</div></div>
-        <div class="b"><div class="l">출제 문항</div><div class="v">${n}</div></div>
+        <div class="b"><div class="l">출제 문항</div><div class="v">${n.toLocaleString()}</div></div>
         <div class="b"><div class="l">제한 시간</div><div class="v">${mmss(n * PER_Q_MS)}</div></div>
         <div class="b"><div class="l">영역</div><div class="v">${cfg.doms.length} / ${ALLDOMS.length}</div></div>
         <div class="b"><div class="l">미출제</div><div class="v">${p.filter(o=>seen.indexOf(o.i)<0).length.toLocaleString()}</div></div>
@@ -1892,6 +1920,7 @@ function render(){
   mountFig(document.getElementById("figRow"));
   document.getElementById("replay").onclick = ()=>{ const w=document.getElementById("stage"); w.innerHTML=""; void w.offsetWidth; w.innerHTML=svgFor(q); mountFig(document.getElementById("figRow")); };
   document.getElementById("zoom").onclick = ()=>openLB(q);
+  { const sw = document.querySelector("#figRow .stage-wrap"); if (sw && matchMedia("(max-width: 600px)").matches) sw.onclick = ()=>openLB(q); }
   document.querySelectorAll("[data-ans]").forEach(b=> b.onclick = (e)=>{
     if (graded) return;
     const j = +b.dataset.ans; answers[idx] = j; saveAll(); render();

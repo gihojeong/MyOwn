@@ -35,7 +35,7 @@
 | 표식 라벨 (`marks[][1]`, `feats[][2]`, `flags[][1]`) | 12자 | |
 | 숫자 | 표시 자리 ≤ 6자 (`1,024`, `0.35`) | 단위는 µm · nm · °C · % 처럼 짧게 |
 
-자동 처리(분야 에이전트가 신경 쓰지 않아도 되는 것): 라벨 글자가 상자보다 크면 상자를 키우고, 라벨(pill)끼리 겹치면 가장 가까운 빈 자리로 옮기며 지시선 끝을 따라 옮긴다(`figPost`). 상자 안 글자는 상자 높이·폭에 맞춰 최대 5.5pt 까지 줄인다. **그래도 위 상한을 넘기면 줄바꿈이 늘어 다른 요소와 겹칠 수 있다.**
+자동 처리(분야 에이전트가 신경 쓰지 않아도 되는 것): 라벨 글자가 상자보다 크면 상자를 키우고, 라벨(pill)끼리 겹치면 가장 가까운 빈 자리로 옮기며 지시선 끝을 따라 옮긴다(`figPost`). 지시선이 다른 글자·pill 을 가로지르면 **시작점(결함·치수 위치)은 그대로 두고** 직선·ㄱ자·옆 통로 ㄷ자 경로 중 덜 가로지르는 것으로 바꾼다(2026-11-21). 폭 추정이 커서 두 줄 높이로 잡힌 pill 이 실제 한 줄이면 높이를 되돌린다. 상자 안 글자는 상자 높이·폭에 맞춰 최대 5.5pt 까지 줄인다. **그래도 위 상한을 넘기면 줄바꿈이 늘어 다른 요소와 겹칠 수 있다.**
 
 ### 정답 노출 방지 — `hideResult: true`
 그림이 계산·판정 결과를 표시하는 템플릿에서 계산·판정을 묻는 문항은 `hideResult: true` 를 넣는다. 입력 조건만 그리고 결과 칸은 `?` 로 둔다.
@@ -57,7 +57,7 @@
 |---|---|
 | `f_tsv` | `dia_um` 2–12, `depth_um` 20–150, `ar` (생략 시 depth/dia 소수 1자리 자동), `fill`: good·void·seam·pinch, `scallop`: 0·1 (**0 이면 scallop 치수 미표시**, "scallop 없음"), `scallopPitch` 0.2–0.6 µm, `scallopDepth` 20–120 nm, `barrier`, `overburden`, `taper` 0.6–1.0, `hideResult` |
 | `f_cmp` | `densA` 5–40, `densB` 30–80 (x축 0–80 %, 두 값이 A/B 표식으로 그려짐), `dish_nm` 5–150, `erosion_nm` 10–80, `nA` 3–5, `nB` 6–10 |
-| `f_bs` | `step` 0–7, `defect`: none·undercut·residue (step 7 에서만), `ox1` 100–500, `sin` 100–300, `ox2` 300–800 nm, `ni_um` 1–5, **`notes: false`** (희생막·CMP·"최종 절연막 = SiO2/SiN 2층" 주석을 끄고 결함 라벨을 "관찰 부위 (A)" 로) |
+| `f_bs` | `step` 0–7, `defect`: none·undercut·residue (step 7 에서만), `ox1` 100–500, `sin` 100–300, `ox2` 300–800 nm, `ni_um` 1–5, **`notes: false`** (희생막·CMP·"최종 절연막 = SiO2/SiN 2층" 주석을 끄고 결함 라벨을 "관찰 부위 (A)" 로), **`labels: false`** (막 이름까지 숨김: 절연막은 회색 "막 1 · 300nm" 식, seed·Ni 는 "seed 층"·"pad 도금 2 µm", 오른쪽 공정 순서도 "막 1 증착 … 평탄화 … seed 제거" — 막 구성·순서를 묻는 문항용, `notes: false` 포함) |
 | `f_bump` | `pillar_um` 10–60, `solder_um` 5–25, `imc_um` 0.5–6, `niBarrier` (IMC 라벨이 Ni₃Sn₄ / (Cu,Ni)₆Sn₅ 로 바뀜), `kirkendall`, `em` + `j_kA` (≤ 4자리), `temp`, `k`, `hours` ≤ `tmax`, **`tmax`** (기본 1000 h), **`ymax`** (기본 8 µm), **`hideLabels`** (Kirkendall·EM 결함 라벨을 "관찰된 void (A)"·"결함 위치 (B)" 로, IMC 상 이름 생략 — 명칭·기구를 묻는 문항용, `hideResult` 도 같은 효과), `bullet`. **`k` 가 없으면 성장 곡선을 그리지 않는다**(축·식 라벨만) |
 | `f_saw` | `method`: blade·lg·stealth·plasma·deeplaser·dbg (비교표에 **DBG 행**이 따로 있고 dbg 면 그 행이 강조됨), `kerf_um` 0–60, `haz_um` 2–20, `chip_um` 5–30, **`notes: false`** (개념 주석·기본 bullet 을 끄고 지시선 라벨을 "관찰 부위 (A/B)" 로 — 개념을 묻는 문항용), `bullet` (표는 "대표 범위" 캡션 표시) |
 | `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um` 5–60, `gap_um` 3–15 (**hcb 에는 주지 말 것 — 표시 안 함**), `voids` 0–3, `filler_trap`, `nonwet`, **`dish: true`** (hcb 에서 dishing 미접합 pad 를 그릴 때만), `bullet` |
@@ -66,13 +66,13 @@
 | `f_therm` | **`core`** (core die 수, 권장 — n = core+1 로 계산) 또는 `n` (base 포함 총 die 수) 4–21, `q_Wmm2` 0.01–1, `tTop`, `limit`, `layers` ≤ 5행 (이름 ≤ 10자), `hideResult`. core 12 초과 시 die 라벨이 작아진다 |
 | `f_fa` | `tech`: lit·obirch·eotpr·xrm · `hot` [0–1, 0–1], `fov_um`, `depth` 5–50, `feats` ≤ 4 (라벨 ≤ 10자), `dz` 5–30, `zpeak` 0–45 |
 | `f_rel` | `seq` ≤ 4행 [문서 ≤ 12자, 시험명 ≤ 20자, 조건 ≤ 16자], `cur`, `fails` ≤ 5점 (x ≤ `xmax`, y ≤ `ymax`), **`xlab`** (기본 "TC cycle 수"), **`xmax`** (기본 1000), **`ymax`** (기본 10 %), **`tcCycles`** (기본 700 — 기본 seq 의 JESD22-A104 cond. B 행과, TC 축일 때 "규격 N cycle" 점선에 쓰임), `crit`, `hint`, `bullet` |
-| `f_stack` | `n` (core die 수) 4–24, `highlight`: height·midcore·base·gap·topcore, `gap_um`, `h_um`, `limit_um`, `bullet`, `hideResult` |
+| `f_stack` | `n` (core die 수) 4–24, `highlight`: height·midcore·base·gap·topcore, `gap_um`, `h_um`, `limit_um`, `bullet`, `hideResult`. **수치는 준 것만 그린다**(2026-11-21): `gap_um` 없으면 "접합 간극 N개" 만(µm 없음), `h_um` 없으면 높이 칸 "—"(산식만), `limit_um` 없으면 높이 상한 pill 생략 |
 | `f_hcb` | `pitch_um` 1–10, **패널은 opt-in**: `off_nm` 0–420 (있을 때만 overlay 오차 화살표·라벨), `tol_nm` 20–300 (있을 때만 허용 원·초과/이내 판정), `dish_nm` 1–16 (있을 때만 dishing 미접합 pad·라벨·"dishing > Cu 팽창량" 요점), `bullet`, `hideResult` (판정 "?", dishing 결과 "?") |
 | `f_plot` | `title`, `x`/`y` {min, max, ticks ≤ 6개 (라벨 ≤ 5자), lab ≤ 24자}, `series` ≤ 4 {name ≤ 22자, color "RRGGBB", pts ≤ 12, dash}, `marks` ≤ 3 [x, 라벨 ≤ 12자], `bullets` ≤ 3 |
 | `f_film` | `layers` ≤ 9 [이름 ≤ 18자, 상대두께, 색], `roles` ≤ 5행 [층, 두께, 역할 ≤ 14자], `bullets` ≤ 3, `flags` ≤ 2 |
 | `f_note` | `title` ≤ 22자, `points` ≤ 4 (각 ≤ 50자, **판단 관점** — 정답 문장 금지), `ask` ≤ 12자 |
 | **`f_table`** (신규) | `title` ≤ 22자, `unit`, `cols` ≤ 5 (머리글 ≤ 8자), `rows` ≤ 7행 × ≤ 5열 (셀 ≤ 14자, 숫자는 문자열 가능), 강조 `hl: [행, 열]` (행은 rows 기준 0부터) 또는 `hlRow` / `hlCol`, `notes` ≤ 3 (각 ≤ 44자) |
-| **`f_wafermap`** (신규) | `title` ≤ 22자, `grid` 9–25 (기본 15), `values` grid×grid 숫자 (`null` = die 없음) **또는** `pattern`: edge·center·ring·notch·random·quadrant, `scale` {min, max, unit}, `bin: true` (합격/불량 2색, values 는 0/1), `marks` ≤ 4 [열, 행, 라벨 ≤ 12자], `bullets` ≤ 3, `seed` (random 배치 변경) |
+| **`f_wafermap`** (신규) | `title` ≤ 22자, `grid` 9–25 (기본 15), `values` grid×grid 숫자 (`null` = die 없음) **또는** `pattern`: edge·center·ring·notch·random·quadrant, `scale` {min, max, unit}, `bin: true` (합격/불량 2색, values 는 0/1 — `scale` 없이도 1 = 불량으로 칠한다), `marks` ≤ 4 [열, 행, 라벨 ≤ 12자], `bullets` ≤ 3, `seed` (random 배치 변경) |
 
 예시 (f_table):
 ```json
@@ -116,3 +116,13 @@
 | `f_bs` (2026-11-21) | 희생막·CMP·최종 절연막 주석 항상 표시 | `notes: false` 로 끔 | 정답 노출 방지 (BSP 요청) |
 | `f_hcb` (2026-11-21) | params 없어도 overlay 150 nm·허용 100 nm "초과"·dishing 8 nm 미접합을 기본으로 그림 | `off_nm` / `tol_nm` / `dish_nm` 을 준 패널만 그림(없으면 정렬된 pad 와 정상 접합 단면) | 문항에 없는 판정이 그림에 나오지 않도록 (BSP 요청) |
 | `f_warp` (2026-11-21) | "∩ = Cry" 주석·명명표 항상 표시 | `hideNames` / `hideResult` 면 이름·볼록/오목을 "?" 로 | 정답 노출 방지 (WARP 요청) |
+| `f_stack` (2026-11-21, DA 최종) | `gap_um`·`h_um`·`limit_um` 이 없으면 기본 7 µm · n×50+100 µm · 775 µm 를 그림 | 준 값만 표시(간극 "N개", 높이 "—", 상한 pill 생략) | EA_to_DA §16 · STANDARDS 3.6. 영향 90 문항(아래) |
+| `f_bs` (2026-11-21, DA 최종) | `notes: false` 에도 막 이름 라벨·공정 순서에 SiO2/SiN 표시 | `labels: false` 추가(막 1·2·3 + 두께, 공정 순서 일반 표기) | EA_to_DA §17. 현재 사용 문항 0 → 영향 없음 |
+| `f_note` (2026-11-21, DA 최종) | 관점 번호 ①②③④ | Ⅰ Ⅱ Ⅲ Ⅳ | 보기 번호(①–④)와 혼동 — EA 가 지표 아이콘을 Ⅰ Ⅱ Ⅲ 로 바꾼 것과 같은 이유. 해설에서 관점 번호를 인용한 문항 0 |
+| `f_wafermap` (2026-11-21, DA 최종) | `bin: true` + `values` 0/1 + `scale` 없음 → 기본 scale 0–100 으로 나눠 불량이 모두 합격색 | `scale` 없으면 values 0/1 그대로 | **SAW-A-9005** 그림에 불량 두 행이 안 보이던 버그 |
+| `f_sip` 단면 (2026-11-21, DA 최종) | 두께 배율이 작아 interposer·RDL 이름이 pill 로 밀려나 substrate 아래에 놓임, 수직 연결선이 글자 관통 | 두께 방향 배율 0.16 in/단위로 키워 층 이름을 층 안에, TSV/via/TIV 선은 칩 아래 양 끝, EMIB 는 substrate 이름을 bridge 왼쪽에 | 그림 의미(층 순서·연결 경로) 불변 |
+| `f_fa` eotpr (2026-11-21, DA 최종) | 위치 이름 pill 이 파형 봉우리를 가림, 구조 대응 단면의 interposer 이름이 substrate 아래로 밀림 | y 축 −50–100 mV 로 넓혀 이름은 봉우리 위 빈 띠에, 단면 두께 배율 키움, probe 라벨은 HBM 위로 | 파형·표식 위치 불변 |
+| `f_warp` · `f_rel` · `f_saw` · `f_hcb` (2026-11-21) | 기준선·규격선이 값 pill 위로 그려짐, 곡선 극값 위에 Tg pill, "Si" 이름이 절단선 밑, SiCN 라벨이 왼쪽 overlay 칸 침범 | 선을 먼저 긋고 pill 을 위에, Tg·측정 pill 은 곡선이 없는 쪽, "Si" 는 왼쪽 위, SiCN 라벨은 단면 아래 | E5 0 |
+
+`f_stack` 수치 규칙 영향 문항(템플릿만 바뀜, 데이터 무수정): `gap_um` 없음 84(k=0 80 · k>0 4: BUMP-A-9005, SIP-I-0137, PROD-I-0026, PROD-I-9012), 높이 "—" 15(hideResult 없이 `h_um` 없음: TSV-B-0078, BSP-A-9043, BSP-A-9053, BUMP-A-9005, COW-I-0112, COW-I-9011, COW-I-9031, COW-A-0133, COW-A-9017, WARP-I-0260, WARP-A-0245, WARP-B-9011, WARP-I-9023, WARP-A-9005, WARP-A-9038), 상한 pill 생략 90(k=0 83 · k>0 7: 위 4 + PROD-I-0036, PROD-I-9019, PROD-I-9020 — 지문에 775 µm 가 없는 문항). 합계 90 문항. 지문이 상한·간극을 근거로 쓰는 문항은 해당 키를 넣으면 다시 표시된다.
+
