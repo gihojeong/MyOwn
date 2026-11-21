@@ -9,6 +9,7 @@ usage:
   python3 sa_struct.py figs              # 그림
 부호: warp = w(중앙) − w(DRAM vertex), (+) Cry(중앙 볼록). 단위 mm, MPa, °C, 출력 μm."""
 import os, sys, json, time, subprocess, numpy as np
+import matplotlib.ticker
 import grid3 as G, stack as S, thermal2 as TH
 from frd import read_frd, read_elprint
 KINDS = ["beol", "si_base", "si", "si_top", "gap", "emc"]
@@ -271,7 +272,7 @@ def figs():
         r45 = [r for r in SJ["steps"] if r["label"] == ref][0]
         ax[0].axhline(r45["warp_phy"], color=col[p], lw=0.7, ls=":")
     for a, tt in zip(ax, ("warp (중앙 - 모서리) [μm], 점선 = 기준(idle)", "Δwarp (full-load - idle 기준) [μm]")):
-        a.set_xscale("log"); a.set_xlabel("시간 [s] (★ = 정상상태)"); a.set_title(tt); a.grid(alpha=0.3); a.legend(fontsize=8)
+        a.set_xscale("log"); a.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:g}")); a.set_xlabel("시간 [s] (★ = 정상상태)"); a.set_title(tt); a.grid(alpha=0.3); a.legend(fontsize=8)
     fig.suptitle("idle → full-load 계단 발열에 따른 상면 warpage 변화 (+ = Cry, 평면 보정)"); fig.tight_layout(); fig.savefig("figs/sa_warp_vs_time.png", dpi=150); plt.close(fig)
     for p in prods:
         Z = np.load(f"out3/mech/{p}/top_w.npz"); lab = list(Z["labels"]); X, Yf, W = Z["X"], Z["Yf"], Z["W"]
