@@ -56,7 +56,7 @@
 |---|---|
 | `f_tsv` | `dia_um` 2–12, `depth_um` 20–150, `ar` (생략 시 depth/dia 소수 1자리 자동), `fill`: good·void·seam·pinch, `scallop`: 0·1 (**0 이면 scallop 치수 미표시**, "scallop 없음"), `scallopPitch` 0.2–0.6 µm, `scallopDepth` 20–120 nm, `barrier`, `overburden`, `taper` 0.6–1.0, `hideResult` |
 | `f_cmp` | `densA` 5–40, `densB` 30–80 (x축 0–80 %, 두 값이 A/B 표식으로 그려짐), `dish_nm` 5–150, `erosion_nm` 10–80, `nA` 3–5, `nB` 6–10 |
-| `f_bs` | `step` 0–7, `defect`: none·undercut·residue (step 7 에서만), `ox1` 100–500, `sin` 100–300, `ox2` 300–800 nm, `ni_um` 1–5 |
+| `f_bs` | `step` 0–7, `defect`: none·undercut·residue (step 7 에서만), `ox1` 100–500, `sin` 100–300, `ox2` 300–800 nm, `ni_um` 1–5, **`notes: false`** (희생막·CMP·"최종 절연막 = SiO2/SiN 2층" 주석을 끄고 결함 라벨을 "관찰 부위 (A)" 로) |
 | `f_bump` | `pillar_um` 10–60, `solder_um` 5–25, `imc_um` 0.5–6, `niBarrier` (IMC 라벨이 Ni₃Sn₄ / (Cu,Ni)₆Sn₅ 로 바뀜), `kirkendall`, `em` + `j_kA` (≤ 4자리), `temp`, `k`, `hours` ≤ `tmax`, **`tmax`** (기본 1000 h), **`ymax`** (기본 8 µm), **`hideLabels`** (Kirkendall·EM 결함 라벨을 "관찰된 void (A)"·"결함 위치 (B)" 로, IMC 상 이름 생략 — 명칭·기구를 묻는 문항용, `hideResult` 도 같은 효과), `bullet`. **`k` 가 없으면 성장 곡선을 그리지 않는다**(축·식 라벨만) |
 | `f_saw` | `method`: blade·lg·stealth·plasma·deeplaser·dbg (비교표에 **DBG 행**이 따로 있고 dbg 면 그 행이 강조됨), `kerf_um` 0–60, `haz_um` 2–20, `chip_um` 5–30, **`notes: false`** (개념 주석·기본 bullet 을 끄고 지시선 라벨을 "관찰 부위 (A/B)" 로 — 개념을 묻는 문항용), `bullet` (표는 "대표 범위" 캡션 표시) |
 | `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um` 5–60, `gap_um` 3–15 (**hcb 에는 주지 말 것 — 표시 안 함**), `voids` 0–3, `filler_trap`, `nonwet`, **`dish: true`** (hcb 에서 dishing 미접합 pad 를 그릴 때만), `bullet` |
@@ -66,7 +66,7 @@
 | `f_fa` | `tech`: lit·obirch·eotpr·xrm · `hot` [0–1, 0–1], `fov_um`, `depth` 5–50, `feats` ≤ 4 (라벨 ≤ 10자), `dz` 5–30, `zpeak` 0–45 |
 | `f_rel` | `seq` ≤ 4행 [문서 ≤ 12자, 시험명 ≤ 20자, 조건 ≤ 16자], `cur`, `fails` ≤ 5점 (x ≤ `xmax`, y ≤ `ymax`), **`xlab`** (기본 "TC cycle 수"), **`xmax`** (기본 1000), **`ymax`** (기본 10 %), **`tcCycles`** (기본 700 — 기본 seq 의 JESD22-A104 cond. B 행과, TC 축일 때 "규격 N cycle" 점선에 쓰임), `crit`, `hint`, `bullet` |
 | `f_stack` | `n` (core die 수) 4–24, `highlight`: height·midcore·base·gap·topcore, `gap_um`, `h_um`, `limit_um`, `bullet`, `hideResult` |
-| `f_hcb` | `pitch_um` 1–10, `tol_nm` 20–300, `off_nm` 0–420 (그림 변위 상한 0.5 in), `dish_nm` 1–16, `bullet`, `hideResult` |
+| `f_hcb` | `pitch_um` 1–10, **패널은 opt-in**: `off_nm` 0–420 (있을 때만 overlay 오차 화살표·라벨), `tol_nm` 20–300 (있을 때만 허용 원·초과/이내 판정), `dish_nm` 1–16 (있을 때만 dishing 미접합 pad·라벨·"dishing > Cu 팽창량" 요점), `bullet`, `hideResult` (판정 "?", dishing 결과 "?") |
 | `f_plot` | `title`, `x`/`y` {min, max, ticks ≤ 6개 (라벨 ≤ 5자), lab ≤ 24자}, `series` ≤ 4 {name ≤ 22자, color "RRGGBB", pts ≤ 12, dash}, `marks` ≤ 3 [x, 라벨 ≤ 12자], `bullets` ≤ 3 |
 | `f_film` | `layers` ≤ 9 [이름 ≤ 18자, 상대두께, 색], `roles` ≤ 5행 [층, 두께, 역할 ≤ 14자], `bullets` ≤ 3, `flags` ≤ 2 |
 | `f_note` | `title` ≤ 22자, `points` ≤ 4 (각 ≤ 50자, **판단 관점** — 정답 문장 금지), `ask` ≤ 12자 |
@@ -112,3 +112,5 @@
 | `f_saw` (2026-11-21) | dbg 면 blade 행 강조, 개념 주석 항상 표시 | DBG 행 추가·강조, `notes: false` 로 주석 끔 | 정답 노출 방지 (SAW 요청) |
 | `f_therm` (2026-11-21) | `hideResult` 에도 "간극 수 = core die 수 (N개)" 표시 | `hideResult` 면 이 pill 생략 | 정답 노출 방지 (THERM 요청) |
 | 축 눈금 (공통) | 붙어 있는 x 눈금 글자가 겹침 | 0.34 in 미만으로 붙은 눈금 글자는 생략(눈금선은 유지) | DRAM-A-9019 겹침 |
+| `f_bs` (2026-11-21) | 희생막·CMP·최종 절연막 주석 항상 표시 | `notes: false` 로 끔 | 정답 노출 방지 (BSP 요청) |
+| `f_hcb` (2026-11-21) | params 없어도 overlay 150 nm·허용 100 nm "초과"·dishing 8 nm 미접합을 기본으로 그림 | `off_nm` / `tol_nm` / `dish_nm` 을 준 패널만 그림(없으면 정렬된 pad 와 정상 접합 단면) | 문항에 없는 판정이 그림에 나오지 않도록 (BSP 요청) |
