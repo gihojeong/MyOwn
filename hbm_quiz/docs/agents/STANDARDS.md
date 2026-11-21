@@ -3,7 +3,7 @@
 - 소유: EA (Editor-in-chief Agent) · 적용 대상: `data/NN_CODE.json` 전 문항 · 자동 검사: `tools/validate.py`
 - 변경 이력: 2026-11-21 용어 규약에 front-to-back 적층 방향 추가(TSV-B-0078 정정 계기).
 - 변경 이력: 2026-11-21 조사 사전 HBM 을 받침 있음(에이치비엠)으로 정정, 검사기가 `f_therm.core` 를 N단과 비교.
-- 변경 이력: 2026-11-20 FACT §9 반영 — 부록 B 참조(HBM3 단수, 패키지 높이 비확정, HBM4 하위 호환, JESD47 조건, HCB pitch·휨, 105 °C).
+- 변경 이력: 2026-11-21 2.4 µbump pitch 를 C-die 25 µm / B-die 55 µm 로 구분(BJ 지정). 2026-11-20 FACT §9 반영 — 부록 B 참조(HBM3 단수, 패키지 높이 비확정, HBM4 하위 호환, JESD47 조건, HCB pitch·휨, 105 °C).
 - 변경 이력: 2026-11-20 DA Phase 1 반영 — 부록 A 를 LAYOUT_RULES §3–4 와 일치(hideResult 의무, f_bond `dish` opt-in, f_sip `lines`, f_therm `core`, f_table·f_wafermap), 질문 마지막 문장 ≤ 90자, 수식 띄어쓰기, `metrics: []` 키 유지.
 - 변경 이력: 2026-11-20 W0.5 — WARP 를 WARP(Warpage 와 기계적 응력)·THERM(열 설계와 방열, `data/13_THERM.json`, legacy_prefix WARP)으로 분할. Smile/Cry 규약 확정.
 - 이 문서는 **모든 분야 에이전트의 공통 헌장**이다. 분야 브리프(`docs/agents/briefs/CODE.md`)는 이 문서를 전제로 쓴다.
@@ -67,7 +67,7 @@
 ### 2.4 물성·범위 (계산 문항의 기본값; 문항이 다른 값을 주면 그 값을 따른다)
 - Cu 비저항 1.68–1.72 × 10⁻⁸ Ω·m · CTE: Cu 16.5–17, Si 2.6–2.9, SnAg ≈ 22, 충전 EMC 7–15 (Tg 이하) ppm/K
 - 열전도율(W/m·K): Si 120–150, Cu ≈ 390, SiO₂ ≈ 1.4, NCF·underfill 0.2–0.7, 충전 EMC/MUF 0.7–3, TIM 3–10
-- HBM 현실 범위(설정값이 벗어나면 사유를 지문에 밝힌다): core die 30–60 µm, base die 50–100 µm, µbump pitch 25–55 µm, 접합 간극 5–15 µm(TC-NCF·MR-MUF), HCB pitch: HBM 용 공개 발표는 < 18 µm 수준(SK hynix Hot Chips 2026), 로직 SoIC 는 9 µm 이하 — 문항 설정값은 2–15 µm(그림 `f_hcb` 는 ≤ 10 µm 만 표시 가능하므로 그보다 크면 `f_note`/`f_table`) 이고 **HCB 에는 bump 간극이 없다**. HCB 의 nm 급 요구는 **표면 거칠기·Cu recess** 이며 die 휨 허용치는 µm 급이다("die 휨 100 nm" 류 서술 금지), µbump 당 전류 수십 mA 이하(평균 전류 밀도 10⁴ A/cm² 급이 EM 시험 영역), DRAM 접합부 온도 상한 85 / 95 °C(확장, refresh 2배). 105 °C 는 출처 확인 전 정답 근거로 쓰지 않는다. 스택 전력·열유속은 '보고된 범위' 로 단정하지 말고 **문항 설정값**으로만 준다
+- HBM 현실 범위(설정값이 벗어나면 사유를 지문에 밝힌다): core die 30–60 µm, base die 50–100 µm, µbump pitch 는 위치별로 구분 — core die(C-die) 사이 25 µm, base die(B-die) 아래 면(인터포저 쪽, JEDEC HBM 규격) 55 µm(2026-11-21 BJ 지정; 다른 값을 쓰면 '설정값'과 사유를 지문에 밝힌다), 접합 간극 5–15 µm(TC-NCF·MR-MUF), HCB pitch: HBM 용 공개 발표는 < 18 µm 수준(SK hynix Hot Chips 2026), 로직 SoIC 는 9 µm 이하 — 문항 설정값은 2–15 µm(그림 `f_hcb` 는 ≤ 10 µm 만 표시 가능하므로 그보다 크면 `f_note`/`f_table`) 이고 **HCB 에는 bump 간극이 없다**. HCB 의 nm 급 요구는 **표면 거칠기·Cu recess** 이며 die 휨 허용치는 µm 급이다("die 휨 100 nm" 류 서술 금지), µbump 당 전류 수십 mA 이하(평균 전류 밀도 10⁴ A/cm² 급이 EM 시험 영역), DRAM 접합부 온도 상한 85 / 95 °C(확장, refresh 2배). 105 °C 는 출처 확인 전 정답 근거로 쓰지 않는다. 스택 전력·열유속은 '보고된 범위' 로 단정하지 말고 **문항 설정값**으로만 준다
 - **결과값이 비현실적이면(예: 최하단 die 150 °C 이상, 단일 pillar 100 kA/cm², 1 ppm 배율 오차가 125 µm 변위) 문항 설정 자체를 고친다.** "계산은 맞다" 는 변명이 되지 않는다.
 
 ### 2.5 용어 규약 (분야 간 통일 — 위반은 교차분야 검사에서 E)
