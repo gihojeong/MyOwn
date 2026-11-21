@@ -46,6 +46,7 @@
 | `f_therm` | core·base die 온도(최상단 `tTop` 만 표시), 층별 R · 합계, ΔT, base 온도, 상한 대비 색 |
 | `f_hcb` | 허용치 대비 "초과/이내" 판정과 색 |
 | `f_tsv` | aspect ratio 값 |
+| `f_bump` | Kirkendall · current crowding 결함 이름, IMC 상(Cu₆Sn₅ 등) 이름 (`hideLabels` 와 같음) |
 
 ## 4. 템플릿별 params 허용 범위
 
@@ -56,7 +57,7 @@
 | `f_tsv` | `dia_um` 2–12, `depth_um` 20–150, `ar` (생략 시 depth/dia 소수 1자리 자동), `fill`: good·void·seam·pinch, `scallop`: 0·1 (**0 이면 scallop 치수 미표시**, "scallop 없음"), `scallopPitch` 0.2–0.6 µm, `scallopDepth` 20–120 nm, `barrier`, `overburden`, `taper` 0.6–1.0, `hideResult` |
 | `f_cmp` | `densA` 5–40, `densB` 30–80 (x축 0–80 %, 두 값이 A/B 표식으로 그려짐), `dish_nm` 5–150, `erosion_nm` 10–80, `nA` 3–5, `nB` 6–10 |
 | `f_bs` | `step` 0–7, `defect`: none·undercut·residue (step 7 에서만), `ox1` 100–500, `sin` 100–300, `ox2` 300–800 nm, `ni_um` 1–5 |
-| `f_bump` | `pillar_um` 10–60, `solder_um` 5–25, `imc_um` 0.5–6, `niBarrier` (IMC 라벨이 Ni₃Sn₄ / (Cu,Ni)₆Sn₅ 로 바뀜), `kirkendall`, `em` + `j_kA` (≤ 4자리), `temp`, `k`, `hours` ≤ `tmax`, **`tmax`** (기본 1000 h), **`ymax`** (기본 8 µm), `bullet` |
+| `f_bump` | `pillar_um` 10–60, `solder_um` 5–25, `imc_um` 0.5–6, `niBarrier` (IMC 라벨이 Ni₃Sn₄ / (Cu,Ni)₆Sn₅ 로 바뀜), `kirkendall`, `em` + `j_kA` (≤ 4자리), `temp`, `k`, `hours` ≤ `tmax`, **`tmax`** (기본 1000 h), **`ymax`** (기본 8 µm), **`hideLabels`** (Kirkendall·EM 결함 라벨을 "관찰된 void (A)"·"결함 위치 (B)" 로, IMC 상 이름 생략 — 명칭·기구를 묻는 문항용, `hideResult` 도 같은 효과), `bullet`. **`k` 가 없으면 성장 곡선을 그리지 않는다**(축·식 라벨만) |
 | `f_saw` | `method`: blade·lg·stealth·plasma·deeplaser·dbg, `kerf_um` 0–60, `haz_um` 2–20, `chip_um` 5–30, `bullet` (표는 "대표 범위" 캡션 표시) |
 | `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um` 5–60, `gap_um` 3–15 (**hcb 에는 주지 말 것 — 표시 안 함**), `voids` 0–3, `filler_trap`, `nonwet`, **`dish: true`** (hcb 에서 dishing 미접합 pad 를 그릴 때만), `bullet` |
 | `f_warp` | `ref`: bump-down·beol-up, `sign` ±1 (1 = 중앙이 기준면에서 멂 ∩ = **Cry**, −1 = 가까움 ∪ = **Smile**), `mag_um` 10–200, `tg` 50–240, `temp` 25–260 |
@@ -106,3 +107,5 @@
 | `f_hcb` 기본 bullet | "particle 1개가 수 µm 범위 미접합을 만든다" | "particle 1개가 자기보다 훨씬 넓은 미접합을 만든다" | 범위 과소 표기 완화 |
 
 이 문구를 정답 근거로 쓰던 문항은 지문·해설을 새 문구에 맞춰야 한다(특히 CoWoS-R 전원 경로, "reticle 이 상한", "12단 → 간극 11개").
+| `f_bump` (2026-11-21) | `k` 미지정 시 기본 k = 0.22 곡선 | `k` 없으면 곡선 생략 | 문항에 없는 성장 속도를 그림이 만들어 내지 않도록 |
+| `f_bump` (2026-11-21) | 결함 라벨 항상 명칭 표기 | `hideLabels` / `hideResult` 로 일반 표기 | 정답 노출 방지 (BUMP 요청) |

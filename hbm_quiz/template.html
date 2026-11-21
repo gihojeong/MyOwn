@@ -728,30 +728,33 @@ function f_bump(s, p) {
   const ph = Math.max(0.3, (p.pillar_um || 25) * 0.014), piy = yy;
   R(s, cx - pw / 2, yy, pw, ph, MX.cu, { lw: 0.8, text: "Cu pillar", fs: 8 }); yy += ph;
   R(s, LC.x + 0.2, yy, 2.6, 0.28, MX.si, { lw: 0.9, text: "lower die", fs: 8 });
+  // hideLabels(또는 hideResult): 결함 명칭·기구·IMC 상 이름을 숨기고 일반 표기로 (명칭·기구를 묻는 문항용)
+  const gen = !!(p.hideLabels || p.hideResult);
   if (p.kirkendall) {
     for (let i = 0; i < 5; i++) E(s, cx - 0.36 + i * 0.17, piy - 0.035, 0.075, 0.055, MX.bare, { lw: 0.6 });
-    annotTo(s, cx - 0.36, piy - 0.01, 1, "Kirkendall void — Cu 측 계면의 공극", K.pink, true);
+    annotTo(s, cx - 0.36, piy - 0.01, 1, gen ? "관찰된 void (A)" : "Kirkendall void — Cu 측 계면의 공극", K.pink, true);
   }
   if (p.em) {
     A(s, cx + pw / 2 + 0.42, yy - 0.12, cx + pw / 2 + 0.42, imc1 - 0.05, K.rust, 1.6);
     pill(s, LC.x + 0.15, TOP + 0.18, "통전 조건 j = " + (p.j_kA || 15) + " kA/cm²", { fs: 8, fill: K.orange, align: "left" });
     for (let i = 0; i < 4; i++) E(s, cx - pw / 2 + 0.03 + i * 0.055, soly + st * 0.15, 0.05, 0.05, K.rust, { line: null, tr: 25 });
-    annotTo(s, cx - pw / 2 + 0.04, soly + st * 0.3, 2, "current crowding — 모서리 전류 집중", K.pink, true);
+    annotTo(s, cx - pw / 2 + 0.04, soly + st * 0.3, 2, gen ? "결함 위치 (B)" : "current crowding — 모서리 전류 집중", K.pink, true);
   }
   const cP = piy + ph / 2, cS = soly + st / 2, need = 0.44;
   const push = Math.max(0, need - Math.abs(cP - cS));
   dimV(s, LC.x + 2.95, piy, piy + ph, "pillar " + (p.pillar_um || 25) + " µm", { dy: push / 2 });
   dimV(s, LC.x + 2.95, soly, soly + st, "solder " + (p.solder_um || 15) + " µm", { dy: -push / 2 });
-  annotTo(s, cx - pw / 2 + 0.06, imc1 + it / 2, 0, "IMC " + (p.imc_um || 2) + (p.niBarrier ? " µm (Ni₃Sn₄ / (Cu,Ni)₆Sn₅) 계면" : " µm (Cu₆Sn₅ / Cu₃Sn) 계면"), MX.imc, true);
+  annotTo(s, cx - pw / 2 + 0.06, imc1 + it / 2, 0, "IMC " + (p.imc_um || 2) + (gen ? " µm 계면" : (p.niBarrier ? " µm (Ni₃Sn₄ / (Cu,Ni)₆Sn₅) 계면" : " µm (Cu₆Sn₅ / Cu₃Sn) 계면")), MX.imc, true);
   legend(s, LC.x + 0.35, TOP + 3.05, [[MX.cu, "Cu"], [MX.sol, "solder"], [MX.imc, "IMC"], [MX.ni, p.niBarrier ? "Ni 적용" : "Ni 없음"]], { cols: 4, cw: 1.08 });
   const TM = p.tmax || 1000, YM = p.ymax || 8, q4 = (m) => [0, 1, 2, 3, 4].map((k) => Math.round(m * k / 4 * 100) / 100);
   const g = axes(s, RC.x + 0.68, TOP + 0.95, 2.85, 2.3, {
     xmin: 0, xmax: TM, xticks: q4(TM), ymin: 0, ymax: YM, yticks: q4(YM),
     xlab: "유지 시간 (h) @ " + (p.temp || 150) + " °C", ylab: "IMC 두께 (µm) — 확산 성장",
   });
-  const k = p.k == null ? 0.22 : p.k, pts = [];
-  for (let t = 0; t <= TM; t += TM / 50) pts.push([g.X(t), g.Y(Math.min(YM, k * Math.sqrt(t)))]);
-  curve(s, pts, K.rust, 1.7);
+  // k 가 없으면 곡선을 그리지 않는다 (문항에 없는 성장 속도를 그림이 만들어 내지 않도록)
+  if (p.k != null) { const pts = [];
+    for (let t = 0; t <= TM; t += TM / 50) pts.push([g.X(t), g.Y(Math.min(YM, p.k * Math.sqrt(t)))]);
+    curve(s, pts, K.rust, 1.7); }
   pill(s, g.X(TM * 0.62), g.Y(YM * 0.91), "x = k · t^0.5", { fs: 8, fill: K.cream });
   if (p.hours) L(s, g.X(Math.min(TM, p.hours)), g.Y(0), g.X(Math.min(TM, p.hours)), g.Y(YM), K.edge, 1.0, { dash: 1 });
   pill(s, RC.x, TOP + 3.95, p.bullet || "IMC 가 두꺼울수록 계면 파괴 확률 증가", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
