@@ -124,3 +124,23 @@ DRAM 이 보유하는 ESD 설계 관점 문항: B-0144(I/O 보호 용량), A-005
 - **문항 설정값**: retention 10 °C 반감, 열 모델(A-9044), pJ/bit(A-9024), tFAW 16 ns 등은 지문에 "이 문항의 가정/설정값" 으로 명시했고 정답 근거를 업체 값에 두지 않았습니다. DDR4 tRFC(8 Gb 350 ns, 16 Gb 550 ns)·tREFI 7.8 µs, DDR5 on-die ECC 128+8, HBM2 BL2/BL4, PRAC(JESD79-5C)은 `src` 에 표준 근거를 적었습니다 — FACT 가 원문 확인을 원하면 이 `src` 들을 우선 대상으로 해 주십시오.
 - **HBM 고유 미확인 사항은 쓰지 않음**: HBM 의 tREFI·tRFC 값, HBM 고유 온도 상한, HBM3/4 bank 수·burst 길이 규격값(I-9021 은 BL8 을 "문항 설정"으로 둠).
 - 정답 위치는 손대지 않았습니다(신규 문항 다수가 a=0). EA Phase 2 재배치 대상이며, 해설의 ①–④ 참조는 현재 보기 순서와 일치합니다.
+
+## W3 수정 (FIX 배치 4 · 2026-11-21)
+근거: `docs/reviews/EA_audit/DRAM.md`, `docs/reviews/xd3/DRAM.md`, `docs/agents/CONVENTIONS_W3.md`(C1). mv 판정(A-0060·A-0061·B-0141·I-0143·I-0148·I-0165, 유입 FA-A-0058)은 EA Phase 2 몫이라 손대지 않음.
+
+| 출처 | id | 반영 |
+|---|---|---|
+| EA 1 | DRAM-A-9021 | ② 60 개(재현 불가) → "약 240 개"(pseudo channel 64 대신 채널 32 로 나눔, 7,680 ÷ 32). 보기 오름차순 재배열(정답 120 개 = ②), ① 15 개 해설에 식 추가 |
+| EA 2 · XD | DRAM-A-9044 | 판정 die 를 "셀이 있는 최하단 core die" 로 명시, 간극 수 N − 1(최하단~최상단 core) 지문에 명시. 열저항을 C1 범위로 재설정(간극당 0.06 °C/W = 140 mm² 기준 8.4 mm²·K/W), 기준 온도를 "최상단 core 70 °C" 로. 재계산: 12단 70 + 11 × 20 × 0.06 = 83.2 °C(1 배), 16단 70 + 15 × 24 × 0.06 = 91.6 °C(2 배). 열유속 0.14·0.17 W/mm²(C1-5 범위) |
+| EA 3 | DRAM-A-0083 | 경로 B 를 "가상의 4,096 bit 인터페이스(계산 연습용, 실재 세대 아님)" 로 명시 |
+| EA 참고 | DRAM-B-0045 | 약한 오답 "8.0 %(8 을 % 로 읽음)" → "약 1.6 %(64 bit 당 1 bit 단순 패리티와 혼동)" |
+| XD 사실 충돌 | DRAM-A-0001 | DRFM 동작을 "HBM4 본문 미확인 → DDR5 정의와 같은 개념으로 본다" 로 근거 수준 명시(FACT W2-01·W2-16). 그림 note 의 "DRFM: 컨트롤러가 행 지목"(정답 단서) 제거, src 갱신 |
+| XD 중복 | DRAM-B-0029 · B-9011 · I-0035 · I-9024 | 삭제 — 근중복: PROD-B-9001 · PROD-B-0103 · PROD-I-9011 · PROD-I-0033 (PROD 보유) |
+
+신규(보강, EA 권고 ①②):
+- **DRAM-A-9053** bank group 제약이 깎는 스택 실효 대역폭 — HBM4 PC 32 GB/s, tCCD_S 1 ns / tCCD_L 2 ns(설정값), 같은 BG 연속 1,024 GB/s vs 무작위 4 BG 1,638 GB/s(평균 간격 1.25 ns). 오답: tCCD_L 무시, 대역폭을 확률 평균(28 GB/s → 1.79 TB/s), 무작위 = 항상 다른 BG.
+- **DRAM-A-9054** 위층 core die 로 갈수록 줄어드는 timing 여유 — die 위치별 pass 창(52/41/28 ps), VDD·온도 둔감, 6.4 Gb/s 통과 → TSV·µbump 단 누적 지연 차이(deskew). A-9020(IR drop)과 다른 기구로 IR drop·retention·TSV open 을 관측으로 배제.
+
+결과: DRAM 198 → 196 (B 62 / I 68 / A 66). validate --gate E 0 · W 0.
+
+남은 우려: XD 개념 공백 **preamble** 은 HBM 세대별 read/write preamble 규정을 표준 원문으로 확인하지 못해 출제하지 않음(우선순위 낮음). A-9054 의 die 당 약 2.2 ps 누적 skew 는 가상의 측정 데이터(지문 명시)이며 특정 제품 값이 아님. EA 권고 ③(FACT W2-08~ 표준 타이밍 재확인)은 FACT 결과 대기.
