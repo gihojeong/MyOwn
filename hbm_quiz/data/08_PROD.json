@@ -1635,7 +1635,7 @@
    "title": "row hammer 대응 기능 DRFM",
    "stem": "같은 row 를 매우 빠르게 반복 활성화하면 이웃 row 의 전하가 새어 bit 가 뒤집히는 row hammer 현상이 생깁니다. JESD270-4(HBM4)는 RAS 강화 항목으로 DRFM(Directed Refresh Management)을 넣었습니다. DRFM 의 동작으로 옳은 것은 무엇입니까?",
    "opts": [
-    "자주 활성화된 row 의 이웃(피해) row 를 추가로 refresh",
+    "공격 row 주변의 피해 row 를 추가로 refresh",
     "전체 bank 의 refresh 주기를 영구히 절반으로 줄임",
     "공격 row 를 예비 row 로 영구 교체",
     "공격이 감지되면 해당 채널의 전원을 차단"
