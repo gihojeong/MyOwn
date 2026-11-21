@@ -1,0 +1,2432 @@
+[
+[
+"TSV-I-0001",
+"stem",
+" nm 의 scallop 이 관측되었고, 그 "
+],
+[
+"TSV-I-0001",
+"opts",
+" 중심에서 만나 seam 이 남았다"
+],
+[
+"TSV-I-0001",
+"opts",
+"scallop 이 via 입구를 좁"
+],
+[
+"TSV-I-0001",
+"exp",
+"되지 않아 scallop 이 깊은 구간의 측벽"
+],
+[
+"TSV-A-0001",
+"opts",
+"상부 절연막에 crack 이 생겼다"
+],
+[
+"TSV-A-0002",
+"opts",
+"CMP 전 anneal 이 Cu 의 열팽창계"
+],
+[
+"TSV-A-0002",
+"opts",
+"CMP 후 anneal 이 barrier 를"
+],
+[
+"TSV-I-0003",
+"opts",
+"Bosch scallop 이 깊어 측벽에서 도"
+],
+[
+"TSV-I-0013",
+"exp",
+"길게 하면 scallop 이 오히려 깊어집니다"
+],
+[
+"TSV-B-0053",
+"opts",
+"keep-out zone 이 필요 없어 배치가"
+],
+[
+"TSV-B-0062",
+"exp",
+"금도 overburden 이 남아 CMP 가 "
+],
+[
+"TSV-B-0065",
+"title",
+"Cu pumping 이 문제가 되는 이유"
+],
+[
+"TSV-B-0073",
+"opts",
+"shing·erosion 이 커진다"
+],
+[
+"TSV-B-0073",
+"exp",
+" 내려가는 erosion 이 커집니다. ②의 "
+],
+[
+"TSV-B-0079",
+"opts",
+"keep-out zone 이 필요 없어지려고"
+],
+[
+"TSV-B-0081",
+"exp",
+"keep-out zone 이 셀·회로를 둘 수"
+],
+[
+"TSV-B-0089",
+"title",
+"via-middle 이 FEOL 뒤·BE"
+],
+[
+"TSV-B-0090",
+"exp",
+"저항이 오르거나 open 이 되므로, 저항과 "
+],
+[
+"TSV-B-0091",
+"exp",
+"n 이면 전체가 open 이 되므로, 한 번의"
+],
+[
+"TSV-B-0099",
+"exp",
+"결되지 않으므로 open 이 됩니다. ②의 b"
+],
+[
+"TSV-B-0107",
+"opts",
+"shing·erosion 이 커지는 것이 문제"
+],
+[
+"TSV-B-0107",
+"exp",
+" 내려가는 erosion 이 커지고, 연마가 "
+],
+[
+"TSV-I-0122",
+"exp",
+"가 약해져 scallop 이 깊어지고 측면 식"
+],
+[
+"TSV-I-0123",
+"stem",
+" 가는 선 모양 seam 이, wafer Y "
+],
+[
+"TSV-I-0123",
+"exp",
+"중심에서 맞닿아 seam 이 남고, 입구 억제"
+],
+[
+"TSV-I-0123",
+"exp",
+"bottom-up 이 약해 측벽 전체에"
+],
+[
+"TSV-I-0124",
+"exp",
+"모든 chain 이 고르게 12 % "
+],
+[
+"TSV-I-0125",
+"stem",
+" 위 금속층의 crack 이 늘었습니다. 이 "
+],
+[
+"TSV-I-0125",
+"exp",
+" 절연 약화는 crack 이 아니라 누설로 나"
+],
+[
+"TSV-I-0130",
+"exp",
+"의 밀착과 wetting 이 좋아 seed 가"
+],
+[
+"TSV-I-0135",
+"exp",
+" 떨어져 휨과 crack 이 커지므로 carr"
+],
+[
+"TSV-I-0136",
+"exp",
+"깊이 눌려 dishing 이 커지고 큰 입자에"
+],
+[
+"TSV-I-0169",
+"stem",
+" 가 남은 TSV lot 이 나오자, 도금 시"
+],
+[
+"TSV-I-0193",
+"opts",
+"liner 를 BEOL 이 견디는 저온으로 "
+],
+[
+"TSV-I-0193",
+"exp",
+"last 에서는 BEOL 이 TSV 보다 먼저"
+],
+[
+"TSV-I-0193",
+"exp",
+"Cu·low-k BEOL 이 이미 있어 그 이"
+],
+[
+"TSV-I-0194",
+"exp",
+"면 식각과 scallop 이 줄어 수직 형상에"
+],
+[
+"TSV-I-0198",
+"stem",
+"Bosch scallop 이 기준보다 깊었고,"
+],
+[
+"TSV-I-0199",
+"title",
+"고전류·짧은 anneal 이 겹친 lot"
+],
+[
+"TSV-I-0199",
+"opts",
+"정의 Cu pumping 이 함께 는다"
+],
+[
+"TSV-I-0199",
+"exp",
+"다. 동시에 anneal 이 짧아 결정립 성장"
+],
+[
+"TSV-A-0102",
+"exp",
+"W1 은 모든 chain 이 고르게 올랐으므로"
+],
+[
+"TSV-B-9008",
+"opts",
+"er 두께와 무관하게 0 이 된다"
+],
+[
+"TSV-B-9008",
+"exp",
+" 있어도 커패시턴스가 0 이 되지는 않습니다."
+],
+[
+"TSV-I-9012",
+"stem",
+"한 daisy chain 이 있습니다. TSV"
+],
+[
+"TSV-I-9015",
+"stem",
+"위의 overburden 이 주변 field "
+],
+[
+"TSV-I-9016",
+"opts",
+"두꺼워 bottom-up 이 빨라졌다"
+],
+[
+"TSV-I-9016",
+"opts",
+"seed overhang 이 개구를 좁혀 입구"
+],
+[
+"TSV-I-9021",
+"stem",
+"eam 만 보이던 lot 이, 400 °C a"
+],
+[
+"TSV-I-9023",
+"opts",
+"liner 를 대신해 0 이 된다"
+],
+[
+"TSV-I-9023",
+"exp",
+"패시턴스는 줄어들 뿐 0 이 되지 않습니다."
+],
+[
+"TSV-I-9025",
+"opts",
+"로 줄지만 dishing 이 커진다"
+],
+[
+"TSV-I-9025",
+"exp",
+"다. overburden 이 얇으면 두께 산포"
+],
+[
+"TSV-I-9026",
+"stem",
+"사이의 crosstalk 이 문제가 되었습니다"
+],
+[
+"TSV-I-9026",
+"exp",
+" 줄어 crosstalk 이 악화됩니다."
+],
+[
+"TSV-A-9006",
+"opts",
+"ia 에서만 과해 tip 이 녹았으니 시간을 "
+],
+[
+"TSV-A-9006",
+"exp",
+"대표합니다. ①은 tip 이 녹으면 구멍 흔적"
+],
+[
+"TSV-A-9008",
+"exp",
+"필요하므로 이 경우 EM 이 지배 조건입니다."
+],
+[
+"TSV-A-9010",
+"exp",
+"진공 prewet 이 덜 되면 via "
+],
+[
+"TSV-A-9013",
+"stem",
+"⁻⁵ 의 확률로 open 이 된다고 봅니다. "
+],
+[
+"TSV-A-9015",
+"stem",
+" 원래의 약 몇 분의 1 이 됩니까?"
+],
+[
+"TSV-A-9016",
+"exp",
+"입니다. ④는 chain 이 모두 Cu 라면 "
+],
+[
+"TSV-A-9022",
+"opts",
+"적으로 bottom-up 이 약해졌으니 배출·"
+],
+[
+"TSV-A-9024",
+"exp",
+" 중심에서 만나 seam 이 남습니다. R 은"
+],
+[
+"TSV-I-9030",
+"opts",
+"빨라져 bottom-up 이 강해지고 결함이 "
+],
+[
+"TSV-A-9028",
+"stem",
+" 바뀌고, scallop 이 깊을수록 하부 측"
+],
+[
+"TSV-A-9034",
+"title",
+" 단축과 고AR seam 이 함께 나타난 도금"
+],
+[
+"TSV-A-9034",
+"stem",
+" 에서만 중심선 seam 이 나타났습니다(10"
+],
+[
+"TSV-A-9034",
+"exp",
+"l 성장이 되어 seam 이 남습니다. 평탄제"
+],
+[
+"TSV-A-9036",
+"stem",
+"420 °C anneal 이 필요했습니다. 판"
+],
+[
+"TSV-A-9037",
+"opts",
+" 와 깊은 scallop 이 겹쳐 가장자리 측"
+],
+[
+"TSV-A-9037",
+"exp",
+"얇은 데다 scallop 이 깊으면 돌출부 그"
+],
+[
+"TSV-A-9040",
+"stem",
+"TSV 의 dishing 이 기준을 넘었습니다"
+],
+[
+"TSV-A-9040",
+"exp",
+"과연마되어 dishing 이 커집니다. 근본 "
+],
+[
+"BSP-A-9056",
+"exp",
+"께보다 깊어야 bevel 이 남지 않는 정상 "
+],
+[
+"BSP-A-9057",
+"exp",
+"기로 바꿨는데 crack 이 0.5 → 4.5"
+],
+[
+"TSV-I-0134",
+"stem",
+"하게 파인 dishing 이 생긴 상태로 ba"
+],
+[
+"TSV-I-0134",
+"opts",
+"tip 이 오목해져 정렬 정"
+],
+[
+"TSV-I-0134",
+"exp",
+" 저항 상승이나 open 이 생기기 쉽습니다."
+],
+[
+"TSV-A-0123",
+"stem",
+"에서 취급 중 crack 이 급증했습니다. 마"
+],
+[
+"TSV-A-0123",
+"exp",
+" lot 에서 crack 이 급증합니다. 각 "
+],
+[
+"BUMP-B-0016",
+"exp",
+"①은 solder cap 이 여전히 있어 녹이"
+],
+[
+"BUMP-B-0017",
+"title",
+"UBM 이 맡는 세 가지 기"
+],
+[
+"BUMP-B-0017",
+"stem",
+"겹쳐 구성합니다. UBM 이 맡는 기능의 조합"
+],
+[
+"BUMP-B-0017",
+"exp",
+"확보합니다. ①은 UBM 이 도체이므로 절연 "
+],
+[
+"BUMP-B-0021",
+"opts",
+"층이 두꺼워져 crack 이 쉬워짐"
+],
+[
+"BUMP-B-0021",
+"exp",
+" 때 계면에서 crack 이 시작되기 쉽습니다"
+],
+[
+"BUMP-B-0023",
+"opts",
+" 에 닿지 않아 open 이 늘어남"
+],
+[
+"BUMP-B-0023",
+"exp",
+" 무관하게 Cu 와 Sn 이 만나면 IMC 가"
+],
+[
+"BUMP-B-0026",
+"exp",
+" 에 닿지 못해 open 이 되고, 높은 bu"
+],
+[
+"BUMP-B-0042",
+"exp",
+" 관계없이 Cu 와 Sn 이 만나면 IMC 가"
+],
+[
+"BUMP-B-0045",
+"exp",
+" 위한 annealing 이 필요합니다. ③은"
+],
+[
+"BUMP-B-0046",
+"title",
+"non-wet 이 가리키는 불량"
+],
+[
+"BUMP-B-9002",
+"exp",
+"er 안의 Ag 와 Sn 이 만드는 입자로 계"
+],
+[
+"BUMP-B-9002",
+"exp",
+"의 없으면 Ni 와 Sn 이 반응해 Ni₃Sn"
+],
+[
+"BUMP-B-9004",
+"title",
+"ctromigration 이 일어나는 원리"
+],
+[
+"BUMP-B-9004",
+"stem",
+"EM)이라 합니다. EM 이 일어나는 원리로 "
+],
+[
+"BUMP-B-9011",
+"stem",
+"solder cap 이 수 µm 로 얇은"
+],
+[
+"BUMP-B-9012",
+"exp",
+" 틀 없이 도금하고 PR 이 남은 채 seed"
+],
+[
+"BUMP-B-9013",
+"stem",
+"하면 solder cap 이 둥근 모양으로 바"
+],
+[
+"BUMP-B-9014",
+"stem",
+"는 daisy chain 이 들어 있습니다. "
+],
+[
+"BUMP-B-9014",
+"exp",
+"입니다. ④는 chain 이 절연을 위한 구조"
+],
+[
+"BUMP-B-9014",
+"exp",
+"끊어져도 전체가 open 이 되고, 접합부가 "
+],
+[
+"BUMP-I-0001",
+"stem",
+"고, Cu 와 Cu₃Sn 이 만나는 계면을 따"
+],
+[
+"BUMP-I-0002",
+"opts",
+"rowding 으로 EM 이 선행됨"
+],
+[
+"BUMP-I-0071",
+"exp",
+"는 IMC 두께만큼 Sn 이 1:1 로 사라진"
+],
+[
+"BUMP-I-0104",
+"opts",
+"가 더 단단해 crack 이 생김"
+],
+[
+"BUMP-I-0105",
+"exp",
+"절반이면 단면적은 1/4 이 되어 평균 전류 "
+],
+[
+"BUMP-I-0129",
+"exp",
+" 형성이 빠르므로 TAL 이 길면 젖음은 충분"
+],
+[
+"BUMP-I-9005",
+"opts",
+"보관 중 Ag₃Sn 이 scallop 사"
+],
+[
+"BUMP-I-9005",
+"exp",
+"며 Cu 쪽에 Cu₃Sn 이 생깁니다. ②는 "
+],
+[
+"BUMP-I-9005",
+"exp",
+" 공급되어 scallop 이 둥글게 자라고, "
+],
+[
+"BUMP-I-9006",
+"exp",
+" 이후에는 Cu 와 Sn 이 직접 반응해 IM"
+],
+[
+"BUMP-I-9008",
+"opts",
+"lder 가 얇으면 EM 이 일어나지 않아서"
+],
+[
+"BUMP-I-9011",
+"opts",
+"Cu 와 Sn 이 IMC 로 바뀌며"
+],
+[
+"BUMP-I-9011",
+"opts",
+"C 가 전류를 받아 EM 이 일어나서"
+],
+[
+"BUMP-I-9011",
+"exp",
+"Cu 와 Sn 이 반응해 Cu₆Sn"
+],
+[
+"BUMP-I-9012",
+"stem",
+" 안에서 미세 crack 이 관찰되었는데, N"
+],
+[
+"BUMP-I-9013",
+"stem",
+"그 판을 따라 crack 이 났습니다. Ag "
+],
+[
+"BUMP-I-9013",
+"opts",
+"Cu₃Sn 이 높은 Ag 때문에"
+],
+[
+"BUMP-I-9013",
+"opts",
+"Ag₃Sn 이 높은 Ag 와 느"
+],
+[
+"BUMP-I-9013",
+"exp",
+"됩니다. ②는 Cu₃Sn 이 Cu 계면에만 생"
+],
+[
+"BUMP-I-9013",
+"exp",
+"한 판을 따라 crack 이 진행됩니다. ②는"
+],
+[
+"BUMP-I-9013",
+"exp",
+"면 응고 전에 Ag₃Sn 이 크게 자라 판 모"
+],
+[
+"BUMP-I-9014",
+"exp",
+" wetting) cap 이 얇아지고 brid"
+],
+[
+"BUMP-I-9016",
+"stem",
+"편차와 die crack 이 줄었습니다. du"
+],
+[
+"BUMP-I-9016",
+"exp",
+"국부 응력으로 crack 이 생깁니다. dum"
+],
+[
+"BUMP-I-9017",
+"opts",
+"사용 조건에서는 EM 이 원리적으로 일어나"
+],
+[
+"BUMP-I-9019",
+"exp",
+"다. solder cap 이 이만큼 눌릴 여유"
+],
+[
+"BUMP-I-9020",
+"exp",
+" 무관하게 Cu 와 Sn 이 만나면 IMC 가"
+],
+[
+"BUMP-I-9024",
+"exp",
+" 직접 반응해 Cu₃Sn 이 자라는 쪽에서 생"
+],
+[
+"BUMP-I-9024",
+"exp",
+"oid 는 Cu 와 Sn 이 직접 반응해 Cu"
+],
+[
+"BUMP-I-9031",
+"stem",
+"ermomigration 이 일어날 수 있는 "
+],
+[
+"BUMP-I-9031",
+"opts",
+"mp 는 전류 밀도가 0 이 되어서"
+],
+[
+"BUMP-I-9032",
+"exp",
+"반응이 훨씬 느려 UBM 이 남고 공극도 줄어"
+],
+[
+"BUMP-A-0073",
+"title",
+"얇은 solder cap 이 full-IMC "
+],
+[
+"BUMP-A-0151",
+"exp",
+"닿지 못해 non-wet 이 됩니다. 도금 전"
+],
+[
+"BUMP-A-0156",
+"opts",
+"온도가 높을수록 EM 이 느려져 시험이 더"
+],
+[
+"BUMP-A-0156",
+"exp",
+"을 수 있어, 고상 EM 이 아니라 용융·열 "
+],
+[
+"BUMP-A-0161",
+"stem",
+"다. solder cap 이 안전하게 눌릴 수"
+],
+[
+"BUMP-A-0161",
+"stem",
+"서리에서만 non-wet 이 반복되었습니다. "
+],
+[
+"BUMP-A-9008",
+"exp",
+" 걸리고, Cu 와 Sn 이 IMC 가 되며 "
+],
+[
+"BUMP-A-9010",
+"exp",
+"미가 없습니다. ①은 n 이 기구와 조건에 따"
+],
+[
+"BUMP-A-9011",
+"opts",
+"라는 중이라 곧 open 이 됨"
+],
+[
+"BUMP-A-9013",
+"exp",
+"다. solder cap 이 10 µm 안팎인"
+],
+[
+"BUMP-A-9015",
+"stem",
+"₆Sn₅ 였고 Cu₃Sn 이 얇았습니다. 위 "
+],
+[
+"BUMP-A-9016",
+"exp",
+" Ni 가 소모되면 Sn 이 Cu 와 직접 만"
+],
+[
+"BUMP-A-9018",
+"stem",
+" 계면을 따라 crack 이 나 있었습니다. "
+],
+[
+"BUMP-A-9018",
+"stem",
+" 갑자기 끊기는 open 이 몇 개 나왔고, "
+],
+[
+"BUMP-A-9018",
+"opts",
+"p 에 전류가 몰려 EM 이 일어나서"
+],
+[
+"BUMP-A-9018",
+"exp",
+"HTS 시료에서 open 이 없었고 공극은 위"
+],
+[
+"BUMP-A-9018",
+"exp",
+"ack 이 자라 open 이 됩니다. ①은 H"
+],
+[
+"BUMP-A-9018",
+"exp",
+"을 따라 피로 crack 이 자라 open 이"
+],
+[
+"BUMP-A-9026",
+"opts",
+"보관 중 Cu₃Sn 이 사라져 계면이 강"
+],
+[
+"BUMP-A-9027",
+"exp",
+"도 적어 공극과 open 이 빨리 진행됩니다."
+],
+[
+"BUMP-A-9028",
+"title",
+"solder cap 이 눌린 뒤 남는 이"
+],
+[
+"BUMP-A-9029",
+"stem",
+"일부에서는 non-wet 이 나왔습니다. 대책"
+],
+[
+"BUMP-A-9029",
+"exp",
+"dge 와 non-wet 이 함께 줄어듭니다."
+],
+[
+"BUMP-A-9030",
+"exp",
+" 커지고, Cu 와 Sn 이 만나는 한 Cu₃"
+],
+[
+"SAW-B-0031",
+"title",
+"단 측면 미세 crack 이 문제인 이유"
+],
+[
+"SAW-B-0047",
+"title",
+"tealth dicing 이 오염에 유리한 점"
+],
+[
+"SAW-B-0050",
+"title",
+"plasma dicing 이 비정형 배치를 허"
+],
+[
+"SAW-B-9004",
+"title",
+"Weibull 계수 m 이 뜻하는 것"
+],
+[
+"SAW-I-9006",
+"title",
+"박리를 seal ring 이 막는 방식"
+],
+[
+"SAW-I-9023",
+"title",
+"가장자리 chipping 이 위험한 이유"
+],
+[
+"SAW-I-9040",
+"title",
+"e 모서리에서 crack 이 시작되는 이유"
+],
+[
+"BUMP-A-0145",
+"stem",
+"은 쪽에서 non-wet 이 생겼습니다. 공정"
+],
+[
+"BUMP-A-0145",
+"opts",
+"밀려 나가 non-wet 이 더 늘어남"
+],
+[
+"BUMP-A-0145",
+"opts",
+" bridge·crack 이 늘어 불량 형태만"
+],
+[
+"WARP-B-0090",
+"exp",
+" open·non-wet 이 생기고, 반대쪽은"
+],
+[
+"WARP-B-0147",
+"opts",
+"e 증가, 낮추면 gel 이 늦어져 생산성·경"
+],
+[
+"WARP-I-0235",
+"opts",
+" 빨라져 몰딩 압력이 0 이 되었다"
+],
+[
+"WARP-I-0235",
+"exp",
+"이며, 점도가 낮아도 0 이 되지 않습니다."
+],
+[
+"WARP-I-0237",
+"opts",
+"계수 차이가 상쇄되어 0 이 되기 때문"
+],
+[
+"WARP-I-0238",
+"stem",
+" bump 의 crack 이 늘었습니다. 이 "
+],
+[
+"WARP-I-0245",
+"exp",
+"중앙부에서 non-wet 이 먼저 생깁니다. "
+],
+[
+"WARP-I-0259",
+"exp",
+" 방향이 반대라 합이 0 이 되어 휨이 생기지"
+],
+[
+"WARP-I-0261",
+"exp",
+" open·non-wet 이 날 위치와 위험도"
+],
+[
+"WARP-I-0276",
+"opts",
+" 때문에 경화 수축이 0 이 된다"
+],
+[
+"WARP-A-0168",
+"exp",
+"상온 값과 α1 이 같으므로 Tg 아"
+],
+[
+"WARP-A-0171",
+"opts",
+".3 mm — crack 이 없으므로 warp"
+],
+[
+"WARP-A-0171",
+"exp",
+"서리 bump crack 이 나타났습니다. ②"
+],
+[
+"WARP-A-0175",
+"stem",
+"bump 에서 crack 이 발견되었습니다. "
+],
+[
+"WARP-A-0175",
+"stem",
+" delamination 이 있었습니다. 온도"
+],
+[
+"WARP-A-0175",
+"opts",
+" delamination 이 측정마다 커졌다"
+],
+[
+"WARP-A-0175",
+"exp",
+" delamination 이 crack 보다 "
+],
+[
+"WARP-A-0190",
+"stem",
+" BGA 볼에서 open 이 났습니다. 같은 "
+],
+[
+"WARP-A-0190",
+"opts",
+" 중앙 볼에서만 open 이 나야 정상이다"
+],
+[
+"WARP-A-0190",
+"exp",
+" 넘으면 모서리 open 이 납니다. 그래서 "
+],
+[
+"WARP-A-0245",
+"stem",
+"역에서 die crack 이 나왔습니다. 세 "
+],
+[
+"WARP-A-0245",
+"exp",
+"씬 크게 휘어 crack 이 납니다. 압력을 "
+],
+[
+"WARP-A-0252",
+"stem",
+"도 사이클 뒤 crack 이 반대편 모서리 b"
+],
+[
+"WARP-A-0252",
+"exp",
+" 변형이 커져 crack 이 몰립니다. ②는 "
+],
+[
+"WARP-I-9011",
+"title",
+"underfill 이 bump 피로 수"
+],
+[
+"WARP-I-9011",
+"opts",
+"underfill 이 bump 의 녹는"
+],
+[
+"WARP-I-9011",
+"opts",
+"underfill 이 die 와 기판의"
+],
+[
+"WARP-I-9011",
+"opts",
+"underfill 이 열을 빼 bump"
+],
+[
+"WARP-I-9011",
+"exp",
+"꾸므로 underfill 이 온도 폭을 없애지"
+],
+[
+"WARP-I-9014",
+"opts",
+"ring 이 패키지의 전기 배"
+],
+[
+"WARP-I-9027",
+"stem",
+"도 warpage 가 0 이 되지 않고 같은 "
+],
+[
+"WARP-A-9001",
+"opts",
+"150 °C 에서 0 이 되므로 그 부근이"
+],
+[
+"WARP-A-9002",
+"exp",
+"다. ①의 E4 는 α1 이 가장 낮지만 Tg"
+],
+[
+"WARP-A-9002",
+"exp",
+"으로 20 µm 인 E1 이 빠집니다. 남은 "
+],
+[
+"WARP-A-9014",
+"stem",
+" delamination 이 반복 관찰되었습니"
+],
+[
+"WARP-A-9015",
+"opts",
+"crack 이 하중에만 의존하므"
+],
+[
+"WARP-A-9015",
+"exp",
+"책입니다. ②는 30 N 이 접합에 충분한지 "
+],
+[
+"WARP-A-9015",
+"exp",
+"60 N 부터 crack 이 늘어, 크게 휜 "
+],
+[
+"WARP-A-9017",
+"exp",
+"단 응력이 커지므로 G1 이 적합합니다. ①은"
+],
+[
+"WARP-A-9022",
+"stem",
+" delamination 이 EMC-1 에서 "
+],
+[
+"WARP-A-9022",
+"exp",
+"니다. 접착 강도와 α1 이 같으므로 차이는 "
+],
+[
+"WARP-A-9027",
+"opts",
+" Tg 가 낮아진 lot 이 고온 휨이 컸으니"
+],
+[
+"WARP-A-9037",
+"stem",
+"선으로 변한다고 보고 0 이 되는 온도를 외삽"
+],
+[
+"WARP-A-9037",
+"exp",
+"32 µm/K 이므로 0 이 되는 온도는 25"
+],
+[
+"WARP-I-0321",
+"stem",
+"부 solder ball 이 접합되지 않았습니"
+],
+[
+"SIP-I-0001",
+"opts",
+"RDL 이 Si 보다 미세해"
+],
+[
+"SIP-I-0001",
+"exp",
+" TIV 와 전역 RDL 이 주로 나르며 LS"
+],
+[
+"SIP-B-0076",
+"stem",
+"의 solder ball 이 격자로 붙어 있습"
+],
+[
+"SIP-B-0080",
+"exp",
+"붙이는 stitching 이 필요하고, 면적이"
+],
+[
+"SIP-B-0084",
+"exp",
+" ②는 underfill 이 절연체이므로 틀립"
+],
+[
+"SIP-B-0085",
+"exp",
+"다르면 낮은 쪽의 TIM 이 두꺼워지거나 접촉"
+],
+[
+"SIP-B-0114",
+"exp",
+"공기로 남습니다. TIM 이 이 틈을 채워 접"
+],
+[
+"SIP-B-0137",
+"title",
+"CoWoS-R 이 Si interp"
+],
+[
+"SIP-B-0138",
+"title",
+"CoWoS-R 이 Si interp"
+],
+[
+"SIP-B-0140",
+"exp",
+" TIV 와 전역 RDL 이 주로 맡습니다. "
+],
+[
+"SIP-B-0152",
+"exp",
+"아닙니다. ④는 ring 이 전기 배선이 아닙"
+],
+[
+"SIP-B-0152",
+"exp",
+"아닙니다. ③은 ring 이 die 와 닿지 "
+],
+[
+"SIP-I-0146",
+"exp",
+" TIV 와 전역 RDL 이 주로 맡습니다. "
+],
+[
+"SIP-I-0146",
+"exp",
+"당 구간 접속이 open 이 되거나 이웃과 붙"
+],
+[
+"SIP-I-0153",
+"opts",
+"낮은 스택 위 TIM 이 두꺼워져 그 스택"
+],
+[
+"SIP-I-0153",
+"exp",
+"낮은 스택 위에는 TIM 이 20 µm 더 두"
+],
+[
+"SIP-A-0144",
+"stem",
+"ow 에서 non-wet 이 먼저 나타날 위치"
+],
+[
+"SIP-A-0144",
+"exp",
+"닿지 못해 non-wet 이 먼저 생기고, 모"
+],
+[
+"SIP-A-0144",
+"exp",
+"멀어지므로 중앙 ball 이 pad 에 닿지 "
+],
+[
+"SIP-A-0166",
+"stem",
+" 출하 검사에서 open 이 HBM2 쪽 채널"
+],
+[
+"SIP-A-0166",
+"exp",
+" 그 양 끝에만 open 이 몰린 관측과 맞습"
+],
+[
+"SIP-A-0178",
+"exp",
+" ③은 underfill 이 변형을 접합면 전"
+],
+[
+"SIP-I-9003",
+"title",
+"e 바로 아래 decap 이 개선하는 것"
+],
+[
+"SIP-I-9003",
+"stem",
+"에 가까운 이 decap 이 주로 개선하는 것"
+],
+[
+"SIP-B-9002",
+"stem",
+" 사이의 BGA ball 이 있습니다. 세 접"
+],
+[
+"SIP-B-9007",
+"exp",
+"은 eye diagram 이 측정 결과일 뿐 "
+],
+[
+"SIP-B-9009",
+"opts",
+" 스택을 지나며 DRAM 이 뜨거워진다"
+],
+[
+"SIP-B-9009",
+"exp",
+"도 상한이 낮은 DRAM 이 로직 열을 그대로"
+],
+[
+"SIP-I-9005",
+"exp",
+"4 ≈ 9.4 로 RDL 이 약 9배 낮습니다"
+],
+[
+"SIP-I-9012",
+"stem",
+" die 근처 decap 이 전하를 공급해야 "
+],
+[
+"SIP-I-9013",
+"stem",
+"underfill 이 없는 C4 접합에"
+],
+[
+"SIP-I-9017",
+"exp",
+"자리에 underfill 이 없으면 bump "
+],
+[
+"SIP-I-9018",
+"exp",
+"underfill 이 bump 와 함께"
+],
+[
+"SIP-I-9019",
+"stem",
+"ow 에서 non-wet 이 먼저 생길 위치는"
+],
+[
+"SIP-I-9019",
+"exp",
+"상태에서 모서리 ball 이 pad 에 닿지 "
+],
+[
+"SIP-I-9039",
+"stem",
+"RZ 신호에서 0 과 1 이 번갈아 나올 때의"
+],
+[
+"SIP-I-9041",
+"stem",
+" 오르다가 끝내 open 이 되었고, 중앙 체"
+],
+[
+"SIP-I-9041",
+"exp",
+" 정상이었다가 cycle 이 쌓이며 저항이 서"
+],
+[
+"SIP-I-9044",
+"opts",
+"하나당 전류가 늘어 EM 이 나빠진다"
+],
+[
+"SIP-A-9008",
+"stem",
+"t 이 납니다. ball 이 흡수할 수 있는 "
+],
+[
+"SIP-A-9008",
+"stem",
+" ball non-wet 이 납니다. ball"
+],
+[
+"SIP-A-9010",
+"stem",
+"합니다. 최상단 DRAM 이 60 °C 일 때"
+],
+[
+"SIP-A-9014",
+"exp",
+"0 개이며 이 경우 EM 이 지배합니다. ②는"
+],
+[
+"SIP-A-9032",
+"exp",
+" 잃었습니다. Intel 이 EMIB-T 를 "
+],
+[
+"SIP-A-9035",
+"exp",
+"닿지 못해 non-wet 이 됩니다. ①은 기"
+],
+[
+"SIP-A-9042",
+"stem",
+" °C 입니다. 스택 3 이 가장 뜨거운 원인"
+],
+[
+"FA-B-0002",
+"exp",
+"는 JESD22-A113 이 정하고, 흡습 조"
+],
+[
+"FA-B-0057",
+"title",
+"delamination 이 신뢰성에 위험한 "
+],
+[
+"FA-B-0057",
+"stem",
+" delamination 이 발견되었으나 전기"
+],
+[
+"FA-B-0058",
+"title",
+" 가장자리에서 crack 이 시작되는 이유"
+],
+[
+"FA-B-0058",
+"stem",
+"를 관찰했더니 crack 이 대부분 die 가"
+],
+[
+"FA-B-0061",
+"opts",
+"underfill 이 채워지지 않은 큰"
+],
+[
+"FA-B-0065",
+"opts",
+"SEM 이 TEM 보다 더 "
+],
+[
+"FA-B-0065",
+"exp",
+"지 봅니다. ①은 TEM 이 얇은 lamell"
+],
+[
+"FA-B-0077",
+"exp",
+"solder 의 Sn 이 Cu·Ni 와 반"
+],
+[
+"FA-B-0084",
+"opts",
+" 낮으면 전류가 함께 0 이 되어서"
+],
+[
+"FA-B-0094",
+"exp",
+"는 JESD22-A113 이 정하며, 흡습 조"
+],
+[
+"FA-B-0100",
+"title",
+"EOTPR 이 미세 패키지에 적"
+],
+[
+"FA-B-0100",
+"stem",
+"어려웠습니다. EOTPR 이 이런 미세 패키지"
+],
+[
+"FA-B-0106",
+"stem",
+" 개에서 전기적 open 이 확인되었습니다. "
+],
+[
+"FA-B-9013",
+"opts",
+"가 훨씬 느려 creep 이 크다"
+],
+[
+"FA-I-0002",
+"exp",
+" 전기적 거리에 open 이 있다는 뜻입니다."
+],
+[
+"FA-I-0018",
+"stem",
+"런데 전기적으로 open 이 확인된 다른 접합"
+],
+[
+"FA-I-0027",
+"title",
+"같은 open 이 여러 원인에서 나"
+],
+[
+"FA-I-0030",
+"opts",
+"변형이 누적돼 crack 이 자라야 해서"
+],
+[
+"FA-I-0030",
+"exp",
+" 변형이 쌓여 crack 이 생기고 자라는 누"
+],
+[
+"FA-I-0057",
+"title",
+"delamination 이 반복될 때 먼저 "
+],
+[
+"FA-I-0057",
+"stem",
+" delamination 이 lot 마다 반복"
+],
+[
+"FA-I-0066",
+"exp",
+" 상동 온도라 creep 이 활발하므로, 유지"
+],
+[
+"FA-I-0067",
+"stem",
+"ature cycling 이 모두 들어 있습니"
+],
+[
+"FA-I-0067",
+"opts",
+"HTSL 이 TC 의 예비 시"
+],
+[
+"FA-I-0082",
+"title",
+"econditioning 이 드러내는 결함"
+],
+[
+"FA-I-0082",
+"exp",
+"popcorn crack 이 생깁니다. ②는 "
+],
+[
+"FA-I-0086",
+"title",
+"HTOL 이 다른 고온 시험과"
+],
+[
+"FA-I-0086",
+"stem",
+"안 수행합니다. HTOL 이 HTSL 과 구분"
+],
+[
+"FA-I-0088",
+"exp",
+"니다. ②와 ③은 MSL 이 정하는 항목이 아"
+],
+[
+"FA-I-0107",
+"title",
+"SDL 이 마진 부족 결함에"
+],
+[
+"FA-I-0112",
+"exp",
+"②는 delayering 이 파괴 공정이라 반"
+],
+[
+"FA-I-0114",
+"title",
+"TC 에서만 crack 이 생길 때 배제되는"
+],
+[
+"FA-I-0114",
+"stem",
+"는 µbump crack 이 나왔고, 더 높은"
+],
+[
+"FA-I-9004",
+"stem",
+"Cu protrusion 이 컸습니다. EBS"
+],
+[
+"FA-I-9007",
+"stem",
+"걸었지만 hot spot 이 전혀 나타나지 않"
+],
+[
+"FA-I-9008",
+"stem",
+" 뚜렷한 hot spot 이 보였습니다. 그 "
+],
+[
+"FA-I-9010",
+"stem",
+"EOTPR 로 open 이 신호 주입점에서 "
+],
+[
+"FA-I-9011",
+"stem",
+"을 따라 미세 crack 이 보였습니다. 이것"
+],
+[
+"FA-I-9011",
+"exp",
+"면에서도 같은 crack 이 보이는지 확인해야"
+],
+[
+"FA-I-9013",
+"stem",
+"OL 유전막에 crack 이 생겼습니다. 원인"
+],
+[
+"FA-I-9013",
+"opts",
+"crack 이 die 중앙인지 "
+],
+[
+"FA-I-9013",
+"exp",
+"레에서 시작한 crack 이 단서입니다. ②·"
+],
+[
+"FA-I-9014",
+"stem",
+"를 가로지르는 crack 이 발견되었습니다. "
+],
+[
+"FA-I-9014",
+"opts",
+"crack 이 표면인지 내부인지"
+],
+[
+"FA-I-9014",
+"exp",
+"crack 은 cycle 이 쌓이며 자라 시험"
+],
+[
+"FA-I-9016",
+"stem",
+"8 입니다. 이 HTOL 이 대표하는 사용 시"
+],
+[
+"FA-I-9027",
+"exp",
+"분막이 줄어 부식·ECM 이 덜 가속되어 시험"
+],
+[
+"FA-I-9033",
+"stem",
+" 시료 수라도 한 lot 이 아니라 서로 다른"
+],
+[
+"FA-I-9033",
+"opts",
+"lot 이 많을수록 시험 시"
+],
+[
+"FA-I-9033",
+"opts",
+"lot 이 많을수록 고장률이"
+],
+[
+"FA-I-9034",
+"stem",
+"die 모서리 crack 이 생겼습니다. 가장"
+],
+[
+"FA-I-9034",
+"exp",
+"결함에서 바로 crack 이 납니다. 누적 피"
+],
+[
+"FA-I-9037",
+"exp",
+"량률이 낮은 좋은 lot 이 우연히 불합격되는"
+],
+[
+"FA-I-9040",
+"exp",
+" TC 후 추가 open 이 생기는지 보는 중"
+],
+[
+"FA-I-9041",
+"stem",
+"직으로 가르는 crack 이 의심되지만, SA"
+],
+[
+"FA-I-9041",
+"exp",
+", ③은 가는 crack 이 X-ray 대비도"
+],
+[
+"FA-A-0002",
+"exp",
+"시했고, ③은 cycle 이 늘수록 증가 속도"
+],
+[
+"FA-A-0025",
+"stem",
+"cycle 후 crack 이 IMC/solde"
+],
+[
+"FA-A-0026",
+"opts",
+"같은 lot 이 문제없었으므로 그"
+],
+[
+"FA-A-0026",
+"exp",
+"econditioning 이 정한 흡습량보다 "
+],
+[
+"FA-A-0045",
+"stem",
+"bump 에서만 open 이 늘었습니다. 적층"
+],
+[
+"FA-A-0045",
+"opts",
+"crack 이 줄어든 것 자체가"
+],
+[
+"FA-A-0045",
+"opts",
+"위치와 관계없이 open 이 고르게 는다"
+],
+[
+"FA-A-0045",
+"exp",
+"뒤집었고, ②는 open 이 모서리에만 몰린 "
+],
+[
+"FA-A-0068",
+"exp",
+" 전위차가 필요한 ECM 이 지배하며, 석출 "
+],
+[
+"FA-A-0102",
+"title",
+"LIT 와 EOTPR 이 서로 다른 위치를"
+],
+[
+"FA-A-0123",
+"title",
+"상인데 실장 후 open 이 늘 때"
+],
+[
+"FA-A-0123",
+"stem",
+"에서 µbump open 이 생겼고, 위치는 "
+],
+[
+"FA-A-0123",
+"exp",
+" 걸리면 벌어져 open 이 됩니다. SAT·"
+],
+[
+"FA-A-0124",
+"exp",
+"온도가 함께 필요한 EM 이 HTOL 에서만 "
+],
+[
+"FA-A-0129",
+"stem",
+"231 개로 0 fail 이 나올 때 0.5 "
+],
+[
+"FA-A-0130",
+"exp",
+"안 되면 경계 voxel 이 void 와 금속"
+],
+[
+"FA-A-9001",
+"stem",
+"TOL 중앙 수명 t50 이 접합부 150 °"
+],
+[
+"FA-A-9004",
+"stem",
+"bump 피로 crack 이 보였습니다. 옳은"
+],
+[
+"FA-A-9004",
+"stem",
+" 에서 시작한 crack 이, 나머지에서는 µ"
+],
+[
+"FA-A-9009",
+"exp",
+" 쌓이므로 burn-in 이 초기 고장을 많이"
+],
+[
+"FA-A-9019",
+"stem",
+"EM 이 의심되는 전원 µ"
+],
+[
+"FA-A-9023",
+"exp",
+"나타나며, ②는 open 이 아니라 short"
+],
+[
+"FA-A-9027",
+"opts",
+"MSL 3 이 MSL 2a 보다"
+],
+[
+"FA-A-9037",
+"exp",
+", ④는 전력 cycle 이 열기계 피로도 만"
+],
+[
+"FA-A-9041",
+"stem",
+"bump 에서 crack 이 났습니다. 같은 "
+],
+[
+"FA-A-9041",
+"opts",
+"µbump crack 이 먼저 생겨 박리를"
+],
+[
+"FA-A-9041",
+"opts",
+"박리와 crack 이 같은 순간에 생겼"
+],
+[
+"FA-A-9041",
+"opts",
+"변형률이 커져 crack 이 났다"
+],
+[
+"FA-A-9041",
+"exp",
+"변형률이 커져 crack 이 빨라집니다. 대책"
+],
+[
+"FA-A-9048",
+"stem",
+"정했더니 hot spot 이 수 mm 로 퍼져"
+],
+[
+"FA-A-9051",
+"title",
+"econditioning 이 만든 TC 고장의"
+],
+[
+"FA-A-9058",
+"exp",
+"스트레스인 burn-in 이 기계적 chipp"
+],
+[
+"PROD-B-0028",
+"exp",
+"면 낮은 쪽 위의 TIM 이 두꺼워지거나 접촉"
+],
+[
+"PROD-B-0132",
+"exp",
+"NCF 는 Samsung 이 HBM3E 12H"
+],
+[
+"PROD-B-9002",
+"stem",
+"seudo channel 이 독립 채널과 무엇"
+],
+[
+"PROD-B-9013",
+"exp",
+"템 차원의 대체로 PPR 이 아니고, ④처럼 "
+],
+[
+"PROD-I-9004",
+"stem",
+"5 W/m·K 인 TIM 이 더 채웁니다. H"
+],
+[
+"PROD-I-9023",
+"stem",
+" 30 µm 낮은 lot 이 있습니다. 열 관"
+],
+[
+"PROD-I-9023",
+"opts",
+"이 큰 SoC 위 TIM 이 두꺼워지거나 떠서"
+],
+[
+"PROD-I-9023",
+"opts",
+" 에 닿지 않아 DRAM 이 즉시 고장 난다"
+],
+[
+"PROD-I-9023",
+"exp",
+"②는 과장입니다. TIM 이 채우므로 즉시 고"
+],
+[
+"PROD-I-9023",
+"exp",
+"낮으면 HBM 쪽 TIM 이 두꺼워지지만 전력"
+],
+[
+"PROD-A-9008",
+"exp",
+"fresh 하는 DRFM 이 대책입니다. ②라"
+],
+[
+"SIP-B-9001",
+"exp",
+"와 core1~core7 이 가지므로 1 + "
+],
+[
+"DRAM-A-0001",
+"stem",
+" 개념 수준에서 DRFM 이 RFM 보다 유리"
+],
+[
+"DRAM-A-0001",
+"stem",
+"행의 이웃 행을 DRAM 이 추가로 refre"
+],
+[
+"DRAM-A-0001",
+"opts",
+"refresh 총량이 0 이 된다"
+],
+[
+"DRAM-A-0024",
+"exp",
+"이상 오류는 신드롬이 0 이 아니어서 통과하지"
+],
+[
+"DRAM-A-0046",
+"exp",
+"4 ÷ 32 = 2 배) 이 셀을 repair"
+],
+[
+"DRAM-B-0069",
+"exp",
+"수 있어 die와 1:1 이 아닙니다. ③과 "
+],
+[
+"DRAM-I-0123",
+"exp",
+" 경우는 드물며 보통 0 이 아닙니다."
+],
+[
+"DRAM-I-0123",
+"exp",
+"의 신드롬이 상쇄되어 0 이 되는 경우는 드물"
+],
+[
+"DRAM-I-0123",
+"exp",
+"SEC 부호는 0 이 아닌 신드롬을 하"
+],
+[
+"DRAM-I-0162",
+"exp",
+" 입니다. 진폭이 1/3 이 되면 같은 잡음의"
+],
+[
+"DRAM-B-9015",
+"exp",
+"④는 bank group 이 같은 I/O 핀을"
+],
+[
+"DRAM-I-9004",
+"stem",
+"e를 허용합니다. tWR 이 필요한 이유로 옳"
+],
+[
+"DRAM-I-9004",
+"stem",
+"이터가 들어온 뒤 tWR 이 지나야 prech"
+],
+[
+"DRAM-I-9006",
+"exp",
+" 보낼 때도 tCCD_L 이 적용된다고 본 것"
+],
+[
+"DRAM-I-9012",
+"stem",
+"듈에서도 bit flip 이 재현되었습니다. "
+],
+[
+"DRAM-I-9014",
+"stem",
+" 행에서 bit flip 이 관찰되었고, 그 "
+],
+[
+"DRAM-I-9016",
+"stem",
+"고 있습니다. JEDEC 이 HBM3에 on-"
+],
+[
+"DRAM-I-9037",
+"stem",
+"격이 없습니다. tWTR 이 필요한 이유로 옳"
+],
+[
+"DRAM-A-9017",
+"exp",
+"수 있습니다. JEDEC 이 HBM3 에 sy"
+],
+[
+"DRAM-A-9020",
+"opts",
+"이 7.5 ps로 1/4 이 된다"
+],
+[
+"DRAM-A-9020",
+"exp",
+"다. ④는 저항이 1/4 이 된다고 본 계산입"
+],
+[
+"DRAM-A-9022",
+"stem",
+"항상 tRCD + tCL 이 걸립니다. 측정된"
+],
+[
+"DRAM-A-9022",
+"stem",
+" + tRCD + tCL 이 걸립니다. clo"
+],
+[
+"DRAM-A-9022",
+"opts",
+"en-page — hit 이 하나라도 있으면 "
+],
+[
+"DRAM-A-9030",
+"exp",
+"은 요청은 row hit 이 거의 없어 여러 "
+],
+[
+"DRAM-A-9041",
+"stem",
+"실험에서 bit flip 이 난 행의 거리별 "
+],
+[
+"DRAM-A-9047",
+"exp",
+"니다. ③은 기댓값이 0 이 아닙니다. ①은 "
+],
+[
+"DRAM-A-9053",
+"stem",
+"마다 bank group 이 4 개입니다. 연"
+],
+[
+"DRAM-A-9053",
+"exp",
+"다른 bank group 이 된다고 본 값입니"
+],
+[
+"DRAM-A-9054",
+"exp",
+"니다. ①은 timing 이 아니라 보존 시간"
+],
+[
+"MET-I-9002",
+"opts",
+" 닿으면 접촉 저항이 0 이 되어 측정이 정확"
+],
+[
+"MET-I-9002",
+"exp",
+" 어떤 접촉도 저항이 0 이 되지 않으며 pa"
+],
+[
+"MET-B-0056",
+"exp",
+" 뿐입니다. ④는 SEM 이 표면에서 나오는 "
+],
+[
+"MET-B-0066",
+"opts",
+"IR 이 Si 표면에서만 "
+],
+[
+"MET-B-0075",
+"opts",
+"ad 의 접촉 저항이 0 이 되기 때문"
+],
+[
+"MET-B-0075",
+"exp",
+". ③의 접촉 저항은 0 이 되지 않습니다. "
+],
+[
+"MET-I-0092",
+"exp",
+"지지 않았으므로 open 이 아닙니다. ④는 "
+],
+[
+"MET-I-0100",
+"opts",
+"underfill 이 한 방향으로만 치"
+],
+[
+"MET-I-0120",
+"exp",
+" 에 닿지 못해 open 이 됩니다. copl"
+],
+[
+"MET-I-0131",
+"exp",
+"판정되는 overkill 이 생깁니다. 세정 "
+],
+[
+"MET-I-0133",
+"exp",
+" 커져 retention 이 짧아지므로, 95"
+],
+[
+"MET-I-0140",
+"opts",
+"과 양품 overkill 이 모두 함께 줄어든"
+],
+[
+"MET-I-0140",
+"exp",
+"판정되는 overkill 이 늘어납니다. ②는"
+],
+[
+"MET-A-0061",
+"opts",
+"결정계수가 1 이 아니므로 상관을 "
+],
+[
+"MET-A-0061",
+"exp",
+"다. ③은 잔여 open 이 보여 주는 다른 "
+],
+[
+"MET-A-0061",
+"exp",
+"afer 에서도 open 이 0.3 % 남아 "
+],
+[
+"MET-A-0076",
+"opts",
+"open 이 TTV 를 키우는"
+],
+[
+"MET-A-0076",
+"exp",
+" ④는 접합 후 open 이 그 전에 연삭된 "
+],
+[
+"MET-A-0101",
+"opts",
+"관측 Cpk 1.33 이 실제 공정 능력이"
+],
+[
+"MET-B-9011",
+"exp",
+"잘 보이지 않으며 SAM 이 유리합니다."
+],
+[
+"MET-B-9012",
+"exp",
+" − p)^n 이라, n 이 커질수록 1 에 "
+],
+[
+"MET-B-9016",
+"opts",
+"open 이 생기면 chain"
+],
+[
+"MET-B-9018",
+"exp",
+" 아닙니다. ④는 SAM 이 X-ray 를 쓰"
+],
+[
+"MET-I-9014",
+"exp",
+"이므로 작은 값 1.33 이 Cpk 입니다. "
+],
+[
+"MET-I-9019",
+"opts",
+"원재료 wafer lot 이 바뀐 영향"
+],
+[
+"MET-I-9023",
+"stem",
+"치지 않으려면 voxel 이 void 지름의 "
+],
+[
+"MET-I-9026",
+"opts",
+"있으면 Si 굴절률이 0 이 되므로"
+],
+[
+"MET-I-9026",
+"opts",
+"IR 이 금속에서만 투과되"
+],
+[
+"MET-I-9026",
+"exp",
+"니다. ②는 굴절률이 0 이 되는 일은 없습니"
+],
+[
+"MET-I-9030",
+"opts",
+"줄어드는 손실 0.006 이 늘어나는 손실 0"
+],
+[
+"MET-A-9008",
+"opts",
+"R 이 아직 UCL 안이"
+],
+[
+"MET-A-9008",
+"exp",
+" die 사이 차이는 R 이 아니라 X̄ 의 "
+],
+[
+"MET-A-9008",
+"exp",
+", 평균이 그대로인데 R 이 커지면 die 안"
+],
+[
+"MET-A-9013",
+"title",
+"에서도 WLI 와 AFM 이 다른 recess"
+],
+[
+"MET-A-9014",
+"exp",
+" bump 에서 open 이 납니다. ②는 높"
+],
+[
+"MET-A-9015",
+"stem",
+"seudo channel 이 실패했고 나머지 "
+],
+[
+"MET-A-9015",
+"opts",
+"Y 불량으로 채널 6·7 이 실패했다"
+],
+[
+"MET-A-9015",
+"opts",
+"위에 쌓인 die 5–8 이 모두 불량이다"
+],
+[
+"MET-A-9015",
+"exp",
+"채널 6·7 이 die 4 에 속"
+],
+[
+"MET-A-9020",
+"opts",
+"24 시간 — 불량이 0 이 될 때까지 계속한"
+],
+[
+"MET-A-9020",
+"exp",
+"니다. ①은 바닥값이 0 이 되지 않으므로 끝"
+],
+[
+"MET-A-9021",
+"exp",
+"% 는 연삭·reveal 이 새로 만든 결함이"
+],
+[
+"MET-A-9022",
+"opts",
+"밀집 영역 dishing 이 원인 — 밀집 영"
+],
+[
+"MET-A-9027",
+"stem",
+" 5 개로 계산해 1.8 이 나왔고, 다음 주"
+],
+[
+"MET-A-9030",
+"exp",
+" 검출률에서 출하 ppm 이 커지므로 앞단 수"
+],
+[
+"MET-A-9032",
+"exp",
+" map 과 불량 map 이 같은 사분면에서 "
+],
+[
+"MET-A-9037",
+"exp",
+" 좁아져 overkill 이 줄어듭니다."
+],
+[
+"MET-A-9040",
+"exp",
+" 낮아 retention 이 2 배 길게 나오"
+],
+[
+"MET-A-9041",
+"stem",
+"1–6 은 모든 lane 이 통과했고 core"
+],
+[
+"MET-A-9041",
+"exp",
+"1–6 도 lane 17 이 실패해야 합니다."
+],
+[
+"MET-A-9041",
+"exp",
+"7 내부 loopback 이 통과하므로 cor"
+],
+[
+"WARP-I-0029",
+"exp",
+" 산화막·저유전 BEOL 이 됩니다."
+],
+[
+"WARP-I-0029",
+"exp",
+"단입니다. ④는 BEOL 이 다른 두 층보다 "
+],
+[
+"WARP-I-0029",
+"exp",
+"m²·K/W 로 BEOL 이 가장 큽니다. ③"
+],
+[
+"WARP-I-0059",
+"exp",
+"이 떨어져 hotspot 이 덜 완화됩니다. "
+],
+[
+"WARP-B-0080",
+"opts",
+"TIM 이 전기적으로 sho"
+],
+[
+"WARP-B-0084",
+"exp",
+"나라도 retention 이 깨지면 데이터 오"
+],
+[
+"WARP-I-0274",
+"opts",
+"반복 휨으로 TIM 이 밀려나 빈 곳이 "
+],
+[
+"WARP-I-0274",
+"opts",
+"TIM 이 두꺼워지면서 열용"
+],
+[
+"WARP-I-0274",
+"opts",
+"TIM 이 굳어 전기가 통하"
+],
+[
+"WARP-I-0274",
+"exp",
+"계없습니다. ④는 TIM 이 전류 경로가 아니"
+],
+[
+"WARP-I-0274",
+"exp",
+"밀려나는 pump-out 이 생기고, 중앙에 "
+],
+[
+"WARP-I-0274",
+"exp",
+" 바뀌면 그리스형 TIM 이 펌프질하듯 가장자"
+],
+[
+"WARP-A-0178",
+"stem",
+" 시료를 분해하니 TIM 이 가장자리로 몰려 "
+],
+[
+"WARP-A-0178",
+"opts",
+"TIM 이 산화되어 열전도율"
+],
+[
+"WARP-A-0178",
+"opts",
+"로 die 에 crack 이 생겨 열 경로가 "
+],
+[
+"WARP-A-0178",
+"opts",
+"TIM 이 경화되며 두꺼워져"
+],
+[
+"WARP-A-0178",
+"exp",
+". ②의 산화로는 TIM 이 가장자리로 몰린 "
+],
+[
+"WARP-A-0178",
+"exp",
+" 의 반복 휨으로 TIM 이 밀려나는 pump"
+],
+[
+"WARP-A-0178",
+"exp",
+"오르고, 분해 시 TIM 이 가장자리로 몰려 "
+],
+[
+"WARP-A-0197",
+"opts",
+"안 1 이 Cu 열전도율이 "
+],
+[
+"WARP-A-0208",
+"opts",
+"SoC 쪽 TIM 이 두꺼워져 SoC "
+],
+[
+"THERM-B-9005",
+"exp",
+"특성과 retention 이 이 온도에 따라 "
+],
+[
+"THERM-B-9007",
+"stem",
+"HBM 패키지에는 TIM 이 두 곳에 들어갑니"
+],
+[
+"THERM-B-9010",
+"exp",
+" 더 올라 hotspot 이 됩니다. ②는 열"
+],
+[
+"THERM-I-9025",
+"stem",
+"역폭 throttling 이 있습니다. 두 대"
+],
+[
+"THERM-I-9029",
+"title",
+"상변화 TIM 이 그리스보다 pum"
+],
+[
+"THERM-I-9029",
+"stem",
+"밀려나는 pump-out 이 문제였습니다. 상"
+],
+[
+"THERM-I-9029",
+"exp",
+" 틀립니다. ③은 PCM 이 수지·왁스 계열이"
+],
+[
+"THERM-I-9029",
+"exp",
+"리스보다 pump-out 이 덜합니다. ②는 "
+],
+[
+"THERM-A-9006",
+"exp",
+"극 열저항 전체가 1/3 이 된다고 본 값, "
+],
+[
+"THERM-A-9015",
+"exp",
+", BLT 2배로 TIM 이 0.7 K/W 가"
+],
+[
+"THERM-A-9026",
+"title",
+"DRAM 이 정하는 custo"
+],
+[
+"THERM-A-9034",
+"exp",
+"태에서 retention 이 부족해 비트 오류"
+],
+[
+"THERM-A-9038",
+"opts",
+"시료 1 이 크게 오른다, v"
+],
+[
+"THERM-I-9041",
+"stem",
+"M1 의 pump-out 이 문제였습니다. 후"
+],
+[
+"THERM-I-9041",
+"opts",
+" 늘리면 pump-out 이 없다"
+],
+[
+"THERM-I-9041",
+"exp",
+" 방향 k 는 인듐 80 이 그래파이트 20 "
+],
+[
+"THERM-A-9043",
+"exp",
+"①은 센서와 core 1 이 같다고 본 값입니"
+],
+[
+"THERM-A-9043",
+"exp",
+"+2.5 K(core 1 이 더 높음)입니다."
+],
+[
+"THERM-A-9043",
+"exp",
+"서 −4 K(core 1 이 센서보다 낮음),"
+],
+[
+"WARP-A-0246",
+"opts",
+"TIM 이 두꺼울수록 열저항"
+],
+[
+"WARP-A-0246",
+"opts",
+"d 를 밀어 모든 TIM 이 같은 두께로 얇아"
+],
+[
+"WARP-A-0246",
+"opts",
+"의 낮은 스택 위 TIM 이 두껍게 남아 열저"
+],
+[
+"WARP-A-0246",
+"exp",
+"낮은 스택 위에는 TIM 이 덜 압축되어 두껍"
+]
+]
