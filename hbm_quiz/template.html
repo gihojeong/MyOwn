@@ -708,7 +708,7 @@ function f_bs(s, p) {
   annotTo(s, tsv[0], sy + 0.75, 0, "TSV Cu — reveal 로 뒷면에 드러난 상태", MX.cu);
   if (step === 4) annot(s, 1, "CMP: SiN stop 으로 희생 SiO2 전량 제거", K.mint);
   // 우측: 공정 순서
-  const names2 = ["TSV reveal", "SiO2 증착", "SiN 증착", "SiO2 희생막", "CMP (SiN stop)", "Ti / Cu seed", "Ni plating", "seed etching"];
+  const names2 = ["TSV reveal", "SiO2 증착", "SiN 증착", NO ? "SiO2 증착 (2차)" : "SiO2 희생막", NO ? "CMP" : "CMP (SiN stop)", "Ti / Cu seed", "Ni plating", "seed etching"];
   ttl(s, "공정 순서", RC.x, TOP - 0.02, 2.0);
   names2.forEach((t, i) => {
     const cur = i === step, yy = TOP + 0.34 + i * 0.44;
