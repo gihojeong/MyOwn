@@ -1299,9 +1299,6 @@
     "f_hcb",
     {
      "pitch_um": 3,
-     "tol_nm": 100,
-     "off_nm": 40,
-     "dish_nm": 3,
      "flag": "주제: 직접 접합 형태"
     }
    ],
@@ -1617,8 +1614,6 @@
     "f_hcb",
     {
      "pitch_um": 6,
-     "tol_nm": 100,
-     "off_nm": 40,
      "dish_nm": 5,
      "flag": "주제: Cu recess"
     }
@@ -1649,9 +1644,7 @@
     "f_hcb",
     {
      "pitch_um": 6,
-     "tol_nm": 100,
      "off_nm": 60,
-     "dish_nm": 3,
      "flag": "주제: overlay 성분"
     }
    ],
@@ -2167,9 +2160,7 @@
     "f_hcb",
     {
      "pitch_um": 4,
-     "tol_nm": 200,
      "off_nm": 400,
-     "dish_nm": 3,
      "flag": "주제: pad 겹침 면적"
     }
    ],
@@ -3561,9 +3552,6 @@
     "f_hcb",
     {
      "pitch_um": 10,
-     "tol_nm": 200,
-     "off_nm": 60,
-     "dish_nm": 3,
      "flag": "주제: HCB 접점 밀도"
     }
    ],
@@ -3875,9 +3863,7 @@
     "f_hcb",
     {
      "pitch_um": 6,
-     "tol_nm": 100,
      "off_nm": 80,
-     "dish_nm": 3,
      "flag": "주제: overlay 성분 판별"
     }
    ],
@@ -4736,9 +4722,7 @@
     "f_hcb",
     {
      "pitch_um": 6,
-     "tol_nm": 100,
      "off_nm": 80,
-     "dish_nm": 3,
      "flag": "주제: W2W vs D2W 정렬"
     }
    ],
@@ -8661,6 +8645,7 @@
     {
      "ref": "beol-up",
      "sign": 1,
+     "hideNames": true,
      "flag": "주제: 측정 자세와 명칭"
     }
    ],
@@ -8675,6 +8660,9 @@
      "측정 형상",
      "중앙 볼록"
     ]
+   ],
+   "vx": [
+    "W_FIG_UNKNOWN_KEY"
    ]
   },
   {
