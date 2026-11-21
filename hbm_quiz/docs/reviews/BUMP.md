@@ -208,3 +208,8 @@
 결과: BUMP 135 → 129 (B 40 / I 51 / A 38). validate --gate E 0 · W 0.
 
 남은 우려: XD 개념 공백 Sn whisker 는 우선순위 낮음·지시 "보강 없음" 에 따라 미출제.
+
+## µbump pitch 기준 반영 (2026-11-21)
+BJ 지정(STANDARDS 2.4): core die 사이 µbump pitch 25 µm, base die 아래 면 55 µm(JEDEC). 현행 pitch 를 40 µm 로 두던 문항을 25 µm 기준으로 재설계하고 값은 스크립트로 재계산.
+- BUMP-I-9002: 25 → 20 µm, 면적당 bump 수 (25/20)² = 1.56배 (오답 0.64 역비 · 1.25 한 방향 · 1.95 세제곱)
+- BUMP-A-9023: 25 → 16 µm, s = 0.64 → EM 수명 s⁴ = 0.17배, full-IMC s² = 0.41배
