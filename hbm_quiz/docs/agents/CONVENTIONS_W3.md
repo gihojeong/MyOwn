@@ -14,7 +14,7 @@
 |---|---|---|---|
 | Si die (core 30–60 µm) | 0.2–0.5 | 40 µm ÷ 130 W/m·K ≈ **0.3** | k_Si 120–150 (STANDARDS 2.4). 간극 열저항에서 거의 무시됨(≈ 2–3 %) |
 | BEOL(배선층, 수 µm) | 1–4 | 5 µm ÷ 2 W/m·K = **2.5** | low-k·SiO₂(1.4) 와 Cu 배선의 혼합 유효 k 1–3 가정 |
-| **µbump 접합층**(TC-NCF·MR-MUF, solder µbump + NCF/EMC/underfill) | **3–20** | 10 µm ÷ 1.0 W/m·K = **10** | 간극 5–15 µm(STANDARDS 2.4), 수지 k 0.2–0.7(NCF·underfill)·0.7–3(EMC/MUF), µbump·dummy bump 면적률 수–20 % 의 병렬·확산 혼합 → 유효 k ≈ 0.5–2 W/m·K. 수지 단독(10 µm ÷ 0.4 = 25)은 상한 밖 — bump 가 없는 영역의 국부값으로만 쓴다 |
+| **µbump 접합층**(TC-NCF·MR-MUF, solder µbump + NCF/EMC/underfill) | **3–20** | 10 µm ÷ 1.0 W/m·K = **10** | 간극: 실제 core die 사이 joint gap 은 6.5–7.5 µm(STANDARDS 2.4, 2026-11-21 BJ 지정) — 대표 계산값 10 µm 는 설정값이며 재점검 대상, 수지 k 0.2–0.7(NCF·underfill)·0.7–3(EMC/MUF), µbump·dummy bump 면적률 수–20 % 의 병렬·확산 혼합 → 유효 k ≈ 0.5–2 W/m·K. 수지 단독(10 µm ÷ 0.4 = 25)은 상한 밖 — bump 가 없는 영역의 국부값으로만 쓴다 |
 | **HCB 접합 계면층**(bond pad + bonding 유전막, BEOL 제외) | **0.2–2** | **1** | bonding 유전막(SiO₂·SiCN, 합계 1–3 µm, k ≈ 1.4)에 Cu pad(면적률 10–30 %)가 병렬. 유전막 단독 1–3 µm ÷ 1.4 ≈ 0.7–2, Cu pad 병렬로 그 이하. Si/유전막 계면 경계 저항(≈ 0.001–0.01)은 무시 가능 |
 | 간극 합계 — µbump 방식 | 8–20 | **13** | 0.3 + 2.5 + 10 ≈ 12.8. 이 값에서 접합층이 약 78 % 로 지배 |
 | 간극 합계 — HCB | 3–5 | **5** | 0.3 + 2.5 + 1–2 ≈ 4–5. 지배 층이 BEOL 로 바뀐다 |
