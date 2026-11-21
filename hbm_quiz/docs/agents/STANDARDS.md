@@ -1,6 +1,7 @@
 # HBM 이해도 평가 — 문항 품질 기준서 (STANDARDS)
 
 - 소유: EA (Editor-in-chief Agent) · 적용 대상: `data/NN_CODE.json` 전 문항 · 자동 검사: `tools/validate.py`
+- 변경 이력: 2026-11-21 조사 사전 HBM 을 받침 있음(에이치비엠)으로 정정, 검사기가 `f_therm.core` 를 N단과 비교.
 - 변경 이력: 2026-11-20 FACT §9 반영 — 부록 B 참조(HBM3 단수, 패키지 높이 비확정, HBM4 하위 호환, JESD47 조건, HCB pitch·휨, 105 °C).
 - 변경 이력: 2026-11-20 DA Phase 1 반영 — 부록 A 를 LAYOUT_RULES §3–4 와 일치(hideResult 의무, f_bond `dish` opt-in, f_sip `lines`, f_therm `core`, f_table·f_wafermap), 질문 마지막 문장 ≤ 90자, 수식 띄어쓰기, `metrics: []` 키 유지.
 - 변경 이력: 2026-11-20 W0.5 — WARP 를 WARP(Warpage 와 기계적 응력)·THERM(열 설계와 방열, `data/13_THERM.json`, legacy_prefix WARP)으로 분할. Smile/Cry 규약 확정.
@@ -140,7 +141,7 @@
 
   | 받침 있음 → 이 / 은 / 을 / 과 | 받침 없음 → 가 / 는 / 를 / 와 |
   |---|---|
-  | seam(심), scallop(스캘럽), dishing, erosion, delamination, crack, open, chipping, bonding, underfill(언더필), retention, channel, DRAM(디램), SiCN, TIM(팀), reveal(리빌), smile | void(보이드), kerf, warpage, residue, short(쇼트), seed, bump(범프), pitch, pad(패드), pillar, solder, barrier, interposer, overlay, bridge, tape, TSV, IMC, CMP, NCF, HBM, HCB, Tg, EMC, ECC, PHY |
+  | seam(심), scallop(스캘럽), dishing, erosion, delamination, crack, open, chipping, bonding, underfill(언더필), retention, channel, DRAM(디램), HBM(에이치비엠), SiCN, TIM(팀), reveal(리빌), smile | void(보이드), kerf, warpage, residue, short(쇼트), seed, bump(범프), pitch, pad(패드), pillar, solder, barrier, interposer, overlay, bridge, tape, TSV, IMC, CMP, NCF, HCB, Tg, EMC, ECC, PHY |
 
   예: "void가 생긴다", "seam이 남는다", "warpage를 줄인다", "Kirkendall void는".
 - 영문 용어 표기: 공정 일반명사는 소문자(void, seam, warpage, underfill, reveal), 약어·고유명사는 정해진 대소문자(TSV, HBM3E, CoWoS-L, MR-MUF, TC-NCF, JESD22-A104). 같은 문항 안에서 한글/영문 혼용 금지(“Void”와 “void”, “Warpage”와 “휨”).

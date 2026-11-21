@@ -123,7 +123,7 @@ EN_BATCHIM = {"void": 0, "kerf": 0, "warpage": 0, "residue": 0, "delamination": 
               "pad": 0, "pillar": 0, "solder": 0, "flux": 0, "barrier": 0, "liner": 0, "interposer": 0, "entrapment": 0,
               "non-wet": 1, "non-bonding": 1, "bonding": 1, "overlay": 0, "bridge": 0, "dicing": 1, "stress": 0,
               "tape": 0, "glue": 0, "debonding": 1, "reveal": 1, "hcb": 0, "kgd": 0, "leakage": 0, "retention": 1,
-              "refresh": 0, "channel": 1, "buffer": 0, "base": 0, "hbm": 0, "dram": 1, "tg": 0, "emc": 0, "muf": 0,
+              "refresh": 0, "channel": 1, "buffer": 0, "base": 0, "hbm": 1, "dram": 1, "tg": 0, "emc": 0, "muf": 0,
               "tcb": 0, "sicn": 1, "smile": 1, "cry": 0, "lid": 0, "tim": 1, "ecc": 0, "phy": 0}
 EN_JOSA = re.compile(r"(?<![A-Za-z])([A-Za-z][A-Za-z\-]*)\s?(이|가|은|는|을|를|과|와)(?=[\s,.)])")
 TOK = re.compile(r"[A-Za-z][A-Za-z0-9\-/]*|\d+(?:\.\d+)?|[가-힣]+")
@@ -491,13 +491,16 @@ def check_item(q, code, join, issues, legacy=()):
         add("W_EXP_FORMULA_SPACE", "지수는 e-3 표기(×10^ 금지)")
     if q["k"] == 1:
         bad, extra, leak = [], [], []
+        pq = dict(p)
+        if name == "f_therm" and "core" in p:
+            pq["n"] = p["core"]  # DA Phase 1: core = core die 수(n = core+1). 지문의 N단과 비교
         for kk in spec["q"]:
             ctx_rx = K1_CTX.get((name, kk))
-            if kk not in p:
+            if kk not in pq:
                 if ctx_rx and re.search(ctx_rx, stem, re.I):
                     bad.append(f"{kk}=기본값")
                 continue
-            v = p[kk]
+            v = pq[kk]
             if isinstance(v, bool) or not isinstance(v, (int, float)):
                 continue
             if name == "f_tsv" and kk == "ar":
