@@ -1757,7 +1757,8 @@ function lineChart(pts){
 
 /* ══════════ 시작(시험 구성) 화면 ══════════ */
 function renderStart(){
-  stopTimer(); { const c = document.getElementById("clock"); if (c) c.style.display = "none"; }   // 구성 화면에는 타이머 칩을 두지 않는다 document.body.classList.add("scrollable"); document.documentElement.classList.add("sc");
+  stopTimer(); { const c = document.getElementById("clock"); if (c) c.style.display = "none"; }   // 구성 화면에는 타이머 칩을 두지 않는다
+  document.body.classList.add("scrollable"); document.documentElement.classList.add("sc");
   const p = pool(), maxN = p.length;
   const byLv = ["B","I","A"].map(lv=>p.filter(o=>o.q.lv===lv).length);
   const counts = [10, 20, 30, 50].filter(n=>n<maxN);
