@@ -13,7 +13,7 @@
 | **W0.5** (완료) | EA | WARP → WARP + THERM 파일 분할 (승인됨) | `data/13_THERM.json` (`legacy_prefix: ["WARP"]`), 이관 id `docs/reviews/_w05_split_moved_ids.json` | build·smoke 통과(14 분야) |
 | **W1** (완료) (병렬, 읽기 전용) | NUM, FACT, XD | 계산 재검증 · 사실 검증 · 교차분야 사전 점검 | `docs/reviews/num/CODE.md`, `docs/reviews/_facts.md`, `docs/reviews/xd/CODE.md` | W0 |
 | **W2** (병렬) | 분야 에이전트 14 | 자기 파일 재편집 + 신규 출제 | `data/NN_CODE.json`, `docs/reviews/CODE.md` | W1 산출물 (늦으면 W2 를 먼저 시작하고 도착 시 반영) |
-| **W3** | XD | 교차분야 사후 점검(중복·용어·사실 충돌) | `docs/reviews/_xd_post.md` → 해당 분야 에이전트가 수정 | W2 전 분야 게이트 통과 |
+| **W3** | XD | 교차분야 사후 점검(중복·용어·사실 충돌). 용어 점검에 **front-to-back 적층 방향**(STANDARDS 2.5: 위 die 앞면 µbump ↔ 아래 die 뒷면 TSV pad, face-to-face·back-to-back 서술 금지) 포함 — TSV·BSP·BUMP·COW·PROD·SIP 전수 | `docs/reviews/_xd_post.md` → 해당 분야 에이전트가 수정 | W2 전 분야 게이트 통과 |
 | **W4** | EA | Phase 2 기계적 일괄 처리(§6) + 최종 표본 QA | `docs/reviews/_auto_final.md`, `docs/reviews/EA_final.md` | W3 반영 완료 |
 
 DA(디자인)는 전 단계에 걸쳐 `template.html` 을 소유하며 EA 와 `EA_to_DA.md` / `DA_to_EA.md` 로 조율한다.

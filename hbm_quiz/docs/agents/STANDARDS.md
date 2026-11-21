@@ -1,6 +1,7 @@
 # HBM 이해도 평가 — 문항 품질 기준서 (STANDARDS)
 
 - 소유: EA (Editor-in-chief Agent) · 적용 대상: `data/NN_CODE.json` 전 문항 · 자동 검사: `tools/validate.py`
+- 변경 이력: 2026-11-21 용어 규약에 front-to-back 적층 방향 추가(TSV-B-0078 정정 계기).
 - 변경 이력: 2026-11-21 조사 사전 HBM 을 받침 있음(에이치비엠)으로 정정, 검사기가 `f_therm.core` 를 N단과 비교.
 - 변경 이력: 2026-11-20 FACT §9 반영 — 부록 B 참조(HBM3 단수, 패키지 높이 비확정, HBM4 하위 호환, JESD47 조건, HCB pitch·휨, 105 °C).
 - 변경 이력: 2026-11-20 DA Phase 1 반영 — 부록 A 를 LAYOUT_RULES §3–4 와 일치(hideResult 의무, f_bond `dish` opt-in, f_sip `lines`, f_therm `core`, f_table·f_wafermap), 질문 마지막 문장 ≤ 90자, 수식 띄어쓰기, `metrics: []` 키 유지.
@@ -71,6 +72,7 @@
 
 ### 2.5 용어 규약 (분야 간 통일 — 위반은 교차분야 검사에서 E)
 - **N단 (N-Hi)** = core DRAM die N 장 + base die 1 장. 접합 계면(간극) 수 = **N** (base–core1 포함). "die 수" 라고 쓸 때는 base 포함 여부를 지문에 적는다. "12단 → 간극 11 개" 처럼 base 를 빼고 세는 서술은 금지.
+- **적층 방향 (front-to-back)**: HBM core die 는 회로(BEOL)면이 아래를 향하게 쌓는다. 접합은 **위 die 앞면(BEOL 쪽) µbump ↔ 아래 die 뒷면 backside pad(TSV 끝)** 이다. base die 도 앞면이 아래(interposer 쪽)를 향하고, base 의 뒷면 TSV pad 가 core1 앞면 µbump 와 만난다. 최상단 core die 는 위에 접합할 die 가 없어 TSV·backside pad 가 없다(대개 더 두껍게 둔다). "앞면끼리(face-to-face)", "뒷면끼리" 접합 서술은 HBM core 적층에 쓰지 않는다(HCB 도 같은 방향).
 - **스택 높이** = base die + N × (core die + 간극) (+ 최상단 mold 가 있으면 따로 명시). 최상단 core die 두께가 다르면 따로 준다.
 - **Warpage 명칭(Smile / Cry)**: 이 문항집은 **"측정 자세를 그대로 둔 채 위에서 내려다본 형상"** 으로 부른다. 중앙이 기준면(chuck)에서 멀어진 볼록(∩) = **Cry (convex)**, 중앙이 기준면에 가까워진 오목(∪) = **Smile (concave)**. 자세(bump 면 아래 / BEOL 면 위)는 반드시 지문에 적고, die 자체의 휨 방향을 물을 때는 "BEOL 면 기준 볼록/오목" 으로 따로 묻는다. **(2026-11-20 오케스트레이터 승인으로 확정.)** 그림 `f_warp` 표는 DA Phase 1 에서 이 규약으로 교체되었다(sign 1 = ∩ = Cry).
 - 공법 명칭: **TC-NCF**, **MR-MUF**, **HCB (hybrid copper bonding, Cu–Cu hybrid bonding)**. "TCB" 는 장비 방식(열압착) 이름이고 NCF/NCP/MUF 와 결합해 쓴다.
