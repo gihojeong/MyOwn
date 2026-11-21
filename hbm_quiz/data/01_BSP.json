@@ -490,7 +490,7 @@
    "id": "BSP-B-0078",
    "lv": "B",
    "title": "wafer 두께를 줄이는 연삭 공정의 이름",
-   "stem": "TSV를 품은 775 µm 두께의 wafer를 carrier에 붙인 뒤 회전하는 다이아몬드 휠로 뒷면을 갈아 수십 µm까지 얇게 만듭니다. 이 공정을 부르는 이름은 무엇입니까?",
+   "stem": "TSV를 품은 두께 약 0.78 mm의 300 mm wafer를 carrier에 붙인 뒤 회전하는 다이아몬드 휠로 뒷면을 갈아 수십 µm까지 얇게 만듭니다. 이 공정을 부르는 이름은 무엇입니까?",
    "opts": [
     "back grinding",
     "dicing",
