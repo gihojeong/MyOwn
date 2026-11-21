@@ -44,7 +44,7 @@ FIG = {
                    enums={"method": ["ncf", "mrmuf", "hcb"]}),
     "f_warp": dict(keys="ref sign mag_um temp tg note flag", q="mag_um tg",
                    enums={"ref": ["bump-down", "beol-up"], "sign": [1, -1]}),
-    "f_sip": dict(keys="type nHBM lines bullet note flag", q="nHBM",
+    "f_sip": dict(keys="type nHBM lines msg bullet note flag", q="nHBM",
                   enums={"type": ["cowos-s", "cowos-r", "cowos-l", "emib", "emib-t"], "nHBM": [1, 2, 3, 4, 5, 6, 7, 8]}),
     "f_therm": dict(keys="n core q_Wmm2 tTop limit layers hideResult note flag", q="n q_Wmm2 tTop limit"),
     "f_fa": dict(keys="tech depth hot fov_um dz zpeak feats note flag", q="",
@@ -511,6 +511,8 @@ def check_item(q, code, join, issues, legacy=()):
             pq["n"] = p["core"]  # DA Phase 1: core = core die 수(n = core+1). 지문의 N단과 비교
         for kk in spec["q"]:
             ctx_rx = K1_CTX.get((name, kk))
+            if hide and (name, kk) == ("f_stack", "h_um"):
+                continue  # hideResult 면 높이 칸이 "?" 로 그려져 h_um 은 표시되지 않는다(생략·값 모두 무관)
             if kk not in pq:
                 if ctx_rx and re.search(ctx_rx, stem, re.I):
                     bad.append(f"{kk}=기본값")
