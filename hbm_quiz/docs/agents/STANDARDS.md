@@ -75,6 +75,8 @@
 - **적층 방향 (front-to-back)**: HBM core die 는 회로(BEOL)면이 아래를 향하게 쌓는다. 접합은 **위 die 앞면(BEOL 쪽) µbump ↔ 아래 die 뒷면 backside pad(TSV 끝)** 이다. base die 도 앞면이 아래(interposer 쪽)를 향하고, base 의 뒷면 TSV pad 가 core1 앞면 µbump 와 만난다. 최상단 core die 는 위에 접합할 die 가 없어 TSV·backside pad 가 없다(대개 더 두껍게 둔다). "앞면끼리(face-to-face)", "뒷면끼리" 접합 서술은 HBM core 적층에 쓰지 않는다(HCB 도 같은 방향).
 - **스택 높이** = base die + N × (core die + 간극) (+ 최상단 mold 가 있으면 따로 명시). 최상단 core die 두께가 다르면 따로 준다.
 - **Warpage 명칭(Smile / Cry)**: 이 문항집은 **"측정 자세를 그대로 둔 채 위에서 내려다본 형상"** 으로 부른다. 중앙이 기준면(chuck)에서 멀어진 볼록(∩) = **Cry (convex)**, 중앙이 기준면에 가까워진 오목(∪) = **Smile (concave)**. 자세(bump 면 아래 / BEOL 면 위)는 반드시 지문에 적고, die 자체의 휨 방향을 물을 때는 "BEOL 면 기준 볼록/오목" 으로 따로 묻는다. **(2026-11-20 오케스트레이터 승인으로 확정.)** 그림 `f_warp` 표는 DA Phase 1 에서 이 규약으로 교체되었다(sign 1 = ∩ = Cry).
+- **refresh·온도 구간 판정 die**: DRAM 셀이 있는 **최하단 core die**(가장 뜨거운 core) 온도로 판정한다. 셀이 없는 base die 온도로 85/95 °C 구간·refresh 배수를 판정하지 않는다. (2026-11-21, EA 감사·XD W3 권고, 오케스트레이터 반영)
+- **분야 간 공통 가정값**: 접합층 면적 열저항 등 여러 분야가 쓰는 가정값의 기준 범위는 `docs/agents/CONVENTIONS_W3.md` 를 따른다 (W3 수정 라운드에서 THERM 이 확정).
 - 공법 명칭: **TC-NCF**, **MR-MUF**, **HCB (hybrid copper bonding, Cu–Cu hybrid bonding)**. "TCB" 는 장비 방식(열압착) 이름이고 NCF/NCP/MUF 와 결합해 쓴다.
 - 단위 표기: µm (U+00B5), °C, Gb/s(핀 속도), GB/s(대역폭), W/m·K, m²·K/W, kA/cm². 숫자와 단위 사이 한 칸("5 µm"). 곱셈 ×, 나눗셈 ÷, 근사 ≈.
 
