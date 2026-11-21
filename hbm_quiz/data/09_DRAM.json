@@ -35808,6 +35808,231 @@
    "src": "JESD235 (HBM2) legacy BL2 / pseudo channel BL4"
   },
   {
+   "id": "DRAM-I-9031",
+   "lv": "I",
+   "title": "open bit line 구조의 잡음 약점",
+   "stem": "6F² 셀 배열은 sense amplifier의 두 입력을 서로 다른 셀 배열(mat)의 bit line에 연결하는 open bit line 구조를 씁니다. 반면 8F²의 folded bit line은 두 입력이 같은 배열 안에서 나란히 지나갑니다. open bit line이 folded보다 불리한 점은 무엇입니까?",
+   "opts": [
+    "두 bit line이 다른 배열에 있어 공통 잡음이 상쇄되지 않는다",
+    "셀 면적이 folded보다 커진다",
+    "sense amplifier가 필요 없어 신호가 약해진다",
+    "bit line이 VDD/2로 precharge 될 수 없다"
+   ],
+   "a": 0,
+   "exp": "folded 구조는 기준 bit line이 같은 배열 안에서 나란히 지나가 word line 결합 같은 잡음이 두 입력에 똑같이 실려 상쇄되지만, open 구조는 두 bit line이 다른 배열에 있어 잡음이 다르게 실려 감지 여유를 깎습니다. 그 대가로 셀 면적(6F²)이 작습니다. ②는 반대로 open이 더 작습니다. ③은 sense amplifier는 여전히 필요합니다. ④의 precharge 방식은 두 구조에서 같습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "두 bit line 구조",
+     "points": [
+      "open: 다른 배열의 bit line 을 기준으로",
+      "folded: 같은 배열 안 나란한 쌍"
+     ],
+     "ask": "open 의 약점",
+     "flag": "주제: 셀 배열 구조"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "DRAM-I-9032",
+   "lv": "I",
+   "title": "bit line을 VDD/2로 precharge하는 이유",
+   "stem": "DRAM bit line은 읽기 전에 0 V 나 VDD가 아니라 그 중간인 VDD/2로 precharge 됩니다. 셀에는 1(VDD) 또는 0(0 V)이 저장되어 있습니다. VDD/2 precharge의 이점으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "1·0 신호가 대칭이 되고 precharge 전력이 준다",
+    "셀에 저장된 전하가 읽기 후에도 그대로 남는다",
+    "sense amplifier 없이 바로 판정할 수 있다",
+    "word line을 VPP로 올릴 필요가 없어진다"
+   ],
+   "a": 0,
+   "exp": "기준이 중간에 있으면 1 은 +ΔV, 0 은 −ΔV 로 대칭인 신호가 생겨 감지 여유가 고르고, 증폭 후 VDD와 0 V 로 벌어진 bit line 쌍을 서로 잇기만 해도 VDD/2 로 돌아와 precharge 에 드는 충전 전력이 작습니다. ②는 읽기는 여전히 파괴적입니다. ③은 신호가 수십 mV 라 증폭이 필요합니다. ④의 VPP는 셀에 완전한 1 을 쓰기 위한 것으로 precharge와 무관합니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "precharge 기준",
+     "points": [
+      "셀: VDD 또는 0 V",
+      "bit line: VDD/2"
+     ],
+     "ask": "이점",
+     "flag": "주제: bit line precharge"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "DRAM-I-9033",
+   "lv": "I",
+   "title": "긴 word line을 sub-word line으로 나누는 이유",
+   "stem": "DRAM 배열의 word line은 수천 개 셀의 게이트를 잇는 긴 선이라 저항과 용량이 큽니다. 그래서 전역 word line 신호로 여러 구간의 sub-word line driver를 켜고, 각 driver가 짧은 sub-word line만 구동하게 나눕니다. 이렇게 나누는 주된 이유는 무엇입니까?",
+   "opts": [
+    "선이 짧아져 RC 지연과 상승 시간이 줄기 때문",
+    "셀 capacitor 용량이 커지기 때문",
+    "bit line 수를 줄여 감지 신호가 커지기 때문",
+    "refresh가 필요 없는 구간이 생기기 때문"
+   ],
+   "a": 0,
+   "exp": "RC 지연은 선 길이의 제곱에 가깝게 늘어나므로, 짧은 sub-word line 으로 나누어 가까운 driver 가 구동하면 word line 상승 시간이 줄어 tRCD를 줄이고 셀 간 도착 시간 차도 줄어듭니다. ②의 셀 용량은 capacitor 구조로 정해집니다. ③은 bit line 수와 무관합니다. ④는 모든 셀이 refresh 되어야 합니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "word line 의 부하",
+     "points": [
+      "수천 개 셀 게이트 연결",
+      "저항·용량이 크다"
+     ],
+     "ask": "분할 이유",
+     "flag": "주제: 셀 배열 구동"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "DRAM-I-9034",
+   "lv": "I",
+   "title": "self refresh 중 온도에 따른 주기 조정",
+   "stem": "self refresh 상태에서는 컨트롤러가 온도를 보고 refresh 배율을 바꿀 수 없습니다. 그래서 일부 DRAM은 내부 온도 센서로 self refresh 주기를 스스로 바꿉니다. 이 기능이 주는 이점으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "저온엔 주기를 늘려 전력을, 고온엔 줄여 데이터를 지킨다",
+    "온도와 무관하게 주기를 고정해 동작을 단순화한다",
+    "고온에서 self refresh를 멈춰 발열을 줄인다",
+    "저온에서 주기를 줄여 retention을 늘린다"
+   ],
+   "a": 0,
+   "exp": "retention은 온도가 낮을수록 길어지므로 대기 중 저온에서는 refresh를 덜 해 전력을 아끼고, 고온에서는 더 자주 해 데이터를 지킬 수 있습니다. ②는 최악 온도에 맞춘 고정 주기라 저온 대기 전력을 낭비합니다. ③은 데이터 손실을 부릅니다. ④는 저온에서 refresh를 늘릴 이유가 없고 retention은 refresh 로 늘어나지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "self refresh",
+     "points": [
+      "컨트롤러 개입 없음",
+      "retention 은 온도에 민감"
+     ],
+     "ask": "기능의 이점",
+     "flag": "주제: 저전력 모드"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "DRAM-I-9035",
+   "lv": "I",
+   "title": "HBM4의 HBM3 컨트롤러 하위 호환이 뜻하는 것",
+   "stem": "JEDEC은 HBM4(JESD270-4) 발표에서 HBM4가 기존 HBM3 컨트롤러와 하위 호환되며, 하나의 컨트롤러가 HBM3와 HBM4를 모두 다룰 수 있다고 밝혔습니다. HBM4는 I/O 폭이 2,048 bit로 두 배입니다. 이 호환성이 시스템 설계에 주는 의미로 가장 타당한 것은 무엇입니까?",
+   "opts": [
+    "한 컨트롤러 설계로 두 세대 메모리를 지원할 수 있어 플랫폼 전환 부담이 준다",
+    "HBM4를 1,024 bit 로만 동작시켜야 한다",
+    "HBM3 스택을 HBM4 PHY에 그대로 꽂아도 2,048 bit로 동작한다",
+    "HBM4는 HBM3와 같은 핀 배열과 같은 대역폭을 가진다"
+   ],
+   "a": 0,
+   "exp": "하위 호환은 컨트롤러 IP 가 두 세대를 모두 지원하도록 규격이 배려되었다는 뜻으로, 시스템 업체가 한 설계로 세대 전환·혼용 제품군을 운영하기 쉬워집니다. ②는 HBM4 의 2,048 bit 를 쓰지 못한다는 뜻이 아닙니다. ③은 HBM3 스택은 1,024 bit 이므로 2,048 bit 로 동작할 수 없습니다. ④는 HBM4 의 폭과 대역폭이 두 배라는 점과 맞지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "JEDEC 발표 내용",
+     "points": [
+      "HBM4 I/O 2,048 bit",
+      "HBM3 컨트롤러와 하위 호환"
+     ],
+     "ask": "설계상 의미",
+     "flag": "주제: 세대 호환"
+    }
+   ],
+   "metrics": [],
+   "src": "JEDEC JESD270-4 발표(2025-04): backwards compatibility with HBM3 controllers"
+  },
+  {
+   "id": "DRAM-I-9036",
+   "lv": "I",
+   "title": "pseudo channel이 명령 버스를 공유할 때의 병목",
+   "stem": "한 채널의 두 pseudo channel은 명령·주소 버스를 공유하고 데이터 버스는 따로 씁니다. 요청 크기가 작고 매번 행이 바뀌는 무작위 접근이 두 pseudo channel에 몰리면, 요청마다 activate·read·precharge 명령이 필요합니다. 이때 먼저 병목이 되기 쉬운 자원은 무엇입니까?",
+   "opts": [
+    "두 pseudo channel이 공유하는 명령·주소 버스",
+    "pseudo channel 마다 따로 있는 데이터 버스",
+    "셀 capacitor의 저장 용량",
+    "스택의 core die 적층 수"
+   ],
+   "a": 0,
+   "exp": "작은 무작위 요청은 데이터 한 번에 명령이 여러 개 필요해, 두 pseudo channel 의 명령을 하나의 버스로 보내면 데이터 버스보다 명령 버스가 먼저 포화되기 쉽습니다. 그래서 HBM는 행 명령과 열 명령 버스를 나누는 등 명령 대역폭을 확보합니다. ②는 요청이 작으면 오히려 여유가 생깁니다. ③과 ④는 명령 처리 속도와 무관합니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "구성",
+     "points": [
+      "명령·주소 버스: 공유",
+      "데이터 버스: 따로"
+     ],
+     "ask": "먼저 막히는 자원",
+     "flag": "조건: 작은 무작위 요청"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "DRAM-I-9037",
+   "lv": "I",
+   "title": "쓰기 뒤 읽기까지 기다리는 이유",
+   "stem": "같은 rank(또는 채널)에서 write 명령 바로 뒤에 read 명령을 보내려면 마지막 쓰기 데이터가 끝난 뒤 tWTR 만큼 기다려야 합니다. 반대 방향(read 뒤 write)에는 이렇게 긴 간격이 없습니다. tWTR 이 필요한 이유로 옳은 것은 무엇입니까?",
+   "opts": [
+    "공유하는 내부 경로가 쓰기를 마칠 때까지 비지 않아서",
+    "쓰기 뒤에는 refresh를 한 번 먼저 해야 해서",
+    "쓰기 뒤에는 열린 행을 모두 닫아야 해서",
+    "쓰기 데이터의 패리티를 되돌려 보내야 해서"
+   ],
+   "a": 0,
+   "exp": "쓰기 데이터는 I/O 에서 내부 쓰기 경로를 거쳐 sense amplifier·배열로 들어가는데, 이 내부 경로를 읽기와 공유하므로 쓰기가 끝나기 전에 읽기를 시작할 수 없습니다. 그래서 컨트롤러는 쓰기와 읽기를 묶어 방향 전환을 줄입니다. ②는 그런 규칙이 없습니다. ③은 열린 행을 유지한 채 읽을 수 있습니다. ④는 패리티는 die 안에 저장될 뿐 되돌리지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "방향 전환",
+     "points": [
+      "write → read: tWTR",
+      "read → write: 짧은 전환"
+     ],
+     "ask": "tWTR 의 이유",
+     "flag": "주제: DRAM 타이밍"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "DRAM-I-9038",
+   "lv": "I",
+   "title": "수신 기준 전압을 training으로 맞추는 이유",
+   "stem": "HBM 같은 단일 종단 신호는 수신기가 기준 전압(Vref)과 비교해 0과 1을 판정합니다. 0.4 V 저진폭 I/O에서 training 중 시점뿐 아니라 Vref도 선이나 바이트마다 조정합니다. Vref를 조정하는 주된 이유는 무엇입니까?",
+   "opts": [
+    "eye 세로 중심이 산포로 달라 한쪽 여유가 줄어서",
+    "Vref를 높이면 핀 속도가 올라가서",
+    "Vref를 바꾸면 셀 retention이 늘어서",
+    "Vref 조정으로 DBI가 필요 없어져서"
+   ],
+   "a": 0,
+   "exp": "송수신 회로와 배선 산포, 전원 차이로 실제 신호의 고·저 레벨 중간이 설계값에서 벗어나므로, 고정 기준이면 eye 의 한쪽(1 또는 0) 여유가 줄어듭니다. 진폭이 작을수록 이 차이의 비중이 커져 Vref training이 중요합니다. ②의 핀 속도는 Vref 와 독립입니다. ③의 retention은 셀 배열 특성입니다. ④의 DBI는 동시 전환을 줄이는 다른 기법입니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "판정 방식",
+     "points": [
+      "단일 종단 신호",
+      "Vref 와 비교해 판정"
+     ],
+     "ask": "조정 이유",
+     "flag": "주제: 링크 training"
+    }
+   ],
+   "metrics": []
+  },
+  {
    "id": "DRAM-A-9001",
    "lv": "A",
    "title": "약해진 셀의 감지 여유 판정",

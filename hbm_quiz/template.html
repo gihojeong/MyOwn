@@ -538,7 +538,9 @@ function axes(s, x, y, w, h, o) {
   // 눈금 글자: 7pt · y 눈금은 가운데 정렬, 원점 모서리에서는 x/y 눈금이 서로 비켜 선다
   (o.yticks || []).forEach((t) => { L(s, x, Y(t), x + w, Y(t), K.lineStrong, 0.5, { dash: 1 }); const lo = t === o.ymin;
     T(s, o.fmty ? o.fmty(t) : String(t), x - 0.58, lo ? Y(t) - 0.22 : Y(t) - 0.1, 0.5, 0.2, { fs: 7, align: "right", color: K.muted, valign: lo ? "bottom" : "middle" }); });
+  let lastX = -1e9;   // 눈금 글자가 너무 붙으면(0.34 in 미만) 그 글자만 생략 (눈금선은 유지)
   (o.xticks || []).forEach((t) => { L(s, X(t), y, X(t), y + h, K.lineStrong, 0.5, { dash: 1 }); const lo = t === o.xmin;
+    if (X(t) - lastX < 0.34) return; lastX = X(t);
     T(s, o.fmtx ? o.fmtx(t) : String(t), lo ? X(t) - 0.04 : X(t) - 0.3, y + h + 0.03, lo ? 0.5 : 0.6, 0.2, { fs: 7, align: lo ? "left" : "center", color: K.muted }); });
   L(s, x, y, x, y + h, K.edge, 1); L(s, x, y + h, x + w, y + h, K.edge, 1);
   if (o.xlab) { const RB = x < 5.03 ? 5.03 : 9.03; T(s, o.xlab, x - 0.3, y + h + 0.25, Math.min(w + 0.6, RB - (x - 0.3)), 0.20, { fs: 8, align: "center", bold: true, color: K.ink2 }); }
@@ -1003,7 +1005,7 @@ function f_therm(s, p) {
   table(s, rows, RC.x, TOP, RC.w, rows.length - 1);
   pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.34, "q = " + q + " W/mm² → ΔT " + (hid ? "?" : dT.toFixed(2)) + " K", { fs: 8, fill: K.orange, align: "left", maxW: RC.w });
   pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.81, "base die " + (hid ? "?" : tt[n - 1].toFixed(1)) + " °C · 상한 " + (p.limit || 85) + " °C", { fs: 8, fill: hid ? K.cream : (tt[n - 1] > (p.limit || 85) ? K.pink : K.mint), align: "left", maxW: RC.w });
-  pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 1.28, "간극 수 = core die 수 (" + (n - 1) + "개)", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  if (!hid) pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 1.28, "간극 수 = core die 수 (" + (n - 1) + "개)", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "1D 정상상태 · 측면 확산 무시 · 물성은 문항 제시값");
 }
 

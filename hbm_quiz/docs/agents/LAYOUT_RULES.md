@@ -43,7 +43,7 @@
 | 템플릿 | `hideResult` 가 숨기는 것 |
 |---|---|
 | `f_stack` | 표의 die 총 장수 · 간극 수 · backside pad die 수 · 스택 높이, 간극 개수 라벨, 높이 상한 pill 의 초과/이내 색 |
-| `f_therm` | core·base die 온도(최상단 `tTop` 만 표시), 층별 R · 합계, ΔT, base 온도, 상한 대비 색 |
+| `f_therm` | core·base die 온도(최상단 `tTop` 만 표시), 층별 R · 합계, ΔT, base 온도, 상한 대비 색, "간극 수 = core die 수 (N개)" pill |
 | `f_hcb` | 허용치 대비 "초과/이내" 판정과 색 |
 | `f_tsv` | aspect ratio 값 |
 | `f_bump` | Kirkendall · current crowding 결함 이름, IMC 상(Cu₆Sn₅ 등) 이름 (`hideLabels` 와 같음) |
