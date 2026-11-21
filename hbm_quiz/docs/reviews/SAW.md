@@ -12,8 +12,8 @@
 
 - 비율: 초급 31 % · 중급 39 % · 고급 29 %. 브리프 신규 목표(15/35/30)는 충족(19/40/30). 수량보다 질 우선 방침에 따라 분야 규모는 180 → 147.
 - 남긴 기존 문항도 지문·보기·해설·제목·지표·그림을 모두 새로 썼다(원 문항 대부분이 템플릿 생성물: ctx 조립형 104, 메타 지표 156, 번호 나열 해설 75). ctx 조립형 0, 메타 지표 0.
-- 게이트:  통과 — E 0 / W 0 / I 19 (I_JOSA_SPACE: 수식 띄어쓰기 규칙과 충돌하는 "0.24 로" 류, I_FACT_WATCH). build + smoke: figErr [] · errs [] (scratchpad build).
-- 작업 원본: scratchpad  →  가 data 파일 생성(수식 뒤 한글 띄어쓰기 자동 정리, vx·k 보정 포함).
+- 게이트: `validate --domain SAW --gate` 통과 — E 0 / W 0 / I 19 (I_JOSA_SPACE: 수식 띄어쓰기 규칙과 충돌하는 "0.24 로" 류, I_FACT_WATCH). build + smoke: figErr [] · errs [] (scratchpad build).
+- 작업 원본: scratchpad `w2/SAW/qB.py·qI.py·qA.py` → `mk.py` 가 data 파일 생성(수식 뒤 한글 띄어쓰기 자동 정리, vx·k 보정 포함).
 
 ## 주요 기술 정정 (사실·정답·수치)
 | id | 무엇이 틀렸나 | 어떻게 고쳤나 | 근거 |
@@ -175,8 +175,8 @@
 | SAW-A-9051 | W_FIG_LEAK | 같은 사유(입도 × 이송 표). 허용 chipping 16 µm 은 지문 기하로 먼저 구해야 함 |
 
 ## 남은 우려 · EA/DA 에 요청
-- **f_saw 템플릿 주석이 개념 정답을 노출**: plasma "scribe lane 금속은 Si 식각으로 안 걷힌다", deeplaser "열영향부가 깊어 측벽 강도가 낮아진다", stealth "kerf 손실 없음" 이 고정 문구라 해당 개념을 묻는 문항에는 쓸 수 없었다(f_note 로 대체). 또  가 비교표에서 blade 행을 강조한다. DA 에 주석 문구 opt-out(예: )과 dbg 행 추가를 요청.
+- **f_saw 템플릿 주석이 개념 정답을 노출**: plasma "scribe lane 금속은 Si 식각으로 안 걷힌다", deeplaser "열영향부가 깊어 측벽 강도가 낮아진다", stealth "kerf 손실 없음" 이 고정 문구라 해당 개념을 묻는 문항에는 쓸 수 없었다(f_note 로 대체). 또 `dbg` 가 비교표에서 blade 행을 강조한다. DA 에 주석 문구 opt-out(예: `quiet: true`)과 dbg 행 추가를 요청.
 - f_saw blade/lg/deeplaser 는 chip_um·haz_um 미지정 시 기본값(25·5·12 µm)을 그려 k=1 수치 일치가 어렵다 — k=1 상황도는 값을 지문에 넣거나 k=0 으로 썼다.
 - 사실 근거 수준: 방식별 kerf·HAZ 범위, SDBG 개질층 제거, Bosch fluorocarbon 잔류, notching, ARDE, UV tape, CO₂ 절삭수 등은 공정 원리·장비사 기술 설명 수준의 일반 지식으로 서술했고 업체 수치를 정답 근거로 쓰지 않았다. 표·그래프 수치는 모두 "문항 설정값"(데이터 해석용)이다. HBM die 크기 11 × 10 mm, die 면적 1.1 cm² 는 지문에 "가정" 명시.
-- I_JOSA_SPACE 19건: 해설 수식 뒤 한글을 띄우는 LAYOUT_RULES §2 규칙()과 Phase 2 조사 붙임 규칙이 충돌한다. Phase 2 조사 정규화 때 수식 직후는 예외로 두기를 EA 에 요청.
-- 작업 중 {"n":5000,"figHighQ":0,"figAnyQ":530,"codes":{"E7":6989,"E5":589},"screens":{"1440x900":{"q":0,"codes":{}},"820x1180":{"q":0,"codes":{}},"390x844":{"q":0,"codes":{}}},"errs":0,"secs":112,"out":"docs/reviews/_layout_latest"} 가 옵션을 무시하고 전체 검사를 실행해  를 덮어썼다(고위험 결함 0, JS 오류 0). DA 소유 산출물이므로 DA 가 다시 생성하면 된다.
+- I_JOSA_SPACE 19건: 해설 수식 뒤 한글을 띄우는 LAYOUT_RULES §2 규칙(`≈ 0.24 로`)과 Phase 2 조사 붙임 규칙이 충돌한다. Phase 2 조사 정규화 때 수식 직후는 예외로 두기를 EA 에 요청.
+- 작업 중 `node tools/layout_check.js --help` 가 옵션을 무시하고 전체 검사를 실행해 `docs/reviews/_layout_latest.{md,json}` 를 덮어썼다(2회, 고위험 결함 0, JS 오류 0). DA 소유 산출물이므로 DA 가 다시 생성하면 된다.
