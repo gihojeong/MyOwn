@@ -1,0 +1,8 @@
+exec(open('f4.py').read().split("ctx('J-STD")[0])
+ctx('Kirkendall 위치',r'Kirkendall[^.]{0,80}(Cu3Sn|Cu₃Sn|Cu 측|계면|Ni)',win=60,lim=12)
+ctx('plasma kerf',r'[Pp]lasma[^.]{0,60}?(\d+)\s?(?:~|–|-)?\s?(\d+)?\s?µm',win=50,lim=12)
+ctx('HCB pitch',r'(?:HCB|[Hh]ybrid|하이브리드|직접 접합)[^.]{0,60}?(\d+(?:\.\d+)?)\s?µm',win=50,lim=20)
+ctx('HCB anneal',r'(?:anneal|어닐)[^.]{0,40}?(\d{3})\s?°C',win=60,lim=12)
+ctx('HTS/HTOL 온도',r'(HTS|HTOL)[^.]{0,40}?(\d{3})\s?°C',win=40,lim=15)
+ctx('HAST',r'HAST[^.]{0,60}?(\d{3})\s?°C',win=40,lim=10)
+ctx('µbump pitch',r'(?:µbump|[Mm]icro-?bump|bump|범프)\s?(?:pitch|피치)[^.]{0,20}?(\d+(?:\.\d+)?)\s?µm',win=30,lim=25)
