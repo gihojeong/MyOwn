@@ -669,6 +669,10 @@ function f_cmp(s, p) {
 // ========== T3. Backside pad 공정 단면 ==========
 // p:{step 0..7, defect:'undercut'|'residue'|'none', ox1,sin,ox2,ni_um}
 function f_bs(s, p) {
+  // notes:false → 개념 주석(희생막·CMP·최종 절연막 구성)을 끄고 결함 지시선 라벨은 "관찰 부위" 로 (f_saw 와 같은 이름)
+  const NO = p.notes === false;
+  const annotTo = (s2, ax, ay, i, text, fill) => annotTo0(s2, ax, ay, i, NO && i > 0 ? "관찰 부위 (A)" : text, NO && i > 0 ? K.cream : fill);
+  const annot = (s2, i, text, fill) => { if (!NO) annot0(s2, i, text, fill); };
   const step = p.step == null ? 7 : p.step;
   const x0 = LC.x + 0.1, w = 2.35, sy = TOP + 2.45;            // Si 상면
   R(s, x0, sy, w, 0.95, MX.si, { lw: 0.9, text: "Si", fs: 8 });
@@ -1151,35 +1155,39 @@ function f_stack(s, p) {
 function f_hcb(s, p) {
   const x0 = LC.x + 0.3, y0 = TOP + 0.5, pitch = 0.72;
   ttl(s, "상면 overlay — 실선: 상부 die pad, 점선: 하부 die pad", LC.x, TOP - 0.04, 4.4);
-  const off = Math.min(0.5, (p.off_nm || 150) / 1000 * 1.2);
+  // 판정·결함 패널은 opt-in: off_nm 이 있을 때만 overlay 오차, tol_nm 이 있을 때만 허용 판정, dish_nm 이 있을 때만 dishing 미접합
+  const hasOff = p.off_nm != null, hasTol = p.tol_nm != null, hasDish = p.dish_nm != null;
+  const off = hasOff ? Math.min(0.5, p.off_nm / 1000 * 1.2) : 0;
   for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) {
     const cx = x0 + 0.35 + i * pitch, cy = y0 + 0.35 + j * pitch;
     E(s, cx - 0.2, cy - 0.2, 0.4, 0.4, MX.cu, { lw: 0.9 });
     E(s, cx - 0.2 + off, cy - 0.2 + off * 0.5, 0.4, 0.4, null, { lw: 0.9, dash: 1 });
   }
   const cx0 = x0 + 0.35 + pitch, cy0 = y0 + 0.35 + pitch;
-  A(s, cx0, cy0, cx0 + off, cy0 + off * 0.5, K.alert, 1.5);
-  lead(s, cx0 + off, cy0 + off * 0.5, x0 + 2.75, y0 + 0.05, "overlay 오차 " + (p.off_nm || 150) + " nm", { fill: K.pink });
+  if (hasOff && off > 0.02) A(s, cx0, cy0, cx0 + off, cy0 + off * 0.5, K.alert, 1.5);
+  if (hasOff) lead(s, cx0 + off, cy0 + off * 0.5, x0 + 2.75, y0 + 0.05, "overlay 오차 " + p.off_nm + " nm", { fill: K.pink });
   dimH(s, cx0, cx0 + pitch, y0 + 2.5, "pad pitch " + (p.pitch_um || 6) + " µm");
   const tx = x0 + 0.55, ty = y0 + 3.3;
+  if (hasTol) {
   E(s, tx - 0.38, ty - 0.38, 0.76, 0.76, K.mint, { lw: 0.9, dash: 1 });
   E(s, tx - 0.05, ty - 0.05, 0.1, 0.1, K.edge, { line: null });
   E(s, tx - 0.05 + off * 0.8, ty - 0.05 + off * 0.4, 0.1, 0.1, K.alert, { line: null });
-  const over = (p.off_nm || 150) > (p.tol_nm || 100);
-  pill(s, tx + 0.5, ty, "허용 ±" + (p.tol_nm || 100) + " nm → " + (p.hideResult ? "?" : (over ? "초과" : "이내")), { fs: 8, fill: p.hideResult ? K.cream : (over ? K.pink : K.mint), align: "left" });
-  ttl(s, "단면: CMP dishing이 접합을 막는다", RC.x, TOP - 0.04, 3.6);
+  const over = (p.off_nm || 0) > p.tol_nm;
+  pill(s, tx + 0.5, ty, "허용 ±" + p.tol_nm + " nm → " + (p.hideResult ? "?" : (over ? "초과" : "이내")), { fs: 8, fill: p.hideResult ? K.cream : (over ? K.pink : K.mint), align: "left" });
+  }
+  ttl(s, hasDish ? "단면: CMP dishing이 접합을 막는다" : "단면: Cu–Cu · 유전막 접합", RC.x, TOP - 0.04, 3.6);
   const ix = RC.x + 0.1, iy = TOP + 0.55;
   R(s, ix, iy, 2.9, 0.5, MX.si, { lw: 0.9, text: "upper die", fs: 8 });
   R(s, ix, iy + 0.95, 2.9, 0.5, MX.si, { lw: 0.9, text: "lower die", fs: 8 });
   R(s, ix, iy + 0.5, 2.9, 0.45, MX.ox, { lw: 0.8 });
   for (let i = 0; i < 4; i++) {
-    const px = ix + 0.4 + i * 0.7, bad = i === 2;
+    const px = ix + 0.4 + i * 0.7, bad = hasDish && i === 2;
     R(s, px - 0.16, iy + 0.5, 0.32, 0.45, MX.cu, { lw: 0.7 });
     if (bad) R(s, px - 0.16, iy + 0.5, 0.32, Math.min(0.2, (p.dish_nm || 8) * 0.012), MX.bare, { lw: 0.6 });
   }
-  lead(s, ix + 1.8, iy + 0.56, ix + 2.88, iy + 1.68, "dishing " + (p.dish_nm || 8) + " nm → 미접합", { fill: K.pink, align: "right" });
+  if (hasDish) lead(s, ix + 1.8, iy + 0.56, ix + 2.88, iy + 1.68, "dishing " + p.dish_nm + " nm → " + (p.hideResult ? "?" : "미접합"), { fill: K.pink, align: "right" });
   lead(s, ix + 0.15, iy + 0.72, ix + 0.05, iy + 1.72, "SiCN 유전막 접합면", { fill: MX.ox });
-  pill(s, RC.x, iy + 2.3, "dishing > Cu 팽창량이면 미접합", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  if (hasDish && !p.hideResult) pill(s, RC.x, iy + 2.3, "dishing > Cu 팽창량이면 미접합", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   pill(s, RC.x, iy + 2.75, p.bullet || "particle 1개가 자기보다 훨씬 넓은 미접합을 만든다", { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "변위 · 단차는 과장 표시");
 }
