@@ -1,0 +1,1742 @@
+{
+ "domain": "HBM 제품과 구조",
+ "code": "PROD",
+ "questions": [
+  {
+   "id": "PROD-B-0001",
+   "lv": "B",
+   "title": "HBM4 스택의 데이터 폭과 채널 폭",
+   "stem": "JESD270-4(HBM4, 2025년 4월)는 한 스택의 데이터 인터페이스를 직전 세대의 두 배로 넓히고 이를 32개의 독립 채널로 나눕니다. 검토 회의에서 '채널 수가 늘었으니 채널 하나의 폭은 좁아졌을 것'이라는 말이 나왔습니다. HBM4 한 스택의 총 데이터 폭과 채널당 폭의 조합으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "2,048 bit · 채널당 64 bit",
+    "1,024 bit · 채널당 32 bit",
+    "2,048 bit · 채널당 128 bit",
+    "4,096 bit · 채널당 128 bit"
+   ],
+   "a": 0,
+   "exp": "HBM4 는 2,048 bit 를 32개 채널로 나누므로 채널당 2,048 ÷ 32 = 64 bit 입니다. 채널 폭은 HBM3 와 같고 늘어난 것은 채널 수입니다. ②는 HBM3 의 1,024 bit 에 pseudo channel 폭(32 bit)을 섞은 조합입니다. ③의 128 bit 는 HBM2 계열(8채널 × 128 bit)의 채널 폭이고, ④의 4,096 bit 는 어느 HBM 세대의 표준 폭도 아닙니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "인터페이스 구성 읽기",
+     "points": [
+      "총 폭 = 독립 채널 수 × 채널 폭",
+      "직전 세대(HBM3)는 16채널",
+      "pseudo channel 은 채널을 다시 나눈 단위"
+     ],
+     "ask": "폭 조합",
+     "flag": "주제: 세대 사양"
+    }
+   ],
+   "metrics": [
+    [
+     "≡",
+     "표준",
+     "JESD270-4"
+    ],
+    [
+     "#",
+     "독립 채널",
+     "32개"
+    ]
+   ],
+   "src": "JEDEC JESD270-4 발표(2025-04-16)"
+  },
+  {
+   "id": "PROD-B-0003",
+   "lv": "B",
+   "title": "n-Hi 표기가 세는 대상",
+   "stem": "제품 사양서에 'HBM4 16-Hi' 라고 적힌 스택이 있습니다. 신입 엔지니어는 이 표기를 '패키지에 스택이 16개 들어간다' 는 뜻으로 읽었습니다. 16-Hi 표기가 가리키는 스택 구성으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "core die 16장 + base die 1장",
+    "core die 15장 + base die 1장",
+    "스택 16개를 한 패키지에 탑재",
+    "독립 채널 16개로 구성"
+   ],
+   "a": 0,
+   "exp": "N-Hi(N단)는 적층된 core DRAM die 의 장수를 셉니다. 16-Hi 는 core die 16장이 base die 1장 위에 올라간 구조이며 die 는 모두 17장, 접합 간극은 16개입니다. ②는 base die 를 16장 안에 포함해 센 오류입니다. ③은 스택 수(패키지당 탑재 개수)와 단수를 혼동한 것이고, ④는 채널 수로 읽은 것으로 HBM4 의 독립 채널은 32개입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 16,
+     "highlight": "base",
+     "hideResult": true,
+     "flag": "주제: 단수 표기"
+    }
+   ],
+   "metrics": [
+    [
+     "n",
+     "표기",
+     "16-Hi"
+    ],
+    [
+     "Σ",
+     "세대",
+     "HBM4"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-0004",
+   "lv": "B",
+   "title": "AI 가속기가 HBM 메모리를 쓰는 이유",
+   "stem": "GDDR 계열 그래픽 메모리는 핀당 전송 속도가 HBM 보다 높지만 대형 AI 가속기는 HBM 메모리를 택합니다. HBM 메모리는 가속기와 같은 interposer 위에 수천 개의 데이터 선으로 연결되고, 핀 속도는 상대적으로 낮습니다. 이 구조가 주는 이점으로 가장 타당한 것은 무엇입니까?",
+   "opts": [
+    "짧고 넓은 배선으로 bit 당 에너지를 낮추며 큰 대역폭을 얻는다",
+    "DRAM 셀의 접근 시간 자체가 짧아 지연이 크게 줄어든다",
+    "대용량 SRAM 캐시를 내장해 외부 메모리 접근 횟수를 줄인다",
+    "보드 위 긴 배선 덕분에 신호 타이밍 여유가 커진다"
+   ],
+   "a": 0,
+   "exp": "HBM 메모리는 I/O 폭을 넓혀 낮은 핀 속도로 큰 대역폭을 만들고, 가속기 바로 옆에서 mm 단위의 짧은 배선으로 연결되므로 bit 당 전송 에너지가 작습니다. ②는 틀렸습니다. DRAM 셀 접근 시간은 HBM 구조라고 해서 근본적으로 짧아지지 않습니다. ③의 대용량 SRAM 캐시는 HBM 의 표준 구성 요소가 아니고, ④는 반대입니다. HBM 메모리는 보드가 아니라 패키지 안의 짧은 배선을 씁니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "메모리 선택 관점",
+     "points": [
+      "대역폭 = 데이터 폭 × 핀 속도 ÷ 8",
+      "배선 길이는 전송 에너지와 연결",
+      "탑재 위치: 패키지 안 / 보드 위"
+     ],
+     "ask": "이점",
+     "flag": "주제: HBM vs GDDR"
+    }
+   ],
+   "metrics": [
+    [
+     "b",
+     "HBM",
+     "넓은 I/O"
+    ],
+    [
+     "f",
+     "GDDR",
+     "높은 핀 속도"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-0027",
+   "lv": "B",
+   "title": "HBM에서 '스택'이 가리키는 단위",
+   "stem": "고객 사양서에 'HBM3E 스택 6개 탑재' 라는 표현이 있습니다. 같은 문서에는 'die', 'interposer', 'package' 라는 단어도 함께 나옵니다. HBM 에서 '스택(stack)' 한 개가 가리키는 단위는 무엇입니까?",
+   "opts": [
+    "base die 위에 core die 를 쌓아 TSV 로 이은 묶음 하나",
+    "TSV 로 연결되기 전의 DRAM die 한 장",
+    "HBM 메모리와 SoC 를 함께 올린 interposer 전체",
+    "SoC 와 메모리를 모두 담은 최종 2.5D 패키지"
+   ],
+   "a": 0,
+   "exp": "HBM 스택은 base die 1장과 그 위의 core die N장을 TSV·µbump 로 이어 하나의 메모리 부품으로 만든 묶음입니다. 패키지에는 이런 스택이 여러 개 올라갑니다. ②의 die 한 장은 스택의 구성 요소입니다. ③과 ④는 스택 여러 개와 SoC 를 함께 담는 더 큰 단위입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "hideResult": true,
+     "flag": "주제: 스택 구성"
+    }
+   ],
+   "metrics": [
+    [
+     "#",
+     "탑재",
+     "스택 6개"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-0028",
+   "lv": "B",
+   "title": "SoC 와 HBM 상면 높이를 맞추는 이유",
+   "stem": "2.5D 패키지에서는 SoC 와 여러 HBM 스택 위를 하나의 lid 또는 cold plate 가 TIM 을 사이에 두고 덮습니다. 그래서 HBM 스택의 상면 높이를 SoC 와 맞추도록 관리합니다. 두 높이를 맞추는 이유로 가장 타당한 것은 무엇입니까?",
+   "opts": [
+    "방열 부품이 모든 die 에 고르게 닿아야 하기 때문",
+    "HBM–SoC 사이 배선 길이를 같게 해야 하기 때문",
+    "패키지의 무게 중심을 가운데로 맞춰야 하기 때문",
+    "HBM 핀 속도를 SoC 와 같게 맞춰야 하기 때문"
+   ],
+   "a": 0,
+   "exp": "높이가 다르면 낮은 쪽 위의 TIM 이 두꺼워지거나 접촉이 끊겨 열저항이 커집니다. 공통 방열 부품이 모든 die 에 고르게 닿도록 상면 높이를 맞춥니다. ②의 배선 길이는 interposer 위 배치로 정해집니다. ③의 무게 중심은 기술적 관리 대상이 아니고, ④의 핀 속도는 높이와 관계가 없습니다.",
+   "k": 0,
+   "fig": [
+    "f_sip",
+    {
+     "type": "cowos-s",
+     "nHBM": 4,
+     "flag": "주제: 상면 높이"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0029",
+   "lv": "B",
+   "title": "스택 수를 늘렸을 때 얻는 효과",
+   "stem": "같은 HBM 스택을 패키지에 4개 올리던 설계를 8개로 바꾸었습니다. 스택 하나의 단수와 핀 속도는 그대로입니다. 시스템 전체에서 직접 얻는 효과로 옳은 것은 무엇입니까?",
+   "opts": [
+    "총 용량과 총 대역폭이 함께 2배",
+    "총 용량만 2배, 대역폭은 그대로",
+    "스택당 용량이 2배",
+    "핀당 전송 속도가 2배"
+   ],
+   "a": 0,
+   "exp": "스택마다 독립된 데이터 폭을 가지므로 스택 수를 늘리면 총 용량과 총 대역폭이 함께 늘어납니다. 대신 interposer 면적과 SoC 쪽 인터페이스가 더 필요합니다. ②는 단수를 늘릴 때의 결과입니다. ③에서 스택당 용량은 단수와 die 밀도로 정해지고, ④의 핀 속도는 스택 수와 무관합니다.",
+   "k": 0,
+   "fig": [
+    "f_sip",
+    {
+     "type": "cowos-s",
+     "nHBM": 8,
+     "flag": "주제: 스택 수"
+    }
+   ],
+   "metrics": [
+    [
+     "#",
+     "스택 수",
+     "4 → 8"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-0030",
+   "lv": "B",
+   "title": "base die 의 역할",
+   "stem": "HBM 스택의 맨 아래에는 base die(buffer die 또는 logic die 라고도 함)가 놓이고, 그 위에 core die 가 쌓입니다. base die 에는 DRAM 셀 배열이 없습니다. base die 가 맡는 역할로 가장 정확한 것은 무엇입니까?",
+   "opts": [
+    "PHY·테스트 회로로 core die 신호를 외부에 중계",
+    "스택 용량의 대부분을 담는 주 저장 계층의 역할",
+    "스택의 열을 위쪽 냉각기로 전달하는 방열 판 역할",
+    "적층 하중을 받치는 기계적 지지대 역할만 수행"
+   ],
+   "a": 0,
+   "exp": "base die 는 SoC 와 연결되는 PHY, 테스트·repair 회로, 전원 분배를 담고 core die 의 데이터를 외부 채널로 중계합니다. ②의 주 저장 계층은 core die 의 역할입니다. ③은 반대입니다. base die 는 냉각기에서 가장 먼 맨 아래에 있습니다. ④의 기계적 지지는 부수적 성질일 뿐 base die 의 정의적 역할이 아닙니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "base",
+     "hideResult": true,
+     "flag": "주제: base die"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0031",
+   "lv": "B",
+   "title": "top core 와 mid core 의 구분 기준",
+   "stem": "같은 설계의 core die 를 쌓아도 공정에서는 최상단 die(top core)와 중간 die(mid core)를 구분해 관리합니다. mid core 는 위아래 die 와 모두 연결되지만 top core 위에는 접합할 die 가 없습니다. 두 die 를 구분하는 기준은 무엇입니까?",
+   "opts": [
+    "뒷면(backside) 접속이 필요한지 여부",
+    "제조에 쓰는 DRAM 공정 노드의 차이",
+    "die 하나가 담는 저장 용량의 차이",
+    "die 마다 다른 동작 클록 주파수"
+   ],
+   "a": 0,
+   "exp": "mid core 는 위 die 와 이어지도록 TSV 를 뒷면으로 노출(reveal)하고 backside pad 를 만들어야 하지만, top core 는 위에 접합할 상대가 없어 그 공정이 필요 없습니다. ②의 공정 노드는 두 die 가 같습니다. ③의 저장 용량도 같은 설계라 동일하고, ④의 동작 클록은 die 위치로 구분되지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "topcore",
+     "hideResult": true,
+     "flag": "주제: top core"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0032",
+   "lv": "B",
+   "title": "top core 에 backside pad 가 없는 이유",
+   "stem": "적층 공정 문서에서 'top core 는 TSV reveal 과 backside pad 형성을 생략한다' 는 문구를 보았습니다. mid core 와 같은 회로 설계인데도 이 공정을 생략할 수 있는 이유는 무엇입니까?",
+   "opts": [
+    "그 위에 접합할 die 가 없기 때문",
+    "두께가 너무 얇아 TSV 를 만들 수 없기 때문",
+    "가장 뜨거운 위치라 금속 pad 가 견디지 못하기 때문",
+    "최상단은 신호를 받지 않는 dummy die 이기 때문"
+   ],
+   "a": 0,
+   "exp": "backside pad 는 위 die 의 µbump 를 받기 위한 접속부이므로 맨 위 die 에는 필요가 없습니다. ②는 반대입니다. top core 는 reveal 이 없어 오히려 두껍게 남길 수 있습니다. ③에서 스택 최상단은 냉각기에 가장 가까워 가장 뜨거운 위치가 아니고, ④는 틀렸습니다. top core 도 저장·동작하는 core die 입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "topcore",
+     "hideResult": true,
+     "flag": "주제: top core"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0034",
+   "lv": "B",
+   "title": "같은 설계의 core die를 쌓는 방법",
+   "stem": "HBM 스택의 core die 는 모두 같은 마스크로 만든 같은 설계입니다. 그런데 스택 안에서는 die 마다 다른 채널이나 주소 영역을 맡아야 합니다. 같은 설계의 die 가 서로 다른 역할을 나눠 맡을 수 있게 하는 방법은 무엇입니까?",
+   "opts": [
+    "적층 위치에 따라 정해지는 식별 정보(stack ID)로 구분",
+    "적층 위치마다 다른 마스크로 die 를 따로 제작해 구분",
+    "적층 후 레이저로 die 마다 내부 배선을 끊어 구분",
+    "SoC 가 die 마다 서로 다른 전압을 걸어 구분"
+   ],
+   "a": 0,
+   "exp": "core die 는 같은 설계로 만들고, 적층 후 위치에 따라 정해지는 식별 정보(stack ID)를 회로가 읽어 자신이 맡을 채널·주소 영역을 정합니다. 마스크 한 벌로 모든 위치를 만들 수 있어 설계·재고 부담이 줄어듭니다. ②는 단일 설계의 이점을 버리는 방식입니다. ③의 적층 후 레이저 배선 절단은 스택 안의 die 에 접근할 수 없어 쓰이지 않고, ④의 전압 차이는 die 구분 수단이 아닙니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "midcore",
+     "hideResult": true,
+     "flag": "주제: core die 구분"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0035",
+   "lv": "B",
+   "title": "HBM용 DRAM die 의 고유 구조",
+   "stem": "HBM core die 는 일반 DDR 용 DRAM die 와 셀·센스 앰프 구조는 같지만 die 평면 배치가 다릅니다. die 면적의 일부를 수직 연결을 위해 따로 써야 하기 때문입니다. HBM core die 에만 있는 구조적 차이는 무엇입니까?",
+   "opts": [
+    "TSV 배열과 그 둘레의 소자 배치 금지 영역",
+    "refresh 가 필요 없도록 바꾼 셀 구조",
+    "센스 앰프 없이 데이터를 읽는 셀 배열",
+    "커패시터를 없앤 1T 셀 구조의 배열"
+   ],
+   "a": 0,
+   "exp": "HBM core die 에는 수천 개의 TSV 가 배열되고, Cu 의 응력이 주변 트랜지스터 특성을 바꾸지 않도록 TSV 둘레에 소자를 두지 않는 keep-out zone 을 둡니다. 이 면적만큼 셀 배열 효율이 낮아집니다. ②, ③, ④는 틀렸습니다. HBM 도 1T1C DRAM 셀을 쓰므로 refresh 와 센스 앰프가 필요하고 커패시터도 있습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "midcore",
+     "hideResult": true,
+     "flag": "주제: core die"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0037",
+   "lv": "B",
+   "title": "base die 를 로직 공정으로 만드는 이유",
+   "stem": "HBM4 세대부터 업체들은 base die 를 DRAM 공정 대신 로직 파운드리 공정으로 만들기 시작했습니다. DRAM 공정은 셀 밀도에 맞춰져 있고 배선층이 적습니다. base die 를 로직 공정으로 옮기는 이유는 무엇입니까?",
+   "opts": [
+    "빠르고 촘촘한 트랜지스터와 많은 배선층으로 PHY·로직을 넣기 위해",
+    "DRAM 공정보다 제조 단가가 낮아서",
+    "로직 공정에서는 TSV 를 만들 필요가 없어서",
+    "base die 에 셀 배열을 넣어 용량을 늘리기 위해"
+   ],
+   "a": 0,
+   "exp": "로직 공정은 트랜지스터가 빠르고 배선층이 많아 2,048 bit PHY, 테스트, 고객 기능 같은 로직을 작은 면적·전력으로 넣을 수 있습니다. ②는 반대입니다. 선단 로직 공정은 더 비쌉니다. ③에서 base die 에는 여전히 TSV 가 필요하고, ④에서 base die 에는 셀 배열을 넣지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 12,
+     "highlight": "base",
+     "hideResult": true,
+     "flag": "주제: base die"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0038",
+   "lv": "B",
+   "title": "core die 사이의 채널 분담",
+   "stem": "16채널 HBM3 스택을 8-Hi 로 만들면 core die 8장이 채널을 나누어 맡습니다. 한 엔지니어는 '모든 die 가 16채널 모두에 동시에 응답한다' 고 이해했습니다. core die 와 채널의 관계로 옳은 것은 무엇입니까?",
+   "opts": [
+    "core die 마다 채널 일부를 맡고 base die 가 외부로 모은다",
+    "맨 아래 core die 가 16채널을 모두 맡고 나머지는 예비다",
+    "모든 die 가 16채널을 공유해 같은 주소에 함께 응답한다",
+    "채널은 interposer 배선이 정하므로 core die 와 무관하다"
+   ],
+   "a": 0,
+   "exp": "HBM 의 채널은 core die 의 bank 들을 묶은 단위이고, 단수에 따라 die 마다 전체 채널 중 일부(또는 채널의 일부 bank)를 맡습니다. base die 가 이 채널들을 모아 외부 인터페이스로 내보냅니다. ②처럼 한 die 에 모든 채널을 몰면 단수를 늘려도 용량을 쓸 수 없습니다. ③은 같은 주소에 여러 die 가 동시에 응답해 데이터가 충돌합니다. ④에서 interposer 는 채널을 전달할 뿐 채널을 정의하지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "hideResult": true,
+     "flag": "주제: 채널 분담"
+    }
+   ],
+   "metrics": [
+    [
+     "#",
+     "채널",
+     "16"
+    ],
+    [
+     "n",
+     "단수",
+     "8-Hi"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-0039",
+   "lv": "B",
+   "title": "base die 아래 접속부의 연결 대상",
+   "stem": "CoWoS-S 형 2.5D 패키지에서 HBM 스택은 SoC 옆에 놓입니다. base die 의 아래쪽(능동면)에는 µbump 가 배열되어 있습니다. 이 µbump 가 직접 접합되는 대상은 무엇입니까?",
+   "opts": [
+    "Si interposer 위의 pad",
+    "패키지 기판의 BGA ball",
+    "바로 위 core die 의 backside pad",
+    "lid 아래의 TIM 층"
+   ],
+   "a": 0,
+   "exp": "base die 의 µbump 는 interposer(또는 bridge) 위의 pad 에 접합되고, 신호는 interposer 배선을 따라 SoC 로 갑니다. ②의 BGA ball 은 패키지 기판 아래에서 보드와 연결되는 단계입니다. ③은 base die 위쪽(뒷면) 연결 대상이고, ④의 TIM 은 스택 위쪽의 방열 경로입니다.",
+   "k": 0,
+   "fig": [
+    "f_sip",
+    {
+     "type": "cowos-s",
+     "nHBM": 4,
+     "flag": "주제: 2.5D 연결"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0040",
+   "lv": "B",
+   "title": "HBM 제조 흐름의 순서",
+   "stem": "HBM 메모리는 wafer 를 만드는 Fab, 앞면 µbump 형성, 뒷면 가공(Post Fab: 박막화·TSV reveal·backside pad), 적층, 검사, 절단(singulation) 단계를 거칩니다. 이 단계들의 순서로 옳은 것은 무엇입니까?",
+   "opts": [
+    "Fab → µbump → Post Fab → 적층 → 검사 → 절단",
+    "Fab → 적층 → µbump → Post Fab → 검사 → 절단",
+    "Fab → Post Fab → 적층 → µbump → 절단 → 검사",
+    "µbump → Fab → Post Fab → 적층 → 절단 → 검사"
+   ],
+   "a": 0,
+   "exp": "앞면 µbump 를 먼저 만든 뒤 carrier 에 붙여 뒷면을 가공하고, 그 die 를 쌓아 wafer 상태에서 검사한 다음 절단합니다. ②는 µbump 와 뒷면 가공 전에 적층을 둡니다. ③은 µbump 없이 적층할 수 없는 순서이고, ④는 회로를 만드는 Fab 보다 µbump 를 앞에 두었습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "hideResult": true,
+     "flag": "주제: 제조 흐름"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0042",
+   "lv": "B",
+   "title": "base wafer 위에 die 를 올리는 방식",
+   "stem": "HBM 적층에서는 base die 를 자르지 않은 wafer 상태로 두고, 양품으로 고른 core die 를 낱개로 그 위에 차례로 접합합니다. 이 조립 방식을 부르는 이름은 무엇입니까?",
+   "opts": [
+    "Chip on Wafer (CoW)",
+    "Wafer on Wafer (WoW)",
+    "Chip on Chip (CoC)",
+    "Package on Package (PoP)"
+   ],
+   "a": 0,
+   "exp": "낱개 die(chip)를 wafer 위에 올리는 방식이 CoW 입니다. 양품 die 만 골라 올릴 수 있어 수율 손실을 줄입니다. ②의 WoW 는 양쪽이 모두 wafer 이고, ③의 CoC 는 양쪽이 모두 낱개 die 입니다. ④의 PoP 는 완성 패키지를 겹쳐 쌓는 방식입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "hideResult": true,
+     "flag": "주제: 적층 방식"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0043",
+   "lv": "B",
+   "title": "HBM 표준을 제정하는 기구",
+   "stem": "HBM 의 인터페이스·채널 구성·전압·적층 단수 같은 공통 사양은 하나의 표준화 기구가 문서로 정합니다. HBM3 는 JESD238, HBM4 는 JESD270-4 라는 번호로 발행되었습니다. 이 문서들을 제정한 기구는 무엇입니까?",
+   "opts": [
+    "IEEE",
+    "JEDEC",
+    "IEC",
+    "SEMI"
+   ],
+   "a": 1,
+   "exp": "JESD 로 시작하는 문서 번호는 JEDEC(고체 기술 협회)이 발행하는 메모리·반도체 표준입니다. HBM, DDR, LPDDR, GDDR 규격이 모두 JEDEC 문서입니다. ①의 IEEE 는 Ethernet·PCIe 계열 통신 표준 등을, ③의 IEC 는 전기·전자 일반 국제 표준을 다룹니다. ④의 SEMI 는 wafer·장비·재료 표준을 주로 정하며 메모리 인터페이스 규격을 내지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "표준 문서 읽기",
+     "points": [
+      "문서 번호의 머리글이 발행 기관을 나타냄",
+      "HBM3: JESD238 · HBM4: JESD270-4",
+      "메모리 인터페이스 규격의 소관"
+     ],
+     "ask": "제정 기구",
+     "flag": "주제: 표준"
+    }
+   ],
+   "metrics": [
+    [
+     "≡",
+     "HBM3",
+     "JESD238"
+    ],
+    [
+     "≡",
+     "HBM4",
+     "JESD270-4"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-0044",
+   "lv": "B",
+   "title": "HBM 세대의 출시 순서",
+   "stem": "HBM 메모리는 처음 표준화된 뒤 같은 세대의 확장판(E)과 다음 세대가 번갈아 나왔습니다. 제품 비교표를 만들기 위해 세대를 오래된 것부터 정렬하려고 합니다. 올바른 순서는 무엇입니까?",
+   "opts": [
+    "HBM → HBM2 → HBM2E → HBM3 → HBM3E → HBM4",
+    "HBM → HBM2 → HBM3 → HBM2E → HBM3E → HBM4",
+    "HBM → HBM2E → HBM2 → HBM3 → HBM4 → HBM3E",
+    "HBM2 → HBM → HBM2E → HBM3E → HBM3 → HBM4"
+   ],
+   "a": 0,
+   "exp": "E 가 붙은 제품은 같은 세대의 속도·용량 확장판으로, 해당 세대 다음이자 다음 세대보다 앞에 옵니다. 따라서 HBM → HBM2 → HBM2E → HBM3 → HBM3E → HBM4 입니다. ②는 HBM2E 를 HBM3 뒤에 두었고, ③은 HBM3E 를 HBM4 뒤에 두었습니다. ④는 HBM2 를 첫 세대 앞에, HBM3E 를 HBM3 앞에 두어 확장판의 의미를 거꾸로 읽었습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "세대 이름 읽기",
+     "points": [
+      "숫자는 세대, E 는 같은 세대의 확장판",
+      "확장판은 원래 세대 뒤에 나온다"
+     ],
+     "ask": "순서",
+     "flag": "주제: 세대"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0045",
+   "lv": "B",
+   "title": "단수를 늘렸을 때 변하는 사양",
+   "stem": "같은 세대·같은 핀 속도의 HBM 에서 단수만 8-Hi 에서 12-Hi 로 늘렸습니다. 스택당 데이터 폭과 채널 수는 그대로입니다. 스택 하나의 용량과 대역폭은 각각 어떻게 됩니까?",
+   "opts": [
+    "용량은 늘고 대역폭은 그대로",
+    "대역폭은 늘고 용량은 그대로",
+    "용량과 대역폭이 모두 늘어남",
+    "용량과 대역폭이 모두 그대로"
+   ],
+   "a": 0,
+   "exp": "용량 = die 밀도 × 단수 ÷ 8 이므로 단수에 비례해 늘지만, 대역폭 = 데이터 폭 × 핀 속도 ÷ 8 은 단수와 무관합니다. 늘어난 die 는 같은 채널을 나눠 씁니다. ②는 두 사양의 결정 요인을 바꾸어 읽었습니다. ③은 단수가 데이터 폭을 늘린다고 본 것이고, ④는 die 가 늘어도 용량이 그대로라고 본 것입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 12,
+     "hideResult": true,
+     "flag": "주제: 단수"
+    }
+   ],
+   "metrics": [
+    [
+     "n",
+     "단수",
+     "8 → 12-Hi"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-0048",
+   "lv": "B",
+   "title": "core wafer 를 얇게 가는 목적",
+   "stem": "core die 용 wafer 는 앞면 µbump 를 만든 뒤 carrier 에 붙여 뒷면을 수십 µm 까지 갈아냅니다. 이렇게 얇게 가공하는 목적의 조합으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "높이 예산 안에 단수를 넣고 TSV 끝을 뒷면으로 노출",
+    "die 무게를 줄여 적층 장비에 걸리는 하중을 낮추기",
+    "die 를 얇게 만들어 동작 전력 소비 자체를 낮추기",
+    "TSV 를 길게 만들어 저항을 높이고 신호를 안정화"
+   ],
+   "a": 0,
+   "exp": "via-middle TSV 는 wafer 앞면에서 일정 깊이로만 만들어지므로 뒷면을 갈아내야 끝이 드러나고(reveal), die 가 얇아야 정해진 높이 안에 여러 단을 넣을 수 있습니다. ②의 무게는 공정 목적이 아닙니다. ③에서 두께는 die 의 전력 소비를 바꾸지 않고, ④는 반대입니다. TSV 가 짧아지면 저항은 오히려 줄어듭니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 12,
+     "highlight": "midcore",
+     "hideResult": true,
+     "flag": "주제: 박막화"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0049",
+   "lv": "B",
+   "title": "core wafer 를 잘라서 올리는 이유",
+   "stem": "core die 를 wafer 째 base wafer 에 붙이지 않고, 먼저 낱개로 자른 뒤 base wafer 위에 하나씩 올립니다. 적층 뒤에는 불량 die 를 떼어낼 수 없습니다. 낱개로 잘라 올리는 이유로 가장 타당한 것은 무엇입니까?",
+   "opts": [
+    "시험으로 고른 양품(KGD)만 쌓을 수 있기 때문",
+    "자른 뒤에야 µbump 를 만들 수 있기 때문",
+    "base die 가 core die 보다 크기 때문",
+    "wafer 상태로는 정렬 마크를 볼 수 없기 때문"
+   ],
+   "a": 0,
+   "exp": "wafer 끼리 붙이면 불량 die 도 그대로 스택에 들어가 스택 수율이 die 수율의 곱으로 떨어집니다. 잘라서 시험을 통과한 KGD 만 올리면 이 손실을 줄일 수 있습니다. ②는 순서가 반대입니다. µbump 는 wafer 상태에서 만듭니다. ③의 크기 차이는 이유가 아니고, ④는 틀렸습니다. wafer 상태에서도 정렬 마크로 정렬합니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "hideResult": true,
+     "flag": "주제: KGD"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0050",
+   "lv": "B",
+   "title": "wafer 단위로 진행하는 마지막 공정",
+   "stem": "CoW 방식의 HBM 공정은 base wafer 위에서 적층, molding, 상면 연삭을 마치고 검사한 뒤 낱개로 자릅니다. 자르는 순간부터는 낱개 스택 단위로 다룹니다. wafer 단위로 진행되는 마지막 공정은 무엇입니까?",
+   "opts": [
+    "절단 직전의 wafer 단위 전기 검사",
+    "base wafer 위 core die 적층",
+    "적층 후 wafer 전면 molding",
+    "core wafer 앞면 µbump 형성"
+   ],
+   "a": 0,
+   "exp": "적층·molding·연삭이 모두 base wafer 위에서 이루어지고, 절단 직전 wafer 상태에서 전기 검사를 한 뒤 singulation 으로 낱개가 됩니다. ②, ③, ④는 모두 검사보다 앞선 공정입니다. 특히 ④는 core wafer 단계의 공정입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "hideResult": true,
+     "flag": "주제: 제조 흐름"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0051",
+   "lv": "B",
+   "title": "적층 후 die 를 교체할 수 없는 이유",
+   "stem": "12-Hi 스택의 전기 검사에서 위에서 다섯 번째 core die 하나만 불량으로 나왔습니다. 공정 담당자가 그 die 만 교체할 수 있는지 묻습니다. 적층이 끝난 스택에서 die 한 장을 교체할 수 없는 기술적 이유는 무엇입니까?",
+   "opts": [
+    "접합부와 충전 수지로 일체화되어 떼면 이웃 die 가 손상되기 때문",
+    "재가열하면 DRAM 셀에 저장된 데이터가 지워지기 때문",
+    "TSV 의 Cu 가 재가열 온도에서 녹아내리기 때문",
+    "die 를 떼면 stack ID 를 다시 부여할 방법이 없기 때문"
+   ],
+   "a": 0,
+   "exp": "die 사이는 µbump 금속 접합과 NCF·MUF·EMC 로 채워져 하나의 덩어리가 되므로, 중간 die 하나를 떼려면 위아래 접합부와 얇은 die 가 함께 손상됩니다. ②는 무관합니다. 출하 전 스택에는 보존할 데이터가 없습니다. ③에서 Cu 는 1,000 °C 이상에서 녹아 리플로 온도와 거리가 멀고, ④의 stack ID 는 위치로 정해지므로 교체 불가의 이유가 아닙니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 12,
+     "highlight": "midcore",
+     "hideResult": true,
+     "flag": "주제: 재작업"
+    }
+   ],
+   "metrics": [
+    [
+     "n",
+     "단수",
+     "12-Hi"
+    ],
+    [
+     "✕",
+     "불량",
+     "core die 1장"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-0057",
+   "lv": "B",
+   "title": "스택 안의 수직 신호 경로",
+   "stem": "core die 의 셀에서 읽은 데이터가 SoC 까지 가는 경로를 단면도에 표시하려 합니다. 데이터는 아래로 내려가 base die 를 거쳐 나갑니다. core die 회로에서 interposer 까지의 경로를 순서대로 나열한 것은 무엇입니까?",
+   "opts": [
+    "회로 → TSV → µbump·pad → 아래 die … → base die → interposer",
+    "회로 → interposer → base die → TSV → µbump",
+    "회로 → base die → TSV → µbump → 아래 die … → interposer",
+    "회로 → TSV → µbump → interposer (base die 우회)"
+   ],
+   "a": 0,
+   "exp": "데이터는 core die 회로에서 TSV 를 따라 내려가 µbump 와 아래 die 의 backside pad 로 이어지고, 이를 반복해 base die 에 도달한 뒤 base die 아래 µbump 를 통해 interposer 로 나갑니다. ②는 base die 를 거치지 않고 interposer 에 먼저 닿습니다. ③은 TSV 를 거치기 전에 base die 에 닿는다고 보아 순서가 맞지 않고, ④는 base die 를 건너뛰어 PHY 를 거치지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "midcore",
+     "hideResult": true,
+     "flag": "주제: 수직 경로"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0058",
+   "lv": "B",
+   "title": "스택 높이를 이루는 항목",
+   "stem": "이 문항집은 스택 높이를 'base die + N × (core die + 접합 간극)' 으로 정의하고, 최상단에 mold 가 있으면 따로 더합니다. N단 스택의 높이를 구할 때 더해야 하는 항목의 조합으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "base die 1장, core die N장, 접합 간극 N개",
+    "core die N장만",
+    "base die 1장, core die N장, 접합 간극 N − 1개",
+    "core die N장과 접합 간극 N + 1개"
+   ],
+   "a": 0,
+   "exp": "접합 계면은 base–core1 을 포함해 N개이므로 높이 = base die + N × (core die + 간극) 입니다(mold 는 별도). ②는 base die 와 간극을 빠뜨렸습니다. ③은 base–core1 계면을 빼고 센 오류이고, ④는 없는 계면 하나를 더 셌습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "height",
+     "hideResult": true,
+     "flag": "주제: 스택 높이"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0060",
+   "lv": "B",
+   "title": "스택에서 가장 얇은 층",
+   "stem": "µbump 로 접합한 HBM 스택의 단면을 보면 base die, core die, die 사이 접합층(µbump 와 NCF 또는 MUF), 상부 mold 가 차례로 보입니다. 현재 양산 범위에서 한 층의 두께가 가장 얇은 것은 무엇입니까?",
+   "opts": [
+    "die 사이 접합층",
+    "core die",
+    "base die",
+    "상부 mold"
+   ],
+   "a": 0,
+   "exp": "µbump 접합층(간극)은 5–15 µm 수준으로, 30–60 µm 인 core die 나 50–100 µm 인 base die 보다 얇습니다. 단수를 늘릴수록 이 간극의 합이 높이 예산을 크게 차지하므로 간극 축소가 계속 시도됩니다. ②의 core die 는 수십 µm 입니다. ③의 base die 는 core die 보다 두껍게 두는 경우가 많고, ④의 mold 는 높이 상한까지 남는 두께를 채우는 층이라 접합층보다 얇게 정해지지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "gap",
+     "hideResult": true,
+     "flag": "주제: 층 두께"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0061",
+   "lv": "B",
+   "title": "HBM 구조가 발전해 온 방향",
+   "stem": "HBM2 에서 HBM4 로 오는 동안 스택 구조의 치수 경향을 한 문장으로 신입 교육 자료에 요약하려 합니다. die 두께, die 간 접속 피치, 단수의 변화 방향을 옳게 요약한 것은 무엇입니까?",
+   "opts": [
+    "die 는 얇아지고 피치는 좁아지며 단수는 높아짐",
+    "die 는 두꺼워지고 피치는 넓어지며 단수는 낮아짐",
+    "die 두께와 피치는 그대로이고 단수만 높아짐",
+    "die 는 얇아지지만 피치는 넓어지고 단수는 그대로"
+   ],
+   "a": 0,
+   "exp": "정해진 높이 안에 더 많은 단을 넣고 더 많은 신호를 잇기 위해 die 는 계속 얇아지고, 접속 피치는 좁아지며, 단수는 4·8-Hi 에서 12·16-Hi 로 높아졌습니다. ②는 세 방향이 모두 반대입니다. ③은 높이 예산 안에서 단수만 늘릴 수 없다는 점을 놓쳤고, ④는 피치와 단수의 방향이 틀렸습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 16,
+     "hideResult": true,
+     "flag": "주제: 구조 발전"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0064",
+   "lv": "B",
+   "title": "KGSD 가 뜻하는 것",
+   "stem": "HBM 공급사는 고객에게 die 가 아니라 시험을 마친 스택 단위로 제품을 공급합니다. 출하 문서에는 'KGSD 기준 출하' 라고 적혀 있습니다. KGSD 가 가리키는 것은 무엇입니까?",
+   "opts": [
+    "시험으로 양품이 확인된 스택",
+    "시험으로 양품이 확인된 낱개 die",
+    "시험 전 적층만 끝낸 상태의 스택",
+    "불량 판정을 받아 분석 대상이 된 스택"
+   ],
+   "a": 0,
+   "exp": "KGSD 는 적층 후 시험까지 통과한 양품 스택입니다. 고객은 이 스택을 SoC 와 함께 패키지에 올리므로 스택 단위 품질 보증이 필요합니다. ②의 KGD 는 적층 전 낱개 die 단위입니다. ③은 시험 이전 상태이고, ④는 시험 결과가 반대입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "hideResult": true,
+     "flag": "주제: KGSD"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0072",
+   "lv": "B",
+   "title": "base die 에도 TSV 가 필요한 이유",
+   "stem": "base die 는 능동면(회로면)이 아래를 향하도록 interposer 에 접합되고, core die 는 base die 의 뒷면 위에 쌓입니다. 그래서 base die 에도 core die 와 마찬가지로 TSV 를 만듭니다. base die 에 TSV 가 필요한 이유는 무엇입니까?",
+   "opts": [
+    "core die 신호·전원을 능동면과 interposer 로 잇기 위해",
+    "적층 때 쓸 정렬 기준 표식을 base die 뒷면에 만들기 위해",
+    "base die 의 열을 흡수해 die 온도를 낮추기 위해",
+    "base die 에도 셀 배열을 넣어 용량을 늘리기 위해"
+   ],
+   "a": 0,
+   "exp": "core die 는 base die 뒷면에 접합되므로 그 신호와 전원이 base die 능동면의 회로와 아래 interposer 로 가려면 base die 두께를 관통하는 TSV 가 있어야 합니다. ②의 정렬 표식은 TSV 없이도 만듭니다. ③에서 TSV 가 열 경로를 보태기는 하지만 base die 에 TSV 를 두는 이유는 전기적 연결입니다. ④는 틀렸습니다. base die 에는 셀 배열이 없습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "base",
+     "hideResult": true,
+     "flag": "주제: base die"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0097",
+   "lv": "B",
+   "title": "core die 뒷면 접속 구조의 이름",
+   "stem": "mid core 는 앞면(회로면)에 µbump 를 만들고, 뒷면에서는 노출된 TSV 끝에 위 die 의 µbump 를 받을 금속 접속부를 만듭니다. 이 뒷면 접속부를 부르는 이름은 무엇입니까?",
+   "opts": [
+    "backside pad",
+    "Cu pillar",
+    "guard ring",
+    "scribe lane"
+   ],
+   "a": 0,
+   "exp": "TSV reveal 후 뒷면에 만드는 접속부를 backside pad 라 하며, 위 die 의 µbump 가 여기에 접합됩니다. ②의 Cu pillar 는 앞면 µbump 의 기둥 부분입니다. ③의 guard ring 은 die 가장자리를 감싸 습기·crack 을 막는 구조이고, ④의 scribe lane 은 die 사이의 절단 영역입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "midcore",
+     "hideResult": true,
+     "flag": "주제: mid core"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0102",
+   "lv": "B",
+   "title": "HBM4가 낮은 VDDQ를 쓰는 목적",
+   "stem": "HBM4 는 VDDQ 를 0.7–0.9 V 범위로 규정해 I/O 전압을 낮게 둡니다. 데이터 선이 2,048 bit 로 늘면서 I/O 에서 소비되는 전력이 커졌습니다. I/O 전압을 낮추는 주된 목적은 무엇입니까?",
+   "opts": [
+    "I/O 의 충·방전 전력을 줄이기 위해",
+    "신호 진폭을 키워 잡음 여유를 늘리기 위해",
+    "DRAM 셀의 retention 시간을 늘리기 위해",
+    "TSV 의 직류 저항을 낮추기 위해"
+   ],
+   "a": 0,
+   "exp": "I/O 선의 충·방전 전력은 대략 C·V²·f 에 비례하므로 전압을 낮추면 제곱으로 줄어듭니다. 선 수가 2배가 된 HBM4 에서 I/O 전력을 억제하는 직접 수단입니다. ②는 반대입니다. 전압을 낮추면 진폭이 작아져 잡음 여유는 오히려 줄어듭니다. ③의 retention 은 core 쪽 셀 특성이라 VDDQ 와 관계가 없고, ④의 TSV 저항은 형상과 재료로 정해집니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "전력 관점",
+     "points": [
+      "동적 전력 ∝ C × V² × f",
+      "I/O 선 수가 늘면 I/O 전력 비중이 커진다"
+     ],
+     "ask": "목적",
+     "flag": "주제: 전원"
+    }
+   ],
+   "metrics": [
+    [
+     "V",
+     "VDDQ",
+     "0.7–0.9 V"
+    ],
+    [
+     "b",
+     "데이터 폭",
+     "2,048 bit"
+    ]
+   ],
+   "src": "JEDEC JESD270-4 발표(2025-04-16)"
+  },
+  {
+   "id": "PROD-B-0103",
+   "lv": "B",
+   "title": "HBM4 12-Hi 스택의 용량 환산",
+   "stem": "현재 양산되는 HBM4 12-Hi 제품은 24 Gb core die 를 씁니다. HBM3E 12-Hi 도 24 Gb die 12장으로 만듭니다. base die 는 셀 배열이 없어 용량에 기여하지 않습니다. 24 Gb die 를 쓰는 HBM4 12-Hi 한 스택의 용량은 얼마입니까?",
+   "opts": [
+    "18 GB",
+    "36 GB",
+    "48 GB",
+    "72 GB"
+   ],
+   "a": 1,
+   "exp": "용량 = die 밀도 × core die 수 ÷ 8 = 24 Gb × 12 ÷ 8 = 36 GB 입니다. 같은 die 를 쓰는 HBM3E 12-Hi 와 용량이 같고, HBM4 의 이득은 용량이 아니라 2배가 된 I/O 폭에서 오는 대역폭입니다. ①은 die 를 6장으로 잘못 본 값입니다. ③의 48 GB 는 32 Gb die 를 쓸 때의 값(32 × 12 ÷ 8)이고, ④는 I/O 폭이 2배라 용량도 2배라고 착각한 값입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 12,
+     "hideResult": true,
+     "flag": "주제: 용량 계산"
+    }
+   ],
+   "metrics": [
+    [
+     "ρ",
+     "die 밀도",
+     "24 Gb"
+    ],
+    [
+     "n",
+     "단수",
+     "12-Hi"
+    ]
+   ],
+   "src": "Samsung ISSCC 2026 HBM4 36 GB 12-Hi"
+  },
+  {
+   "id": "PROD-B-0108",
+   "lv": "B",
+   "title": "높이 여유가 늘 때 기존 공법의 수명",
+   "stem": "어떤 고객이 다음 세대 제품에서 허용 패키지 높이(설계 조건)를 키우기로 했습니다. 지금은 µbump 공법으로 die 와 간극을 한계까지 줄여야 단수를 맞추는 상황입니다. 허용 높이가 커지면 접합 공법 선택에 생기는 변화로 가장 타당한 것은 무엇입니까?",
+   "opts": [
+    "기존 µbump 공법으로도 단수를 늘릴 여유가 생긴다",
+    "간극이 없는 HCB 로 즉시 바꿔야 할 압력이 커진다",
+    "같은 단수에서도 die 를 더 얇게 갈아야 한다",
+    "허용 높이가 늘어난 만큼 단수를 줄여야 한다"
+   ],
+   "a": 0,
+   "exp": "높이 = base die + N × (core die + 간극) 이므로 허용 높이가 늘면 같은 die 두께·간극으로 더 많은 단을 넣거나 die 를 덜 얇게 할 수 있습니다. 그만큼 간극이 없는 HCB 로 넘어갈 압력이 줄어듭니다. ②는 반대입니다. 여유가 생기면 전환 압력이 줄어듭니다. ③도 반대 방향이고, ④는 높이 여유와 맞지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 12,
+     "highlight": "height",
+     "hideResult": true,
+     "flag": "주제: 높이 예산"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0109",
+   "lv": "B",
+   "title": "HBM4 세대의 주력 접합 방식",
+   "stem": "HBM4 를 양산하는 업체들은 die 사이 접합 방식을 각자 발표했습니다. Cu–Cu 를 직접 붙이는 HCB 는 차세대 후보로 개발 중입니다. HBM4 세대 양산에서 주력으로 쓰이는 die 간 접합 방식은 무엇입니까?",
+   "opts": [
+    "µbump 기반 기존 접합(TC-NCF·MR-MUF)",
+    "범프 없는 Cu–Cu hybrid bonding(HCB)",
+    "die 가장자리를 잇는 와이어 본딩",
+    "이방성 도전 필름(ACF) 접착"
+   ],
+   "a": 0,
+   "exp": "HBM4 양산은 µbump 를 쓰는 기존 방식이 주력입니다. SK hynix 는 Advanced MR-MUF, Samsung 은 TC-NCF 를 써 왔습니다. ②의 HCB 는 지문대로 차세대 후보입니다. ③의 와이어 본딩은 수천 개의 die 간 수직 연결을 만들 수 없고, ④의 ACF 는 µm 급 피치·고단 적층에 쓰이지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "접합 방식 구분",
+     "points": [
+      "µbump(솔더) 접합: 열압착 또는 일괄 리플로",
+      "HCB: 범프 없이 Cu–Cu 직접 접합"
+     ],
+     "ask": "주력 방식",
+     "flag": "주제: 접합 공법"
+    }
+   ],
+   "metrics": [],
+   "src": "SK hynix 2025-09-12 · Samsung TC NCF 2024-02"
+  },
+  {
+   "id": "PROD-B-0110",
+   "lv": "B",
+   "title": "현행 HBM die 간 접속 피치의 자릿수",
+   "stem": "µbump 로 die 를 잇는 현재의 HBM 스택에서 die 사이 접속 피치의 자릿수를 신입 교육 자료에 적으려 합니다. 현행 µbump 접속 피치 수준으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "수십 µm",
+    "수 µm",
+    "수백 µm",
+    "수 mm"
+   ],
+   "a": 0,
+   "exp": "현행 µbump 피치는 대략 25–55 µm 범위의 수십 µm 수준입니다. ②의 수 µm 는 HCB 로 가야 도달하는 차세대 영역입니다. ③의 수백 µm 는 패키지 기판의 C4 bump·BGA 쪽 자릿수이고, ④의 수 mm 는 die 크기의 자릿수입니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "피치 자릿수",
+     "points": [
+      "die–die µbump",
+      "die–interposer µbump",
+      "기판 C4 · BGA"
+     ],
+     "ask": "자릿수",
+     "flag": "주제: 접속 피치"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0111",
+   "lv": "B",
+   "title": "10 µm 이하 접속 피치에 필요한 방식",
+   "stem": "차세대 고단 HBM 에서 die 간 접속 피치를 10 µm 이하로 줄이고 간극도 없애는 방안이 검토되고 있습니다. 솔더 µbump 는 리플로 때 솔더가 옆으로 퍼질 여유가 필요합니다. 이 목표에 맞는 접합 방식은 무엇입니까?",
+   "opts": [
+    "Cu–Cu hybrid bonding(HCB)",
+    "솔더 µbump 열압착(TC-NCF)",
+    "솔더 µbump 일괄 리플로(MR-MUF)",
+    "와이어 본딩"
+   ],
+   "a": 0,
+   "exp": "HCB 는 솔더 없이 Cu pad 와 유전막을 직접 접합하므로 솔더 퍼짐 여유가 필요 없고 간극도 생기지 않아 수 µm 피치까지 줄일 수 있습니다. ②와 ③은 솔더가 녹아 퍼지므로 피치를 줄이면 이웃 bump 끼리 붙는 bridge 위험이 커집니다. ④의 와이어 본딩은 die 가장자리만 쓸 수 있어 면 배열 접속이 불가능합니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "미세 피치 조건",
+     "points": [
+      "솔더 µbump 는 리플로 때 퍼질 공간이 필요",
+      "간극이 없으면 높이 예산도 줄어든다"
+     ],
+     "ask": "접합 방식",
+     "flag": "주제: 접합 공법"
+    }
+   ],
+   "metrics": [
+    [
+     "p",
+     "목표 피치",
+     "10 µm 이하"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-0112",
+   "lv": "B",
+   "title": "thermal dummy bump 를 배치하는 목적",
+   "stem": "HBM 스택에는 전기 신호를 전달하지 않는 µbump 를 die 사이에 추가로 배열하기도 합니다. 이를 thermal dummy bump 라 부릅니다. die 사이 충전 수지의 열전도율은 금속보다 훨씬 낮습니다. dummy bump 를 넣는 목적은 무엇입니까?",
+   "opts": [
+    "die 사이 수직 열 경로를 보강하기 위해",
+    "신호 선 수를 늘려 대역폭을 키우기 위해",
+    "TSV 를 대신해 전원을 공급하기 위해",
+    "die 간 접합 간극을 줄이기 위해"
+   ],
+   "a": 0,
+   "exp": "충전 수지(NCF·MUF)의 열전도율은 0.2–3 W/m·K 수준이라 die 사이가 열 병목이 됩니다. 금속 bump 를 더 배열하면 수직 열 경로가 늘어 하단 die 의 온도를 낮춥니다. ②의 신호는 dummy bump 로 전달되지 않습니다. ③의 전원은 전원용 TSV·bump 로 공급되고, ④에서 dummy bump 는 간극을 그대로 두고 그 사이를 채웁니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "gap",
+     "hideResult": true,
+     "flag": "주제: 열 경로"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-0124",
+   "lv": "B",
+   "title": "HBM4 JEDEC 핀 속도와 업체 제품",
+   "stem": "JESD270-4 발표문은 HBM4 의 전송 속도를 'up to 8 Gb/s' 로 적었습니다. 이후 메모리 업체들은 10 Gb/s 를 넘는 HBM4 제품을 발표했습니다(업체 발표 기준). 규격 속도와 업체 제품 속도의 관계로 옳은 것은 무엇입니까?",
+   "opts": [
+    "규격 최대 8 Gb/s, 업체 제품은 그보다 높은 자체 사양",
+    "규격은 8 Gb/s 를 하한으로 정하고 그 이상을 권장",
+    "규격 최대 12 Gb/s, 업체 제품은 그 안의 8–10 Gb/s",
+    "규격과 업체 제품이 모두 6.4 Gb/s 로 동일"
+   ],
+   "a": 0,
+   "exp": "JEDEC 의 8 Gb/s 는 표준이 정의한 최대 속도이고, 업체의 10 Gb/s 이상 제품은 표준 범위를 넘는 업체 사양입니다(SK hynix 10 Gb/s 이상, Samsung 11.7 Gb/s 발표). ②는 'up to' 를 하한으로 거꾸로 읽은 것입니다. ③의 12 Gb/s 는 JEDEC HBM4 값이 아니고, ④의 6.4 Gb/s 는 HBM3(JESD238)의 속도입니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "규격값과 제품값",
+     "points": [
+      "'up to' 의 의미",
+      "업체 발표는 업체 사양으로 읽는다",
+      "HBM3 의 표준 속도와 구분"
+     ],
+     "ask": "관계",
+     "flag": "주제: 핀 속도"
+    }
+   ],
+   "metrics": [
+    [
+     "f",
+     "JEDEC",
+     "up to 8 Gb/s"
+    ],
+    [
+     "f",
+     "업체 발표",
+     "10 Gb/s 초과"
+    ]
+   ],
+   "src": "JEDEC JESD270-4 발표 · SK hynix 2025-09-12 · Samsung 2026-02-12"
+  },
+  {
+   "id": "PROD-B-0127",
+   "lv": "B",
+   "title": "Samsung HBM4 base die 공정",
+   "stem": "Samsung 은 2026년 2월 HBM4 양산 출하를 발표하면서 core die 와 base die 에 서로 다른 공정을 쓴다고 밝혔습니다(업체 발표 기준). 발표된 base die 공정은 무엇입니까?",
+   "opts": [
+    "자사 파운드리 4 nm 로직 공정",
+    "core die 와 같은 1c DRAM 공정",
+    "28 nm 로직 공정",
+    "외부 파운드리 12 nm 로직 공정"
+   ],
+   "a": 0,
+   "exp": "Samsung 은 HBM4 core die 에 1c(10 nm 급 6세대) DRAM 공정을, base die 에 자사 파운드리 4 nm 로직 공정을 적용했다고 발표했습니다. ②는 core die 의 공정입니다. ③의 28 nm 는 발표와 다르고, ④의 외부 파운드리 12 nm 는 TSMC 가 HBM4 base die 용으로 제공한다고 밝힌 공정으로 Samsung 의 발표 내용이 아닙니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "업체 발표 구분",
+     "points": [
+      "core die 와 base die 의 공정은 다를 수 있다",
+      "자사 파운드리 보유 여부"
+     ],
+     "ask": "공정",
+     "flag": "주제: base die"
+    }
+   ],
+   "metrics": [],
+   "src": "Samsung Newsroom 2026-02-12"
+  },
+  {
+   "id": "PROD-B-0132",
+   "lv": "B",
+   "title": "SK hynix 가 HBM4에 쓰는 접합 방식",
+   "stem": "SK hynix 는 2025년 9월 HBM4 개발 완료를 발표하면서 die 적층 방식으로 자사가 HBM3 세대부터 써 온 공법의 개량판을 적용한다고 밝혔습니다(업체 발표 기준). 이 접합 방식은 무엇입니까?",
+   "opts": [
+    "Advanced MR-MUF",
+    "TC-NCF",
+    "Cu–Cu hybrid bonding(HCB)",
+    "와이어 본딩"
+   ],
+   "a": 0,
+   "exp": "SK hynix 는 die 를 쌓은 뒤 일괄 리플로하고 액상 몰딩재(MUF)로 사이를 채우는 MR-MUF 의 개량판인 Advanced MR-MUF 를 HBM4 에 적용한다고 발표했습니다. ②의 TC-NCF 는 Samsung 이 HBM3E 12H 에서 밝힌 방식입니다. ③의 HCB 는 차세대 후보이고, ④는 HBM die 간 접합에 쓰이지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "업체 발표 구분",
+     "points": [
+      "MR-MUF: 일괄 리플로 + 액상 몰딩재 충전",
+      "TC-NCF: die 별 열압착 + 비전도 필름"
+     ],
+     "ask": "공법",
+     "flag": "주제: 접합 공법"
+    }
+   ],
+   "metrics": [],
+   "src": "SK hynix 보도자료 2025-09-12"
+  },
+  {
+   "id": "PROD-B-0133",
+   "lv": "B",
+   "title": "Samsung HBM3E 12H 의 칩 간 간격",
+   "stem": "Samsung 은 2024년 HBM3E 12H 를 발표하면서 TC-NCF 를 얇게 만들어 칩 사이 간격을 줄였고, 덕분에 12단을 8단과 같은 높이에 넣었다고 밝혔습니다(업체 발표 기준). 발표된 칩 간 간격은 얼마입니까?",
+   "opts": [
+    "0.7 µm",
+    "7 µm",
+    "20 µm",
+    "50 µm"
+   ],
+   "a": 1,
+   "exp": "Samsung 은 HBM3E 12H 에서 칩 간 간격을 7 µm 로 줄였다고 발표했습니다. 12-Hi 의 간극 합은 12 × 7 = 84 µm 가 됩니다. µbump 접합 간극의 현실 범위(5–15 µm) 안의 값입니다. ①은 HCB 의 표면 단차 수준으로 µbump 간극으로는 불가능한 값입니다. ③과 ④는 die 두께나 µbump 피치의 자릿수로, 12단을 8단 높이에 넣는다는 발표와 맞지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "간격 자릿수",
+     "points": [
+      "µbump 접합 간극의 현실 범위",
+      "die 두께·피치의 자릿수와 구분"
+     ],
+     "ask": "간격",
+     "flag": "주제: 업체 발표"
+    }
+   ],
+   "metrics": [
+    [
+     "n",
+     "제품",
+     "HBM3E 12H"
+    ]
+   ],
+   "src": "Samsung Newsroom 2024-02-27"
+  },
+  {
+   "id": "PROD-B-9001",
+   "lv": "B",
+   "title": "HBM3 스택의 채널 구성",
+   "stem": "JESD238(HBM3, 2022년 1월)은 한 스택의 데이터 폭을 1,024 bit 로 두고, 채널 수를 HBM2 의 두 배로 늘렸습니다. 각 채널은 다시 두 개의 pseudo channel 로 나뉩니다. HBM3 의 독립 채널 수와 채널 폭으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "8채널 × 128 bit",
+    "16채널 × 64 bit",
+    "32채널 × 32 bit",
+    "32채널 × 64 bit"
+   ],
+   "a": 1,
+   "exp": "HBM3 는 1,024 bit 를 16개 독립 채널로 나누어 채널당 1,024 ÷ 16 = 64 bit 이고, pseudo channel 은 32개(각 32 bit)입니다. ①은 HBM2 계열의 구성입니다. ③은 HBM3 의 pseudo channel 구성을 독립 채널로 착각한 것이고, ④는 HBM4 의 구성(2,048 bit)입니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "채널 구성 읽기",
+     "points": [
+      "총 폭 = 채널 수 × 채널 폭",
+      "HBM2 는 8채널이었다",
+      "독립 채널과 pseudo channel 을 구분"
+     ],
+     "ask": "채널 구성",
+     "flag": "주제: 세대 사양"
+    }
+   ],
+   "metrics": [
+    [
+     "≡",
+     "표준",
+     "JESD238"
+    ],
+    [
+     "b",
+     "데이터 폭",
+     "1,024 bit"
+    ]
+   ],
+   "src": "JEDEC JESD238 발표(2022-01-27)"
+  },
+  {
+   "id": "PROD-B-9002",
+   "lv": "B",
+   "title": "pseudo channel 의 정의",
+   "stem": "HBM3 이후 채널 하나는 두 개의 pseudo channel 로 나뉘어 동작합니다. 컨트롤러 설계자가 'pseudo channel 이 독립 채널과 무엇이 다르냐'고 묻습니다. pseudo channel 을 가장 정확하게 설명한 것은 무엇입니까?",
+   "opts": [
+    "한 채널의 명령·주소 경로를 공유하고 데이터 경로를 나눈 단위",
+    "채널마다 따로 둔 전원 도메인의 구분 단위",
+    "서로 다른 core die 에 놓인 완전히 독립된 별도 채널",
+    "TSV 를 공유하지 않도록 물리적으로 분리한 die 영역"
+   ],
+   "a": 0,
+   "exp": "pseudo channel 은 한 채널의 명령·주소(CA) 경로를 공유하면서 데이터 폭을 둘로 나누어 따로 접근하게 한 단위입니다. HBM3 는 64 bit 채널을 32 bit pseudo channel 두 개로 나눕니다. ②의 전원 도메인과는 관계없는 개념입니다. ③은 독립 채널의 설명이며 pseudo channel 은 명령 경로를 공유하므로 완전히 독립적이지 않습니다. ④처럼 TSV 공유 여부로 정의되는 단위도 아닙니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "채널 계층",
+     "points": [
+      "독립 채널의 정의를 먼저 떠올린다",
+      "무엇을 공유하고 무엇을 나누는지 본다",
+      "접근 단위가 작아지면 효율이 바뀐다"
+     ],
+     "ask": "정의",
+     "flag": "주제: 채널 구조"
+    }
+   ],
+   "metrics": [
+    [
+     "#",
+     "HBM3 채널",
+     "16 × 64 bit"
+    ],
+    [
+     "½",
+     "pseudo ch.",
+     "32 × 32 bit"
+    ]
+   ],
+   "src": "JEDEC JESD238 발표(2022-01-27)"
+  },
+  {
+   "id": "PROD-B-9003",
+   "lv": "B",
+   "title": "HBM2E 의 채널 폭",
+   "stem": "JEDEC 문서명으로는 HBM2(JESD235C)에 해당하는 HBM2E 는 1,024 bit 데이터 폭을 8개의 독립 채널로 나눕니다. 같은 1,024 bit 인 HBM3 와 비교할 때 HBM2E 의 채널당 데이터 폭은 얼마입니까?",
+   "opts": [
+    "32 bit",
+    "64 bit",
+    "128 bit",
+    "256 bit"
+   ],
+   "a": 2,
+   "exp": "채널당 폭 = 1,024 bit ÷ 8 = 128 bit 입니다. HBM3 는 같은 1,024 bit 를 16채널로 나누어 채널당 64 bit 가 되었습니다. ①은 HBM3 pseudo channel 의 폭입니다. ②는 HBM3·HBM4 의 채널 폭이고, ④는 채널 수를 4로 잘못 나눈 값입니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "세대 비교",
+     "points": [
+      "총 폭은 HBM2E·HBM3 가 같다",
+      "채널 수가 바뀌면 채널 폭이 바뀐다"
+     ],
+     "ask": "채널 폭",
+     "flag": "주제: 세대 사양"
+    }
+   ],
+   "metrics": [
+    [
+     "b",
+     "데이터 폭",
+     "1,024 bit"
+    ],
+    [
+     "#",
+     "채널 수",
+     "8"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-9004",
+   "lv": "B",
+   "title": "Gb 단위 die 밀도의 GB 환산",
+   "stem": "DRAM die 의 밀도는 Gb(기가비트), 스택 용량은 GB(기가바이트)로 표기합니다. 고객 자료에는 HBM3E 의 core die 가 '24 Gb' 로 적혀 있습니다. 24 Gb die 한 장의 용량을 GB 로 환산하면 얼마입니까?",
+   "opts": [
+    "1.5 GB",
+    "3 GB",
+    "8 GB",
+    "24 GB"
+   ],
+   "a": 1,
+   "exp": "1 byte = 8 bit 이므로 24 Gb ÷ 8 = 3 GB 입니다. 12장을 쌓으면 3 × 12 = 36 GB 가 됩니다. ①은 16 으로 나눈 값입니다. ③은 bit 와 byte 의 비율(8)을 답으로 고른 것이고, ④는 Gb 를 GB 로 그대로 읽은 단위 혼동입니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "단위 환산",
+     "points": [
+      "밀도는 bit, 용량은 byte 로 적는다",
+      "1 byte = 8 bit"
+     ],
+     "ask": "환산 값",
+     "flag": "주제: 용량 단위"
+    }
+   ],
+   "metrics": [
+    [
+     "ρ",
+     "die 밀도",
+     "24 Gb"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-9005",
+   "lv": "B",
+   "title": "pJ/bit 가 나타내는 양",
+   "stem": "메모리 인터페이스의 효율은 흔히 'pJ/bit' 로 비교합니다. 한 자료에 'A 메모리는 3.5 pJ/bit, B 메모리는 7 pJ/bit' 라고 적혀 있습니다. 이 단위가 나타내는 양으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "1 bit 를 전송하는 데 드는 에너지",
+    "1초 동안 소비하는 평균 전력",
+    "핀 하나가 1초에 보내는 bit 수",
+    "die 1장이 저장하는 bit 수"
+   ],
+   "a": 0,
+   "exp": "pJ/bit 는 1 bit 를 읽거나 써서 보내는 데 드는 에너지(피코줄)입니다. 전력은 이 값에 초당 전송 bit 수를 곱해 얻으므로, 같은 대역폭이면 A 가 B 의 절반 전력을 씁니다. ②는 W(J/s) 단위의 양입니다. ③은 Gb/s 로 적는 핀 속도이고, ④는 Gb 로 적는 die 밀도입니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "효율 지표",
+     "points": [
+      "에너지 = 전력 × 시간",
+      "전력 = 대역폭 × 에너지 효율",
+      "단위의 분모가 무엇인지 확인"
+     ],
+     "ask": "물리량",
+     "flag": "주제: 전력 효율"
+    }
+   ],
+   "metrics": [
+    [
+     "E",
+     "A 메모리",
+     "3.5 pJ/bit"
+    ],
+    [
+     "E",
+     "B 메모리",
+     "7 pJ/bit"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-9006",
+   "lv": "B",
+   "title": "VDDC 와 VDDQ 의 구분",
+   "stem": "JESD270-4 는 HBM4 의 전원으로 VDDC(1.0 V 또는 1.05 V)와 VDDQ(0.7–0.9 V 중 선택)를 따로 규정합니다. 전원 설계 검토서에서 두 레일의 용도를 정리하려 합니다. 두 전원의 역할을 옳게 짝지은 것은 무엇입니까?",
+   "opts": [
+    "VDDC 는 core 회로, VDDQ 는 데이터 I/O 구동",
+    "VDDC 는 데이터 I/O, VDDQ 는 core 회로",
+    "VDDC 는 TSV 충전, VDDQ 는 refresh 전용",
+    "두 레일 모두 base die 의 PHY 전용"
+   ],
+   "a": 0,
+   "exp": "VDDC 는 DRAM core(셀 배열·주변 회로) 전원이고, VDDQ 는 데이터 입출력(I/O) 구동 전원입니다. I/O 전압을 낮게 따로 두면 전송 전력을 줄이면서 core 에는 동작 여유를 남길 수 있습니다. ②는 두 레일을 바꾸어 적었습니다. ③의 TSV 충전·refresh 전용 레일은 규정된 구분이 아니고, ④처럼 두 레일이 모두 PHY 전용이면 core 전원이 따로 없게 됩니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "전원 레일",
+     "points": [
+      "Q 는 I/O(DQ) 쪽 전원을 뜻하는 관례",
+      "I/O 전압과 core 전압의 최적점은 다르다"
+     ],
+     "ask": "역할",
+     "flag": "주제: 전원"
+    }
+   ],
+   "metrics": [
+    [
+     "V",
+     "VDDC",
+     "1.0 / 1.05 V"
+    ],
+    [
+     "V",
+     "VDDQ",
+     "0.7–0.9 V"
+    ]
+   ],
+   "src": "JEDEC JESD270-4 발표(2025-04-16)"
+  },
+  {
+   "id": "PROD-B-9007",
+   "lv": "B",
+   "title": "JEDEC 기준 16-Hi가 들어간 세대",
+   "stem": "적층 단수는 세대마다 표준이 허용하는 범위가 다릅니다. JESD238(HBM3) 발표문은 4/8/12-Hi 를 지원 단수로 적고 16-Hi 는 향후 확장으로 남겼습니다. 16-Hi 를 지원 단수로 명시한 JEDEC 세대는 무엇입니까?",
+   "opts": [
+    "HBM2(JESD235C)",
+    "HBM3(JESD238)",
+    "HBM4(JESD270-4)",
+    "어느 세대에도 없음"
+   ],
+   "a": 2,
+   "exp": "JESD270-4(HBM4)는 4/8/12/16-Hi 와 24 Gb·32 Gb die 를 규정해 최대 64 GB(32 Gb × 16 ÷ 8)를 허용합니다. ①의 HBM2 계열은 최대 12-Hi 입니다. ②의 HBM3 는 지문대로 16-Hi 를 향후 확장으로만 남겼고, ④는 HBM4 의 규정과 맞지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "단수 규정 읽기",
+     "points": [
+      "세대별 지원 단수",
+      "'향후 확장' 과 '지원' 의 구분"
+     ],
+     "ask": "세대",
+     "flag": "주제: 단수"
+    }
+   ],
+   "metrics": [
+    [
+     "n",
+     "HBM3",
+     "4/8/12-Hi"
+    ]
+   ],
+   "src": "JEDEC JESD270-4 발표(2025-04-16) · JEDEC JESD238 발표(2022-01-27)"
+  },
+  {
+   "id": "PROD-B-9008",
+   "lv": "B",
+   "title": "스택 용량을 늘리는 두 가지 수단",
+   "stem": "같은 세대 HBM 에서 스택 하나의 용량을 키우려 합니다. 데이터 폭과 채널 구성은 표준으로 고정되어 있습니다. 스택 하나의 용량을 직접 늘리는 수단의 조합으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "die 밀도를 높이거나 단수를 늘린다",
+    "핀 속도를 높이거나 채널 수를 늘린다",
+    "base die 를 키우거나 VDDQ 를 높인다",
+    "패키지에 스택 수를 늘린다"
+   ],
+   "a": 0,
+   "exp": "용량 = die 밀도 × core die 수 ÷ 8 이므로 24 Gb → 32 Gb 처럼 밀도를 올리거나 12-Hi → 16-Hi 처럼 단수를 늘려야 합니다. ②는 대역폭을 바꾸는 수단입니다. ③의 base die 는 셀이 없어 용량에 기여하지 않고 VDDQ 는 I/O 전압입니다. ④는 시스템 용량을 늘리지만 스택 하나의 용량은 그대로입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 12,
+     "hideResult": true,
+     "flag": "주제: 용량"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-9009",
+   "lv": "B",
+   "title": "HBM 연결에 interposer·bridge 를 쓰는 이유",
+   "stem": "HBM4 스택 하나는 2,048개의 데이터 선에 명령·주소·전원 선까지 SoC 와 이어야 하고, base die 의 µbump 는 수십 µm 피치로 배열됩니다. 그래서 HBM 메모리는 일반 유기 기판 위가 아니라 Si interposer 나 bridge 를 거쳐 SoC 와 연결됩니다. 그 이유는 무엇입니까?",
+   "opts": [
+    "미세 피치의 수천 개 배선을 짧게 뽑을 배선 밀도가 필요해서",
+    "Si 가 유기 기판보다 전기 저항이 낮아서",
+    "interposer 가 HBM 의 용량을 늘려 주어서",
+    "유기 기판이 DRAM 의 refresh 를 방해해서"
+   ],
+   "a": 0,
+   "exp": "수십 µm 피치로 수천 개가 배열된 HBM 접속을 SoC 까지 짧게 이으려면 µm 급 선폭의 고밀도 배선이 필요하고, 이것을 Si interposer 나 국부 bridge 가 제공합니다. ②는 틀렸습니다. 도체 저항은 Si 가 아니라 배선 금속이 정합니다. ③에서 interposer 는 용량과 무관하고, ④의 refresh 는 기판 종류와 관계가 없습니다.",
+   "k": 0,
+   "fig": [
+    "f_sip",
+    {
+     "type": "cowos-s",
+     "nHBM": 4,
+     "lines": 2048,
+     "flag": "주제: 2.5D 연결"
+    }
+   ],
+   "metrics": [
+    [
+     "b",
+     "데이터 선",
+     "2,048개"
+    ]
+   ]
+  },
+  {
+   "id": "PROD-B-9010",
+   "lv": "B",
+   "title": "PHY 가 base die 가장자리에 놓이는 이유",
+   "stem": "HBM base die 의 평면 배치를 보면 SoC 와 통신하는 PHY 회로와 그 µbump 영역이 die 한쪽 가장자리에 몰려 있습니다. 패키지에서는 이 가장자리가 SoC 쪽을 향하도록 스택을 놓습니다. 이렇게 배치하는 이유는 무엇입니까?",
+   "opts": [
+    "SoC 까지의 배선 길이를 짧게 할 수 있기 때문",
+    "die 가장자리로 열이 가장 잘 빠져나가기 때문",
+    "TSV 를 die 중앙부에는 배치할 수 없기 때문",
+    "가장자리에 두어야 die 를 자를 수 있기 때문"
+   ],
+   "a": 0,
+   "exp": "PHY 를 SoC 쪽 가장자리에 모으면 HBM–SoC 사이 배선이 mm 단위로 짧아져 선 용량과 지연, 전송 에너지가 줄어듭니다. ②에서 열 방출은 위쪽 방열 경로로 주로 이루어져 가장자리 배치의 이유가 아닙니다. ③은 틀렸습니다. TSV 는 die 중앙부에도 배열됩니다. ④의 절단은 scribe lane 에서 하므로 PHY 위치와 무관합니다.",
+   "k": 0,
+   "fig": [
+    "f_sip",
+    {
+     "type": "cowos-s",
+     "nHBM": 2,
+     "flag": "주제: PHY 배치"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-9011",
+   "lv": "B",
+   "title": "부하 중 스택에서 가장 뜨거운 위치",
+   "stem": "HBM 스택은 위쪽(top core 위)에 TIM 과 방열 부품이 놓이고, 맨 아래 base die 에는 PHY 와 로직 회로가 있습니다. 고부하로 동작할 때 스택 안에서 온도가 가장 높은 쪽은 어디입니까?",
+   "opts": [
+    "base die 와 하단 core die 쪽",
+    "냉각기와 맞닿아 있는 top core 쪽",
+    "스택 중간 높이에 있는 core die",
+    "모든 die 가 거의 같은 온도"
+   ],
+   "a": 0,
+   "exp": "열은 위쪽 방열 부품으로 빠지므로 아래에 있을수록 열이 지나야 할 층(die·접합층)이 많아 온도가 높고, base die 자체도 PHY·로직 발열원입니다. ②의 top core 는 방열 부품에 가장 가까워 가장 차갑습니다. ③은 아래쪽의 열 누적을 설명하지 못하고, ④는 접합층의 열저항을 무시한 것입니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 12,
+     "highlight": "base",
+     "hideResult": true,
+     "flag": "주제: 온도 분포"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-9012",
+   "lv": "B",
+   "title": "on-die ECC 의 역할",
+   "stem": "JESD238(HBM3)은 플랫폼 수준의 신뢰성을 위해 DRAM die 안에서 동작하는 ECC(on-die ECC)를 도입했습니다. 고객이 'on-die ECC 가 정확히 무엇을 해 주느냐' 고 묻습니다. on-die ECC 의 역할로 옳은 것은 무엇입니까?",
+   "opts": [
+    "die 안에서 저장 데이터의 bit 오류를 검출·정정",
+    "die 의 온도를 낮춰 오류 발생을 막음",
+    "불량 die 를 스택에서 전기적으로 떼어 냄",
+    "refresh 를 없애 전력을 줄임"
+   ],
+   "a": 0,
+   "exp": "on-die ECC 는 데이터와 함께 저장한 검사 bit 로 읽을 때 생긴 bit 오류를 die 안에서 찾아 고칩니다. 셀이 미세해질수록 늘어나는 단일 bit 오류를 흡수합니다. ②의 온도 제어 기능이 아닙니다. ③처럼 die 를 떼어 내는 기능은 없고, ④에서 refresh 는 ECC 와 별개로 계속 필요합니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "RAS 용어",
+     "points": [
+      "ECC: 검사 bit 로 오류를 찾고 고친다",
+      "정정과 예방은 다르다"
+     ],
+     "ask": "역할",
+     "flag": "주제: RAS"
+    }
+   ],
+   "metrics": [
+    [
+     "≡",
+     "표준",
+     "JESD238"
+    ]
+   ],
+   "src": "JEDEC JESD238 발표(2022-01-27)"
+  },
+  {
+   "id": "PROD-B-9013",
+   "lv": "B",
+   "title": "post-package repair 의 대상",
+   "stem": "적층이 끝난 HBM 스택은 die 를 교체할 수 없습니다. 그래서 스택 시험이나 사용 중 발견된 불량 셀 행(row)을 die 안의 예비 행으로 바꾸는 기능을 씁니다. 이 기능(post-package repair)이 대체하는 대상은 무엇입니까?",
+   "opts": [
+    "불량 셀이 있는 row 를 die 안의 예비 row 로",
+    "불량 core die 전체를 예비 die 로",
+    "불량 스택을 같은 패키지의 다른 스택으로",
+    "불량 TSV 를 새 Cu 로 다시 채움"
+   ],
+   "a": 0,
+   "exp": "post-package repair 는 die 안에 미리 만들어 둔 예비 row 로 불량 row 의 주소를 옮기는 방식입니다. 패키지 이후에도 퓨즈 등으로 주소를 바꿀 수 있어 die 를 떼지 않고 수리합니다. ②의 예비 die 는 스택에 두지 않습니다. ③은 시스템 차원의 대체로 PPR 이 아니고, ④처럼 접합된 스택의 TSV 를 다시 채울 수는 없습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "RAS 용어",
+     "points": [
+      "repair 는 예비 자원으로 주소를 옮기는 것",
+      "적층 후에는 물리적 교체가 불가"
+     ],
+     "ask": "대상",
+     "flag": "주제: RAS"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-9014",
+   "lv": "B",
+   "title": "row hammer 대응 기능 DRFM",
+   "stem": "같은 row 를 매우 빠르게 반복 활성화하면 이웃 row 의 전하가 새어 bit 가 뒤집히는 row hammer 현상이 생깁니다. JESD270-4(HBM4)는 RAS 강화 항목으로 DRFM(Directed Refresh Management)을 넣었습니다. DRFM 의 동작으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "호스트가 지정한 공격 row 주변의 피해 row 를 추가로 refresh",
+    "전체 bank 의 refresh 주기를 영구히 절반으로 줄임",
+    "공격 row 를 예비 row 로 영구 교체",
+    "공격이 감지되면 해당 채널의 전원을 차단"
+   ],
+   "a": 0,
+   "exp": "DRFM 은 호스트가 자주 활성화된 row 를 지정하면 DRAM 이 그 이웃(피해) row 를 추가로 refresh 해 전하 손실을 보충하는 방식입니다. ②처럼 전체 주기를 바꾸면 성능·전력 손실이 커 DRFM 의 방식이 아닙니다. ③의 영구 교체는 repair 기능이고, ④의 전원 차단은 데이터를 잃게 합니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "RAS 용어",
+     "points": [
+      "피해 row 는 공격 row 의 이웃",
+      "refresh 로 전하를 보충할 수 있다"
+     ],
+     "ask": "동작",
+     "flag": "주제: RAS"
+    }
+   ],
+   "metrics": [
+    [
+     "≡",
+     "표준",
+     "JESD270-4"
+    ]
+   ],
+   "src": "JEDEC JESD270-4 발표(2025-04-16)"
+  },
+  {
+   "id": "PROD-B-9015",
+   "lv": "B",
+   "title": "TSV lane repair 의 원리",
+   "stem": "스택 시험에서 데이터 TSV 하나가 open 으로 판정되었습니다. HBM 메모리는 데이터 TSV 묶음마다 예비 TSV 를 두고 신호를 옮겨 실을 수 있게 설계합니다. 이 lane repair 가 하는 일로 옳은 것은 무엇입니까?",
+   "opts": [
+    "불량 TSV 의 신호를 예비 TSV 경로로 재배치",
+    "open 된 TSV 를 전류로 다시 녹여 연결",
+    "불량 TSV 가 있는 die 를 비활성화",
+    "해당 채널의 핀 속도를 낮춰 통과"
+   ],
+   "a": 0,
+   "exp": "lane repair 는 불량 TSV 가 맡던 신호를 옆 lane 으로 한 칸씩 밀어 예비 TSV 까지 쓰도록 경로를 바꾸는 방식입니다. TSV 하나 때문에 스택 전체를 버리지 않게 합니다. ②처럼 open 을 전류로 복구하는 기능은 없습니다. ③은 die 의 용량을 잃게 하고, ④는 끊어진 선을 이어 주지 못합니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "highlight": "midcore",
+     "hideResult": true,
+     "flag": "주제: TSV repair"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-9016",
+   "lv": "B",
+   "title": "custom HBM 에서 바뀌는 부분",
+   "stem": "HBM4 세대부터 고객별 기능을 넣은 'custom HBM' 이 논의됩니다. core die 는 표준 DRAM 그대로 두고 특정 die 의 회로를 고객 요구에 맞춥니다. custom HBM 에서 고객 맞춤으로 바뀌는 부분은 무엇입니까?",
+   "opts": [
+    "base die 의 로직 회로",
+    "core die 의 셀 배열",
+    "TSV 의 직경과 배치",
+    "접합 간극의 두께"
+   ],
+   "a": 0,
+   "exp": "custom HBM 구조는 로직 공정으로 만든 base die 에 고객이 원하는 인터페이스·제어·연산 기능을 넣는 방식입니다. core die 는 표준 제품을 공유합니다. ②의 셀 배열은 표준 core die 를 그대로 씁니다. ③과 ④는 적층 구조의 물리 사양으로 고객 기능과 직접 관계가 없습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 12,
+     "highlight": "base",
+     "hideResult": true,
+     "flag": "주제: custom HBM"
+    }
+   ],
+   "metrics": []
+  },
+  {
+   "id": "PROD-B-9017",
+   "lv": "B",
+   "title": "HBM·GDDR 의 탑재 위치 비교",
+   "stem": "GDDR 메모리는 GPU 패키지 바깥 보드 위에 여러 개 놓이고, HBM 메모리는 가속기 패키지 안에 들어갑니다. 두 메모리의 탑재 위치를 옳게 설명한 것은 무엇입니까?",
+   "opts": [
+    "HBM 스택은 SoC 옆 interposer 위, GDDR 은 보드 위 별도 패키지",
+    "HBM 스택은 보드 위 별도 패키지, GDDR 은 SoC 옆 interposer 위",
+    "둘 다 SoC die 위에 TSV 로 직접 적층",
+    "둘 다 보드 위 소켓에 끼우는 모듈 형태"
+   ],
+   "a": 0,
+   "exp": "HBM 메모리는 SoC 옆 interposer(또는 bridge) 위에 µbump 로 붙어 같은 패키지를 이루고, GDDR 은 BGA 패키지로 보드에 실장되어 보드 배선으로 GPU 와 연결됩니다. ②는 위치를 바꾸었습니다. ③의 SoC 위 직접 적층은 두 메모리의 일반 탑재 방식이 아니고, ④의 소켓 장착은 DIMM 형 메모리의 방식입니다.",
+   "k": 0,
+   "fig": [
+    "f_sip",
+    {
+     "type": "cowos-s",
+     "nHBM": 4,
+     "flag": "주제: 탑재 위치"
+    }
+   ],
+   "metrics": []
+  }
+ ]
+}
