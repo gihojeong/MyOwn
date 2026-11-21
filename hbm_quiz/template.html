@@ -914,12 +914,15 @@ function f_warp(s, p) {
   A(s, x0 + w / 2, baseY, x0 + w / 2, midY + 0.18, K.rust, 1.3, { both: true });
   pill(s, x0 + w / 2 + 0.1, (baseY + midY) / 2, "중앙 변위 " + (p.mag_um || 80) + " µm", { fs: 8, fill: K.orange, align: "left" });
   L(s, x0, edgeY, x0 + w, edgeY, K.edge, 0.7, { dash: 1 });
-  annot(s, 0, sg > 0 ? "중앙이 기준면에서 멀어진 형상 (∩) = Cry" : "중앙이 기준면에 가까워진 형상 (∪) = Smile", K.pink);
+  // hideNames(또는 hideResult): Smile/Cry 이름과 die 면 볼록·오목 판정을 숨긴다 (명명·형상 판정 문항용)
+  const hn = !!(p.hideNames || p.hideResult);
+  annot(s, 0, sg > 0 ? "중앙이 기준면에서 멀어진 형상 (∩)" + (hn ? "" : " = Cry") : "중앙이 기준면에 가까워진 형상 (∪)" + (hn ? "" : " = Smile"), K.pink);
   // 우측: 명명 규칙 표 (3행으로 압축) + 온도 곡선
   // 명칭 규약 (EA STANDARDS 2.5): 측정 자세 그대로 위에서 본 형상 — 중앙이 기준면에서 멀어짐(∩) = Cry, 가까워짐(∪) = Smile
   const rows = [["측정 자세", "중앙이 기준면에서 멂 (∩)", "중앙이 기준면에 가까움 (∪)"],
     ["위에서 본 이름", "Cry (convex)", "Smile (concave)"],
     ["bump 면 아래: BEOL 면", "오목", "볼록"], ["BEOL 면 위: BEOL 면", "볼록", "오목"]];
+  if (hn) rows.forEach((r, ri) => { if (ri > 0) { r[1] = "?"; r[2] = "?"; } });
   s.addTable(rows.map((r, ri) => r.map((c) => ({ text: c, options: (ri === 1 || ri === (bumpDown ? 2 : 3)) ? { color: K.alert } : {} }))), { x: RC.x, y: TOP - 0.05, w: RC.w, h: 2.3, fs: 14 });
   pill(s, RC.x, TOP + 2.62, "자세를 밝혀야 die 의 실제 휨 방향을 알 수 있다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   const g = axes(s, RC.x + 0.72, TOP + 3.55, 2.8, 1.25, {

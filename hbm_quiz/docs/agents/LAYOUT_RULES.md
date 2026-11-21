@@ -46,6 +46,7 @@
 | `f_therm` | core·base die 온도(최상단 `tTop` 만 표시), 층별 R · 합계, ΔT, base 온도, 상한 대비 색, "간극 수 = core die 수 (N개)" pill |
 | `f_hcb` | 허용치 대비 "초과/이내" 판정과 색 |
 | `f_tsv` | aspect ratio 값 |
+| `f_warp` | Smile/Cry 이름, 자세별 die BEOL 면 볼록·오목 (`hideNames` 와 같음) |
 | `f_bump` | Kirkendall · current crowding 결함 이름, IMC 상(Cu₆Sn₅ 등) 이름 (`hideLabels` 와 같음) |
 
 ## 4. 템플릿별 params 허용 범위
@@ -60,7 +61,7 @@
 | `f_bump` | `pillar_um` 10–60, `solder_um` 5–25, `imc_um` 0.5–6, `niBarrier` (IMC 라벨이 Ni₃Sn₄ / (Cu,Ni)₆Sn₅ 로 바뀜), `kirkendall`, `em` + `j_kA` (≤ 4자리), `temp`, `k`, `hours` ≤ `tmax`, **`tmax`** (기본 1000 h), **`ymax`** (기본 8 µm), **`hideLabels`** (Kirkendall·EM 결함 라벨을 "관찰된 void (A)"·"결함 위치 (B)" 로, IMC 상 이름 생략 — 명칭·기구를 묻는 문항용, `hideResult` 도 같은 효과), `bullet`. **`k` 가 없으면 성장 곡선을 그리지 않는다**(축·식 라벨만) |
 | `f_saw` | `method`: blade·lg·stealth·plasma·deeplaser·dbg (비교표에 **DBG 행**이 따로 있고 dbg 면 그 행이 강조됨), `kerf_um` 0–60, `haz_um` 2–20, `chip_um` 5–30, **`notes: false`** (개념 주석·기본 bullet 을 끄고 지시선 라벨을 "관찰 부위 (A/B)" 로 — 개념을 묻는 문항용), `bullet` (표는 "대표 범위" 캡션 표시) |
 | `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um` 5–60, `gap_um` 3–15 (**hcb 에는 주지 말 것 — 표시 안 함**), `voids` 0–3, `filler_trap`, `nonwet`, **`dish: true`** (hcb 에서 dishing 미접합 pad 를 그릴 때만), `bullet` |
-| `f_warp` | `ref`: bump-down·beol-up, `sign` ±1 (1 = 중앙이 기준면에서 멂 ∩ = **Cry**, −1 = 가까움 ∪ = **Smile**), `mag_um` 10–200, `tg` 50–240, `temp` 25–260 |
+| `f_warp` | `ref`: bump-down·beol-up, `sign` ±1 (1 = 중앙이 기준면에서 멂 ∩ = **Cry**, −1 = 가까움 ∪ = **Smile**), `mag_um` 10–200, `tg` 50–240, `temp` 25–260, **`hideNames`** (`hideResult` 도 같음: 주석의 "= Cry/Smile" 과 명명표의 이름·die 면 볼록/오목 칸을 "?" 로 — 명명·형상 판정 문항 필수) |
 | `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` **1–8**, **`lines`** (예 1024, 2048 — 생략 시 "HBM I/O 배선"), **`msg`** (오른쪽 요점 pill 교체, ≤ 44자), `bullet` |
 | `f_therm` | **`core`** (core die 수, 권장 — n = core+1 로 계산) 또는 `n` (base 포함 총 die 수) 4–21, `q_Wmm2` 0.01–1, `tTop`, `limit`, `layers` ≤ 5행 (이름 ≤ 10자), `hideResult`. core 12 초과 시 die 라벨이 작아진다 |
 | `f_fa` | `tech`: lit·obirch·eotpr·xrm · `hot` [0–1, 0–1], `fov_um`, `depth` 5–50, `feats` ≤ 4 (라벨 ≤ 10자), `dz` 5–30, `zpeak` 0–45 |
@@ -114,3 +115,4 @@
 | 축 눈금 (공통) | 붙어 있는 x 눈금 글자가 겹침 | 0.34 in 미만으로 붙은 눈금 글자는 생략(눈금선은 유지) | DRAM-A-9019 겹침 |
 | `f_bs` (2026-11-21) | 희생막·CMP·최종 절연막 주석 항상 표시 | `notes: false` 로 끔 | 정답 노출 방지 (BSP 요청) |
 | `f_hcb` (2026-11-21) | params 없어도 overlay 150 nm·허용 100 nm "초과"·dishing 8 nm 미접합을 기본으로 그림 | `off_nm` / `tol_nm` / `dish_nm` 을 준 패널만 그림(없으면 정렬된 pad 와 정상 접합 단면) | 문항에 없는 판정이 그림에 나오지 않도록 (BSP 요청) |
+| `f_warp` (2026-11-21) | "∩ = Cry" 주석·명명표 항상 표시 | `hideNames` / `hideResult` 면 이름·볼록/오목을 "?" 로 | 정답 노출 방지 (WARP 요청) |
