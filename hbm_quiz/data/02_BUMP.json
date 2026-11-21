@@ -6,7 +6,7 @@
    "id": "BUMP-B-0001",
    "lv": "B",
    "title": "보관 시간에 따른 IMC 두께 증가 양상",
-   "stem": "Cu pillar와 SnAg solder로 접합한 시료를 150 °C에서 보관하며 계면 IMC의 두께를 측정했습니다(pillar 높이 25 µm, solder 두께 15 µm). 250 시간에서 3.5 µm, 1000 시간에서 7 µm였습니다. 시간이 4배가 되는 동안 두께는 2배가 되었습니다. 이 결과가 보여 주는 확산 지배 IMC 성장의 시간 의존성으로 옳은 것은 무엇입니까?",
+   "stem": "Cu pillar와 SnAg solder로 접합한 시료를 150 °C에서 보관하며 계면 IMC의 두께를 측정했습니다(시험용 시료 설정값: pillar 높이 25 µm, solder 두께 15 µm). 250 시간에서 3.5 µm, 1000 시간에서 7 µm였습니다. 시간이 4배가 되는 동안 두께는 2배가 되었습니다. 이 결과가 보여 주는 확산 지배 IMC 성장의 시간 의존성으로 옳은 것은 무엇입니까?",
    "opts": [
     "두께가 시간과 무관하게 일정함",
     "두께가 시간의 제곱에 비례함",
@@ -50,7 +50,7 @@
    "id": "BUMP-B-0002",
    "lv": "B",
    "title": "Ni barrier를 넣은 접합부의 IMC 차이",
-   "stem": "같은 Cu pillar 구조에서 한 조건은 Cu 위에 바로 SnAg solder를 올렸고, 다른 조건은 Cu와 solder 사이에 Ni 층을 넣었습니다. 두 조건을 150 °C에서 같은 시간 보관했더니 Ni를 넣은 조건의 IMC는 1.2 µm로 뚜렷하게 얇았고 Cu pillar의 두께 감소도 작았습니다(pillar 높이 30 µm, solder 두께 12 µm). 이 차이를 만드는 Ni 층의 역할로 옳은 것은 무엇입니까?",
+   "stem": "같은 Cu pillar 구조에서 한 조건은 Cu 위에 바로 SnAg solder를 올렸고, 다른 조건은 Cu와 solder 사이에 Ni 층을 넣었습니다. 두 조건을 150 °C에서 같은 시간 보관했더니 Ni를 넣은 조건의 IMC는 1.2 µm로 뚜렷하게 얇았고 Cu pillar의 두께 감소도 작았습니다(시험용 시료 설정값: pillar 높이 30 µm, solder 두께 12 µm). 이 차이를 만드는 Ni 층의 역할로 옳은 것은 무엇입니까?",
    "opts": [
     "접합부 저항을 낮춰 발열을 줄이는 역할",
     "Sn과의 반응이 느려 Cu 소모를 늦추는 역할",
@@ -89,13 +89,14 @@
      "IMC",
      "뚜렷하게 얇음"
     ]
-   ]
+   ],
+   "src": "M4 §E-7"
   },
   {
    "id": "BUMP-B-0015",
    "lv": "B",
    "title": "HBM die 사이 µbump의 기본 구성",
-   "stem": "HBM의 core die와 core die 사이, base die와 core die 사이는 수십 µm pitch의 µbump 수천 개로 연결됩니다. 전류를 나르고 간극 높이를 지키는 기둥과, 녹아서 상대 pad와 붙는 접합재로 역할이 나뉩니다. 이 µbump의 일반적인 구성으로 옳은 것은 무엇입니까?",
+   "stem": "HBM의 core die와 core die 사이, base die와 core die 사이는 미세 pitch의 µbump 수천 개로 연결됩니다. 전류를 나르고 간극 높이를 지키는 기둥과, 녹아서 상대 pad와 붙는 접합재로 역할이 나뉩니다. 이 µbump의 일반적인 구성으로 옳은 것은 무엇입니까?",
    "opts": [
     "Ag paste를 pad 위에 인쇄해 굳힌 구조",
     "Cu pillar 위에 SnAg solder를 올린 구조",
@@ -108,12 +109,14 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: µbump 구성"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: µbump 구성",
+     "imc_um": 1
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M1 §C.4"
   },
   {
    "id": "BUMP-B-0016",
@@ -132,9 +135,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 10,
-     "flag": "주제: Cu pillar 구조"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: Cu pillar 구조",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -157,9 +161,10 @@
     "f_bump",
     {
      "niBarrier": true,
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: UBM"
+     "pillar_um": 5,
+     "solder_um": 3,
+     "flag": "주제: UBM",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -181,9 +186,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: 젖음 불량"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: 젖음 불량",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -205,9 +211,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: flux"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: flux",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -229,9 +236,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: IMC 위치"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: IMC 위치",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -253,13 +261,14 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "imc_um": 3,
+     "pillar_um": 5,
+     "solder_um": 2,
+     "imc_um": 2,
      "flag": "주제: IMC 두께와 취성"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M1 §C.2"
   },
   {
    "id": "BUMP-B-0022",
@@ -273,17 +282,19 @@
     "마주 보는 두 die 면 사이의 수직 거리"
    ],
    "a": 3,
-   "exp": "SOH는 접합이 끝난 뒤 두 die 사이에 남는 간극의 높이로, 수지 충전과 접합부의 응력 분산에 영향을 줍니다. ②는 bump 직경, ③은 pitch의 정의입니다. ①은 접합 전 solder 높이로, 접합 중 녹아 눌리므로 SOH와 같지 않습니다.",
+   "exp": "SOH는 접합이 끝난 뒤 두 die 사이에 남는 간극의 높이로, 수지 충전과 접합부의 응력 분산에 영향을 줍니다. Micron HBM3E 12H 단면 실측에서 core die 사이 SOH(NCP 접합층)는 11 µm입니다. ②는 bump 직경, ③은 pitch의 정의입니다. ①은 접합 전 solder 높이로, 접합 중 녹아 눌리므로 SOH와 같지 않습니다.",
    "k": 0,
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: stand-off height"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: stand-off height",
+     "imc_um": 1
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §스택 높이 구성"
   },
   {
    "id": "BUMP-B-0023",
@@ -302,9 +313,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 15,
-     "solder_um": 8,
-     "flag": "주제: SOH 축소"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: SOH 축소",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -326,12 +338,14 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: 접촉 후 미결합"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: 접촉 후 미결합",
+     "imc_um": 1
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M1 §C.1"
   },
   {
    "id": "BUMP-B-0025",
@@ -350,9 +364,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: bridge"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: bridge",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -374,9 +389,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: coplanarity"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: coplanarity",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -398,9 +414,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: SnAg solder"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: SnAg solder",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -422,9 +439,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: reflow profile"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: reflow profile",
+     "imc_um": 1
     }
    ],
    "metrics": [
@@ -452,9 +470,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: pillar 와 solder"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: pillar 와 solder",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -476,9 +495,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: 젖음성"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: 젖음성",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -500,9 +520,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: flux 잔사"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: flux 잔사",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -524,9 +545,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 20,
-     "solder_um": 10,
-     "flag": "주제: 미세 pitch solder 양"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: 미세 pitch solder 양",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -548,9 +570,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: 간극 충전"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: 간극 충전",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -572,9 +595,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 20,
-     "solder_um": 10,
-     "flag": "주제: µbump 와 HCB"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: µbump 와 HCB",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -596,12 +620,14 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: non-wet"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: non-wet",
+     "imc_um": 1
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M1 §C.4"
   },
   {
    "id": "BUMP-B-0047",
@@ -620,13 +646,14 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "imc_um": 3,
+     "pillar_um": 5,
+     "solder_um": 2,
+     "imc_um": 2,
      "flag": "주제: 고온 보관 후 계면"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M4 §E-7 · M1 §C.2"
   },
   {
    "id": "BUMP-B-0057",
@@ -645,9 +672,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: 냉각 속도"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: 냉각 속도",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -669,9 +697,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: through-mask 도금"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: through-mask 도금",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -693,13 +722,14 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "imc_um": 3,
+     "pillar_um": 5,
+     "solder_um": 2,
+     "imc_um": 2,
      "flag": "주제: Cu–Sn IMC 층"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M4 §E-7 · M1 §C.2"
   },
   {
    "id": "BUMP-B-9002",
@@ -728,7 +758,8 @@
      "flag": "주제: Ni 위 IMC"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M4 §E-7"
   },
   {
    "id": "BUMP-B-9003",
@@ -742,17 +773,19 @@
     "수십 µm"
    ],
    "a": 3,
-   "exp": "HBM의 µbump pitch는 수십 µm 수준(대략 25–55 µm 범위)입니다. ②의 수백 µm는 기판 쪽 C4 bump나 BGA에 가까운 규모입니다. ③은 패키지 볼 규모보다도 큽니다. ①의 nm는 트랜지스터·배선 규모로, solder bump로 만들 수 없는 크기입니다.",
+   "exp": "HBM의 µbump pitch는 수십 µm 수준입니다. Micron HBM3E 12H 단면 실측에서 core die 사이는 23 µm이고, base die 아래 면(인터포저 쪽) bump는 JEDEC 48 × 55 µm 배열입니다. ②의 수백 µm는 기판 쪽 C4 bump나 BGA에 가까운 규모입니다. ③은 패키지 볼 규모보다도 큽니다. ①의 nm는 트랜지스터·배선 규모로, solder bump로 만들 수 없는 크기입니다.",
    "k": 0,
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: µbump pitch"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: µbump pitch",
+     "imc_um": 1
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §스택 높이 구성 · §5"
   },
   {
    "id": "BUMP-B-9004",
@@ -773,9 +806,10 @@
     {
      "em": true,
      "j_kA": 10,
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: electromigration"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: electromigration",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -797,9 +831,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: 전류 밀도"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: 전류 밀도",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -816,17 +851,19 @@
     "skin effect"
    ],
    "a": 2,
-   "exp": "전류 경로가 좁은 곳에서 넓은 곳으로 꺾여 들어갈 때 모서리에 전류가 몰려 국부 전류 밀도가 높아지는 현상을 current crowding이라 하며, EM 공극이 그 지점부터 시작됩니다. ②는 확산 속도 차이로 공극이 생기는 현상입니다. ①은 발열이 다시 발열을 키우는 폭주 현상입니다. ④는 고주파 교류가 도체 표면으로 몰리는 현상으로 직류 EM과 무관합니다.",
+   "exp": "전류 경로가 좁은 곳에서 넓은 곳으로 꺾여 들어갈 때 모서리에 전류가 몰려 국부 전류 밀도가 높아지는 현상을 current crowding이라 하며, EM 공극이 그 지점부터 시작됩니다(국부 전류 밀도가 평균의 5–10배에 이른 사례 보고). ②는 확산 속도 차이로 공극이 생기는 현상입니다. ①은 발열이 다시 발열을 키우는 폭주 현상입니다. ④는 고주파 교류가 도체 표면으로 몰리는 현상으로 직류 EM과 무관합니다.",
    "k": 0,
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: 전류 경로"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: 전류 경로",
+     "imc_um": 1
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M1 §C.4 · M4 §E-8"
   },
   {
    "id": "BUMP-B-9008",
@@ -845,9 +882,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: coplanarity"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: coplanarity",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -869,9 +907,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: fluxless 접합"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: fluxless 접합",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -893,13 +932,14 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 20,
-     "solder_um": 6,
-     "imc_um": 3,
+     "pillar_um": 6,
+     "solder_um": 2,
+     "imc_um": 1.5,
      "flag": "주제: full-IMC 접합"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M4 §E-7"
   },
   {
    "id": "BUMP-B-9012",
@@ -948,9 +988,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: wafer reflow"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: wafer reflow",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -972,9 +1013,10 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: daisy chain"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: daisy chain",
+     "imc_um": 1
     }
    ],
    "metrics": []
@@ -997,14 +1039,14 @@
     "f_bump",
     {
      "kirkendall": true,
-     "pillar_um": 25,
-     "solder_um": 12,
-     "imc_um": 3,
+     "pillar_um": 5,
+     "solder_um": 2,
+     "imc_um": 2,
      "flag": "주제: HTSL"
     }
    ],
    "metrics": [],
-   "src": "JESD22-A103 (HTSL)"
+   "src": "JESD22-A103 (HTSL) · M1 §C.3"
   },
   {
    "id": "BUMP-B-9016",
@@ -1023,12 +1065,54 @@
    "fig": [
     "f_bump",
     {
-     "pillar_um": 25,
-     "solder_um": 12,
-     "flag": "주제: UBM 층 구성"
+     "pillar_um": 6,
+     "solder_um": 3,
+     "flag": "주제: UBM 층 구성",
+     "imc_um": 1
     }
    ],
    "metrics": []
+  },
+  {
+   "id": "BUMP-B-9017",
+   "lv": "B",
+   "title": "전기 경로가 없는 bump의 접합 불량 확인",
+   "stem": "HBM3E 12H 단면 실측에서 core die 사이 µbump는 일정한 pitch로 규칙적으로 배열되어 있었습니다. 그중 TSV와 정렬된 active bump만 신호가 흐르고, 나머지는 지지·방열을 맡는 structural bump였습니다. structural bump 하나가 접합되지 않았을 때 이를 확인하는 방법으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "해당 채널의 open/short 전기 시험 결과 확인",
+    "X-ray CT나 단면으로 접합부를 직접 관찰",
+    "해당 bump 위치의 EM 시험 수명 단축 확인",
+    "인접 active bump의 전압 강하 증가 측정"
+   ],
+   "a": 1,
+   "exp": "structural bump는 회로에 연결되지 않아 전류가 흐르지 않으므로 끊어져도 전기 시험에 나타나지 않습니다. 접합 형상을 직접 보는 X-ray CT나 단면 관찰로만 확인할 수 있으며, 미세 pitch 배열은 2D 투과 영상에서 bump가 겹쳐 보여 고해상도 CT나 단면이 필요합니다. ①은 신호 경로에 속한 bump에만 해당합니다. ③은 전류가 흐르지 않는 bump에는 EM 열화가 일어나지 않습니다. ④는 structural bump가 전류를 나눠 받지 않으므로 인접 bump의 전압 강하가 변하지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "active · structural bump",
+     "points": [
+      "TSV와 정렬된 bump만 신호 경로에 속함",
+      "각 시험이 무엇을 측정하는지 확인",
+      "미세 pitch 배열의 관찰 해상도"
+     ],
+     "ask": "확인 방법",
+     "flag": "주제: structural bump"
+    }
+   ],
+   "metrics": [
+    [
+     "≡",
+     "적층",
+     "HBM3E 12H"
+    ],
+    [
+     "◎",
+     "대상",
+     "structural bump"
+    ]
+   ],
+   "src": "HBM_단면실측 §7 · M1 §C.4"
   },
   {
    "id": "BUMP-I-0001",

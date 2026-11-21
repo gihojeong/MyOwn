@@ -217,3 +217,40 @@ BJ 지정(STANDARDS 2.4): core die 사이 µbump pitch 25 µm, base die 아래 �
 ## 형상 기준 Micron HBM3E 12H 실측으로 통일 (2026-11-21, BJ 결정)
 core die 사이 µbump pitch 23 µm, 접합 간극 11 µm(NCP), base die 아래 면 JEDEC 48 × 55 µm. 같은 날 위 절에서 쓴 25 µm·6.5–7.5 µm 값을 이 기준으로 다시 고치고 계산을 재수행(작업 스크립트 scratchpad work/pitch).
 - BUMP-I-9002 23 → 18 µm: 1.63배(0.61·1.28·2.09) / BUMP-A-9023 23 → 15 µm: EM 0.18배·IMC 0.43배
+
+## 참고문헌 대조 업데이트 (2026-11-21, 초급)
+
+기준: 브리프 '초급 나머지 분야용 참고문헌' + 추가 규칙 4(형상 = Micron HBM3E 12H 실측: core die 사이 µbump pitch 23 µm, NCP 접합 간극 11 µm, base die 아래 면 JEDEC 48 × 55 µm, µbump 지름 약 10–11.6 µm). 근거: M1 §C(X-ray FA 사례), M4 §E-7·E-8(µbump IMC·EM 사례), HBM_단면실측. 초급 40문항은 개념 문항이고 계산 문항이 없음.
+
+| 검토 | 수정(내용) | 그림 params | 추가 | 삭제 | src 부착 |
+|---|---|---|---|---|---|
+| 40 | 6 (치수 4 · 해설 보강 2) | 36 (k=0 `f_bump` 전부) | 1 | 0 | 14 (신규 1 포함) |
+
+그림 params 일괄: `f_bump` k=0 주제도의 `pillar 25 µm · solder 12 µm`(합 37 µm 이상)은 실측 core die 사이 간극 11 µm와 맞지 않아, pillar + solder + 위아래 IMC 합이 11 µm가 되게 설정값으로 바꿈. 기본 `6 / 3 / IMC 1`, 보관 후 IMC 성장 문항(B-0021·0047·9001·9015) `5 / 2 / 2`, full-IMC(B-9011) `6 / 2 / 1.5`, Ni barrier(B-0017) `5 / 3 / 1`. pillar·solder 분해 자체는 실측값이 아닌 그림 설정값(실측은 접합층 전체 11 µm와 지름만 있음). LAYOUT_RULES §4 의 `pillar_um` 권장 범위 10–60 보다 작지만 그림 높이는 하한에서 고정되어 겹침 없음(layout_check figAnyQ 0).
+
+### 정정
+
+| id | 무엇이 틀렸나 | 고친 내용 | 근거 |
+|---|---|---|---|
+| BUMP-B-9003 | 해설 "µbump pitch 대략 25–55 µm" (폐기된 25 µm 기준, 계면 구분 없음) | core die 사이 23 µm(실측), base die 아래 면 48 × 55 µm(JEDEC)로 계면별 명시 | HBM_단면실측 §스택 높이 구성 · §5 |
+| BUMP-B-0015 | 지문 "수십 µm pitch" 가 B-9003 정답(수십 µm) 단서 | "미세 pitch" 로 바꿈 | — |
+| BUMP-B-0001 | pillar 25 µm · solder 15 µm 가 HBM 간극 11 µm 와 다른데 설정값 표시 없음 | "시험용 시료 설정값" 명시(IMC 7 µm 성장을 담으려면 solder 두께가 필요해 수치는 유지) | HBM_단면실측 §스택 높이 구성 |
+| BUMP-B-0002 | pillar 30 µm · solder 12 µm 설정값 표시 없음 | "시험용 시료 설정값" 명시 | 같음 |
+| BUMP-B-0022 | SOH 정의만 있고 실측 크기 없음 | 해설에 실측 core die 사이 SOH(NCP 접합층) 11 µm 추가 | HBM_단면실측 §스택 높이 구성 |
+| BUMP-B-9007 | current crowding 크기 감각 없음 | 해설에 국부 전류 밀도 평균의 5–10배 사례 추가 | M1 §C.4 · M4 §E-8 |
+
+나머지 34문항은 사실 오류 없음(SnAg 공정 221 °C·SnBi 139·SnPb 183 °C, Cu₃Sn이 Cu 쪽, Kirkendall void가 Cu₃Sn/Cu 계면, Ni 위 Ni₃Sn₄, HiP 산화막 미융합, non-wet 원통형 cap, HTSL JESD22-A103 등 참고문헌과 일치).
+
+### 신규 문항
+
+| id | 주제 | 근거 |
+|---|---|---|
+| BUMP-B-9017 | 신호가 흐르지 않는 structural bump의 미접합은 전기 시험에 안 잡혀 X-ray CT·단면으로만 확인 | HBM_단면실측 §7 · M1 §C.4 |
+
+정답 위치: B 41문항 ①10 ②11 ③10 ④10.
+
+### 충돌 · 남은 위험
+- 참고문헌과 _facts.md 의 충돌은 없음. 단 _facts.md X-F3 는 "solder µbump pitch 25–55 µm(STANDARDS 2.4)" 로 적혀 있어 현 STANDARDS(23 µm, 48 × 55 µm)와 다름 — 메인 세션 갱신 대상.
+- `f_bump` pillar/solder 분해(6/3 µm 등)는 실측이 아닌 설정값. 실측 단면에서 pillar·cap 두께가 확인되면 맞출 것.
+- 중급·고급(보고만, 수정 안 함): BUMP-I·A 의 `f_bump` 주제도 다수가 pillar 25 µm · solder 12 µm(간극 11 µm 와 불일치). BUMP-A-9022·9028·9030 은 pitch 30 µm 를 '설정값' 표시 없이 사용.
+- B-9014(daisy chain)·B-9009(formic acid)·B-9004(electron wind)는 참고문헌에 직접 근거가 없어 src 미부착.
