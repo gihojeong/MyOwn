@@ -14,7 +14,6 @@ from frd import read_frd, read_elprint
 KINDS = ["beol", "si_base", "si", "si_top", "gap", "emc"]
 SIK = ("si", "si_top", "si_base")
 ENV = dict(os.environ, OMP_NUM_THREADS="1", CCX_NPROC_EQUATION_SOLVER="1", CCX_NPROC_STIFFNESS="1", CCX_NPROC_RESULTS="1")
-HD = S.L_DRAM/2
 
 def odir(prod, sub="mech"):
     d = f"out3/{sub}/{prod}"; os.makedirs(d, exist_ok=True); return d
@@ -176,13 +175,17 @@ def verify(prod="hbm4_8h", tps=(1e-3, 0.01, 0.1), deltmx=1.0):
 
 # ================================================================ 2) 본 해석
 def fields_path(prod): return f"out3/thermal/{prod}/fields.npz"
+def fields_ok(prod, N):
+    """새 HA 정의(첫 레코드 t=0 = idle 정상상태, 현재 grid3 절점 수)인 fields.npz 인지"""
+    try:
+        F = np.load(fields_path(prod)); return F["T"].shape[1] == N and float(F["times"][0]) == 0.0
+    except Exception: return False
 def wait_fields(prod, every=30, tmax=3*3600):
-    t0 = time.time()
-    while not os.path.exists(fields_path(prod)):
+    t0 = time.time(); N = len(model(prod)[1])
+    while not fields_ok(prod, N):
         if time.time()-t0 > tmax: raise TimeoutError(fields_path(prod))
         time.sleep(every)
-    time.sleep(5)
-def tlabel(t): return "steady" if not np.isfinite(t) else f"{t:g}s"
+def tlabel(t): return "steady" if not np.isfinite(t) else ("idle" if t == 0 else f"{t:g}s")
 def build_main(prod):
     d = odir(prod); g, ids, xyz, eids, conn, kf = model(prod); c = g["c"]; N = len(ids)
     F = np.load(fields_path(prod)); times, TF = np.asarray(F["times"], float), np.asarray(F["T"], float)
@@ -198,10 +201,11 @@ def build_main(prod):
         s += ["*EXPANSION, ZERO=0."] + [f"{ep/t:.7e},{t:.1f}" for ep, t in zip(eps, Tt)] + ["0.,400."]
         s += [f"*SOLID SECTION, ELSET=E_{k}, MATERIAL={k}"]
     s += bc_lines(g, ids, xyz) + ["*INITIAL CONDITIONS, TYPE=TEMPERATURE", "NALL,400."]
-    steps = [("25C", 25.), ("230C", 230.), ("45C", 45.)] + [(tlabel(t), i) for i, t in enumerate(times)]
+    ref = "idle" if times[0] == 0 else "45C"      # 운전 기준 상태 (HA idle 정상상태 장; 없으면 균일 45 °C)
+    steps = [("25C", 25.), ("230C", 230.)] + ([("45C", 45.)] if ref == "45C" else []) + [(tlabel(t), i) for i, t in enumerate(times)]
     pr_t = [0.01, 0.1]
     def printed(lab, t):
-        if lab in ("25C", "45C", "steady"): return True
+        if lab in ("25C", ref, "steady"): return True
         if isinstance(t, float): return False
         return bool(any(np.isclose(times[t], x) for x in pr_t))
     meta = []
@@ -214,14 +218,14 @@ def build_main(prod):
         pr = printed(lab, v); s += ["*NODE FILE", "U"] + (["*EL PRINT, ELSET=E_PRT", "S"] if pr else []) + ["*END STEP"]
         meta.append(dict(label=lab, printed=pr, **tinfo))
     open(f"{d}/mech.inp", "w").write("\n".join(s)+"\n")
-    json.dump(meta, open(f"{d}/steps.json", "w"), indent=1); return meta
+    json.dump(dict(ref=ref, steps=meta), open(f"{d}/steps.json", "w"), indent=1); return meta
 def post(prod):
     d = odir(prod); g, ids, xyz, eids, conn, kf = model(prod); N = len(ids)
-    meta = json.load(open(f"{d}/steps.json")); st = read_frd(f"{d}/mech.frd"); assert len(st) == len(meta), (len(st), len(meta))
+    J = json.load(open(f"{d}/steps.json")); meta, ref = J["steps"], J["ref"]; st = read_frd(f"{d}/mech.frd"); assert len(st) == len(meta), (len(st), len(meta))
     W = {m["label"]: top_w(g, disp(s, N)) for m, s in zip(meta, st)}
     els = read_elprint(f"{d}/mech.dat"); pl = [m["label"] for m in meta if m["printed"]]; assert len(els) == len(pl)
     SM = {lab: stress_metrics(g, eids, kf, a) for lab, a in zip(pl, els)}
-    w45 = W["45C"]; m45 = metrics(g, w45); out = []
+    w45 = W[ref]; m45 = metrics(g, w45); out = []
     for m in meta:
         lab = m["label"]; mm = metrics(g, W[lab]); dm = metrics(g, W[lab]-w45)
         r = dict(m, **mm, dwarp_phy=mm["warp_phy"]-m45["warp_phy"], dwarp_far=mm["warp_far"]-m45["warp_far"],
@@ -230,8 +234,10 @@ def post(prod):
         out.append(r)
     Yf, _ = mirror(g, w45)
     np.savez(f"{d}/top_w.npz", X=g["X"], Yf=Yf, labels=np.array(list(W)), W=np.array([mirror(g, W[k])[1] for k in W]))
-    summ = dict(prod=prod, conv="warp = w(center) - w(DRAM vertex) [um], + = Cry; plane (area-weighted LSQ over DRAM 10x10 mm) removed; "
-                "phy = corners x=-5 mm (GPU/PHY side), far = x=+5 mm; d* = relative to uniform 45C step; copl_of_dw = coplanarity of (w - w45C); "
+    summ = dict(prod=prod, ref=ref, dram_box=list(dram_box(g)), t0b=g["c"]["t0b"],
+                conv="warp = w(center) - w(DRAM vertex) [um], + = Cry; plane (area-weighted LSQ over DRAM top area) removed; "
+                "phy = DRAM corners at x=-dx/2 (GPU/PHY side), far = x=+dx/2; d* = relative to reference step 'ref' (HA idle steady field at t=0); "
+                "copl_of_dw = coplanarity of (w - w_ref); stress-free temps: Si/BEOL t0b, gap 217C, EMC 175C (400C = fictitious initial temp of the CalculiX alpha-table trick, not a physical state); "
                 "stress = element-average [MPa], phy = elements within PHY footprint (all z), mesh-dependent (0.19 mm in-plane)",
                 phy_box=list(map(float, g["phy_box"])), phy_W=G.PRODUCTS[prod]["phy_W"], steps=out)
     json.dump(summ, open(f"{d}/summary.json", "w"), indent=1)
@@ -252,18 +258,19 @@ def figs():
     os.makedirs("figs", exist_ok=True); prods = [p for p in G.PRODUCTS if os.path.exists(f"out3/mech/{p}/summary.json")]
     fig, ax = plt.subplots(1, 2, figsize=(12, 4.6)); col = {"hbm4_8h": "tab:red", "hbm3e_12h": "tab:blue"}
     for p in prods:
-        R = [r for r in json.load(open(f"out3/mech/{p}/summary.json"))["steps"] if r["label"].endswith("s") or r["label"] == "steady"]
-        tr = [r for r in R if r["label"] != "steady"]; t = np.array([r["time"] for r in tr]); tss = t.max()*10
+        SJ = json.load(open(f"out3/mech/{p}/summary.json")); ref = SJ["ref"]
+        R = [r for r in SJ["steps"] if "time" in r]
+        tr = [r for r in R if r["label"] not in ("steady", "idle")]; t = np.array([r["time"] for r in tr]); tss = t.max()*10
         for key, ls, nm in (("phy", "-", "PHY 측"), ("far", "--", "반대측")):
             for a, pre in ((ax[0], "warp_"), (ax[1], "dwarp_")):
                 y = [r[pre+key] for r in tr]; ys = [r[pre+key] for r in R if r["label"] == "steady"]
                 a.plot(t, y, ls, marker="o", ms=3, color=col[p], label=f"{p} {nm}")
                 if ys: a.plot([tss], ys, marker="*", ms=11, color=col[p], ls="none")
-        r45 = [r for r in json.load(open(f"out3/mech/{p}/summary.json"))["steps"] if r["label"] == "45C"][0]
+        r45 = [r for r in SJ["steps"] if r["label"] == ref][0]
         ax[0].axhline(r45["warp_phy"], color=col[p], lw=0.7, ls=":")
-    for a, tt in zip(ax, ("warp (중앙 - 모서리) [μm], 점선 = 45 °C 균일", "Δwarp (운전 - 45 °C 균일) [μm]")):
+    for a, tt in zip(ax, ("warp (중앙 - 모서리) [μm], 점선 = 기준(idle)", "Δwarp (full-load - idle 기준) [μm]")):
         a.set_xscale("log"); a.set_xlabel("시간 [s] (★ = 정상상태)"); a.set_title(tt); a.grid(alpha=0.3); a.legend(fontsize=8)
-    fig.suptitle("PHY 발열에 따른 상면 warpage 변화 (+ = Cry, 평면 보정)"); fig.tight_layout(); fig.savefig("figs/sa_warp_vs_time.png", dpi=150); plt.close(fig)
+    fig.suptitle("idle → full-load 계단 발열에 따른 상면 warpage 변화 (+ = Cry, 평면 보정)"); fig.tight_layout(); fig.savefig("figs/sa_warp_vs_time.png", dpi=150); plt.close(fig)
     for p in prods:
         Z = np.load(f"out3/mech/{p}/top_w.npz"); lab = list(Z["labels"]); X, Yf, W = Z["X"], Z["Yf"], Z["W"]
         g = G.grid(p); pb = g["phy_box"]; x0, x1, hy = dram_box(g)
@@ -272,9 +279,10 @@ def figs():
             wt = np.outer(trib(X[mx]), trib(Yf[my])).ravel(); A = np.c_[np.ones(wt.size), XX[np.ix_(mx, my)].ravel(), YY[np.ix_(mx, my)].ravel()]
             sw = np.sqrt(wt); c = np.linalg.lstsq(A*sw[:, None], w[np.ix_(mx, my)].ravel()*sw, rcond=None)[0]
             return w - (c[0]+c[1]*XX+c[2]*YY)
-        sel = [("45C", "45 °C 균일 (t=0)"), (next((l for l in lab if l in ("0.1s",)), None), "t = 0.1 s"), ("steady", "정상상태")]
+        ref = json.load(open(f"out3/mech/{p}/summary.json"))["ref"]
+        sel = [(ref, "기준 (idle, t=0)" if ref == "idle" else "45 °C 균일"), (next((l for l in lab if l in ("0.1s",)), None), "t = 0.1 s"), ("steady", "정상상태")]
         panels = [(deplane(W[lab.index(k)]), t) for k, t in sel if k in lab]
-        if "steady" in lab: panels.append((deplane(W[lab.index("steady")]-W[lab.index("45C")]), "Δ(정상 - 45 °C)"))
+        if "steady" in lab: panels.append((deplane(W[lab.index("steady")]-W[lab.index(ref)]), "Δ(정상 - 기준)"))
         fig, ax = plt.subplots(1, len(panels), figsize=(4.4*len(panels), 4.2))
         for a, (w, tt) in zip(np.atleast_1d(ax), panels):
             v = np.abs(w).max(); cs = a.contourf(X, Yf, w.T, 31, cmap="RdBu_r", vmin=-v, vmax=v); fig.colorbar(cs, ax=a, shrink=0.8, label="w [μm]")
