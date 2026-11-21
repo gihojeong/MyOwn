@@ -4,3 +4,5 @@
 - [THERM] CONVENTIONS_W3 C1 접합층 열저항 범위는 물성 추정 가정값 — 문헌값 확보 시 갱신.
 - [SIP] A-9046 "LSI 에 TSV 없음" 은 문항 가정 — CoWoS-L LSI TSV 유무 공식 확인 필요 (FACT).
 - [PROD] A-9032 를 CONVENTIONS_W3 C3 (간격·돌출) 규칙에 맞출 것 — 배치 3.
+- [FEOL] A-9013: C2 적용(pitch 10 µm)으로 후보 지름 2/5/10 → 2/4/6 µm, 정답 5 → 4 µm 로 변경됨 — EA 원 지시("표·정답 유지")와 다르므로 EA 확인.
+- [FEOL/MET/SAW] 가정값 문항: FEOL A-9037 ΔIon, A-9047 ΔVt, A-9050 누설; SAW A-9098 유효 가장자리 길이 비 4.
