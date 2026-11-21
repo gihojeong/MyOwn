@@ -11,3 +11,8 @@ out2/*
 !out2/*.csv
 !out2/validate.log
 out3/
+!out3/
+out3/**
+!out3/**/
+!out3/**/summary.json
+!out3/**/*.png

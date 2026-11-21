@@ -31,6 +31,7 @@ def geom_lines(g, ids, xyz, eids, conn, kf, etype):
         e = eids[kf == k]
         if len(e): s += [f"*ELSET, ELSET=E_{k}"] + l16(e)
     s += ["*ELSET, ELSET=E_PRT"] + l16(eids[kf != "emc"])        # EL PRINT 대상 (EMC 제외)
+    s += ["*ELSET, ELSET=E_ONE", "1"]                               # EL PRINT 요청은 다음 스텝으로 이월되므로, 비출력 스텝은 요소 1개로 덮어씀
     return s
 def bc_lines(g, ids, xyz):
     nx = len(g["X"]); sy = ids[np.isclose(xyz[:, 1], 0)]
@@ -145,8 +146,9 @@ def verify(prod="hbm4_8h", tps=(1e-3, 0.01, 0.1), deltmx=1.0):
     open(f"{d}/thermal.inp", "w").write("\n".join(s)+"\n")
     R = dict(prod=prod, deltmx=deltmx, q_mW_mm3=q, n_nodes=N)
     R["t_thermal_s"] = ccx(d, "thermal")
-    Tb = [ntemp(st, N) for st in read_frd(f"{d}/thermal.frd")]
-    labels = [str(t) for t in tps] + ["steady"]; assert len(Tb) == len(labels), len(Tb)
+    pick = lambda L: L[:len(tps)] + L[-1:]          # TIME POINTS 결과 + 정상상태 스텝의 마지막 증분 (정상 스텝은 증분마다 출력됨)
+    Tb = pick([ntemp(st, N) for st in read_frd(f"{d}/thermal.frd")])
+    labels = [str(t) for t in tps] + ["steady"]
     # (b2) 구조 (같은 C3D8, 순차)
     s = ["** sequential mech"] + geom_lines(g, ids, xyz, eids, conn, kf, "C3D8") + mats(False, True) + bc_lines(g, ids, xyz)
     s += ["*INITIAL CONDITIONS, TYPE=TEMPERATURE", f"NALL,{Tr}"]
@@ -157,7 +159,7 @@ def verify(prod="hbm4_8h", tps=(1e-3, 0.01, 0.1), deltmx=1.0):
     R["t_seqmech_s"] = ccx(d, "seqmech")
     Ub = [disp(st, N) for st in read_frd(f"{d}/seqmech.frd")]
     R["t_coupled_s"] = ccx(d, "coupled")
-    sa = read_frd(f"{d}/coupled.frd"); assert len(sa) == len(labels), len(sa)
+    sa = pick(read_frd(f"{d}/coupled.frd"))
     Ta = [ntemp(st, N) for st in sa]; Ua = [disp(st, N) for st in sa]
     rows = {}
     for lab, ta, tb, ua, ub in zip(labels, Ta, Tb, Ua, Ub):
@@ -215,7 +217,7 @@ def build_main(prod):
         else:
             write_temp_inc(f"{d}/T_{v:02d}.inc", TF[v]); s += [f"*INCLUDE, INPUT=T_{v:02d}.inc"]
             tinfo = dict(Tmax=float(TF[v].max()), Tmin=float(TF[v].min()), Tmean=float(TF[v].mean()), time=float(times[v]) if np.isfinite(times[v]) else "inf")
-        pr = printed(lab, v); s += ["*NODE FILE", "U"] + (["*EL PRINT, ELSET=E_PRT", "S"] if pr else []) + ["*END STEP"]
+        pr = printed(lab, v); s += ["*NODE FILE", "U"] + (["*EL PRINT, ELSET=E_PRT", "S"] if pr else ["*EL PRINT, ELSET=E_ONE", "S"]) + ["*END STEP"]
         meta.append(dict(label=lab, printed=pr, **tinfo))
     open(f"{d}/mech.inp", "w").write("\n".join(s)+"\n")
     json.dump(dict(ref=ref, steps=meta), open(f"{d}/steps.json", "w"), indent=1); return meta
@@ -223,8 +225,8 @@ def post(prod):
     d = odir(prod); g, ids, xyz, eids, conn, kf = model(prod); N = len(ids)
     J = json.load(open(f"{d}/steps.json")); meta, ref = J["steps"], J["ref"]; st = read_frd(f"{d}/mech.frd"); assert len(st) == len(meta), (len(st), len(meta))
     W = {m["label"]: top_w(g, disp(s, N)) for m, s in zip(meta, st)}
-    els = read_elprint(f"{d}/mech.dat"); pl = [m["label"] for m in meta if m["printed"]]; assert len(els) == len(pl)
-    SM = {lab: stress_metrics(g, eids, kf, a) for lab, a in zip(pl, els)}
+    els = read_elprint(f"{d}/mech.dat"); assert len(els) == len(meta), (len(els), len(meta))   # 모든 스텝 출력 (비출력 스텝 = 요소 1개)
+    SM = {m["label"]: stress_metrics(g, eids, kf, a) for m, a in zip(meta, els) if m["printed"]}
     w45 = W[ref]; m45 = metrics(g, w45); out = []
     for m in meta:
         lab = m["label"]; mm = metrics(g, W[lab]); dm = metrics(g, W[lab]-w45)
