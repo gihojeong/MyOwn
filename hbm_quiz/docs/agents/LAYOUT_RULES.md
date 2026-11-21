@@ -60,7 +60,7 @@
 | `f_saw` | `method`: blade·lg·stealth·plasma·deeplaser·dbg, `kerf_um` 0–60, `haz_um` 2–20, `chip_um` 5–30, `bullet` (표는 "대표 범위" 캡션 표시) |
 | `f_bond` | `method`: ncf·mrmuf·hcb, `pitch_um` 5–60, `gap_um` 3–15 (**hcb 에는 주지 말 것 — 표시 안 함**), `voids` 0–3, `filler_trap`, `nonwet`, **`dish: true`** (hcb 에서 dishing 미접합 pad 를 그릴 때만), `bullet` |
 | `f_warp` | `ref`: bump-down·beol-up, `sign` ±1 (1 = 중앙이 기준면에서 멂 ∩ = **Cry**, −1 = 가까움 ∪ = **Smile**), `mag_um` 10–200, `tg` 50–240, `temp` 25–260 |
-| `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` **1–8**, **`lines`** (예 1024, 2048 — 생략 시 "HBM I/O 배선"), `bullet` |
+| `f_sip` | `type`: cowos-s·cowos-r·cowos-l·emib·emib-t, `nHBM` **1–8**, **`lines`** (예 1024, 2048 — 생략 시 "HBM I/O 배선"), **`msg`** (오른쪽 요점 pill 교체, ≤ 44자), `bullet` |
 | `f_therm` | **`core`** (core die 수, 권장 — n = core+1 로 계산) 또는 `n` (base 포함 총 die 수) 4–21, `q_Wmm2` 0.01–1, `tTop`, `limit`, `layers` ≤ 5행 (이름 ≤ 10자), `hideResult`. core 12 초과 시 die 라벨이 작아진다 |
 | `f_fa` | `tech`: lit·obirch·eotpr·xrm · `hot` [0–1, 0–1], `fov_um`, `depth` 5–50, `feats` ≤ 4 (라벨 ≤ 10자), `dz` 5–30, `zpeak` 0–45 |
 | `f_rel` | `seq` ≤ 4행 [문서 ≤ 12자, 시험명 ≤ 20자, 조건 ≤ 16자], `cur`, `fails` ≤ 5점 (x ≤ `xmax`, y ≤ `ymax`), **`xlab`** (기본 "TC cycle 수"), **`xmax`** (기본 1000), **`ymax`** (기본 10 %), **`tcCycles`** (기본 700 — 기본 seq 의 JESD22-A104 cond. B 행과, TC 축일 때 "규격 N cycle" 점선에 쓰임), `crit`, `hint`, `bullet` |
@@ -89,3 +89,20 @@
 
 ## 6. 분야 수
 분야 목록·필터·결과 차트는 `data/NN_CODE.json` 의 `domain` 수(현재 14)를 그대로 따른다. 분야 색은 16색 팔레트로 14개까지 모두 다르다.
+
+## 7. 템플릿 고정 문구 변경 기록 (2026-11-21, `_facts.md` · STANDARDS 대조)
+
+| 템플릿 | 이전 | 현재 | 근거 |
+|---|---|---|---|
+| `f_sip` cowos-s | "전면 Si → reticle 크기가 상한" | "전면 Si 인터포저 · stitching 으로 약 3.3× reticle 까지" | F34 |
+| `f_sip` cowos-r | "TSV가 없어 전원은 substrate 경유 · 저비용" | "TSV 없이 RDL 적층 via 로 수직 연결 · 한계는 배선 피치" (단면에 적층 via 점선) | F36 · F37 |
+| `f_sip` cowos-l | "미세배선이 필요한 구간만 bridge로 국한" | "미세배선 구간만 LSI bridge · 수직 경로는 TIV · 전역 RDL" (단면에 TIV 선) | F37 |
+| `f_sip` emib | "전원은 bridge를 통과하지 못하고 substrate 경유" | "bridge 는 신호 전용 · 전원은 기판 via 로 바로 내려간다" | F37 |
+| `f_stack` 표 산식 | 간극 "die 수 − 1" · 높이 "die 두께 × 장수 + 간극" | 간극 "= core 수 (base–core1 포함)" · pad "base + core, top core 제외" · 높이 "base + N × (core + 간극)" | STANDARDS 2.5 |
+| `f_stack` pill | "패키지 높이 상한 775 µm" | "높이 상한 (설계 조건) 775 µm" | F13 |
+| `f_bond` 표 | "gap 하한 5–7 µm / 7 µm 급", 열 경로 "EMC 전도 유리" | "칩 간 간격 ≈ 7 µm / µm 급", "EMC 유리" | F24 · F33 |
+| `f_rel` | 기본 TC 행 "−55/+125 °C, 1000 cycle", "판정 기준선 1%" | "cond. B (−55/+125 °C) × 700" (`tcCycles`), "판정 기준선 (사내) 1%" | F41 · F42 · F43 |
+| `f_fa` eotpr | "패키지 내부 경로에는 TDR 이 아니라 EOTPR 을 쓴다" | "패키지 내부 미세 경로는 분해능이 높은 EOTPR 로 본다" | 과잉 단정 완화 |
+| `f_hcb` 기본 bullet | "particle 1개가 수 µm 범위 미접합을 만든다" | "particle 1개가 자기보다 훨씬 넓은 미접합을 만든다" | 범위 과소 표기 완화 |
+
+이 문구를 정답 근거로 쓰던 문항은 지문·해설을 새 문구에 맞춰야 한다(특히 CoWoS-R 전원 경로, "reticle 이 상한", "12단 → 간극 11개").

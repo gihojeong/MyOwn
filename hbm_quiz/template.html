@@ -872,9 +872,9 @@ function f_bond(s, p) {
   const rows = [["항목", "TC-NCF", "MR-MUF", "HCB"],
     ["접합 매체", "NCF + solder", "solder + MUF", "Cu–Cu + SiCN"],
     ["가압·가열", "layer마다", "일괄 reflow", "상온 후 anneal"],
-    ["gap 하한", "5–7 µm", "7 µm 급", "0 (bump 없음)"],
+    ["칩 간 간격", "≈ 7 µm", "µm 급", "0 (bump 없음)"],
     ["주 결함", "void · filler", "fillet · flow void", "dishing · particle"],
-    ["열 경로", "filler 의존", "EMC 전도 유리", "계면 최소"]];
+    ["열 경로", "filler 의존", "EMC 유리", "계면 최소"]];
   tableCol(s, rows, RC.x, TOP, RC.w, { ncf: 1, mrmuf: 2, hcb: 3 }[m]);
   pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.42, p.bullet || "붉은 열이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
@@ -947,8 +947,10 @@ function f_sip(s, p) {
   const Q = OBL(RC.x + 0.12, TOP + 2.7, 0.097);
   oblBox(s, Q, 0, 0, 0, 33, 5, 2.2, M.sub, { lw: 0.7, text: "substrate", fs: 8 });
   if (t === "cowos-s") { oblBox(s, Q, 2, 0, 2.2, 29, 5, 1.5, M.inter, { lw: 0.7, text: "Si interposer + TSV", fs: 8 }); for (const tx of [8, 16, 24]) { const a1 = Q(tx, 0, 2.2), a2 = Q(tx, 0, 3.7); L(s, a1[0], a1[1], a2[0], a2[1], "8C6D3F", 1.2); } }
-  else if (t === "cowos-r") oblBox(s, Q, 2, 0, 2.2, 29, 5, 1.1, "E7DDF5", { lw: 0.7, text: "RDL (유기)", fs: 8 });
-  else if (t === "cowos-l") { oblBox(s, Q, 2, 0, 2.2, 29, 5, 1.1, "E7DDF5", { lw: 0.7, text: "RDL", fs: 8 }); oblBox(s, Q, 12, 0, 2.3, 9, 5, 0.9, M.phy, { lw: 0.8 }); }
+  else if (t === "cowos-r") { oblBox(s, Q, 2, 0, 2.2, 29, 5, 1.1, "E7DDF5", { lw: 0.7, text: "RDL (유기) · 적층 via", fs: 8 });
+    for (const tx of [6, 9, 23, 27]) { const a1 = Q(tx, 0, 2.2), a2 = Q(tx, 0, 3.3); L(s, a1[0], a1[1], a2[0], a2[1], "8C6D3F", 1.0, { dash: 1 }); } }
+  else if (t === "cowos-l") { oblBox(s, Q, 2, 0, 2.2, 29, 5, 1.1, "E7DDF5", { lw: 0.7, text: "RDL", fs: 8 }); oblBox(s, Q, 12, 0, 2.3, 9, 5, 0.9, M.phy, { lw: 0.8 });
+    for (const tx of [6, 9, 24, 27]) { const a1 = Q(tx, 0, 2.2), a2 = Q(tx, 0, 3.3); L(s, a1[0], a1[1], a2[0], a2[1], "8C6D3F", 1.2); } }
   else { oblBox(s, Q, 11, 0, 0.5, 11, 5, 1.3, M.phy, { lw: 0.8 }); if (t === "emib-t") for (const tx of [13, 16.5, 20]) { const a1 = Q(tx, 0, 0.5), a2 = Q(tx, 0, 1.8); L(s, a1[0], a1[1], a2[0], a2[1], "8C6D3F", 1.2); } }
   if (t.indexOf("emib") === 0) { const bq = Q(16, 0, -1.6); pill(s, bq[0], bq[1], "bridge", { fs: 8, fill: M.phy }); }
   const zz = t.indexOf("emib") === 0 ? 2.2 : (t === "cowos-s" ? 3.7 : 3.3);
@@ -957,11 +959,13 @@ function f_sip(s, p) {
   const b1 = Q(13, 0, zz + 1), b2 = Q(19, 0, zz + 1); A(s, b1[0], b1[1], b2[0], b2[1], K.rust, 1.3, { both: true });
   const qq = Q(16, 0, zz + 8.4);
   pill(s, qq[0], qq[1], (t.indexOf("emib") === 0 ? "bridge 경유 " : "interposer 경유 ") + ((p.lines || p.io) ? Number(p.lines || p.io).toLocaleString() + "선" : "HBM I/O 배선"), { fs: 8, fill: K.cream });
-  const msg = t === "emib" ? ["전원은 bridge를 통과하지 못하고 substrate 경유", K.pink]
+  // 사실 근거: _facts F34 (CoWoS-S stitching ≈ 3.3× reticle), F37 (RDL 적층 via · CoWoS-L TIV · EMIB 전원은 기판 via)
+  const msg = p.msg ? [p.msg, K.violet]
+    : t === "emib" ? ["bridge 는 신호 전용 · 전원은 기판 via 로 바로 내려간다", K.violet]
     : t === "emib-t" ? ["bridge 내 TSV로 전원도 수직 통과", K.mint]
-    : t === "cowos-s" ? ["전면 Si → reticle 크기가 상한", K.violet]
-    : t === "cowos-r" ? ["TSV가 없어 전원은 substrate 경유 · 저비용", K.violet]
-    : ["미세배선이 필요한 구간만 bridge로 국한", K.violet];
+    : t === "cowos-s" ? ["전면 Si 인터포저 · stitching 으로 약 3.3× reticle 까지", K.violet]
+    : t === "cowos-r" ? ["TSV 없이 RDL 적층 via 로 수직 연결 · 한계는 배선 피치", K.violet]
+    : ["미세배선 구간만 LSI bridge · 수직 경로는 TIV · 전역 RDL", K.violet];
   pill(s, RC.x, TOP + 3.5, msg[0], { fs: 8, fill: msg[1], align: "left", maxW: RC.w });
   if (p.bullet) pill(s, RC.x, TOP + 3.95, p.bullet, { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 비례 근사");
@@ -1036,7 +1040,7 @@ function f_fa(s, p) {
     const pts = []; for (let i = 0; i <= 120; i++) { let v = 0; feats.forEach((f) => { v += f[1] * Math.exp(-Math.pow((i - f[0]) / 4.5, 2)); }); pts.push([g.X(i), g.Y(Math.max(-40, Math.min(60, v)))]); }
     curve(s, pts, K.rust, 1.6);
     feats.forEach((f, i) => { L(s, g.X(f[0]), g.Y(-40), g.X(f[0]), g.Y(60), K.edge, 0.7, { dash: 1 }); pill(s, Math.min(g.X(f[0]), LC.x + 3.9), g.Y(60) + 0.17 + (i % 2) * 0.24, f[2], { fs: 8, fill: K.yellow }); });
-    annot(s, 0, "패키지 내부 경로에는 TDR 이 아니라 EOTPR 을 쓴다", K.violet);
+    annot(s, 0, "패키지 내부 미세 경로는 분해능이 높은 EOTPR 로 본다", K.violet);
     ttl(s, "구조 대응", RC.x, TOP - 0.04, 2.0);
     const Q = OBL(RC.x + 0.15, TOP + 3.0, 0.1);
     oblBox(s, Q, 0, 0, 0, 30, 5, 2, M.sub, { lw: 0.7, text: "substrate", fs: 8 });
@@ -1094,7 +1098,7 @@ function f_rel(s, p) {
   // TC 축일 때 규격 cycle 수(기본 JESD22-A104 cond. B 700 cycle)를 세로 점선으로
   const tcC = p.tcCycles || 700;
   if (!p.xlab && tcC <= XM) { L(s, g.X(tcC), g.Y(0), g.X(tcC), g.Y(YM), K.edge, 0.9, { dash: 1 }); pill(s, g.X(tcC), g.Y(YM * 0.62), "규격 " + tcC + " cycle", { fs: 7, h: 0.2, fill: K.cream, axis: "y" }); }
-  pill(s, g.X(0) + 0.08, g.Y(YM) + 0.22, "판정 기준선 " + (p.crit || 1) + "%", { fs: 8, fill: K.green, align: "left" });
+  pill(s, g.X(0) + 0.08, g.Y(YM) + 0.22, "판정 기준선 (사내) " + (p.crit || 1) + "%", { fs: 8, fill: K.green, align: "left" });
   if (p.bullet) pill(s, RC.x, TOP + 4.15, p.bullet, { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "고장률 곡선은 문항 제시값 · 조건은 각 JESD 문서 기준");
 }
@@ -1123,11 +1127,11 @@ function f_stack(s, p) {
   else if (p.highlight === "height") annot(s, 1, "전체 높이 = die 두께 합 + 간극 합", K.violet);
   const rows = [["항목", "수량", "산식"],
     ["die 총 장수", hid ? "?" : (n + 1) + "장", "core " + n + " + base 1"],
-    ["접합 간극", hid ? "?" : n + "개", "die 수 − 1"],
-    ["backside pad 보유 die", hid ? "?" : n + "장", "top core 제외"],
-    ["스택 높이", hid ? "?" : (p.h_um || (n * 50 + 100)) + " µm", "die 두께 × 장수 + 간극"]];
+    ["접합 간극", hid ? "?" : n + "개", "= core 수 (base–core1 포함)"],
+    ["backside pad 보유 die", hid ? "?" : n + "장", "base + core, top core 제외"],
+    ["스택 높이", hid ? "?" : (p.h_um || (n * 50 + 100)) + " µm", "base + N × (core + 간극)"]];
   table(s, rows, RC.x, TOP, RC.w, null);
-  pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.32, "패키지 높이 상한 " + (p.limit_um || 775) + " µm", { fs: 8, fill: hid ? K.cream : ((p.h_um || 0) > (p.limit_um || 775) ? K.pink : K.mint), align: "left", maxW: RC.w });
+  pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.32, "높이 상한 (설계 조건) " + (p.limit_um || 775) + " µm", { fs: 8, fill: hid ? K.cream : ((p.h_um || 0) > (p.limit_um || 775) ? K.pink : K.mint), align: "left", maxW: RC.w });
   if (p.bullet) pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.84, p.bullet, { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례");
 }
@@ -1165,7 +1169,7 @@ function f_hcb(s, p) {
   lead(s, ix + 1.8, iy + 0.56, ix + 2.88, iy + 1.68, "dishing " + (p.dish_nm || 8) + " nm → 미접합", { fill: K.pink, align: "right" });
   lead(s, ix + 0.15, iy + 0.72, ix + 0.05, iy + 1.72, "SiCN 유전막 접합면", { fill: MX.ox });
   pill(s, RC.x, iy + 2.3, "dishing > Cu 팽창량이면 미접합", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
-  pill(s, RC.x, iy + 2.75, p.bullet || "particle 1개가 수 µm 범위 미접합을 만든다", { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
+  pill(s, RC.x, iy + 2.75, p.bullet || "particle 1개가 자기보다 훨씬 넓은 미접합을 만든다", { fs: 8, fill: K.card2, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "변위 · 단차는 과장 표시");
 }
 

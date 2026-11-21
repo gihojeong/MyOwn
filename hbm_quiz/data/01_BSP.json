@@ -230,7 +230,7 @@
    "stem": "HBM core die wafer 는 앞면 회로와 µbump 를 만든 뒤 Post Fab 구간으로 넘어가 carrier 에 붙인 채 뒷면을 가공합니다. 이 구간이 끝나야 die 를 위아래로 쌓을 수 있습니다. Post Fab 구간이 core die wafer 에 만들어 주는 것은 무엇입니까?",
    "opts": [
     "얇아진 뒷면에 드러난 TSV 와 backside pad",
-    "앞면 BEOL 배선과 그 위의 µbump",
+    "앞면 BEOL 배선과 그 위에 올린 µbump",
     "die 를 감싸는 EMC 몰드와 외부 단자",
     "TSV 구멍과 그 안을 채운 Cu"
    ],
@@ -645,9 +645,9 @@
    "stem": "HBM 스택에서 core die 는 앞면에 µbump 를, 뒷면에 backside pad 를 가집니다. die 를 쌓을 때 위·아래 die 가 서로 맞닿습니다. 아래 die 의 backside pad 가 맡는 역할은 무엇입니까?",
    "opts": [
     "위 die 의 µbump 를 받아 TSV 로 잇는 접점",
-    "다음 die 를 맞출 때 쓰는 정렬 표식",
+    "다음 die 를 맞출 때만 쓰는 정렬 표식",
     "아래 die 회로를 수분에서 지키는 덮개",
-    "die 의 열을 옆으로 퍼뜨리는 방열판"
+    "die 의 열을 옆으로 넓게 퍼뜨리는 방열판"
    ],
    "a": 0,
    "exp": "backside pad 는 아래 die 의 TSV 끝 위에 놓여, 바로 위 die 앞면의 µbump 와 접합해 신호와 전원을 위 die 로 잇습니다. ②의 정렬 표식은 별도 mark 를 씁니다. ③의 앞면 보호는 앞면 passivation 의 역할이고, ④처럼 pad 는 방열을 목적으로 두지 않습니다.",
@@ -948,7 +948,7 @@
     "Si 와 EMC 가 섞여 경계에 합금층이 생긴다"
    ],
    "a": 0,
-   "exp": "같은 휠 조건에서도 EMC(수지+filler)와 Si 는 제거 속도와 탄성 회복이 달라 경계에 단차가 생기고, filler 탈락이나 휠 막힘도 함께 나타납니다. ②처럼 연삭열로 EMC 가 녹아 덮지는 않습니다. ③은 제거 속도 차이를 한쪽만 깎인다고 과장했습니다. ④의 합금층은 두 재료 사이에서 생기지 않습니다.",
+   "exp": "같은 휠 조건에서도 EMC(수지+filler)와 Si 는 제거 속도와 탄성 회복이 달라 경계에 단차가 생기고, filler 탈락이나 휠 막힘도 함께 나타납니다. ②처럼 연삭열로 EMC 가 녹아 덮지는 않습니다. ③은 EMC 가 거의 깎이지 않는다고 과장했습니다. ④의 합금층은 두 재료 사이에서 생기지 않습니다.",
    "k": 0,
    "fig": [
     "f_note",
@@ -1312,9 +1312,9 @@
    "stem": "연삭으로 TSV 끝 위에 Si 를 수 µm 남긴 뒤, Si 만 선택적으로 식각해 TSV 를 돌출시킵니다. TSV 의 Cu 는 SiO2 liner 와 barrier 로 둘러싸여 있습니다. 이 식각에서 높게 유지해야 하는 선택비는 무엇입니까?",
    "opts": [
     "Si 대 SiO2 liner 식각 선택비",
-    "SiO2 대 SiN 식각 선택비",
-    "Cu 대 Si 식각 선택비",
-    "SiN 대 Si 식각 선택비"
+    "SiO2 대 SiN 의 식각 선택비",
+    "Cu 대 Si 의 식각 선택비",
+    "SiN 대 Si 의 식각 선택비"
    ],
    "a": 0,
    "exp": "recess 식각은 Si 를 걷어 내면서 TSV 를 감싼 SiO2 liner 는 남겨야 하므로 Si : SiO2 선택비가 높아야 합니다. liner 가 남아 있으면 Cu 가 식각 중 드러나지 않습니다. ②의 SiO2 : SiN 은 이후 CMP 단계의 선택비이고, ③처럼 Cu 를 Si 보다 빨리 깎으면 TSV 가 오히려 패입니다. ④는 아직 SiN 이 없는 단계입니다.",
@@ -1462,13 +1462,13 @@
    "title": "edge trimming 을 하는 시점",
    "stem": "Post Fab 구간은 carrier 임시 접합 → back grinding → reveal → 절연막 · pad 형성 → debonding 순으로 진행됩니다. device wafer 앞면 가장자리를 깎는 edge trimming 은 어느 시점에 하는 것이 맞습니까?",
    "opts": [
-    "carrier 에 임시 접합하기 직전",
-    "back grinding 을 마친 직후",
-    "backside pad 를 형성한 직후",
-    "debonding 을 마친 직후"
+    "carrier 에 임시 접합하기 전",
+    "carrier 접합 뒤 연삭을 시작하기 전",
+    "backside pad 를 형성한 뒤",
+    "debonding 을 마친 뒤"
    ],
    "a": 0,
-   "exp": "앞면 가장자리는 접합 뒤 carrier 쪽을 향해 가려지므로, 접합 전에 앞면에서 trimming 해야 합니다. ②는 이미 얇아진 칼날 가장자리가 연삭 중에 깨진 뒤입니다. ③과 ④는 위험 구간이 모두 지난 뒤라 효과가 없고, 얇은 wafer 에 기계 가공을 더하는 셈입니다.",
+   "exp": "앞면 가장자리는 접합 뒤 carrier 쪽을 향해 가려지므로, 접합 전에 앞면에서 trimming 해야 합니다. ②는 앞면 가장자리가 이미 접착층과 carrier 에 덮여 깎을 수 없는 시점입니다. ③과 ④는 위험 구간이 모두 지난 뒤라 효과가 없고, 얇은 wafer 에 기계 가공을 더하는 셈입니다.",
    "k": 0,
    "fig": [
     "f_film",
@@ -2063,44 +2063,23 @@
    "title": "접촉식 게이지가 재는 두께",
    "stem": "연삭기 안의 접촉식 높이 게이지는 chuck 면과 연삭 중인 윗면의 높이 차를 잽니다. carrier 를 붙인 wafer 를 연삭할 때 이 게이지 값이 나타내는 두께는 무엇입니까?",
    "opts": [
-    "carrier · 접착층 · Si 를 합친 두께",
-    "Si 층만의 두께",
-    "접착층과 Si 를 합친 두께",
-    "carrier 와 접착층을 합친 두께"
+    "세 층(carrier·접착층·Si)의 합",
+    "한 층(Si)만의 두께",
+    "두 층(접착층·Si)의 합",
+    "두 층(carrier·접착층)의 합"
    ],
    "a": 0,
    "exp": "chuck 위에 carrier 가 놓이고 그 위에 접착층과 Si 가 있으므로 접촉식 게이지는 세 층을 합친 높이를 잽니다. Si 두께는 carrier 와 접착층 두께를 빼야 나오며, 두 층의 편차가 그대로 오차가 됩니다. ②의 Si 두께만 재려면 IR 간섭 센서가 필요하고, ③과 ④는 chuck 위에 놓인 carrier 또는 Si 를 빠뜨린 조합입니다.",
    "k": 0,
    "fig": [
-    "f_film",
+    "f_note",
     {
-     "layers": [
-      [
-       "Si 뒷면 (연삭 대상)",
-       3.0,
-       "D9D2C7"
-      ],
-      [
-       "BEOL · 앞면 bump",
-       1.0,
-       "E2D6F3"
-      ],
-      [
-       "임시 접착층",
-       1.0,
-       "F7E3B0"
-      ],
-      [
-       "release 층",
-       0.4,
-       "F6D3D0"
-      ],
-      [
-       "carrier wafer",
-       3.0,
-       "C9CFD6"
-      ]
+     "title": "연삭기 높이 게이지",
+     "points": [
+      "게이지 기준점은 chuck 면이다",
+      "탐침은 연삭 중인 윗면에 닿는다"
      ],
+     "ask": "재는 범위",
      "flag": "주제: 두께 측정"
     }
    ],
