@@ -1,5 +1,5 @@
 // Layout / overlap checker for every question (DA).
-// usage: node tools/layout_check.js [--baseline] [--html dist/HBM_quiz.html] [--no-screen] [--limit N]
+// usage: node tools/layout_check.js [--help] [--html FILE] [--out PREFIX | --publish] [--baseline] [--no-screen] [--limit N]
 //   (a) figure: renders svgFor(q) for all questions at 1:1 user-unit scale inside one page and measures
 //       E1 text overflow  : foreignObject text exceeds its own box (scrollHeight/scrollWidth) by > 3 px
 //       E2 text–text      : rendered text ink rects of two labels intersect (> 3 px both ways)
@@ -10,7 +10,7 @@
 //   (b) screen: renders the real question screen (graded, with explanation) at 1440×900, 820×1180, 390×844 and checks
 //       S1 horizontal page scroll, S2 panels overlapping, S3 figure squeezed (< 200 px tall on desktop),
 //       S4 metric / option text clipped, S5 title clipped.
-// Writes docs/reviews/_layout_latest.{md,json} (or _layout_baseline with --baseline) and compares with the baseline.
+// Writes $TMPDIR/hbm_layout_check/_layout_latest.{md,json} by default; docs/reviews/ only with --publish. Always compares with docs/reviews/_layout_baseline.json.
 // Exit code 1 when the number of questions with high-severity figure defects (E1–E4, E6) or screen defects grows vs baseline.
 const { chromium } = require('playwright');
 const path = require('path'), fs = require('fs');
@@ -18,8 +18,23 @@ const ROOT = path.resolve(__dirname, '..');
 const argv = process.argv.slice(2), opt = (k, d) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : d; };
 const HTML = path.resolve(ROOT, opt('--html', 'dist/HBM_quiz.html'));
 const BASE = argv.includes('--baseline');
+const PUBLISH = argv.includes('--publish');
+if (argv.includes('--help') || argv.includes('-h')) {
+  console.log(`usage: node tools/layout_check.js [options]
+  --html <file>     검사할 빌드 파일 (기본 dist/HBM_quiz.html)
+  --out <prefix>    결과 파일 접두 경로 (<prefix>.md / <prefix>.json). 기본: $TMPDIR/hbm_layout_check/_layout_latest
+  --publish         공용 docs/reviews/_layout_latest.{md,json} 갱신 (--baseline 과 함께면 _layout_baseline)
+  --baseline        기준선으로 기록 (비교 안 함). 공용 기준선은 --publish 를 함께 줄 때만 바뀐다
+  --limit <N>       앞 N 문항만 검사
+  --no-screen       문항 화면(뷰포트별) 검사 생략
+  -h, --help        이 도움말
+비교 기준은 항상 docs/reviews/_layout_baseline.json. 고위험 결함 문항·화면 결함 문항이 기준선보다 늘면 exit 1.`);
+  process.exit(0);
+}
 const LIMIT = +opt('--limit', 0);
-const OUT = path.join(ROOT, 'docs/reviews', BASE ? '_layout_baseline' : '_layout_latest');
+const NAME = BASE ? '_layout_baseline' : '_layout_latest';
+// 공용 파일은 --publish 로만 갱신. 기본은 임시 디렉터리 (다른 에이전트의 결과를 덮어쓰지 않도록)
+const OUT = opt('--out', null) ? path.resolve(opt('--out')) : PUBLISH ? path.join(ROOT, 'docs/reviews', NAME) : path.join(process.env.TMPDIR || require('os').tmpdir(), 'hbm_layout_check', NAME);
 
 function figProbe(limit) {
   const TOL = 3;
@@ -170,7 +185,7 @@ function screenProbe(limit) {
   Object.keys(ex).sort().forEach((f) => { L.push(`**${f}**`, ...ex[f], ''); });
   L.push('전체 목록은 같은 이름의 `.json` 참조 (`fig[]`: 문항별 결함, `screens{}`: 뷰포트별).');
   fs.writeFileSync(OUT + '.md', L.join('\n') + '\n');
-  console.log(JSON.stringify({ n: fig.n, figHighQ: highQ, figAnyQ: anyQ, codes: total, screens: scr, errs: errs.length, secs: summary.secs, out: path.relative(ROOT, OUT) }));
+  console.log(JSON.stringify({ n: fig.n, figHighQ: highQ, figAnyQ: anyQ, codes: total, screens: scr, errs: errs.length, secs: summary.secs, out: OUT }));
   let fail = errs.length > 0;
   if (base) {
     if (highQ > base.figHighQ) { console.error(`REGRESSION: figure high-severity questions ${highQ} > baseline ${base.figHighQ}`); fail = true; }

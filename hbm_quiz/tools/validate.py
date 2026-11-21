@@ -130,6 +130,21 @@ TOK = re.compile(r"[A-Za-z][A-Za-z0-9\-/]*|\d+(?:\.\d+)?|[가-힣]+")
 NUM = re.compile(r"(?<![A-Za-z])[-−]?\d[\d,]*(?:\.\d+)?")
 
 
+JOSA_SPACE_RX = re.compile(r"[A-Za-z0-9)%µ°] (가|이|는|은|를|을|의|에|와|과|로|으로|에서|에는|에도|까지|부터|보다|처럼|만|도)(?=[\s,.)])")
+FORMULA_TAIL = re.compile(r"[=≈×÷][^가-힣]*$")
+
+
+def josa_space_hits(text):
+    """영문·숫자 + 공백 + 조사. 단, 직전 한글 이후 구간에 = ≈ × ÷ 가 있으면(수식 바로 뒤) 예외 —
+    LAYOUT_RULES §2 · STANDARDS 3.4 의 '수식과 한글은 띄어 쓴다' 규칙. Phase 2 정규화도 이 함수 기준."""
+    out = []
+    for m in JOSA_SPACE_RX.finditer(text or ""):
+        if FORMULA_TAIL.search(text[:m.start() + 1]):
+            continue
+        out.append(m)
+    return out
+
+
 def strip_particle(t):
     for p in PARTICLES:
         if len(t) > len(p) + 1 and t.endswith(p):
@@ -549,8 +564,8 @@ def check_item(q, code, join, issues, legacy=()):
         add("I_UNIT_MU", "그리스 문자 μ 대신 µ(U+00B5) 사용")
     if re.search(r"\d\s?um\b", alltext):
         add("I_UNIT_UM", "um → µm")
-    if re.search(r"[A-Za-z0-9)%] (가|이|는|은|를|을|의|에|와|과|로|으로|에서|에는|에도)(?=[\s,.)])", stem + " " + exp):
-        add("I_JOSA_SPACE", "영문·숫자 뒤 조사 띄어 씀 (EA Phase 2 일괄)")
+    if josa_space_hits(stem + " " + exp):
+        add("I_JOSA_SPACE", "영문·숫자 뒤 조사 띄어 씀 (EA Phase 2 일괄; 수식 바로 뒤는 예외)")
 
 
 # ───────────────────────── 집합 검사 ─────────────────────────
