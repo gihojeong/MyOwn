@@ -256,6 +256,9 @@
 ## 남은 우려 · EA/DA 에 요청
 - `tools/layout_check.js --help` 를 실행했더니 옵션 없이 전체 검사가 돌아 `docs/reviews/_layout_latest.json/.md` 가 갱신되었습니다(DA 소유 파일, 내용은 실행 통계 3줄 차이). 필요하면 DA 가 다시 생성해 주십시오.
 - 문항 설정값(pJ/bit, 열저항, 원가, 신호선 수, GDDR 장치 사양 등)은 모두 지문에 "가정/문항 설정값" 으로 명시했습니다. 실제 제품값으로 읽히지 않도록 EA 표본 확인 시 참고 바랍니다.
-- DRFM(JESD270-4 RAS 항목)과 HBM3 on-die ECC·실시간 오류 보고(JESD238)는 JEDEC 발표문 기준으로 썼습니다(`src`). FACT 표에 없던 항목이라 EA 확인을 권합니다.
-- lane repair·post-package repair·stack ID 는 특정 표준 조항 번호 없이 일반 개념으로만 출제했습니다.
+- **FACT §12 W2-01·W2-02 반영(2026-11-21)**:
+  - DRFM(B-9014, I-9028, A-9008, A-9009): JESD270-4 발표문이 밝힌 존재·목적(row hammer 완화 RAS)과 '피해 row 추가 refresh' 개념만 남김. "호스트가 지정한 row" 같은 명령 동작 서술(DDR5 정의)을 지문·보기·해설에서 제거. 명령·타이밍 세부를 묻는 문항은 없음.
+  - on-die ECC(B-9012, I-9026): JESD238 표현대로 "symbol 기반 on-die ECC" 로 고치고 "bit 오류" 단정을 "bit(symbol) 오류"·"오류" 로 바꿈. ECS 용어는 PROD 전 문항에 없음(확인).
+  - lane repair·post-package repair(A-9007, A-9030, 함께 B-9015, I-9030): 개념 수준으로만 서술. 예비 TSV 묶음 구성(32 + 1)은 "문항 설정" 으로 명시했고, 'lane 을 한 칸씩 민다' 같은 구현 세부와 규격 주장은 지움.
+- stack ID 는 특정 표준 조항 번호 없이 일반 개념으로만 출제했습니다.
 - 정답 위치 균형·`E_JOSA_CIRC` 는 EA Phase 2 대상(현재 E_JOSA_CIRC 0 건).
