@@ -254,3 +254,32 @@ core die 사이 µbump pitch 23 µm, 접합 간극 11 µm(NCP), base die 아래 
 - `f_bump` pillar/solder 분해(6/3 µm 등)는 실측이 아닌 설정값. 실측 단면에서 pillar·cap 두께가 확인되면 맞출 것.
 - 중급·고급(보고만, 수정 안 함): BUMP-I·A 의 `f_bump` 주제도 다수가 pillar 25 µm · solder 12 µm(간극 11 µm 와 불일치). BUMP-A-9022·9028·9030 은 pitch 30 µm 를 '설정값' 표시 없이 사용.
 - B-9014(daisy chain)·B-9009(formic acid)·B-9004(electron wind)는 참고문헌에 직접 근거가 없어 src 미부착.
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+- 점검: BUMP-B 41 문항 전부를 `tools/sheets.js` 접촉 인화지(4장)로 렌더해 직접 봄. 수정 후 4장 모두 다시 렌더해 확인.
+- 결함(중복 계상): **E1 36** (k 없는 `f_bump` — 작은 단면 한 개 + 오른쪽 절반 빈 공간) · **E2 30** (같은 접합 단면이 도금·flux·reflow·HCB·젖음·EM 등 다른 주제 문항에 붙음, BUMP-B-0067 포함) · **E3 5** · E4 0 · **E5 1**.
+- 고친 문항 **38**, 그대로 둔 문항 3 (B-9002 · B-9012 · B-9017 — 기존 `f_note`, 결함 없음).
+- 게이트: `validate --domain BUMP` E 0 / W 0 · build · smoke figErr [] · figEmpty [] · layout_check 3 화면 결함 0.
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0001 | E3 (그래프의 "x = k · t^0.5" 가 정답 '제곱근 비례' 그대로) | `f_plot` — 지문 측정값 250 h 3.5 µm · 1000 h 7 µm 두 점만(식·경향선 없음) |
+| B-0002 | E5 (지문에 없는 k = 0.1 성장 곡선) · E2 | `f_table` — Cu 직접 / Ni 삽입 두 조건 비교(IMC 1.2 µm, pillar 감소 작음 = 지문 관찰) |
+| B-0015 · B-0036 | E1 · E3 (단면 라벨 'Cu pillar'·solder 가 정답 구성) | `f_note` (녹는/녹지 않는 부분, 간극 유지, 접합재 관점) |
+| B-0017 | E1 · E2 | `f_film` — solder / UBM 층 3·2·1 / pad / die (층 이름·역할 숨김) |
+| B-9016 | E1 · E2 | `f_film` — Cu pillar / Cu seed / Ti / pad / die |
+| B-0020 | E1 · E3 (IMC 라벨이 계면을 가리킴 = 정답 위치) | `f_note` |
+| B-9001 | E1 · E3 (IMC 라벨 "Cu₆Sn₅ / Cu₃Sn" 순서) | `f_note` (원자 비·공급 원소 관점) |
+| B-0021 · B-9011 | E1 | `f_note` |
+| B-0033 | E1 · E2 | `f_plot` reflow 예시 프로파일 + 융점 221 °C 점선 (지문 조건 bullet) |
+| B-0057 | E1 · E2 | `f_plot` 같은 최고 온도 · 느린/빠른 냉각 두 프로파일 |
+| B-0067 (사용자 지적) | E1 · E2 (IMC 단면 ↔ through-mask 도금) | `f_note` (seed · PR 구멍 · PR 제거 후 형상 관점) |
+| B-0016 · 0018 · 0019 · 0022 · 0023 · 0024 · 0025 · 0026 · 0032 · 0037 · 0039 · 0042 · 0044 · 0045 · 0046 · 0047 · 9003 · 9004 · 9005 · 9007 · 9008 · 9009 · 9013 · 9014 · 9015 | E1 · E2 | `f_note` — points 는 지문 조건·관찰 대상과 비교 관점만(정답 문장 없음, validate W_FIG_LEAK 0) |
+
+- 중간 시도: B-0018·0023·0042·0044 를 `f_bond`(hideTable·hideNotes)로 바꿨으나 단면이 작고 오른쪽 열이 비어(E1) `f_note` 로 다시 바꿈. B-0036·B-9015 는 첫 points 가 W_FIG_LEAK(정답 어휘 노출)에 걸려 고쳐 씀.
+- 템플릿 결함(보고만 — 메인 세션):
+  1. `tools/sheets.js` 가 렌더 150 ms 뒤 캡처하는데 `.stage .el` 의 rise 애니메이션(0.42 s + 요소당 4 ms 지연)이 끝나지 않아 요소가 많은 그림은 반투명으로 찍힘(B-9015·0033·0057 등). `newPage({ …, reducedMotion: 'reduce' })` 권장. 이번 점검은 그 옵션만 바꾼 사본(scratch)으로 렌더함.
+  2. `f_bump` 는 k 가 없으면 오른쪽 절반이 비고, `f_bond` 는 `hideTable` 이면 오른쪽 열이 bullet 하나만 남아 비어 보임(배치가 다시 흐르지 않음).
+  3. smoke `figEmpty` 는 점 1개짜리 `f_plot` series 를 빈 곡선으로 셈(B-0001 첫 시도) — 점만 찍는 series 를 쓸 수 없음.
+- 남은 위험: 초급 BUMP 그림의 대부분(35/41)이 이제 `f_note` 개념 카드다(주제에 맞는 도식 템플릿 — 도금 단면·젖음 접촉각·bridge/HIP 단면·daisy chain 회로 — 이 없음). points 의 정답 노출 판단은 DA 육안 + W_FIG_LEAK 기준이며 EA 검토 전. 범위 밖: BUMP-I 35 · BUMP-A 5 문항이 여전히 k 없는 `f_bump`(E1·E2 가능성 높음).

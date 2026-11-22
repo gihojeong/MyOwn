@@ -292,13 +292,16 @@
    "exp": "TC-NCF는 NCF를 wafer나 die 표면에 먼저 붙여 두고 열압착 중 solder 접합과 수지 경화를 함께 끝냅니다. MR-MUF는 일괄 reflow로 접합을 마친 뒤 액상 EMC를 주입해 간극을 채웁니다. ②는 두 공법의 순서를 뒤바꾼 것이고, ③과 ④는 두 공법의 차이를 없앤 서술입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: 수지 투입 시점",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "두 공법의 접합 수지",
+     "points": [
+      "두 공법 모두 die 간극을 절연 수지로 채움 (지문)",
+      "수지가 접합 전에 있는가, 접합 후에 들어가는가",
+      "수지가 들어가는 형태: 필름인가 액상인가"
+     ],
+     "ask": "투입 시점·형태",
+     "flag": "주제: 수지 투입 시점"
     }
    ],
    "metrics": [
@@ -481,13 +484,16 @@
    "exp": "solder가 pad에 금속적으로 젖으려면 그 사이의 수지가 모두 밀려 나가야 합니다. 수지가 남으면 금속 접합이 생기지 않아 open이 되거나, 일부만 닿아 저항이 높은 joint가 됩니다(resin entrapment). ② IMC가 생기지 않는 것은 접합이 없다는 뜻입니다. ① 수지의 접착력은 금속 접합을 대신하지 못합니다. ④ 수지는 열전도율이 낮아 열 경로로도 불리합니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: 수지 끼임 미접합",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "joint 단면 관찰",
+     "points": [
+      "solder 와 상대 Cu pad 사이에 경화된 NCF 층 (지문)",
+      "NCF 는 비전도성 수지",
+      "solder 와 Cu 가 금속 결합하려면 필요한 조건"
+     ],
+     "ask": "joint 상태",
+     "flag": "주제: 수지 끼임 미접합"
     }
    ],
    "metrics": [
@@ -518,13 +524,38 @@
    "exp": "N단 스택에는 core die가 N장이고 접합 계면도 N개이므로 TC-NCF 사이클도 N번입니다. 8단 → 16단이면 사이클 수가 8 → 16으로 늘어 접합 시간은 대략 2배가 됩니다. ② 일괄 reflow는 MR-MUF의 특징입니다. ③ 사이클 시간은 승온·경화·냉각이 정하며 die 두께로 크게 줄지 않습니다. ④ 단마다 정렬은 생략할 수 없습니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_table",
     {
-     "method": "ncf",
-     "flag": "주제: 순차 열압착",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "TC-NCF 적층 조건",
+     "cols": [
+      "항목",
+      "8단",
+      "16단"
+     ],
+     "rows": [
+      [
+       "core die 수",
+       "8",
+       "16"
+      ],
+      [
+       "die 당 열압착 사이클",
+       "1회",
+       "1회"
+      ],
+      [
+       "사이클 조건",
+       "같음",
+       "같음"
+      ],
+      [
+       "스택 접합 공정 시간",
+       "기준",
+       "?"
+      ]
+     ],
+     "hlRow": 3,
+     "flag": "주제: 순차 열압착"
     }
    ],
    "metrics": [
@@ -590,13 +621,16 @@
    "exp": "solder와 Cu 사이 IMC는 접합 뒤에도 열을 받을 때마다 확산으로 자랍니다. 아래 die일수록 위 die 접합 사이클을 많이 겪으므로 IMC가 두꺼워지고, 취성 계면이 넓어져 신뢰성이 먼저 떨어질 수 있습니다. ② 수지에 갇힌 void는 열로 빠져나가지 않습니다. ③ IMC가 두꺼워지면 강도는 오히려 취약해집니다. ④ 확산은 접합 후에도 계속됩니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: 누적 열이력",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "16단 TC-NCF 의 아래쪽 joint",
+     "points": [
+      "위에 die 가 올라갈 때마다 bond head 열이 전달 (지문)",
+      "가장 아래 joint 가 열을 받는 횟수",
+      "고온에 놓인 시간이 늘 때 접합 계면의 변화"
+     ],
+     "ask": "반복 열이력 영향",
+     "flag": "주제: 누적 열이력"
     }
    ],
    "metrics": [
@@ -662,12 +696,16 @@
    "exp": "HCB는 단단한 고체 면끼리 맞닿아야 붙습니다. 입자가 두 면 사이를 받치면 입자 둘레로 면이 휘어 내려오기까지 상당한 거리가 필요해, 입자보다 훨씬 넓은 원형 미접합 영역이 남습니다. 메워 줄 solder나 수지도 없습니다. ② 입자는 열을 흡수해 주변 팽창을 막을 만큼 크지 않습니다. ③ 문제는 단락이 아니라 미접합입니다. ④ 일반 입자가 유전막을 녹이지는 않습니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "hcb",
-     "flag": "주제: HCB 입자 결함",
-     "pitch_um": 9,
-     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
+     "title": "HCB 접합면의 입자",
+     "points": [
+      "입자 높이 약 0.5 µm (지문)",
+      "두 접합면은 단단하고 평평함",
+      "입자 주변에서 두 면 사이 간격이 어떻게 변하는가"
+     ],
+     "ask": "넓은 미접합 이유",
+     "flag": "주제: HCB 입자 결함"
     }
    ],
    "metrics": [
@@ -698,13 +736,16 @@
    "exp": "underfill은 joint가 있는 간극을 채워 열팽창 차이로 생기는 응력을 나누고 joint를 보호하는 수지입니다. NCF·NCP는 이를 접합 전에 미리 두는 형태이고, MR-MUF의 EMC는 간극 충전과 외곽 성형을 함께 맡습니다. ② 열 계면 재료는 TIM입니다. ① flux는 산화막 제거용이며 간극을 채우지 않습니다. ④ 외곽 성형만 하는 수지는 mold compound(봉지재)입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
-     "flag": "주제: underfill",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
+     "title": "underfill 이라는 용어",
+     "points": [
+      "flip chip · die 적층 패키지에서 쓰는 용어",
+      "under + fill: 무엇의 아래를 채우는가",
+      "보기의 대상이 패키지 안 어디에 놓이는가"
+     ],
+     "ask": "가리키는 재료",
+     "flag": "주제: underfill"
     }
    ],
    "metrics": [
@@ -798,12 +839,16 @@
    "exp": "solder 접합은 녹은 solder가 퍼지는 거리만큼 이웃과의 간격을 남겨야 하지만, HCB는 고체 Cu pad와 유전막이 그대로 맞닿아 그런 여유가 필요 없습니다. 그래서 pad 크기와 간격을 리소그래피 수준까지 줄일 수 있습니다. ② HCB pad는 높이를 쌓는 구조가 아닙니다. ③ anneal에서 Cu 팽창은 오히려 접합에 쓰입니다. ① pitch를 줄이면 pad는 작아지고 정렬 여유도 줄어듭니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "hcb",
-     "flag": "주제: HCB 미세 pitch",
-     "pitch_um": 9,
-     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
+     "title": "HCB 와 solder µbump",
+     "points": [
+      "HCB 접합면: Cu pad + 유전막",
+      "µbump 접합 중 녹는 재료의 거동",
+      "pitch 가 줄 때 이웃 접점과의 거리"
+     ],
+     "ask": "미세 pitch 이유",
+     "flag": "주제: HCB 미세 pitch"
     }
    ],
    "metrics": [
@@ -865,13 +910,16 @@
    "exp": "µbump 접합에서는 녹은 solder가 수 µm의 높이 차를 흡수하지만, HCB는 고체 유전막과 Cu가 직접 맞닿아야 하므로 국부 거칠기(약 1 nm 이하)와 Cu recess(수 nm)를 엄격히 관리해야 합니다. ② HCB의 anneal 온도에서 Cu·유전막은 녹지 않습니다. ③ 산화 속도와 무관하며 Cu 표면도 처리가 필요합니다. ④ die 전체 휨 허용치는 µm 급으로 보고되며, nm 급 요구는 표면 거칠기와 recess에 해당합니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "hcb",
-     "dish": true,
-     "flag": "주제: HCB 표면 요구",
-     "pitch_um": 9,
-     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
+     "title": "HCB 접합면 관리",
+     "points": [
+      "관리 대상: 표면 거칠기 · Cu recess (nm 단위)",
+      "µbump 접합에서 높이 차를 흡수하는 재료",
+      "HCB 접합면에서 직접 맞닿는 두 재료"
+     ],
+     "ask": "근본 이유",
+     "flag": "주제: HCB 표면 요구"
     }
    ],
    "metrics": [
@@ -902,13 +950,16 @@
    "exp": "모든 joint를 한 번에 녹이므로 처리량은 높지만, 여러 층의 solder가 동시에 녹는 동안 die가 밀리거나 기울 수 있어 위치 유지가 과제입니다. ① die별 조건 제어는 순차 열압착(TC-NCF)의 장점입니다. ③ 접합 시간이 die 수에 비례하는 것은 순차 방식입니다. ④ solder 표면장력의 자기 정렬은 작은 오차만 보정하며 정렬을 대신하지 못합니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
-     "flag": "주제: 일괄 접합",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
+     "title": "일괄(gang) 접합",
+     "points": [
+      "가접합(tack) 후 한 번의 가열로 모든 joint 접합 (지문)",
+      "die 한 장씩 접합하는 방식과 가열 횟수 비교",
+      "모든 solder 가 동시에 녹아 있는 동안 die 를 붙잡는 것"
+     ],
+     "ask": "방식의 특징",
+     "flag": "주제: 일괄 접합"
     }
    ],
    "metrics": [
@@ -1014,13 +1065,16 @@
    "exp": "비전도성 paste를 NCP(non-conductive paste)라 부르며, dispenser로 접합 위치에 도포한 뒤 열압착 중 밀려 나가며 경화됩니다. ① solder resist는 기판 배선을 덮는 절연 보호막입니다. ② TIM은 die와 방열 부품 사이의 열 계면 재료입니다. ③ EMC는 일괄 reflow 뒤 주입하거나 성형하는 봉지 수지로, 접합 전에 도포하지 않습니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: 액상 접합 수지",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "액상 비전도성 접합 수지",
+     "points": [
+      "NCF 와 같은 역할의 비전도성 접합 수지 (지문)",
+      "형태: 필름이 아니라 액상(paste)",
+      "약어의 각 글자가 가리키는 것"
+     ],
+     "ask": "재료 이름",
+     "flag": "주제: 액상 접합 수지"
     }
    ],
    "metrics": [
@@ -1051,13 +1105,16 @@
    "exp": "NCF는 정해진 두께의 필름으로 laminate되므로 위치마다 수지량이 같습니다. NCP는 dispenser 토출량과 퍼짐 형태에 따라 위치마다 수지량이 달라질 수 있습니다. ① 경화 속도는 두께 균일도를 결정하지 않습니다. ③ filler 크기는 재료마다 다르며 두께 균일도의 근거가 아닙니다. ④ 점도가 낮으면 오히려 흐름이 커져 두께가 흔들립니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: NCF 두께",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "NCF 와 NCP 의 두께",
+     "points": [
+      "NCF: 필름 형태로 공급되어 붙임",
+      "NCP: 접합 전에 액상으로 도포",
+      "접합층 두께가 정해지는 시점"
+     ],
+     "ask": "NCF 이점",
+     "flag": "주제: NCF 두께"
     }
    ],
    "metrics": [
@@ -1088,13 +1145,16 @@
    "exp": "NCP는 dispenser로 bump 영역에 맞춰 양과 패턴을 조절해 도포할 수 있어, 재료 낭비를 줄이고 영역별로 양을 달리할 수 있습니다. ② 두께 균일도는 오히려 필름형 NCF가 유리합니다. ③ NCP도 열경화성 수지라 경화가 필요합니다. ① 액상 도포는 공기가 말려들어 void가 생길 위험이 있어 도포 패턴 관리가 필요합니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: NCP 도포",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "NCF 와 NCP 의 공급 방식",
+     "points": [
+      "NCF: 정해진 두께의 필름을 붙임",
+      "NCP: dispenser 로 액상 도포",
+      "도포 방식이 허용하는 자유도"
+     ],
+     "ask": "NCP 이점",
+     "flag": "주제: NCP 도포"
     }
    ],
    "metrics": [
@@ -1193,13 +1253,16 @@
    "exp": "SK hynix 발표 기준 Advanced MR-MUF는 적층 시 칩마다 순간 가열로 얇은 칩의 warpage를 잡는 기술(chip control)과 방열 특성이 개선된 새 EMC를 기존 MR-MUF에 더한 방식입니다. ① 기존 MR-MUF에는 이 두 요소가 없습니다. ③ HCB는 solder와 EMC 없이 Cu와 유전막을 직접 접합합니다. ④ TC-NCF는 필름을 깔고 die마다 열압착하며 EMC를 주입하지 않습니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
-     "flag": "주제: MR-MUF 개량형",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
+     "title": "MR-MUF 개량 발표",
+     "points": [
+      "바탕 공법: MR-MUF (지문)",
+      "더한 기술: 적층마다 순간 고열로 칩 휨 억제",
+      "더한 재료: 방열 특성을 높인 새 EMC"
+     ],
+     "ask": "공법 이름",
+     "flag": "주제: MR-MUF 개량형"
     }
    ],
    "metrics": [
@@ -1234,13 +1297,16 @@
    "exp": "TC-NCF는 die를 bond head로 누르고 가열한 상태에서 solder가 굳고 NCF가 경화되므로, 접합 순간 die의 휨을 하중으로 펴서 고정합니다. ① 일괄 reflow는 die를 누르지 않는 MR-MUF의 방식입니다. ③ 액상 수지 충전도 MR-MUF의 방식이며 접합 전 휨을 펴지 못합니다. ④ EMC는 TC-NCF에서 쓰지 않습니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: 얇은 die 휨",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "얇은 core die 접합",
+     "points": [
+      "얇은 die 는 접합 중 휘어 가장자리 joint 가 뜨기 쉬움",
+      "접합하는 동안 die 를 붙잡는 것이 있는가",
+      "공법별 가열·가압 방식"
+     ],
+     "ask": "TC-NCF 이점",
+     "flag": "주제: 얇은 die 휨"
     }
    ],
    "metrics": [
@@ -1410,9 +1476,15 @@
    "exp": "wafer 전체를 한 번에 정렬해 붙이는 방식이 W2W입니다. 정렬·처리량은 유리하지만 양품 die만 골라 붙일 수 없습니다. ② D2W는 낱개 die를 wafer에 하나씩 붙입니다. ③ CoW 열압착은 die를 wafer에 하나씩 열압착하는 solder 공정입니다. ④ mass reflow는 쌓아 둔 solder joint를 한 번에 녹이는 접합 단계입니다.",
    "k": 0,
    "fig": [
-    "f_hcb",
+    "f_note",
     {
-     "pitch_um": 3,
+     "title": "직접 접합의 접합 단위",
+     "points": [
+      "두 wafer 를 통째로 정렬해 한 번에 맞댐 (지문)",
+      "접합 단위: wafer 한 장 전체",
+      "칩 단위로 집어 올리는 방식과 비교"
+     ],
+     "ask": "방식 이름",
      "flag": "주제: 직접 접합 형태"
     }
    ],
@@ -1479,13 +1551,16 @@
    "exp": "reflow 중에는 모든 joint의 solder가 동시에 녹아 die를 붙잡는 고체 연결이 없으므로, 표면장력 불균형이나 진동·warpage로 die가 밀리거나 기울 수 있습니다. ② EMC 경화와 ① EMC 주입은 solder가 이미 굳은 뒤라 die가 고정되어 있습니다. ③ 냉각 후에는 joint가 굳어 위치가 확정됩니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
-     "flag": "주제: reflow 중 위치",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
+     "title": "MR-MUF 공정 구간",
+     "points": [
+      "가접합 → 일괄 reflow → EMC 주입 → 경화 (지문)",
+      "각 구간에서 solder 의 상태(고체·액체)",
+      "구간마다 die 를 붙잡는 것이 무엇인가"
+     ],
+     "ask": "흔들리는 구간",
+     "flag": "주제: reflow 중 위치"
     }
    ],
    "metrics": [
@@ -1511,13 +1586,16 @@
    "exp": "하중이 높으면 녹은 solder가 과도하게 눌려 옆으로 밀려 나오며 이웃 bump와 붙을 수 있고, 하중이 낮으면 bump 끝의 NCF가 다 밀려 나가지 못해 solder가 pad에 닿지 못합니다. ②는 방향을 뒤바꾼 것이고, ③과 ④는 하중의 양방향 효과를 한쪽으로만 본 것입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: 압착 하중",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "TC-NCF 압착 하중",
+     "points": [
+      "bond head 가 die 를 누르며 가열",
+      "하중이 높을 때 녹은 solder 의 거동",
+      "하중이 낮을 때 bump 끝의 NCF"
+     ],
+     "ask": "하중별 결함",
+     "flag": "주제: 압착 하중"
     }
    ],
    "metrics": [
@@ -1543,14 +1621,16 @@
    "exp": "도포량이 과하면 압착 중 남는 수지가 die 가장자리로 넘쳐 bond head·die 측면·이웃 die를 오염시키고, 부족하면 간극이 다 차지 않아 void가 남습니다. ②는 방향을 뒤바꾼 것이고, ③과 ④는 도포량의 양방향 효과를 한쪽으로만 본 것입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "voids": 1,
-     "flag": "주제: NCP 도포량",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "NCP 도포량",
+     "points": [
+      "NCP 를 dispenser 로 도포 (지문)",
+      "도포량이 많을 때 남는 수지가 가는 곳",
+      "도포량이 적을 때 간극에 남는 것"
+     ],
+     "ask": "도포량별 결함",
+     "flag": "주제: NCP 도포량"
     }
    ],
    "metrics": [
@@ -1576,13 +1656,16 @@
    "exp": "die가 얇아지면 굽힘 강성이 두께의 세제곱에 비례해 떨어져 적층·reflow 중 warpage가 커집니다. 그래서 칩마다 순간 가열로 붙잡아 휨을 억제하는 기술이 더해졌습니다. ② solder 융점은 조성이 정하며 die 두께와 무관합니다. ① core die는 위아래 연결을 위해 TSV가 필요합니다. ④ Advanced MR-MUF는 EMC를 버리지 않고 방열성을 높인 새 EMC를 썼습니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
-     "flag": "주제: 얇은 die 와 휨",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
+     "title": "12단 HBM3 의 칩 두께",
+     "points": [
+      "같은 높이 안에 die 를 더 쌓음 (12단)",
+      "칩이 8단 제품보다 약 40 % 얇아짐 (발표)",
+      "얇은 칩이 적층 중 겪는 변형"
+     ],
+     "ask": "도입 배경",
+     "flag": "주제: 얇은 die 와 휨"
     }
    ],
    "metrics": [
@@ -1614,12 +1697,16 @@
    "exp": "Samsung 발표(2026-03)는 HCB가 TC 본딩(TC-NCF) 대비 열저항을 20 % 이상 개선하고 16단 이상 적층을 가능하게 한다는 내용입니다. 개선의 근거는 die 사이 수지 간극이 사라지는 데 있습니다. ① 3 %는 발표값보다 훨씬 작습니다. ③ 80 %는 스택 전체 열 경로에 Si·base die·TIM 등 다른 층이 남는 점을 무시한 과장입니다. ④ 간극 제거 효과를 부정한 서술입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "hcb",
-     "flag": "주제: HCB 열저항",
-     "pitch_um": 9,
-     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
+     "title": "업체 발표 비교",
+     "points": [
+      "발표: GTC 2026 · HBM4E · HCB 적용 적층",
+      "비교 대상: TC 본딩(TC-NCF)",
+      "비교 지표: 열저항 개선 폭"
+     ],
+     "ask": "발표 수치",
+     "flag": "주제: HCB 열저항"
     }
    ],
    "metrics": [
@@ -1646,13 +1733,16 @@
    "exp": "fluxless 접합은 formic acid 증기, 수소 plasma 같은 환원 분위기에서 금속 산화물을 금속으로 환원해 산화막을 없앱니다. 잔사가 남지 않아 접합 후 세정이 필요 없습니다. ① 접합 뒤 세정으로는 이미 접합을 방해한 산화막을 되돌리지 못합니다. ③ filler는 산화막을 제거하지 않고 오히려 끼임 결함의 원인이 됩니다. ④ Cu 팽창은 HCB의 금속 접합 기구입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: fluxless 접합",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "fluxless 접합",
+     "points": [
+      "flux 를 쓰지 않음 (지문)",
+      "제거 대상: solder·pad 표면의 금속 산화막",
+      "잔사를 남기지 않고 산화막을 없애는 방법"
+     ],
+     "ask": "산화막 제거",
+     "flag": "주제: fluxless 접합"
     }
    ],
    "metrics": [
@@ -1683,12 +1773,40 @@
    "exp": "표면 활성화는 plasma로 유전막 표면의 결합 상태를 바꾸고 수산기를 늘려, 맞대는 즉시 상온에서 결합이 시작되게 하는 단계입니다. ② anneal은 상온 접합 뒤 결합을 강화하고 Cu 접합을 완성하는 마지막 단계입니다. ① back grinding은 die를 얇게 가는 공정이라 접합면 처리와 무관합니다. ④ reflow는 solder를 녹이는 단계라 HCB에는 없습니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_table",
     {
-     "method": "hcb",
-     "flag": "주제: HCB 공정 흐름",
-     "pitch_um": 9,
-     "note": "pad pitch 9 µm는 설정값 · 두께 방향 확대 표시"
+     "title": "HCB 공정 흐름",
+     "cols": [
+      "순서",
+      "단계"
+     ],
+     "rows": [
+      [
+       "1",
+       "CMP 평탄화"
+      ],
+      [
+       "2",
+       "세정"
+      ],
+      [
+       "3",
+       "(    )"
+      ],
+      [
+       "4",
+       "정렬 · 상온 접합"
+      ],
+      [
+       "5",
+       "anneal"
+      ]
+     ],
+     "hlRow": 2,
+     "notes": [
+      "빈칸: 접합 직전 유전막 표면 plasma 처리"
+     ],
+     "flag": "주제: HCB 공정 흐름"
     }
    ],
    "metrics": [
@@ -1714,9 +1832,15 @@
    "exp": "CMP 뒤 Cu pad 표면이 유전막 면보다 낮게 들어간 깊이를 Cu recess라 하며, anneal 중 Cu 팽창으로 메울 수 있는 범위 안(수 nm)으로 관리합니다. ② 유전막보다 솟아오른 것은 protrusion입니다. ③ 옆면 틈은 recess와 다른 결함입니다. ① 산화막 두께는 표면 오염 지표로 따로 관리합니다.",
    "k": 0,
    "fig": [
-    "f_hcb",
+    "f_note",
     {
-     "pitch_um": 6,
+     "title": "HCB 접합면 형상",
+     "points": [
+      "CMP 후 Cu 와 유전막은 연마 속도가 다름",
+      "높이 기준을 무엇으로 잡는가",
+      "보기마다 높이·위치·두께 중 무엇을 말하는가"
+     ],
+     "ask": "recess 의 뜻",
      "flag": "주제: Cu recess"
     }
    ],
@@ -1743,9 +1867,15 @@
    "exp": "위치와 관계없이 모든 점이 같은 벡터만큼 어긋나면 병진 성분입니다. ② 회전은 중심에서 멀수록 접선 방향 오차가 커집니다. ③ 배율은 중심에서 멀수록 반지름 방향 오차가 커집니다. ① dishing은 pad 표면의 높이 형상이라 평면 overlay 성분이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_hcb",
+    "f_note",
     {
-     "pitch_um": 6,
+     "title": "die 안 overlay 측정",
+     "points": [
+      "측정: die 안 여러 위치의 overlay",
+      "중심·가장자리 모두 같은 방향, 같은 거리 (지문)",
+      "위치에 따라 크기가 변하는 성분과 비교"
+     ],
+     "ask": "오차 성분",
      "flag": "주제: overlay 성분"
     }
    ],
@@ -1812,13 +1942,16 @@
    "exp": "NCF는 일부만 반응한 반경화(B-stage) 상태로 공급되어, 접합 열에서 점도가 내려가 흐른 뒤 계속 가열되면 경화(C-stage)됩니다. ① 이미 완전 경화되었다면 흐르지 못해 bump 끝을 덮은 채 남습니다. ③ 묽은 액상이면 필름 형태를 유지할 수 없고 laminate가 불가능합니다. ④ 도전 입자를 넣으면 비전도성 필름이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: NCF 경화 상태",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "laminate 된 NCF",
+     "points": [
+      "접합 전: wafer 에 laminate 해 둠",
+      "열압착 중: 흘러서 bump 끝에서 밀려나야 함",
+      "접합 후: 경화되어야 함"
+     ],
+     "ask": "접합 전 상태",
+     "flag": "주제: NCF 경화 상태"
     }
    ],
    "metrics": [
@@ -1844,13 +1977,16 @@
    "exp": "간극이 좁아지면 세정액이 들어가고 빠져나오기 어려워 flux 잔사가 남고, 남은 잔사는 underfill·EMC의 흐름과 접착을 방해해 void·박리의 원인이 됩니다. ② flux는 융점을 바꾸지 않습니다. ③ flux는 산화막을 제거할 뿐 Cu pad를 녹이지 않습니다. ④ 정렬 마크 인식은 flux 사용 여부와 별개입니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "mrmuf",
-     "flag": "주제: flux 잔사",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 설정값 · 두께 확대 표시"
+     "title": "미세 pitch 와 flux",
+     "points": [
+      "pitch · 간극이 좁아짐 (지문)",
+      "flux 를 쓰면 접합 후 남는 것",
+      "좁은 간극에서 이어지는 다음 공정"
+     ],
+     "ask": "부담 이유",
+     "flag": "주제: flux 잔사"
     }
    ],
    "metrics": [
@@ -1876,13 +2012,16 @@
    "exp": "daisy chain은 joint와 배선을 사슬처럼 직렬로 이어, joint 하나라도 열리면 경로 전체가 끊기고 저항이 오른 joint가 있으면 전체 저항이 올라가게 만든 구조입니다. ② ring oscillator는 회로 속도를 재는 구조입니다. ③ SRAM 비트 셀 배열은 메모리 셀 특성 평가용입니다. ① TLM 패턴은 박막의 접촉 저항을 거리별로 재는 구조로 적층 joint 연결 확인용이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_bond",
+    "f_note",
     {
-     "method": "ncf",
-     "flag": "주제: 전기적 연결 확인",
-     "pitch_um": 23,
-     "gap_um": 11,
-     "note": "치수: Micron 실측 기준 · 표 7 µm: Samsung 발표"
+     "title": "joint 연결 확인 구조",
+     "points": [
+      "위·아래 die 의 pad 와 배선을 번갈아 연결",
+      "수백–수천 개 joint 가 하나의 직렬 경로 (지문)",
+      "구조를 무엇에 빗댄 이름인가"
+     ],
+     "ask": "구조 이름",
+     "flag": "주제: 전기적 연결 확인"
     }
    ],
    "metrics": [

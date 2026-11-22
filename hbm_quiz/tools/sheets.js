@@ -5,7 +5,7 @@ const out = path.resolve(process.argv[2] || '/tmp/sheets'), LV = process.argv[3]
 const file = path.resolve(process.argv[4] || 'dist/HBM_quiz.html'), DOM = process.argv[5] || '';
 fs.mkdirSync(out, { recursive: true });
 (async () => {
-  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1500, height: 1200 }, deviceScaleFactor: 1 });
+  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1500, height: 1200 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
   await p.goto('file://' + file); await p.waitForTimeout(800);
   const ids = await p.evaluate(([LV, DOM]) => BANK.filter(q => q.lv === LV && (!DOM || q.id.startsWith(DOM + '-'))).map(q => q.id), [LV, DOM]);
   const index = [];
