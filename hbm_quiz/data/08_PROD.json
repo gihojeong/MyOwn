@@ -41,7 +41,7 @@
      "32개"
     ]
    ],
-   "src": "JEDEC JESD270-4 발표(2025-04-16)"
+   "src": "JEDEC JESD270-4 발표(2025-04-16) · HBM_HotChips2026 §대역폭"
   },
   {
    "id": "PROD-B-0003",
@@ -58,11 +58,14 @@
    "exp": "N-Hi(N단)는 적층된 core DRAM die의 장수를 셉니다. 16-Hi는 core die 16장이 base die 1장 위에 올라간 구조이며 die는 모두 17장, 접합 간극은 16개입니다. ②는 base die를 16장 안에 포함해 센 오류입니다. ③은 스택 수(패키지당 탑재 개수)와 단수를 혼동한 것이고, ④는 채널 수로 읽은 것으로 HBM4의 독립 채널은 32개입니다.",
    "k": 0,
    "fig": [
-    "f_stack",
+    "f_note",
     {
-     "n": 16,
-     "highlight": "base",
-     "hideResult": true,
+     "title": "단수 표기 읽기",
+     "points": [
+      "표기는 스택 하나의 적층 구성을 나타낸다",
+      "스택 수 · 채널 수와는 다른 개념"
+     ],
+     "ask": "구성",
      "flag": "주제: 단수 표기"
     }
    ],
@@ -117,7 +120,8 @@
      "GDDR",
      "높은 핀 속도"
     ]
-   ]
+   ],
+   "src": "HBM_HotChips2026 §대역폭 · §연산강도 분화"
   },
   {
    "id": "PROD-B-0027",
@@ -134,10 +138,14 @@
    "exp": "HBM 스택은 base die 1장과 그 위의 core die N장을 TSV·µbump로 이어 하나의 메모리 부품으로 만든 묶음입니다. 패키지에는 이런 스택이 여러 개 올라갑니다. ②의 die 한 장은 스택의 구성 요소입니다. ①과 ③은 스택 여러 개와 SoC를 함께 담는 더 큰 단위입니다.",
    "k": 0,
    "fig": [
-    "f_stack",
+    "f_note",
     {
-     "n": 8,
-     "hideResult": true,
+     "title": "단위 구분",
+     "points": [
+      "die · 스택 · interposer · 패키지는 서로 다른 단위",
+      "'스택 6개 탑재' 에서 세는 대상"
+     ],
+     "ask": "단위",
      "flag": "주제: 스택 구성"
     }
    ],
@@ -161,7 +169,7 @@
     "HBM 핀 속도를 SoC와 같게 맞춰야 하기 때문"
    ],
    "a": 2,
-   "exp": "높이가 다르면 낮은 쪽 위의 TIM이 두꺼워지거나 접촉이 끊겨 열저항이 커집니다. 공통 방열 부품이 모든 die에 고르게 닿도록 상면 높이를 맞춥니다. ②의 배선 길이는 interposer 위 배치로 정해집니다. ①의 무게 중심은 기술적 관리 대상이 아니고, ④의 핀 속도는 높이와 관계가 없습니다.",
+   "exp": "높이가 다르면 낮은 쪽 위의 TIM이 두꺼워지거나 접촉이 끊겨 열저항이 커집니다. 공통 방열 부품이 모든 die에 고르게 닿도록 상면 높이를 맞춥니다. HBM 스택 쪽도 최상단 die(실측 139 µm)를 EMC와 함께 연마해 TIM 접촉면을 평탄하게 만듭니다. ②의 배선 길이는 interposer 위 배치로 정해집니다. ①의 무게 중심은 기술적 관리 대상이 아니고, ④의 핀 속도는 높이와 관계가 없습니다.",
    "k": 0,
    "fig": [
     "f_sip",
@@ -171,7 +179,8 @@
      "flag": "주제: 상면 높이"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §1 최상단 다이가 139 µm · HBM_HotChips2026 §열 모델"
   },
   {
    "id": "PROD-B-0029",
@@ -201,7 +210,8 @@
      "스택 수",
      "4 → 8"
     ]
-   ]
+   ],
+   "src": "HBM_HotChips2026 §대역폭"
   },
   {
    "id": "PROD-B-0030",
@@ -221,12 +231,12 @@
     "f_stack",
     {
      "n": 8,
-     "highlight": "base",
      "hideResult": true,
      "flag": "주제: base die"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_통합자료 §v22 구성"
   },
   {
    "id": "PROD-B-0031",
@@ -240,18 +250,22 @@
     "die마다 다른 동작 클록 주파수"
    ],
    "a": 0,
-   "exp": "mid core는 위 die와 이어지도록 TSV를 뒷면으로 노출(reveal)하고 backside pad를 만들어야 하지만, top core는 위에 접합할 상대가 없어 그 공정이 필요 없습니다. ②의 공정 노드는 두 die가 같습니다. ③의 저장 용량도 같은 설계라 동일하고, ④의 동작 클록은 die 위치로 구분되지 않습니다.",
+   "exp": "mid core는 위 die와 이어지도록 TSV를 뒷면으로 노출(reveal)하고 backside pad를 만들어야 하지만, top core는 위에 접합할 상대가 없어 그 공정이 필요 없고 대개 더 두껍게 남깁니다(Micron HBM3E 12H 실측 139 µm). ②의 공정 노드는 두 die가 같습니다. ③의 저장 용량도 같은 설계라 동일하고, ④의 동작 클록은 die 위치로 구분되지 않습니다.",
    "k": 0,
    "fig": [
-    "f_stack",
+    "f_note",
     {
-     "n": 8,
-     "highlight": "topcore",
-     "hideResult": true,
+     "title": "die 위치별 차이",
+     "points": [
+      "mid core: 위아래 die 와 모두 접합",
+      "top core: 위에 접합할 die 가 없다"
+     ],
+     "ask": "구분 기준",
      "flag": "주제: top core"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §1 최상단 다이가 139 µm"
   },
   {
    "id": "PROD-B-0034",
@@ -265,7 +279,7 @@
     "적층 위치에 따라 정해지는 식별 정보(stack ID)로 구분"
    ],
    "a": 3,
-   "exp": "core die는 같은 설계로 만들고, 적층 후 위치에 따라 정해지는 식별 정보(stack ID)를 회로가 읽어 자신이 맡을 채널·주소 영역을 정합니다. 마스크 한 벌로 모든 위치를 만들 수 있어 설계·재고 부담이 줄어듭니다. ②는 단일 설계의 이점을 버리는 방식입니다. ③의 적층 후 레이저 배선 절단은 스택 안의 die에 접근할 수 없어 쓰이지 않고, ①의 전압 차이는 die 구분 수단이 아닙니다.",
+   "exp": "core die는 같은 설계로 만들고, 적층 후 위치에 따라 정해지는 식별 정보(stack ID)를 회로가 읽어 자신이 맡을 채널·주소 영역을 정합니다. 채널 묶음 자체를 층마다 한 칸씩 돌린 TSV 배선(spiral)으로 나누고 같은 채널을 나눠 쓰는 die만 SID로 가리는 구현도 발표되었습니다(Samsung HBM2, ISSCC 2017). 마스크 한 벌로 모든 위치를 만들 수 있어 설계·재고 부담이 줄어듭니다. ②는 단일 설계의 이점을 버리는 방식입니다. ③의 적층 후 레이저 배선 절단은 스택 안의 die에 접근할 수 없어 쓰이지 않고, ①의 전압 차이는 die 구분 수단이 아닙니다.",
    "k": 0,
    "fig": [
     "f_stack",
@@ -276,7 +290,8 @@
      "flag": "주제: core die 구분"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_통합자료 §v23 · §v25"
   },
   {
    "id": "PROD-B-0035",
@@ -321,12 +336,12 @@
     "f_stack",
     {
      "n": 12,
-     "highlight": "base",
      "hideResult": true,
      "flag": "주제: base die"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §ISSCC 2026 회로 데이터"
   },
   {
    "id": "PROD-B-0038",
@@ -361,7 +376,8 @@
      "단수",
      "8-Hi"
     ]
-   ]
+   ],
+   "src": "HBM_통합자료 §v23"
   },
   {
    "id": "PROD-B-0039",
@@ -375,17 +391,22 @@
     "Si interposer 위의 pad"
    ],
    "a": 3,
-   "exp": "base die의 µbump는 interposer(또는 bridge) 위의 pad에 접합되고, 신호는 interposer 배선을 따라 SoC로 갑니다. ②의 BGA ball은 패키지 기판 아래에서 보드와 연결되는 단계입니다. ③은 base die 위쪽(뒷면) 연결 대상이고, ①의 TIM은 스택 위쪽의 방열 경로입니다.",
+   "exp": "base die의 µbump는 interposer(또는 bridge) 위의 pad에 접합되고, 신호는 interposer 배선을 따라 SoC로 갑니다. 이 계면의 bump 배열은 JEDEC 48 × 55 µm 이고, Micron HBM3E 12H 실측에서 base die와 interposer 사이에는 범프 접합 + 언더필(약 23 µm) 외의 층이 없습니다. ②의 BGA ball은 패키지 기판 아래에서 보드와 연결되는 단계입니다. ③은 base die 위쪽(뒷면) 연결 대상이고, ①의 TIM은 스택 위쪽의 방열 경로입니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "cowos-s",
-     "nHBM": 4,
+     "title": "2.5D 연결 단계",
+     "points": [
+      "base die 능동면의 방향",
+      "중간 기판 · 패키지 기판 · 보드의 층 순서"
+     ],
+     "ask": "접합 대상",
      "flag": "주제: 2.5D 연결"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §(a) 베이스 다이 아래 31 µm의 구성 · §5 µbump 피치는 계면마다 다르다"
   },
   {
    "id": "PROD-B-0040",
@@ -531,13 +552,14 @@
      "단수",
      "8 → 12-Hi"
     ]
-   ]
+   ],
+   "src": "HBM_HotChips2026 §대역폭"
   },
   {
    "id": "PROD-B-0048",
    "lv": "B",
    "title": "core wafer를 얇게 가는 목적",
-   "stem": "core die 용 wafer는 앞면 µbump를 만든 뒤 carrier에 붙여 뒷면을 수십 µm까지 갈아냅니다. 이렇게 얇게 가공하는 목적의 조합으로 옳은 것은 무엇입니까?",
+   "stem": "core die 용 wafer는 앞면 µbump를 만든 뒤 carrier에 붙여 뒷면을 수십 µm(Micron HBM3E 12H 실측 core die 34–35 µm)까지 갈아냅니다. 이렇게 얇게 가공하는 목적의 조합으로 옳은 것은 무엇입니까?",
    "opts": [
     "TSV를 길게 만들어 저항을 높이고 신호를 안정화",
     "die 무게를 줄여 적층 장비에 걸리는 하중을 낮추기",
@@ -551,12 +573,12 @@
     "f_stack",
     {
      "n": 12,
-     "highlight": "midcore",
      "hideResult": true,
      "flag": "주제: 박막화"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §스택 높이 구성"
   },
   {
    "id": "PROD-B-0049",
@@ -660,7 +682,6 @@
     "f_stack",
     {
      "n": 8,
-     "highlight": "midcore",
      "hideResult": true,
      "flag": "주제: 수직 경로"
     }
@@ -671,7 +692,7 @@
    "id": "PROD-B-0058",
    "lv": "B",
    "title": "스택 높이를 이루는 항목",
-   "stem": "이 문항집은 스택 높이를 'base die + N × (core die + 접합 간극)'으로 정의하고, 최상단에 mold가 있으면 따로 더합니다. N단 스택의 높이를 구할 때 더해야 하는 항목의 조합으로 옳은 것은 무엇입니까?",
+   "stem": "N단 HBM 스택의 높이를 층별 두께의 합으로 구하려 합니다. 접합 간극은 맞붙은 두 die 사이마다 하나씩 생기고, 최상단 mold나 base die 아래 범프처럼 die·간극 밖의 층은 따로 더합니다. N단 스택의 높이를 구할 때 die와 간극에서 더해야 하는 항목의 조합은 무엇입니까?",
    "opts": [
     "core die N장만",
     "base die 1장, core die N장, 접합 간극 N개",
@@ -679,18 +700,22 @@
     "core die N장과 접합 간극 N + 1개"
    ],
    "a": 1,
-   "exp": "접합 계면은 base–core1을 포함해 N개이므로 높이 = base die + N × (core die + 간극) 입니다(mold는 별도). ①은 base die와 간극을 빠뜨렸습니다. ③은 base–core1 계면을 빼고 센 오류이고, ④는 없는 계면 하나를 더 셌습니다.",
+   "exp": "die는 base 1장과 core N장이고, 맞붙은 계면은 base–core1을 포함해 N개입니다. 그래서 높이 = base die + N × (core die + 간극)이며 mold 등은 따로 더합니다. Micron HBM3E 12H 실측 720 µm 내역도 base 위 접합층 11 µm 1개와 core die 사이 11개, 모두 12개의 간극을 셉니다(최상단 die는 139 µm로 따로 둠). ①은 base die와 간극을 빠뜨렸습니다. ③은 base–core1 계면을 빼고 센 오류이고, ④는 없는 계면 하나를 더 셌습니다.",
    "k": 0,
    "fig": [
-    "f_stack",
+    "f_note",
     {
-     "n": 8,
-     "highlight": "height",
-     "hideResult": true,
+     "title": "높이 합산",
+     "points": [
+      "간극은 맞붙은 두 die 사이마다 하나",
+      "die · 간극 밖의 층(mold · 하부 범프)은 따로 더한다"
+     ],
+     "ask": "합산 항목",
      "flag": "주제: 스택 높이"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §720 µm 내역"
   },
   {
    "id": "PROD-B-0060",
@@ -704,18 +729,22 @@
     "상부 mold"
    ],
    "a": 0,
-   "exp": "µbump 접합층(간극)은 5–15 µm 수준으로, 30–60 µm인 core die나 50–100 µm인 base die보다 얇습니다. 단수를 늘릴수록 이 간극의 합이 높이 예산을 크게 차지하므로 간극 축소가 계속 시도됩니다. ②의 core die는 수십 µm입니다. ③의 base die는 core die보다 두껍게 두는 경우가 많고, ④의 mold는 높이 상한까지 남는 두께를 채우는 층이라 접합층보다 얇게 정해지지 않습니다.",
+   "exp": "µbump 접합층(간극)이 가장 얇습니다. Micron HBM3E 12H 단면 실측에서 die 사이 접합층(NCP)은 11 µm로, core die 34–35 µm, base die 44 µm(Si 31 µm), 최상단 die 139 µm보다 얇습니다. 단수를 늘리면 이 간극의 합(12-Hi에서 12 × 11 = 132 µm)이 높이 예산을 크게 차지하므로 간극 축소가 계속 시도됩니다. ②의 core die는 수십 µm입니다. ③의 base die는 core die보다 두껍게 두는 경우가 많고(실측 44 µm), ④의 상부 mold(또는 두껍게 남긴 최상단 die)는 상면 높이를 맞추는 층이라 접합층보다 훨씬 두껍습니다.",
    "k": 0,
    "fig": [
-    "f_stack",
+    "f_note",
     {
-     "n": 8,
-     "highlight": "gap",
-     "hideResult": true,
+     "title": "단면 층 비교",
+     "points": [
+      "보이는 층: base die · core die · 접합층 · 상부 mold",
+      "층 하나의 두께를 비교한다"
+     ],
+     "ask": "가장 얇은 층",
      "flag": "주제: 층 두께"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §스택 높이 구성 · §베이스 다이"
   },
   {
    "id": "PROD-B-0061",
@@ -739,7 +768,8 @@
      "flag": "주제: 구조 발전"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "DRAM_기술발전방향 §높이 예산 (6.1절)"
   },
   {
    "id": "PROD-B-0064",
@@ -777,18 +807,18 @@
     "base die에도 셀 배열을 넣어 용량을 늘리기 위해"
    ],
    "a": 0,
-   "exp": "core die는 base die 뒷면에 접합되므로 그 신호와 전원이 base die 능동면의 회로와 아래 interposer로 가려면 base die 두께를 관통하는 TSV가 있어야 합니다. ②의 정렬 표식은 TSV 없이도 만듭니다. ③에서 TSV가 열 경로를 보태기는 하지만 base die에 TSV를 두는 이유는 전기적 연결입니다. ④는 틀렸습니다. base die에는 셀 배열이 없습니다.",
+   "exp": "core die는 base die 뒷면에 접합되므로 그 신호와 전원이 base die 능동면의 회로와 아래 interposer로 가려면 base die 두께를 관통하는 TSV가 있어야 합니다(Micron HBM3E 12H 실측: Si 31 µm를 Cu 지름 약 2.2 µm TSV가 관통). ②의 정렬 표식은 TSV 없이도 만듭니다. ③에서 TSV가 열 경로를 보태기는 하지만 base die에 TSV를 두는 이유는 전기적 연결입니다. ④는 틀렸습니다. base die에는 셀 배열이 없습니다.",
    "k": 0,
    "fig": [
     "f_stack",
     {
      "n": 8,
-     "highlight": "base",
      "hideResult": true,
      "flag": "주제: base die"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §8 베이스 다이는 엎어져 있다"
   },
   {
    "id": "PROD-B-0097",
@@ -805,11 +835,14 @@
    "exp": "TSV reveal 후 뒷면에 만드는 접속부를 backside pad라 하며, 위 die의 µbump가 여기에 접합됩니다. ②의 Cu pillar는 앞면 µbump의 기둥 부분입니다. ①의 guard ring은 die 가장자리를 감싸 습기·crack을 막는 구조이고, ④의 scribe lane은 die 사이의 절단 영역입니다.",
    "k": 0,
    "fig": [
-    "f_stack",
+    "f_note",
     {
-     "n": 8,
-     "highlight": "midcore",
-     "hideResult": true,
+     "title": "뒷면 접속부",
+     "points": [
+      "TSV reveal 뒤 뒷면에 만드는 금속 접속부",
+      "위 die 의 µbump 가 여기에 접합된다"
+     ],
+     "ask": "이름",
      "flag": "주제: mid core"
     }
    ],
@@ -827,7 +860,7 @@
     "TSV의 직류 저항을 낮추기 위해"
    ],
    "a": 2,
-   "exp": "I/O 선의 충·방전 전력은 대략 C·V²·f에 비례하므로 전압을 낮추면 제곱으로 줄어듭니다. 선 수가 2배가 된 HBM4에서 I/O 전력을 억제하는 직접 수단입니다. ②는 반대입니다. 전압을 낮추면 진폭이 작아져 잡음 여유는 오히려 줄어듭니다. ①의 retention은 core 쪽 셀 특성이라 VDDQ와 관계가 없고, ④의 TSV 저항은 형상과 재료로 정해집니다.",
+   "exp": "I/O 선의 충·방전 전력은 대략 C·V²·f에 비례하므로 전압을 낮추면 제곱으로 줄어듭니다. 선 수가 2배가 된 HBM4에서 I/O 전력을 억제하는 직접 수단입니다(Samsung HBM4, ISSCC 2026: VDDQ 1.1 → 0.75 V 로 bit 당 에너지 (0.75/1.1)² ≈ 0.46배). ②는 반대입니다. 전압을 낮추면 진폭이 작아져 잡음 여유는 오히려 줄어듭니다. ①의 retention은 core 쪽 셀 특성이라 VDDQ와 관계가 없고, ④의 TSV 저항은 형상과 재료로 정해집니다.",
    "k": 0,
    "fig": [
     "f_note",
@@ -853,7 +886,7 @@
      "2,048 bit"
     ]
    ],
-   "src": "JEDEC JESD270-4 발표(2025-04-16)"
+   "src": "JEDEC JESD270-4 발표(2025-04-16) · HBM_HotChips2026 §ISSCC 2026 회로 데이터"
   },
   {
    "id": "PROD-B-0103",
@@ -889,13 +922,13 @@
      "12-Hi"
     ]
    ],
-   "src": "Samsung ISSCC 2026 HBM4 36 GB 12-Hi"
+   "src": "Samsung ISSCC 2026 HBM4 36 GB 12-Hi · HBM_HotChips2026 §ISSCC 2026 회로 데이터"
   },
   {
    "id": "PROD-B-0108",
    "lv": "B",
    "title": "높이 여유가 늘 때 기존 공법의 수명",
-   "stem": "어떤 고객이 다음 세대 제품에서 허용 패키지 높이(설계 조건)를 키우기로 했습니다. 지금은 µbump 공법으로 die와 간극을 한계까지 줄여야 단수를 맞추는 상황입니다. 허용 높이가 커지면 접합 공법 선택에 생기는 변화로 가장 타당한 것은 무엇입니까?",
+   "stem": "어떤 고객이 다음 세대 제품에서 허용 스택 높이(설계 조건)를 키우기로 했습니다. 지금은 µbump 공법으로 die와 간극을 한계까지 줄여야 단수를 맞추는 상황입니다. 허용 높이가 커지면 접합 공법 선택에 생기는 변화로 가장 타당한 것은 무엇입니까?",
    "opts": [
     "허용 높이가 늘어난 만큼 단수를 줄여야 한다",
     "간극이 없는 HCB로 즉시 바꿔야 할 압력이 커진다",
@@ -914,7 +947,8 @@
      "flag": "주제: 높이 예산"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §2 적층의 벽 = 고정비 문제"
   },
   {
    "id": "PROD-B-0109",
@@ -943,13 +977,13 @@
     }
    ],
    "metrics": [],
-   "src": "SK hynix 2025-09-12 · Samsung TC NCF 2024-02"
+   "src": "SK hynix 2025-09-12 · Samsung TC NCF 2024-02 · DRAM_기술발전방향 §4 3사 포지션"
   },
   {
    "id": "PROD-B-0111",
    "lv": "B",
    "title": "10 µm 이하 접속 피치에 필요한 방식",
-   "stem": "차세대 고단 HBM에서 die 간 접속 피치를 10 µm 이하로 줄이고 간극도 없애는 방안이 검토되고 있습니다. 솔더 µbump는 리플로 때 솔더가 옆으로 퍼질 여유가 필요합니다. 이 목표에 맞는 접합 방식은 무엇입니까?",
+   "stem": "현재 die 사이 µbump 피치는 23 µm 수준입니다(Micron HBM3E 12H 실측). 차세대 고단 HBM에서 이 피치를 10 µm 이하로 줄이고 간극도 없애는 방안이 검토되고 있습니다. 솔더 µbump는 리플로 때 솔더가 옆으로 퍼질 여유가 필요합니다. 이 목표에 맞는 접합 방식은 무엇입니까?",
    "opts": [
     "Cu–Cu hybrid bonding(HCB)",
     "솔더 µbump 열압착(TC-NCF)",
@@ -977,7 +1011,8 @@
      "목표 피치",
      "10 µm 이하"
     ]
-   ]
+   ],
+   "src": "HBM_단면실측 §5 µbump 피치는 계면마다 다르다"
   },
   {
    "id": "PROD-B-0112",
@@ -991,7 +1026,7 @@
     "die 간 접합 간극을 줄이기 위해"
    ],
    "a": 1,
-   "exp": "충전 수지(NCF·MUF)의 열전도율은 0.2–3 W/m·K 수준이라 die 사이가 열 병목이 됩니다. 금속 bump를 더 배열하면 수직 열 경로가 늘어 하단 die의 온도를 낮춥니다. ①의 신호는 dummy bump로 전달되지 않습니다. ③의 전원은 전원용 TSV·bump로 공급되고, ④에서 dummy bump는 간극을 그대로 두고 그 사이를 채웁니다.",
+   "exp": "충전 수지(NCF·MUF)의 열전도율은 0.2–3 W/m·K 수준이라 die 사이가 열 병목이 됩니다. 금속 bump를 더 배열하면 수직 열 경로가 늘어 하단 die의 온도를 낮춥니다. Micron HBM3E 12H 단면에서도 23 µm 피치 bump 가운데 TSV와 정렬된 것만 신호를 나르고 나머지는 지지·방열용(structural bump)입니다. ①의 신호는 dummy bump로 전달되지 않습니다. ③의 전원은 전원용 TSV·bump로 공급되고, ④에서 dummy bump는 간극을 그대로 두고 그 사이를 채웁니다.",
    "k": 0,
    "fig": [
     "f_stack",
@@ -1002,7 +1037,8 @@
      "flag": "주제: 열 경로"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §7 active bump vs structural bump"
   },
   {
    "id": "PROD-B-0124",
@@ -1043,7 +1079,7 @@
      "10 Gb/s 초과"
     ]
    ],
-   "src": "JEDEC JESD270-4 발표 · SK hynix 2025-09-12 · Samsung 2026-02-12"
+   "src": "JEDEC JESD270-4 발표 · SK hynix 2025-09-12 · Samsung 2026-02-12 · HBM_HotChips2026 §대역폭"
   },
   {
    "id": "PROD-B-0127",
@@ -1072,7 +1108,7 @@
     }
    ],
    "metrics": [],
-   "src": "Samsung Newsroom 2026-02-12"
+   "src": "Samsung Newsroom 2026-02-12 · HBM_HotChips2026 §ISSCC 2026 회로 데이터"
   },
   {
    "id": "PROD-B-0132",
@@ -1101,7 +1137,7 @@
     }
    ],
    "metrics": [],
-   "src": "SK hynix 보도자료 2025-09-12"
+   "src": "SK hynix 보도자료 2025-09-12 · DRAM_기술발전방향 §4 3사 포지션"
   },
   {
    "id": "PROD-B-0133",
@@ -1115,7 +1151,7 @@
     "50 µm"
    ],
    "a": 1,
-   "exp": "Samsung은 HBM3E 12H에서 칩 간 간격을 7 µm로 줄였다고 발표했습니다. 12-Hi의 간극 합은 12 × 7 = 84 µm 가 됩니다. µbump 접합 간극의 현실 범위(5–15 µm) 안의 값입니다. ①은 HCB의 표면 단차 수준으로 µbump 간극으로는 불가능한 값입니다. ③과 ④는 die 두께나 µbump 피치의 자릿수로, 12단을 8단 높이에 넣는다는 발표와 맞지 않습니다.",
+   "exp": "Samsung은 HBM3E 12H에서 칩 간 간격을 7 µm로 줄였다고 발표했습니다. 12-Hi의 간극 합은 12 × 7 = 84 µm 가 됩니다. µbump 접합 간극의 현실 범위(5–15 µm) 안의 값이며, Micron HBM3E 12H 단면 실측의 NCP 접합층은 11 µm입니다. ①은 HCB의 표면 단차 수준으로 µbump 간극으로는 불가능한 값입니다. ③과 ④는 die 두께나 µbump 피치의 자릿수로, 12단을 8단 높이에 넣는다는 발표와 맞지 않습니다.",
    "k": 0,
    "fig": [
     "f_note",
@@ -1136,7 +1172,7 @@
      "HBM3E 12H"
     ]
    ],
-   "src": "Samsung Newsroom 2024-02-27"
+   "src": "Samsung Newsroom 2024-02-27 · HBM_단면실측 §스택 높이 구성"
   },
   {
    "id": "PROD-B-9001",
@@ -1331,7 +1367,8 @@
      "B 메모리",
      "7 pJ/bit"
     ]
-   ]
+   ],
+   "src": "HBM_세미나자료_v2 §v5 13매"
   },
   {
    "id": "PROD-B-9006",
@@ -1430,7 +1467,8 @@
      "flag": "주제: 용량"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §대역폭"
   },
   {
    "id": "PROD-B-9009",
@@ -1485,7 +1523,8 @@
      "flag": "주제: PHY 배치"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "PROD-B-9012",
@@ -1628,12 +1667,12 @@
     "f_stack",
     {
      "n": 12,
-     "highlight": "base",
      "hideResult": true,
      "flag": "주제: custom HBM"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "PROD-B-9017",
@@ -1650,14 +1689,59 @@
    "exp": "HBM 메모리는 SoC 옆 interposer(또는 bridge) 위에 µbump로 붙어 같은 패키지를 이루고, GDDR은 BGA 패키지로 보드에 실장되어 보드 배선으로 GPU와 연결됩니다. ②는 위치를 바꾸었습니다. ③의 SoC 위 직접 적층은 두 메모리의 일반 탑재 방식이 아니고, ④의 소켓 장착은 DIMM 형 메모리의 방식입니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "cowos-s",
-     "nHBM": 4,
+     "title": "탑재 위치 비교",
+     "points": [
+      "실장 단계: die 위 · interposer 위 · 보드 위 · 소켓",
+      "GPU 와 메모리 사이 배선 길이"
+     ],
+     "ask": "위치",
      "flag": "주제: 탑재 위치"
     }
    ],
    "metrics": []
+  },
+  {
+   "id": "PROD-B-9018",
+   "lv": "B",
+   "title": "JEDEC이 bump 배열을 정하는 계면",
+   "stem": "HBM 스택에는 bump 접합 계면이 여러 곳 있습니다. Micron HBM3E 12H 단면 실측에서 core die 사이 µbump 피치는 23 µm, 스택 바닥(base die 아래 면)의 bump 배열은 48 × 55 µm로 계면마다 달랐습니다. JEDEC 표준이 bump 배열을 정하는 계면과 그 목적으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "core die 사이 계면 — 스택 높이를 표준화하기 위해",
+    "base die 윗면 계면 — 업체가 다른 core die를 섞어 쌓기 위해",
+    "base die 아래 계면 — 어느 업체 스택이든 같은 interposer에 붙이기 위해",
+    "모든 계면 — 같은 피치로 통일해 같은 장비를 쓰기 위해"
+   ],
+   "a": 2,
+   "exp": "JEDEC은 고객이 설계하는 스택 바깥 접속, 즉 base die 아래 면(interposer 쪽) bump 배열을 기구 도면으로 정합니다(HBM3 MO-349B, 48 × 55 µm). 그래야 SoC·interposer 설계가 어느 업체의 스택이든 같은 pad 배열로 받을 수 있습니다. core die 사이와 base die 윗면은 한 업체가 설계·조립하는 스택 내부 계면이라 업체가 정하며, 실측도 23 µm로 바닥과 다릅니다. ①의 스택 높이는 피치로 정해지는 양이 아닙니다. ②처럼 다른 업체의 core die를 섞어 쌓지 않습니다. ④는 실측에서 계면마다 피치가 다르다는 사실과 맞지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "계면별 bump 배열",
+     "points": [
+      "core die 사이 · base die 윗면: 23 µm",
+      "base die 아래(interposer 쪽): 48 × 55 µm",
+      "그 계면의 양쪽을 누가 설계하는가"
+     ],
+     "ask": "표준 계면",
+     "flag": "주제: 표준 계면"
+    }
+   ],
+   "metrics": [
+    [
+     "p",
+     "core die 사이",
+     "23 µm"
+    ],
+    [
+     "p",
+     "스택 바닥",
+     "48 × 55 µm"
+    ]
+   ],
+   "src": "HBM_단면실측 §5 µbump 피치는 계면마다 다르다 · §(a) 베이스 다이 아래 31 µm의 구성"
   },
   {
    "id": "PROD-I-0001",
@@ -6264,11 +6348,14 @@
    "exp": "die는 core 8 + base 1 = 9장입니다. 접합 계면은 base–core1부터 core7–core8까지 8개로 core die 수(N)와 같습니다. backside pad는 위에 die가 붙는 base die와 core1~core7이 가지므로 1 + 7 = 8장입니다. ②는 최상단 core die에도 pad를 만든다고 본 값입니다. ①은 base die를 빼고 센 값이라 die·간극·pad 수가 모두 하나씩 모자랍니다. ④는 간극을 die 수(9)만큼 센 값으로, 최상단 위에는 접합 계면이 없습니다.",
    "k": 0,
    "fig": [
-    "f_stack",
+    "f_note",
     {
-     "n": 8,
-     "highlight": "topcore",
-     "hideResult": true,
+     "title": "구성 세기",
+     "points": [
+      "맞붙은 두 die 사이마다 계면 하나",
+      "위에 다른 die 가 붙는 die 에만 뒷면 접속부"
+     ],
+     "ask": "세 값",
      "flag": "주제: 스택 구성 세기"
     }
    ],
@@ -6320,7 +6407,8 @@
      "12-Hi",
      "36 GB"
     ]
-   ]
+   ],
+   "src": "HBM_HotChips2026 §대역폭"
   }
  ],
  "legacy_prefix": [
