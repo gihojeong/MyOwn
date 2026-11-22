@@ -290,3 +290,23 @@ WARP-B-9018(굽힘 강성 비)·TSV-B-9045(뒷면 pad 불요)·PROD-B-0031 과 �
   - 확인 필요: _facts F45·STANDARDS 2.4 는 85 / 95 °C 를 "DRAM 접합부 온도" 로 적지만, DDR 계열 JEDEC(JESD79-4 등)의 운용 온도 TOPER 는 케이스 표면 온도로 정의된 것으로 안다(원문 미확인). HBM 규격의 온도 기준(Tj 여부)도 미확인 — B-9005 는 이 단정을 빼서 영향 없음.
 
 게이트: validate --domain THERM --gate E 0 / W 0 (I 2: A-9009 775 µm 설계 조건, B-9016 JESD51 번호 — 기존), build 2434 문항, smoke figErr [] errs [], layout_check figHighQ 0 · 화면 결함 0(E7 참고 코드만). dist 변경은 되돌림.
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+- 점검: THERM-B 17 문항(sheets.js 2장). 수정 뒤 2장을 다시 렌더해 봤다.
+- 결함: E1 0 · E2 15(f_note 13 지문 반복·빈 카드, 9009 f_bond MR-MUF 접합도에 'EMC 주입 방향'만 있고 dummy bump 없음, 9012 f_sip '신호 경로' 제목·reticle pill) · E3 4(9001 'R = t ÷ k', 9013 'R″ = t ÷ k · ΔT = R″ × q', 9015 '단위가 초가 되는 조합', 9002 'base–core1 계면') · E4 0 · E5 0.
+- 고친 문항 **16**. 게이트: validate --domain THERM E 0 / W 0, smoke figErr [] figEmpty [], layout_check 결함 0.
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-9001 | E3 | f_film Si·BEOL·접합층 + roles(두께·R 순위, k 값 비표시) |
+| B-9002 | E3 | f_stack 4단 예시 hideResult ('그림은 4단 예시 · 문항은 12단') |
+| B-9003 | E2 | f_film 재료 위치(재료 이름은 일반명, 열전도율 값·순서 비표시 — W_FIG_LEAK 회피) |
+| B-9005 · 9007 · 9008 · 9017 | E2 | f_film 패키지 단면(9007 은 계면 A·B, 9017 은 실측 139·34·11 µm) |
+| B-9006 · 9010 · 9015 | E2 (9015 E3) | f_plot 온도–시간·위치별 온도·계단 응답 |
+| B-9009 | E2 | f_ubj 신호·dummy·전원 bump 태그 |
+| B-9011 · 9012 | E2 | f_sip sideTitle·hidePath·msg = 지문 조건 |
+| B-9013 · 9014 · 9016 | E2 (9013 E3) | f_table 단위·온도 구간·JESD51 지표 |
+
+- 유지: B-9004(k=1 조건표).
+- 남은 위험: 9003 은 W_FIG_LEAK(어휘 일치) 때문에 재료를 일반명(금속 lid·몰드 수지·접합 수지 필름·빈 공간)으로 적었다.

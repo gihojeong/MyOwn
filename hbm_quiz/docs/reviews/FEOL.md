@@ -173,3 +173,24 @@ f_film 의 `flag`(카드 머리말에 표시)와 층 이름을 전 문항 점검
 - B-0017: 그림(DRAM 셀 단면 — storage node·buried WL)이 1T1C 구조를 보여 주는 셈이나, 셀 구조 주제도 자체라 flag 만 바꿈. 필요하면 EA 판단.
 - 중급·고급(보고만): FEOL-I-9031·A-9006 의 "775 µm" 는 300 mm wafer 두께라 맞음(검사기 I_FACT_WATCH 는 오탐). 같은 두 문항이 얇은 die 를 50 µm 로 둠 — Micron HBM3E 12H 실측 core die 34–35 µm 와 다름(가정 표기 권장). A-9046 의 bump pad 지름 20 µm 는 실측 µbump 지름 약 10–11.6 µm 와 다름(설정값 명시 또는 조정 권장).
 - 게이트: validate --domain FEOL E 0 / W 0 (I 2: 위 775 µm 오탐), build·smoke figErr [] errs [], layout_check figHighQ 0·화면 결함 0(E7 1,035 는 기존 전역 항목, FEOL-B 없음).
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+- 점검: FEOL-B 56 문항(12_FEOL 52 + 06_SIP 0035·0042 + 07_FA 0047 + 10_MET 0012, sheets.js 5장). 수정 뒤 5장을 다시 렌더해 봤다.
+- 결함: E1 52(f_film 에 roles·bullets 가 없어 오른쪽 절반이 빔) · E2 53(같은 일반 적층 5종 — PR/하드마스크, 셀 적층, BEOL, 게이트, passivation — 이 flag 만 바꿔 52 문항에 붙음 + 0035 f_note 지문 반복) · E3 6(0061 'W contact', 9014 'cap SiCN', 0065 'high-k (HfO2 계)', 9001 'buried WL (BCAT)', 0018 'buried WL', 0042 '임피던스가 최소인 주파수가 다르다') · E4 0 · E5 0.
+- 고친 문항 **55**: f_film 32(문항별 층 구성 + bullets, 묻는 층은 '재료 ?'·'배선 X'·'역할 ?') · f_plot 9(0008·0009 깊이별 막 두께, 0011·9016 온도 프로파일, 0016 식각 깊이, 0026 seasoning, 0035 반사, 0036 누화, 9005 CMP 표면) · f_table 12 · f_wafermap 1(0012) · f_note 재작성 1(0042). 게이트: validate --domain FEOL E 0 / W 0, smoke figErr [] figEmpty [], layout_check 결함 0.
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0061 · 0063 · 0065 · 9014 | E3 | f_film, 묻는 층은 '금속 ?'·'재료 ?' (9014 는 지문 SiCN) |
+| B-0018 · 9001 | E3 | f_film 셀 단면, 게이트 배선은 '배선 X'·'Si 홈 속 게이트' (BCAT 명칭 비표시) |
+| B-0042 | E3 | f_note points 재작성(정답 문장 삭제) |
+| B-0008 · 0009 · 0011 · 0016 · 0026 · 0035 · 0036 · 9016 | E1·E2 | f_plot 지문 현상 |
+| B-9005 | E1·E2·E3 | f_plot Cu pad 표면 단면(dishing 이름 없음). f_cmp hideLabels 는 밀도 A/B 와 단차 A/B 가 겹쳐 혼동 → f_plot 유지 |
+| B-0012 | E2 | f_wafermap bin 판정 map |
+| B-0029 · 0058 · 0059 · 0060 · 0067 · 0071 · 9002 · 9007 · 9009 · 9015 · 9017 · 9019 | E1·E2 | f_table 지문 조건, 묻는 칸 '?' |
+| 나머지 f_film 문항 | E1·E2 | 지문 대상 층으로 다시 구성 + bullets(지문 조건) |
+
+- 유지: B-0047(f_note, 정답 비노출).
+- 템플릿 결함(보고, 반영됨 7994902): f_cmp hideLabels 여도 그래프 범례가 dishing/erosion 이름을 보였다. f_film 은 패턴(구멍·홈·옆으로 놓인 well)을 그리지 못해 층으로 단순화했다(캡션 명시).
+- 남은 위험: 0014·9020(스퍼터 챔버)·9008(EUV 광학계)·0043(well) 은 공간 배치를 층으로 단순화한 그림이다.
