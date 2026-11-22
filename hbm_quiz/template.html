@@ -592,6 +592,7 @@ const annot = annot0, annotTo = annotTo0;
 
 // ========== T1. TSV 단면 ==========
 function f_tsv(s, p) {
+  const HL = p.hideLabels === true; // 결함 이름·barrier 재료·AR 정의 숨김(정답 노출 방지, DA 2026-11-22)
   const cx = LC.x + 1.5, top = TOP + 0.78, dep = 2.55, wt = 0.6, wb = wt * (p.taper == null ? 0.82 : p.taper);
   R(s, LC.x, top - 0.26, 3.0, 0.26, MX.lowk, { lw: 0.8, text: "BEOL / low-k ILD", fs: 8 });
   R(s, LC.x, top, 3.0, dep + 0.52, MX.si, { lw: 0.9 });
@@ -606,14 +607,14 @@ function f_tsv(s, p) {
   poly(s, off(0.055), p.barrier === false ? MX.ox : MX.ti, { lw: 0.5 });
   const fill = p.fill || "good", inner = off(0.075);
   poly(s, inner, MX.cu, { lw: 0.5 });
-  if (fill === "void") { E(s, cx - 0.11, top + dep * 0.44, 0.22, 0.5, MX.bare, { lw: 0.9 }); annotTo(s, cx + 0.1, top + dep * 0.5, 0, "void — 충전이 중앙에서 닫혀 빈 공간이 남았다", K.pink); }
-  else if (fill === "seam") { L(s, cx, top + 0.2, cx, top + dep - 0.1, K.edge, 0.9, { dash: 1 }); annotTo(s, cx, top + 1.1, 0, "seam — 양 측벽 성장면이 중심에서 만났다", K.pink); }
-  else if (fill === "pinch") { poly(s, [[cx - 0.1, top + 0.1], [cx + 0.1, top + 0.1], [cx + 0.03, top + 0.95], [cx - 0.03, top + 0.95]], MX.bare, { lw: 0.8 }); annotTo(s, cx, top + 0.55, 0, "pinch-off — 입구가 먼저 닫혔다", K.pink); }
+  if (fill === "void") { E(s, cx - 0.11, top + dep * 0.44, 0.22, 0.5, MX.bare, { lw: 0.9 }); annotTo(s, cx + 0.1, top + dep * 0.5, 0, HL ? "관찰 부위 (A)" : "void — 충전이 중앙에서 닫혀 빈 공간이 남았다", K.pink); }
+  else if (fill === "seam") { L(s, cx, top + 0.2, cx, top + dep - 0.1, K.edge, 0.9, { dash: 1 }); annotTo(s, cx, top + 1.1, 0, HL ? "관찰 부위 (A)" : "seam — 양 측벽 성장면이 중심에서 만났다", K.pink); }
+  else if (fill === "pinch") { poly(s, [[cx - 0.1, top + 0.1], [cx + 0.1, top + 0.1], [cx + 0.03, top + 0.95], [cx - 0.03, top + 0.95]], MX.bare, { lw: 0.8 }); annotTo(s, cx, top + 0.55, 0, HL ? "관찰 부위 (A)" : "pinch-off — 입구가 먼저 닫혔다", K.pink); }
   if (p.overburden !== false) R(s, cx - wt / 2 - 0.1, top - 0.26 - 0.14, wt + 0.2, 0.14, MX.cu, { lw: 0.8 });
   dimH(s, cx - wt / 2, cx + wt / 2, top - 0.5, "Ø " + (p.dia_um || 5) + " µm");
   dimV(s, LC.x + 3.12, top, top + dep, (p.depth_um || 60) + " µm");
   const ar = p.ar != null ? p.ar : Math.round((p.depth_um || 60) / (p.dia_um || 5) * 10) / 10;
-  annot(s, 1, "aspect ratio = 깊이 / 직경 = " + (p.hideResult ? "?" : ar) + " : 1", K.orange);
+  if (!HL) annot(s, 1, "aspect ratio = 깊이 / 직경 = " + (p.hideResult ? "?" : ar) + " : 1", K.orange);
   // 우측: 측벽 확대 + 범례
   ttl(s, "측벽 확대 (Bosch 주기)", RC.x, TOP, 2.6);
   const ix = RC.x + 0.1, iy = TOP + 0.26;
@@ -629,12 +630,13 @@ function f_tsv(s, p) {
   } else pill(s, RC.x + 1.35, iy + 0.5, "scallop 없음", { fs: 8, fill: K.mint, align: "left", maxW: 2.4 });
   pill(s, RC.x + 1.35, iy + 0.95, p.scallop ? "측벽 거칠기 → liner 피복 불균일" : "매끈한 측벽", { fs: 8, fill: K.violet, align: "left", maxW: 2.4 });
   ttl(s, "막 구성", RC.x, iy + 1.95, 2.4);
-  legend(s, RC.x, iy + 2.24, [[MX.ox, "liner SiO2"], [p.barrier === false ? MX.bare : MX.ti, p.barrier === false ? "barrier 없음 (Cu 확산 위험)" : "barrier Ta / TaN"], [MX.cu, "Cu (electroplated)"], [MX.bare, "void / 미충전"]], { cols: 1, cw: 3.6 });
+  legend(s, RC.x, iy + 2.24, [[MX.ox, "liner SiO2"], [p.barrier === false ? MX.bare : MX.ti, p.barrier === false ? "barrier 없음 (Cu 확산 위험)" : (HL ? "barrier" : "barrier Ta / TaN")], [MX.cu, "Cu (electroplated)"], [MX.bare, HL ? "빈 공간" : "void / 미충전"]], { cols: 1, cw: 3.6 });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
 }
 
 // ========== T2. CMP dishing / erosion ==========
 function f_cmp(s, p) {
+  const HL = p.hideLabels === true; // dishing/erosion 이름 숨김 → 단차 A/B (DA 2026-11-22)
   const x0 = LC.x + 0.15, y0 = TOP + 0.42;
   ttl(s, "상면: pattern density 가 다른 두 영역", LC.x, TOP - 0.02, 4.3);
   R(s, x0, y0, 1.5, 1.3, MX.si, { lw: 0.9 });
@@ -654,8 +656,8 @@ function f_cmp(s, p) {
   }
   curve(s, prof, K.rust, 1.6);
   L(s, x0, cy, x0 + 3.0, cy, K.edge, 0.7, { dash: 1 });
-  annotTo(s, x0 + 0.9, cy + 0.12, 0, "dishing " + (p.dish_nm || 90) + " nm — 넓은 Cu 가 국부로 파인다", K.pink);
-  annotTo(s, x0 + 2.5, cy + 0.2, 1, "erosion " + (p.erosion_nm || 40) + " nm — 고밀도 영역이 함께 내려간다", K.pink);
+  annotTo(s, x0 + 0.9, cy + 0.12, 0, HL ? "단차 A " + (p.dish_nm || 90) + " nm" : "dishing " + (p.dish_nm || 90) + " nm — 넓은 Cu 가 국부로 파인다", K.pink);
+  annotTo(s, x0 + 2.5, cy + 0.2, 1, HL ? "단차 B " + (p.erosion_nm || 40) + " nm" : "erosion " + (p.erosion_nm || 40) + " nm — 고밀도 영역이 함께 내려간다", K.pink);
   const g = axes(s, RC.x + 0.72, TOP + 0.75, 2.8, 2.9, {
     xmin: 0, xmax: 80, xticks: [0, 20, 40, 60, 80], ymin: 0, ymax: 200, yticks: [0, 50, 100, 150, 200],
     xlab: "pattern density (%)", ylab: "표면 단차 (nm)",
@@ -1166,11 +1168,12 @@ function f_stack(s, p) {
   else if (p.highlight === "gap") annot(s, 1, hid ? "접합 간극은 어디에 몇 개 생기는가" : "접합 간극 수 = core die 수", MX.ncf);
   else if (p.highlight === "base") annot(s, 1, "base die 가 외부 인터페이스를 담당한다", M.base);
   else if (p.highlight === "height") annot(s, 1, "전체 높이 = die 두께 합 + 간극 합", K.violet);
+  const HF = hid || p.hideFormula === true; // hideResult 면 산식 칸도 숨김(산식이 곧 정답, DA 2026-11-22)
   const rows = [["항목", "수량", "산식"],
-    ["die 총 장수", hid ? "?" : (n + 1) + "장", "core " + n + " + base 1"],
-    ["접합 간극", hid ? "?" : n + "개", "= core 수 (base–core1 포함)"],
-    ["backside pad 보유 die", hid ? "?" : n + "장", "base + core, top core 제외"],
-    ["스택 높이", hid ? "?" : (p.h_um != null ? p.h_um + " µm" : "—"), "base + N × (core + 간극)"]];
+    ["die 총 장수", hid ? "?" : (n + 1) + "장", HF ? "?" : "core " + n + " + base 1"],
+    ["접합 간극", hid ? "?" : n + "개", HF ? "?" : "= core 수 (base–core1 포함)"],
+    ["backside pad 보유 die", hid ? "?" : n + "장", HF ? "?" : "base + core, top core 제외"],
+    ["스택 높이", hid ? "?" : (p.h_um != null ? p.h_um + " µm" : "—"), HF ? "?" : "base + N × (core + 간극)"]];
   table(s, rows, RC.x, TOP, RC.w, null);
   const hasLim = p.limit_um != null;
   if (hasLim) pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.32, "높이 상한 (설계 조건) " + p.limit_um + " µm", { fs: 8, fill: hid || p.h_um == null ? K.cream : (p.h_um > p.limit_um ? K.pink : K.mint), align: "left", maxW: RC.w });

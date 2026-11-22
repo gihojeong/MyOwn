@@ -31,9 +31,9 @@ WAIVABLE_E = {"E_K1_FIG_NUM", "E_FAMILY_OVER", "E_CALC_NO_WORK", "E_STYLE_PLAIN"
 # ───────────────────────── 그림 템플릿 스키마 ─────────────────────────
 # keys: template.html 이 읽는 params. q: 그림에 수치로 그려지는 키(k=1 이면 지문과 일치해야 함)
 FIG = {
-    "f_tsv": dict(keys="ar depth_um dia_um fill scallop scallopPitch scallopDepth barrier overburden taper hideResult note flag",
+    "f_tsv": dict(keys="ar depth_um dia_um fill scallop scallopPitch scallopDepth barrier overburden taper hideResult note flag hideLabels",
                   q="ar depth_um dia_um", enums={"fill": ["good", "void", "seam", "pinch"]}),
-    "f_cmp": dict(keys="nA nB densA densB dish_nm erosion_nm note flag", q="densA densB dish_nm erosion_nm"),
+    "f_cmp": dict(keys="nA nB densA densB dish_nm erosion_nm note flag hideLabels", q="densA densB dish_nm erosion_nm"),
     "f_bs": dict(keys="step defect ox1 sin ox2 ni_um notes note flag", q="ox1 sin ox2",
                  enums={"defect": ["none", "undercut", "residue"], "step": list(range(8))}),
     "f_bump": dict(keys="imc_um pillar_um solder_um niBarrier kirkendall em j_kA temp k hours tmax ymax hideLabels hideResult bullet note flag",
@@ -50,7 +50,7 @@ FIG = {
     "f_fa": dict(keys="tech depth hot fov_um dz zpeak feats note flag", q="",
                  enums={"tech": ["lit", "obirch", "eotpr", "xrm"]}),
     "f_rel": dict(keys="seq cur fails crit hint xlab xmax ymax tcCycles bullet note flag", q="crit"),
-    "f_stack": dict(keys="n highlight gap_um h_um limit_um hideResult bullet note flag", q="n gap_um h_um limit_um",
+    "f_stack": dict(keys="n highlight gap_um h_um limit_um hideResult bullet note flag hideFormula", q="n gap_um h_um limit_um",
                     enums={"highlight": [None, "height", "midcore", "base", "gap", "topcore"]}),
     "f_hcb": dict(keys="pitch_um tol_nm off_nm dish_nm hideResult bullet note flag", q="pitch_um tol_nm off_nm dish_nm"),
     "f_plot": dict(keys="title x y series marks bullets note flag", q=""),
