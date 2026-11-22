@@ -1442,9 +1442,13 @@ function f_ubj(s, p) {
         }
         if (s_ === "kv") { for (let k = 0; k < 5; k++) E(s, cx - pw / 2 + 0.04 + k * (pw - 0.1) / 4, yS - 0.03, 0.05, 0.04, MX.bare, { lw: 0.5 }); marks.push([i, cx - pw / 2 + 0.04, yS - 0.01]); }
         if (s_ === "em") {
-          for (let k = 0; k < 3; k++) E(s, cx - pw / 2 + 0.03 + k * 0.1, yS + itop + 0.02, 0.1, 0.08, MX.bare, { lw: 0.6 });
-          poly(s, [[cx + pw / 2 - 0.02, yE - ibot - 0.12], [cx + pw / 2 + 0.16, yE - ibot - 0.04], [cx + pw / 2 - 0.02, yE - ibot]], MX.sol, { lw: 0.6 });
-          marks.push([i, cx - pw / 2 + 0.06, yS + itop + 0.05]);
+          // EM: 전자가 들어오는 쪽(cathode) 계면에 void, 나가는 쪽(anode)에 돌출(hillock). 기본 전자 흐름 = 위 → 아래(electron.dir "up" 이면 반대)
+          const up = !!(p.electron && p.electron.dir === "up");
+          const yv = up ? yE - ibot - 0.1 : yS + itop + 0.02, yh = up ? yS + itop : yE - ibot;
+          for (let k = 0; k < 3; k++) E(s, cx - pw / 2 + 0.03 + k * 0.1, yv, 0.1, 0.08, MX.bare, { lw: 0.6 });
+          poly(s, up ? [[cx + pw / 2 - 0.02, yh], [cx + pw / 2 + 0.16, yh + 0.04], [cx + pw / 2 - 0.02, yh + 0.12]]
+                     : [[cx + pw / 2 - 0.02, yh - 0.12], [cx + pw / 2 + 0.16, yh - 0.04], [cx + pw / 2 - 0.02, yh]], MX.sol, { lw: 0.6 });
+          marks.push([i, cx - pw / 2 + 0.06, yv + 0.04]);
         }
         if (s_ === "crowd") {
           E(s, cx - pw / 2 - 0.03, yS + itop - 0.03, 0.24, 0.18, MX.hot, { line: null, tr: 10 }); E(s, cx - pw / 2 + 0.01, yS + itop, 0.1, 0.08, K.alert, { line: null, tr: 20 });
@@ -1468,7 +1472,7 @@ function f_ubj(s, p) {
   }
   // 전류(선택): 같은 전류 I 를 bump 마다 화살표로
   if (p.I) for (let i = 0; i < n; i++) { const cx = xs(i); A(s, cx, yU - 0.18, cx, yU + 0.02, K.rust, 1.4); if (i === 0) T(s, "I", cx + 0.06, yU - 0.26, 0.2, 0.2, { fs: 9, bold: true, color: K.rust }); }
-  if (p.electron) { const cx = xs(p.electron.at || 0) + pw0 / 2 + 0.22; A(s, cx, yL - 0.05, cx, top0 + 0.08, K.rust, 1.5); T(s, "e⁻", cx + 0.05, (top0 + yL) / 2 - 0.1, 0.3, 0.2, { fs: 9, bold: true, color: K.rust }); }
+  if (p.electron) { const cx = xs(p.electron.at || 0) + pw0 / 2 + 0.22; if (p.electron.dir === "up") A(s, cx, yL - 0.05, cx, top0 + 0.08, K.rust, 1.5); else A(s, cx, top0 + 0.08, cx, yL - 0.05, K.rust, 1.5); T(s, "e⁻", cx + 0.05, (top0 + yL) / 2 - 0.1, 0.3, 0.2, { fs: 9, bold: true, color: K.rust }); }
   if (p.trace) { const cx = xs(p.trace.at || 0); L(s, x0 + 0.05, top0 - 0.06, cx - pw0 / 2 + 0.02, top0 - 0.06, K.rust, 2.4); A(s, x0 + 0.1, top0 - 0.16, x0 + 0.5, top0 - 0.16, K.rust, 1.2); T(s, "배선", x0 + 0.08, top0 - 0.38, 0.6, 0.2, { fs: 8, color: K.rust, bold: true }); }
   // daisy chain: 위·아래 die 배선이 bump 를 번갈아 잇는다 + 양 끝 측정 단자
   if (p.chain) {

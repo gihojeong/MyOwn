@@ -138,3 +138,5 @@
 새 템플릿 `f_ubj`·`f_plate`·`f_wet` (2026-11-22, BJ 승인): µbump 접합 단면(접합 불량·IMC·SOH·EM·daisy chain·HCB/ball 비교), through-mask 도금 공정 패널, 젖음 접촉각. params 는 STANDARDS 부록 A. 불량 이름을 그림에 쓰지 않는 것이 기본(이상 부위는 "관찰 부위 (A)"). BUMP-B 33문항의 f_note 를 이 템플릿으로 교체, 렌더 육안 확인·layout_check 3 화면 결함 0.
 
 DA 육안 점검 3 지적 반영 (2026-11-22): `f_sip sideTitle`(오른쪽 단면 제목 지정)·`hidePath`(HBM–XPU 신호 경로 화살표·라벨 끔 — lid·stiffener·BGA·underfill 문항용). `f_therm` tTop 기본값 95 → (상한 − 25) °C(기본 최상단 온도가 상한보다 높게 그려지던 것). `f_ubj` 수지 충전을 배경과 구분되는 색 + 빗금으로, "수지 충전" 라벨을 간극 위쪽으로.
+
+`f_ubj` EM 방향 정정 (2026-11-22, DA-5 지적): 전자 화살표가 아래 → 위인데 void 가 위(전자가 나가는 anode)쪽에 그려져 물리적으로 틀렸다. 기본 전자 흐름을 위 → 아래로 바꾸고, void 는 전자가 들어오는 cathode 계면, 돌출은 anode 계면에 그린다. `electron.dir:"up"` 이면 둘 다 반대로. BUMP-B-9004 그림이 이 정정으로 바로잡힘. 상태 void·trap·dendrite·unfill, `fillet` 추가(부록 A).
