@@ -215,6 +215,9 @@
 | `f_hcb` | `pitch_um` ≤ 10, `tol_nm`, `off_nm`, `dish_nm`, `bullet`, `hideResult` | |
 | `f_plot` | `title`, `x`/`y`{min,max,ticks ≤ 6,lab}, `series` ≤ 4, `marks` ≤ 3, `bullets` ≤ 3 | 데이터 해석형 고급의 주력 |
 | `f_film` | `layers` ≤ 9, `roles` ≤ 5, `bullets` ≤ 3, `flags` ≤ 2 | |
+| `f_ubj` | µbump 접합 단면. `n`(≤6)·`st`[bump별: ok·nonwet·hip·open·bridge·squeeze·fullimc·imcthick·imcgrow·kv·em·crowd]·`stage`("pre"=접합 전)·`h`/`w`(bump별 높이·폭 배율)·`cap`·`fill`(none·ncf·muf)·`ni`·`imc`(one·two·none)·`zoom`(확대할 bump 번호)·`layerNames`·`names`(재료 이름 범례·확대 라벨)·`tags`·`tsv`·`chain`·`shear`·`I`·`electron`·`trace`·`dims`{pitch,gap,dia}(문자열 그대로)·`cand`(후보 치수 A·B·C)·`residue`·`cmp`(ball·hcb) | 불량 이름은 그리지 않고 이상 부위는 "관찰 부위 (A)". 재료명이 정답이면 `names` 를 끄고 `layerNames` 로 "층 A" |
+| `f_plate` | through-mask 도금 단면 패널. `steps`(seed·pr·plate·strip·etch·reflow 중, 준 순서대로 ≤6)·`labels`·`hideNames`((가)(나)…) | 순서 문항은 섞어서 준다 |
+| `f_wet` | 녹은 solder 접촉각. `drops`[{surf: clean·oxide, theta, label, vapor}] ≤3·`hideAngle` | 같은 부피로 그림 |
 | `f_note` | `title` ≤ 22자, `points` ≤ 4(각 ≤ 50자), `ask` ≤ 12자 | points 는 **판단 관점** — 정답 문장 금지 |
 | **`f_table`** | `title`, `unit`, `cols` ≤ 5, `rows` ≤ 7 × 5(셀 ≤ 14자), `hl`/`hlRow`/`hlCol`, `notes` ≤ 3 | 고급 '실측 데이터 해석' 용. 강조(hl)가 정답을 가리키지 않게 — 관측 대상만 강조 |
 | **`f_wafermap`** | `title`, `grid` 9–25, `values` 또는 `pattern`(edge·center·ring·notch·random·quadrant), `scale`, `bin`, `marks` ≤ 4, `bullets` ≤ 3, `seed` | 맵 패턴을 묻는 문항에서 bullets·marks 로 원인을 쓰지 말 것 |

@@ -283,3 +283,7 @@ core die 사이 µbump pitch 23 µm, 접합 간극 11 µm(NCP), base die 아래 
   2. `f_bump` 는 k 가 없으면 오른쪽 절반이 비고, `f_bond` 는 `hideTable` 이면 오른쪽 열이 bullet 하나만 남아 비어 보임(배치가 다시 흐르지 않음).
   3. smoke `figEmpty` 는 점 1개짜리 `f_plot` series 를 빈 곡선으로 셈(B-0001 첫 시도) — 점만 찍는 series 를 쓸 수 없음.
 - 남은 위험: 초급 BUMP 그림의 대부분(35/41)이 이제 `f_note` 개념 카드다(주제에 맞는 도식 템플릿 — 도금 단면·젖음 접촉각·bridge/HIP 단면·daisy chain 회로 — 이 없음). points 의 정답 노출 판단은 DA 육안 + W_FIG_LEAK 기준이며 EA 검토 전. 범위 밖: BUMP-I 35 · BUMP-A 5 문항이 여전히 k 없는 `f_bump`(E1·E2 가능성 높음).
+
+## 새 그림 템플릿으로 관점 카드 교체 (2026-11-22, DA)
+
+BJ 승인으로 µbump 전용 템플릿 3종(f_ubj 접합 단면, f_plate through-mask 도금, f_wet 접촉각)을 만들고 BUMP-B f_note 35문항 중 33문항을 실제 그림으로 바꿨다(0032 융점, 9015 시험 조건 카드는 유지). 불량 이름·재료명이 정답인 문항은 이름을 숨겼다(0015 층 A–C, 9001 층 A·B, 9002 "계면 IMC ?", 불량은 "관찰 부위 (A)"). 순서 문항 9012 는 패널을 섞어 배치. 렌더 시트 4장 육안 확인, validate E 0 / W 0, smoke figErr·figEmpty [], layout_check 3 화면 결함 0.

@@ -1352,6 +1352,257 @@ function f_wafermap(s, p) {
 
 // ── 그림이 필요 없는 주제: 핵심 개념 카드 ──────────────────────────────
 // p:{title, points:[문장...], ask, flag}
+// ========== T20. µbump 접합 단면 (f_ubj) — 접합 상태·불량·IMC·SOH·EM (DA 2026-11-22) ==========
+// 이름(불량명·재료명)은 기본적으로 쓰지 않는다. 이상 부위는 "관찰 부위 (A)" 식 기호로만 표시.
+// names:true 일 때만 재료 이름(Cu pillar·solder·IMC·pad)을 보인다. 단면 두께 방향은 과장 표시.
+function f_ubj(s, p) {
+  const n = Math.max(1, Math.min(6, p.n || (p.st ? p.st.length : 3)));
+  const st = (p.st || []).slice(0, n); while (st.length < n) st.push("ok");
+  const pre = p.stage === "pre", NM = p.names === true, zoomOn = p.zoom != null, rightUsed = zoomOn || p.cmp;
+  const x0 = LC.x + 0.05, W0 = rightUsed ? 4.3 : 8.2, dz = 0.42;
+  const P = OBL(0, 0, 1, 1);  // 깊이 방향 투영(정면 단면 + 다이 윗면/옆면 살짝)
+  const FW = !rightUsed, dieH = FW ? 0.55 : 0.46, gH = (pre ? 1.55 : 1.15) * (FW ? 1.3 : 1), yU = TOP + 0.55, yL = yU + dieH + gH;
+  const die = (y, txt) => { oblBox(s, OBL(x0, y + dieH, 1, 1), 0, 0, 0, W0 - 0.35, dz, dieH, MX.si, p.tsv ? {} : { text: txt, fs: 8 }); if (p.tsv) T(s, txt, x0 + 0.08, y + dieH / 2 - 0.1, 1.2, 0.2, { fs: 8, bold: true, color: K.ink }); };
+  const sp = (W0 - 0.35) / n, xs = (i) => x0 + sp * (i + 0.5);
+  const ws = p.w || [], hs = p.h || [];
+  const pw0 = Math.min(FW ? 0.85 : 0.62, sp * 0.42);
+  // 간극 충전 수지 (뒤쪽에 먼저)
+  if (!pre && p.fill && p.fill !== "none") R(s, x0, yU + dieH, W0 - 0.35, gH, MX.ncf, { line: null, tr: 15 });
+  die(yU, p.upper || "upper die"); die(yL, p.lower || "lower die");
+  const tags = p.tags || [], letters = "ABCDEF"; let li = 0; const marks = [];
+  const tagOf = (i) => tags[i] != null ? tags[i] : (st[i] !== "ok" && p.autoTag !== false ? "관찰 부위 (" + letters[li++] + ")" : null);
+  const solderPoly = (cx, y1, y2, half, bulge) => {
+    const pts = []; for (let k = 0; k <= 10; k++) { const t = k / 10, b = Math.sin(Math.PI * t) * bulge; pts.push([cx - half - b, y1 + (y2 - y1) * t]); }
+    for (let k = 10; k >= 0; k--) { const t = k / 10, b = Math.sin(Math.PI * t) * bulge; pts.push([cx + half + b, y1 + (y2 - y1) * t]); }
+    return pts;
+  };
+  const top0 = yU + dieH, bot0 = yL;
+  for (let i = 0; i < n; i++) {
+    const cx = xs(i), pw = pw0 * (ws[i] || 1), hk = hs[i] || 1, s_ = st[i];
+    // TSV (선택): bump 위·아래 die 를 관통하는 Cu 기둥
+    if (p.tsv && p.tsv[i]) { R(s, cx - 0.05, yU + 0.02, 0.1, dieH - 0.02, MX.cu, { lw: 0.6 }); R(s, cx - 0.05, yL, 0.1, dieH - 0.02, MX.cu, { lw: 0.6 }); }
+    // 아래 die pad
+    const padH = 0.08; R(s, cx - pw / 2 - 0.05, bot0 - padH, pw + 0.1, padH, MX.cu2, { lw: 0.6 });
+    const pillH = (pre ? 0.55 : 0.5) * (FW ? 1.3 : 1) * hk, pyb = top0 + pillH;
+    R(s, cx - pw / 2, top0, pw, pillH, MX.cu, { lw: 0.8 });
+    if (p.ni) R(s, cx - pw / 2, pyb, pw, 0.06, MX.ni2, { lw: 0.6 });
+    const yS = pyb + (p.ni ? 0.06 : 0);
+    if (pre) {   // 접합 전: 둥근 solder cap
+      const ch = 0.26 * (FW ? 1.3 : 1) * (p.cap || 1);
+      R(s, cx - pw / 2, yS, pw, ch * 0.55, MX.sol, { lw: 0.7 });
+      E(s, cx - pw / 2, yS + ch * 0.05, pw, ch, MX.sol, { lw: 0.7 });
+      R(s, cx - pw / 2 + 0.01, yS, pw - 0.02, ch * 0.5, MX.sol, { line: null });
+      if (p.residue) E(s, cx - pw / 2 - 0.12, bot0 - 0.1, 0.18, 0.1, "B99A6B", { lw: 0.5 });
+    } else {
+      const itop = s_ === "imcthick" || s_ === "imcgrow" ? 0.16 : s_ === "fullimc" ? 0 : 0.045;
+      const ibot = itop, yE = bot0 - padH;
+      const showImc = p.imc !== "none";
+      if (s_ === "nonwet") {
+        E(s, cx - pw / 2 - 0.02, yS - 0.04, pw + 0.04, (yE - yS) * 0.62, MX.sol, { lw: 0.7 });
+        if (showImc) R(s, cx - pw / 2, yS, pw, 0.04, MX.imc, { lw: 0.5 });
+        marks.push([i, cx, yS + (yE - yS) * 0.66]);
+      } else if (s_ === "hip") {
+        const mid = yS + (yE - yS) * 0.5;
+        E(s, cx - pw / 2 - 0.04, yS - 0.04, pw + 0.08, mid - yS + 0.07, MX.sol, { lw: 0.7 });
+        E(s, cx - pw / 2 - 0.06, mid - 0.03, pw + 0.12, yE - mid + 0.05, MX.sol, { lw: 0.7 });
+        L(s, cx - pw / 2 + 0.02, mid + 0.015, cx + pw / 2 - 0.02, mid + 0.015, K.edge, 1.6);
+        marks.push([i, cx + pw / 2, mid]);
+      } else if (s_ === "open") {
+        R(s, cx - pw / 2, yS, pw, (yE - yS) * 0.45, MX.sol, { lw: 0.7 });
+        marks.push([i, cx, yS + (yE - yS) * 0.7]);
+      } else if (s_ === "fullimc") {
+        R(s, cx - pw / 2, yS, pw, yE - yS, MX.imc, { lw: 0.7 });
+        marks.push([i, cx, (yS + yE) / 2]);
+      } else {
+        const bulge = s_ === "squeeze" ? 0.16 : s_ === "bridge" ? 0.0 : 0.035;
+        poly(s, solderPoly(cx, yS, yE, pw / 2, bulge), MX.sol, { lw: 0.7 });
+        if (showImc) { R(s, cx - pw / 2, yS, pw, itop, MX.imc, { lw: 0.5 }); R(s, cx - pw / 2 - 0.02, yE - ibot, pw + 0.04, ibot, MX.imc, { lw: 0.5 }); }
+        if (s_ === "kv") { for (let k = 0; k < 5; k++) E(s, cx - pw / 2 + 0.04 + k * (pw - 0.1) / 4, yS - 0.03, 0.05, 0.04, MX.bare, { lw: 0.5 }); marks.push([i, cx - pw / 2 + 0.04, yS - 0.01]); }
+        if (s_ === "em") {
+          for (let k = 0; k < 3; k++) E(s, cx - pw / 2 + 0.03 + k * 0.1, yS + itop + 0.02, 0.1, 0.08, MX.bare, { lw: 0.6 });
+          poly(s, [[cx + pw / 2 - 0.02, yE - ibot - 0.12], [cx + pw / 2 + 0.16, yE - ibot - 0.04], [cx + pw / 2 - 0.02, yE - ibot]], MX.sol, { lw: 0.6 });
+          marks.push([i, cx - pw / 2 + 0.06, yS + itop + 0.05]);
+        }
+        if (s_ === "crowd") {
+          E(s, cx - pw / 2 - 0.03, yS + itop - 0.03, 0.24, 0.18, MX.hot, { line: null, tr: 10 }); E(s, cx - pw / 2 + 0.01, yS + itop, 0.1, 0.08, K.alert, { line: null, tr: 20 });
+          marks.push([i, cx - pw / 2 + 0.05, yS + itop + 0.04]);
+        }
+        if (s_ === "squeeze") marks.push([i, cx + pw / 2 + 0.12, (yS + yE) / 2]);
+        if (s_ === "imcthick" || s_ === "imcgrow") marks.push([i, cx + pw / 2, yS + itop / 2]);
+        if (s_ === "bridge" && i < n - 1) {
+          const nx = xs(i + 1), m = (yS + yE) / 2 + 0.05;
+          poly(s, [[cx + pw / 2 - 0.01, m - 0.16], [nx - pw / 2 + 0.01, m - 0.12], [nx - pw / 2 + 0.01, m + 0.16], [cx + pw / 2 - 0.01, m + 0.2]], MX.sol, { lw: 0.7 });
+          marks.push([i, (cx + nx) / 2, m]);
+        }
+      }
+      if (p.residue) { E(s, cx - pw / 2 - 0.17, yE - 0.1, 0.2, 0.1, "B99A6B", { lw: 0.5 }); E(s, cx + pw / 2 - 0.03, yE - 0.1, 0.2, 0.1, "B99A6B", { lw: 0.5 }); }
+    }
+    const tg = tagOf(i);
+    if (tg) {
+      const mk = marks.find((m) => m[0] === i) || [i, cx, (top0 + bot0) / 2];
+      lead(s, mk[1], mk[2], mk[1] + 0.02, yL + dieH + 0.25 + (i % 2) * 0.27, tg, { fill: K.cream, align: "left", nogut: FW });
+    }
+  }
+  // 전류(선택): 같은 전류 I 를 bump 마다 화살표로
+  if (p.I) for (let i = 0; i < n; i++) { const cx = xs(i); A(s, cx, yU - 0.18, cx, yU + 0.02, K.rust, 1.4); if (i === 0) T(s, "I", cx + 0.06, yU - 0.26, 0.2, 0.2, { fs: 9, bold: true, color: K.rust }); }
+  if (p.electron) { const cx = xs(p.electron.at || 0) + pw0 / 2 + 0.22; A(s, cx, yL - 0.05, cx, top0 + 0.08, K.rust, 1.5); T(s, "e⁻", cx + 0.05, (top0 + yL) / 2 - 0.1, 0.3, 0.2, { fs: 9, bold: true, color: K.rust }); }
+  if (p.trace) { const cx = xs(p.trace.at || 0); L(s, x0 + 0.05, top0 - 0.06, cx - pw0 / 2 + 0.02, top0 - 0.06, K.rust, 2.4); A(s, x0 + 0.1, top0 - 0.16, x0 + 0.5, top0 - 0.16, K.rust, 1.2); T(s, "배선", x0 + 0.08, top0 - 0.38, 0.6, 0.2, { fs: 8, color: K.rust, bold: true }); }
+  // daisy chain: 위·아래 die 배선이 bump 를 번갈아 잇는다 + 양 끝 측정 단자
+  if (p.chain) {
+    for (let i = 0; i < n - 1; i++) {
+      const y = i % 2 === 0 ? top0 - 0.05 : bot0 + 0.05;
+      L(s, xs(i), y, xs(i + 1), y, K.rust, 2.4);
+    }
+    L(s, xs(0), bot0 + 0.05, xs(0), yL + dieH + 0.25, K.rust, 1.2); L(s, xs(n - 1), bot0 + 0.05, xs(n - 1), yL + dieH + 0.25, K.rust, 1.2);
+    L(s, xs(0), yL + dieH + 0.25, xs(n - 1), yL + dieH + 0.25, K.rust, 1.0);   // 선을 먼저, 측정 pill 을 위에
+    pill(s, (xs(0) + xs(n - 1)) / 2, yL + dieH + 0.25, p.chainLabel || "양 끝 단자 사이 저항 측정 (Ω)", { fs: 8, fill: K.orange, nogut: true });
+  }
+  // 열팽창 차이로 생기는 수평 변위(선택)
+  if (p.shear) {
+    A(s, x0 + 0.6, yU - 0.15, x0 + 1.4, yU - 0.15, K.rust, 1.5); A(s, x0 + 1.4, yL + dieH + 0.18, x0 + 0.6, yL + dieH + 0.18, K.rust, 1.5);
+    T(s, p.shear === true ? "위·아래 die 수평 변위 차이" : p.shear, x0 + 1.5, yU - 0.27, 5.0, 0.22, { fs: 8, bold: true, color: K.rust });
+  }
+  // 치수(선택): dims.pitch / gap / pillar — 값 문자열을 그대로 표시("?" 가능). cand:true 는 후보 치수 A·B·C
+  const d = p.dims || {};
+  if (n >= 2 && d.pitch) dimH(s, xs(0), xs(1), yU - 0.2, "pitch " + d.pitch);
+  if (d.gap) dimV(s, x0 + W0 - 0.2, top0, bot0, "간극 " + d.gap, { align: FW ? "right" : "left" });
+  if (d.dia) dimH(s, xs(0) - pw0 / 2, xs(0) + pw0 / 2, yL + dieH + 0.2, d.dia);
+  if (p.cand) {
+    dimV(s, x0 + W0 - 0.2, top0, bot0, "A", { align: FW ? "right" : "left" });
+    dimV(s, xs(0) - pw0 / 2 - 0.15, top0, top0 + 0.5, "B", { align: "right" });
+    if (n >= 2) dimH(s, xs(0), xs(1), yU - 0.2, "C");
+  }
+  if (p.fill && p.fill !== "none" && !pre) T(s, p.fillLabel || "수지 충전", x0 + 0.08, bot0 - 0.3, 1.0, 0.2, { fs: 8, color: K.muted, bold: true });
+  // 재료 범례(names:true 일 때만 이름)
+  const legY = yL + dieH + 0.85;
+  if (NM) legend(s, x0 + 0.1, legY, [[MX.cu, "Cu"], [MX.sol, "solder"], [MX.imc, "IMC"]].concat(p.ni ? [[MX.ni2, "Ni"]] : []).concat(p.fill && p.fill !== "none" ? [[MX.ncf, "수지"]] : []), { cols: 5, cw: 0.85 });
+  // ── 오른쪽 칸: 한 접합부 확대(zoom) 또는 비교 단면(cmp)
+  if (zoomOn) ubZoom(s, p, st[p.zoom] || "ok");
+  else if (p.cmp) ubCmp(s, p);
+  if (p.bullet) pill(s, rightUsed ? RC.x : LC.x, rightUsed ? TOP + 3.75 : yL + dieH + 1.2, p.bullet, { fs: 8, fill: K.violet, align: "left", maxW: rightUsed ? RC.w : 8.0, nogut: !rightUsed });
+  flagOf(s, p); cap(s, p.note || "단면 · 두께 방향 확대 표시 (비례 아님)");
+}
+// 확대 단면: 층 순서를 위에서 아래로. hideNames 면 층 이름을 "층 A/B/…" 로
+function ubZoom(s, p, s_) {
+  const HN = p.names !== true, x = RC.x + 0.55, w = 1.35;
+  let y = TOP + 0.25;
+  ttl(s, p.zoomTitle || "접합부 한 곳 확대", RC.x, TOP - 0.04, 3.6);
+  const imc = p.imc || "one", lay = [];
+  lay.push(["Cu pillar", MX.cu, 0.7]);
+  if (p.ni) lay.push(["Ni", MX.ni2, 0.16]);
+  if (imc === "two") { lay.push(["Cu₃Sn", "B08A4E", 0.12]); lay.push(["Cu₆Sn₅", MX.imc, 0.2]); }
+  else if (imc !== "none") lay.push(["IMC", MX.imc, s_ === "imcthick" || s_ === "imcgrow" ? 0.3 : 0.12]);
+  if (s_ === "fullimc") lay.push(["IMC", MX.imc, 0.5]);
+  else lay.push(["solder", MX.sol, s_ === "imcgrow" ? 0.2 : 0.62]);
+  if (imc !== "none" && s_ !== "fullimc") lay.push(["IMC", MX.imc, s_ === "imcthick" || s_ === "imcgrow" ? 0.3 : 0.12]);
+  lay.push(["Cu pad", MX.cu2, 0.22]);
+  R(s, x - 0.35, y, w + 0.7, 0.28, MX.si, { lw: 0.8, text: "upper die", fs: 8 }); y += 0.28;
+  const L0 = "ABCDEFG"; let k = 0;
+  const named = p.layerNames || null;
+  lay.forEach(([nm, c, h], i) => {
+    R(s, x, y, w, h, c, { lw: 0.7 });
+    if (s_ === "kv" && nm === "Cu pillar") for (let j = 0; j < 6; j++) E(s, x + 0.06 + j * 0.22, y + h - 0.05, 0.08, 0.06, MX.bare, { lw: 0.5 });
+    const label = named ? named[i] : (HN ? "층 " + L0[k++] : nm);
+    if (label) lead(s, x + w - 0.05, y + h / 2, x + w + 0.35, y + h / 2, label, { fill: K.cream, align: "left" });
+    y += h;
+  });
+  R(s, x - 0.35, y, w + 0.7, 0.28, MX.si, { lw: 0.8, text: "lower die", fs: 8 });
+}
+// 비교 단면: ball(같은 높이의 solder ball 접합) · hcb(Cu–Cu hybrid 접합)
+function ubCmp(s, p) {
+  const x = RC.x + 0.15, w = 3.3, y = TOP + 0.55;
+  ttl(s, p.cmpTitle || (p.cmp === "ball" ? "같은 높이를 solder ball 로 만든 경우" : "solder 없이 Cu 끼리 붙인 경우"), RC.x, TOP - 0.04, 3.7);
+  if (p.cmp === "ball") {
+    R(s, x, y, w, 0.46, MX.si, { lw: 0.9, text: "upper die", fs: 8 });
+    R(s, x, y + 1.61, w, 0.46, MX.si, { lw: 0.9, text: "lower die", fs: 8 });
+    for (let i = 0; i < 2; i++) { const cx = x + 0.9 + i * 1.5; E(s, cx - 0.62, y + 0.44, 1.24, 1.19, MX.sol, { lw: 0.8 }); }
+  } else {
+    R(s, x, y, w, 0.5, MX.si, { lw: 0.9, text: "upper die", fs: 8 });
+    R(s, x, y + 0.5, w, 0.3, MX.ox, { lw: 0.7 }); R(s, x, y + 0.8, w, 0.3, MX.ox, { lw: 0.7 });
+    for (let i = 0; i < 4; i++) { const cx = x + 0.45 + i * 0.8; R(s, cx - 0.15, y + 0.5, 0.3, 0.3, MX.cu, { lw: 0.7 }); R(s, cx - 0.15, y + 0.8, 0.3, 0.3, MX.cu, { lw: 0.7 }); }
+    R(s, x, y + 1.1, w, 0.5, MX.si, { lw: 0.9, text: "lower die", fs: 8 });
+    L(s, x, y + 0.8, x + w, y + 0.8, K.alert, 1.0, { dash: 1 });
+    T(s, "접합면", x + w - 0.7, y + 0.62, 0.7, 0.18, { fs: 7, color: K.alert, bold: true });
+  }
+}
+
+// ========== T21. through-mask 도금 공정 단면 (f_plate) ==========
+// steps: seed · pr · plate · strip · etch · reflow 중 고른 순서대로 패널을 그린다(순서 문항은 섞어서 준다).
+// hideNames:true 면 패널 이름을 (가)(나)… 로. labels 로 직접 지정 가능.
+function f_plate(s, p) {
+  const steps = (p.steps || ["seed", "pr", "plate", "strip", "etch", "reflow"]).slice(0, 6);
+  const NAMES = { seed: "seed 증착", pr: "PR 패터닝", plate: "전해 도금", strip: "PR 제거", etch: "seed 식각", reflow: "reflow" };
+  const KO = ["(가)", "(나)", "(다)", "(라)", "(마)", "(바)"];
+  const nc = steps.length <= 3 ? steps.length : 3, nr = Math.ceil(steps.length / 3);
+  const pw = (DG.w - 0.3) / nc - 0.18, ph = nr > 1 ? 1.62 : 2.2;
+  const has = (st, k) => { const o = ["seed", "pr", "plate", "strip", "etch", "reflow"]; return o.indexOf(st) >= o.indexOf(k); };
+  steps.forEach((stp, i) => {
+    const px = DG.x + 0.15 + (i % nc) * (pw + 0.18), py = TOP + 0.25 + Math.floor(i / nc) * (ph + 0.42);
+    R(s, px, py, pw, ph, K.cream, { lw: 0.6, line: K.lineStrong, round: 0.06 });
+    const bx = px + 0.18, bw = pw - 0.36, base = py + ph - 0.32;
+    R(s, bx, base, bw, 0.22, MX.si, { lw: 0.7 });                                // wafer
+    R(s, bx, base - 0.06, bw, 0.06, MX.ox, { lw: 0.5 });                        // passivation
+    const op = [bx + bw * 0.28, bx + bw * 0.72], ow = Math.min(0.42, bw * 0.2);
+    op.forEach((cx) => R(s, cx - ow / 2 - 0.04, base - 0.06, ow + 0.08, 0.06, MX.pad, { lw: 0.5 })); // pad 개구
+    const seedOn = stp !== "etch" && stp !== "reflow";
+    const ySeed = base - 0.1;
+    if (seedOn) R(s, bx, ySeed, bw, 0.04, MX.ti, { lw: 0.4 });
+    else op.forEach((cx) => R(s, cx - ow / 2, ySeed, ow, 0.04, MX.ti, { lw: 0.4 }));
+    const prH = Math.min(0.9, ph - 0.75), yPR = ySeed - prH;
+    if (stp === "pr" || stp === "plate") {
+      const segs = [[bx, op[0] - ow / 2], [op[0] + ow / 2, op[1] - ow / 2], [op[1] + ow / 2, bx + bw]];
+      segs.forEach(([a, b]) => R(s, a, yPR, b - a, prH, MX.lowk, { lw: 0.6, tr: 5 }));
+    }
+    if (has(stp, "plate")) op.forEach((cx) => {
+      const cuH = prH * 0.62, snH = prH * 0.26;
+      R(s, cx - ow / 2, ySeed - cuH, ow, cuH, MX.cu, { lw: 0.6 });
+      if (stp === "reflow") E(s, cx - ow / 2, ySeed - cuH - snH * 1.5, ow, snH * 1.9, MX.sol, { lw: 0.6 });
+      else R(s, cx - ow / 2, ySeed - cuH - snH, ow, snH, MX.sol, { lw: 0.6 });
+    });
+    if (stp === "plate") { op.forEach((cx) => A(s, cx, py + 0.12, cx, yPR - 0.04, K.rust, 1.2)); }
+    if (stp === "seed") A(s, bx + bw / 2, py + 0.15, bx + bw / 2, ySeed - 0.05, K.muted, 1.1, { dash: 1 });
+    const lab = (p.labels && p.labels[i]) || (p.hideNames ? KO[i] : NAMES[stp] || stp);
+    T(s, lab, px, py + ph + 0.02, pw, 0.22, { fs: 8.5, bold: true, align: "center", color: K.ink2 });
+  });
+  if (p.legend !== false) legend(s, DG.x + 0.2, TOP + 0.25 + nr * (ph + 0.42) + 0.05, [[MX.ti, "seed"], [MX.lowk, "PR"], [MX.cu, "Cu"], [MX.sol, "solder"], [MX.pad, "pad"], [MX.ox, "passivation"]], { cols: 6, cw: 1.3 });
+  if (p.bullet) pill(s, DG.x + 0.2, ANY + 0.45, p.bullet, { fs: 8, fill: K.violet, align: "left", nogut: true, maxW: 8.0 });
+  flagOf(s, p); cap(s, p.note || "단면 · 두께 방향 확대 표시 (비례 아님)");
+}
+
+// ========== T22. 녹은 solder 의 젖음 — 접촉각 (f_wet) ==========
+// drops: [{surf:"clean"|"oxide", theta:도, label, vapor:true}] · hideAngle:true 면 각도 값을 "θ" 로만
+function f_wet(s, p) {
+  const drops = (p.drops || [{ surf: "clean", theta: 30 }, { surf: "oxide", theta: 120 }]).slice(0, 3);
+  const n = drops.length, cw = (DG.w - 0.3) / n;
+  drops.forEach((d, i) => {
+    const x = DG.x + 0.15 + i * cw, bw = cw - 0.35, by = TOP + 2.2;
+    const P = OBL(x + 0.1, by + 0.35, 1, 1);
+    oblBox(s, P, 0, 0, 0, bw - 0.3, 0.55, 0.35, MX.cu2, {});
+    if (d.surf === "oxide") oblBox(s, OBL(x + 0.1, by, 1, 1), 0, 0, 0, bw - 0.3, 0.55, 0.06, "8A6E5A", { lw: 0.5 });
+    const th = Math.max(10, Math.min(160, d.theta || 40)) * Math.PI / 180;
+    const cx = x + 0.1 + (bw - 0.3) / 2 + 0.12, y0 = by - (d.surf === "oxide" ? 0.06 : 0);
+    const Vol = 0.45;   // 같은 부피로 그리기 위해 반지름 조정
+    const capA = (R0, t) => R0 * R0 * (t - Math.sin(t) * Math.cos(t));
+    const Rr = Math.sqrt(Vol / Math.max(0.05, capA(1, th)));
+    const a = Rr * Math.sin(th), ccy = y0 + Rr * Math.cos(th);
+    const pts = [];
+    for (let k = 0; k <= 40; k++) { const ang = -th + 2 * th * k / 40; pts.push([cx + Rr * Math.sin(ang), ccy - Rr * Math.cos(ang)]); }
+    poly(s, pts, MX.sol, { lw: 0.9 });
+    // 접촉각 표시: 오른쪽 접촉점에서 기판선과 방울 접선 사이 (방울 안쪽에서 잰다)
+    const ex = cx + a;
+    L(s, ex - 0.6, y0, ex, y0, K.alert, 1.1);
+    L(s, ex, y0, ex - 0.6 * Math.cos(th), y0 - 0.6 * Math.sin(th), K.alert, 1.1);
+    const tl = p.hideAngle ? "θ" : "θ ≈ " + Math.round(d.theta) + "°";
+    pill(s, ex + 0.5 + (th > Math.PI / 2 ? 0.35 : 0), y0 - 0.5, tl, { fs: 8, fill: K.cream, nogut: true, h: 0.2 });
+    if (d.vapor) for (let k = 0; k < 3; k++) A(s, x + 0.4 + k * 0.6, TOP + 0.2, x + 0.4 + k * 0.6, TOP + 0.75, K.blue2, 1.2, { dash: 1 });
+    if (d.vapor) T(s, typeof d.vapor === "string" ? d.vapor : "증기 공급", x + 0.3, TOP - 0.05, bw, 0.2, { fs: 8, bold: true, color: K.ink2 });
+    const lab = d.label || (d.surf === "oxide" ? "산화막이 있는 표면" : "깨끗한 표면");
+    T(s, lab, x, by + 0.95, bw, 0.22, { fs: 8.5, bold: true, align: "center", color: K.ink2 });
+  });
+  if (p.bullet) pill(s, DG.x + 0.2, ANY + 0.2, p.bullet, { fs: 8, fill: K.violet, align: "left", nogut: true, maxW: 8.0 });
+  flagOf(s, p); cap(s, p.note || "녹은 solder 방울 단면 · 같은 부피로 그림");
+}
+
 function f_note(s, p) {
   const pts = (p.points || []).slice(0, 4);
   const W = DG.w - 0.30, X = DG.x + 0.15;
@@ -1374,7 +1625,7 @@ function f_note(s, p) {
 }
 
 
-module.exports = { f_bond, f_warp, f_sip, f_therm, f_fa, f_rel, f_stack, f_hcb, f_plot, f_film, f_note, f_table, f_wafermap };
+module.exports = { f_bond, f_warp, f_sip, f_therm, f_fa, f_rel, f_stack, f_hcb, f_plot, f_film, f_note, f_table, f_wafermap, f_ubj, f_plate, f_wet };
 MODS["./fig2.js"] = module.exports; })({ exports: {} });
 
 const F = Object.assign({}, MODS["./fig1.js"], MODS["./fig2.js"]);

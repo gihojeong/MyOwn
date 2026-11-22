@@ -175,16 +175,12 @@
    "exp": "HBM 적층의 µbump는 전기 도금한 Cu pillar 위에 얇은 SnAg solder cap을 올린 구조가 일반적입니다. Cu pillar가 높이와 전류 경로를, solder가 접합을 맡습니다. ①은 Ag paste 인쇄로 수십 µm pitch와 높이 균일도를 맞추기 어렵습니다. ③은 Al 표면 산화막 때문에 금속 결합이 되지 않습니다. ④는 wire bonding·stud bump 계열이라 수천 개를 미세 pitch로 동시에 형성하는 구조가 아닙니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "HBM die 사이 µbump",
-     "points": [
-      "접합 온도에서 녹는 부분과 녹지 않는 부분",
-      "die 간극 높이를 유지하는 것은 무엇인가",
-      "상대 pad 와 붙는 접합재는 무엇인가"
-     ],
-     "ask": "µbump 구성",
-     "flag": "주제: µbump 구성"
+     "n": 3,
+     "zoom": 1,
+     "imc": "none",
+     "zoomTitle": "µbump 한 개 확대 — 위에서 아래로"
     }
    ],
    "metrics": [],
@@ -205,16 +201,12 @@
    "exp": "Cu pillar는 녹지 않으므로 간극(stand-off)을 유지하면서도 solder 양을 줄일 수 있습니다. 녹는 solder가 적으면 옆으로 퍼지는 양도 작아 미세 pitch에서 bridge 위험이 줄어듭니다. ①은 solder cap이 여전히 있어 녹이는 온도가 필요합니다. ③은 사실과 반대로 Cu의 비저항이 solder보다 작습니다. ④는 solder 양이 적을수록 표면 장력에 의한 자가 정렬은 오히려 약해집니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "solder ball 과 Cu pillar",
-     "points": [
-      "같은 높이를 얻을 때 녹는 solder 의 부피",
-      "pitch 가 줄면 이웃 bump 와의 거리",
-      "접합 중 녹지 않고 형상을 유지하는 부분"
-     ],
-     "ask": "미세 pitch 이점",
-     "flag": "주제: Cu pillar 구조"
+     "n": 3,
+     "names": true,
+     "cmp": "ball",
+     "cmpTitle": "같은 높이를 solder ball 로 만든 경우"
     }
    ],
    "metrics": []
@@ -292,16 +284,14 @@
    "exp": "solder가 금속 표면을 적시려면 금속 원자끼리 직접 만나야 하는데, 산화막이나 유기 오염이 그 사이를 가로막으면 녹은 solder가 표면에 퍼지지 못합니다. ②는 하중이 크면 solder가 밀려 퍼지는 쪽(bridge)으로 나타납니다. ③은 충분한 온도가 오히려 젖음을 돕습니다. ④는 solder가 많으면 넘쳐 퍼지는 쪽의 위험이 커집니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "젖음 불량 접점",
-     "points": [
-      "단면: solder 가 상대 pad 위에 둥글게 뭉쳐 떨어짐",
-      "온도·하중은 규격대로 (지문)",
-      "solder 가 pad 를 적시려면 필요한 표면 상태"
+     "st": [
+      "ok",
+      "nonwet",
+      "ok"
      ],
-     "ask": "1차 원인",
-     "flag": "주제: 젖음 불량"
+     "names": true
     }
    ],
    "metrics": []
@@ -321,16 +311,21 @@
    "exp": "flux는 금속 표면의 산화막을 화학적으로 제거하고, 가열하는 동안 표면이 다시 산화되지 않게 덮어 solder가 젖도록 돕습니다. ②는 강도가 접합 금속과 IMC로 정해지며 flux의 기능이 아닙니다. ③은 반대로 남은 flux 잔사가 이온 오염원이 될 수 있어 세정 대상입니다. ④는 융점이 solder 조성으로 정해집니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_wet",
     {
-     "title": "solder 접합 직전 표면",
-     "points": [
-      "가열하면 금속 표면에 생기는 막",
-      "녹은 solder 가 pad 를 적시려면 필요한 표면",
-      "flux 를 언제 바르고 언제 작용하는가"
+     "drops": [
+      {
+       "surf": "clean",
+       "theta": 125,
+       "label": "flux 없이 가열한 pad"
+      },
+      {
+       "surf": "clean",
+       "theta": 25,
+       "label": "flux 를 쓰고 가열한 pad"
+      }
      ],
-     "ask": "flux 목적",
-     "flag": "주제: flux"
+     "hideAngle": true
     }
    ],
    "metrics": []
@@ -350,16 +345,12 @@
    "exp": "IMC는 Sn과 Cu(또는 Ni)가 만나는 계면에서 반응으로 생겨 그 계면을 따라 층으로 자랍니다. ①은 Cu만 있는 곳이라 반응 상대가 없습니다. ③은 Sn 덩어리 내부라 Cu가 녹아 들어와 작은 입자로 석출될 수는 있지만 층이 형성되는 위치는 아닙니다. ④는 절연막과 Si 계면이라 solder 반응과 무관합니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "접합부 단면의 IMC",
-     "points": [
-      "IMC 는 서로 다른 금속이 반응해 생김",
-      "접합부 재료: Si, passivation, Cu, (Ni), SnAg",
-      "반응이 일어나려면 무엇이 맞닿아야 하는가"
-     ],
-     "ask": "IMC 위치",
-     "flag": "주제: IMC 위치"
+     "n": 3,
+     "zoom": 1,
+     "imc": "none",
+     "names": true
     }
    ],
    "metrics": []
@@ -379,16 +370,17 @@
    "exp": "IMC는 solder보다 단단하지만 잘 깨지는(취성) 화합물이라, 두꺼워질수록 열·기계 응력을 받을 때 계면에서 crack이 시작되기 쉽습니다. ①은 열전도 변화가 신뢰성 저하의 주된 이유가 아닙니다. ③은 사실이 아니며 IMC도 금속 전도체입니다. ④는 IMC 성장이 solder의 융점을 낮추지 않습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "IMC 두께와 신뢰성",
-     "points": [
-      "IMC 는 solder·Cu 와 기계적 성질이 다름",
-      "온도 변화로 접합부에 반복 응력이 걸림",
-      "두꺼운 층이 응력을 받을 때의 거동"
+     "st": [
+      "ok",
+      "imcthick"
      ],
-     "ask": "두꺼운 IMC 문제",
-     "flag": "주제: IMC 두께와 취성"
+     "names": true,
+     "tags": [
+      "열이력 짧음",
+      "열이력 김"
+     ]
     }
    ],
    "metrics": [],
@@ -409,16 +401,13 @@
    "exp": "SOH는 접합이 끝난 뒤 두 die 사이에 남는 간극의 높이로, 수지 충전과 접합부의 응력 분산에 영향을 줍니다. Micron HBM3E 12H 단면 실측에서 core die 사이 SOH(NCP 접합층)는 11 µm입니다. ②는 bump 직경, ③은 pitch의 정의입니다. ①은 접합 전 solder 높이로, 접합 중 녹아 눌리므로 SOH와 같지 않습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "접합 후 die 사이",
-     "points": [
-      "간극은 NCF·MUF 수지로 채워짐 (지문)",
-      "SOH 는 어느 면에서 어느 면까지 재는가",
-      "보기의 치수가 각각 수직·수평 중 어느 방향인가"
-     ],
-     "ask": "SOH 정의",
-     "flag": "주제: stand-off height"
+     "n": 3,
+     "fill": "ncf",
+     "cand": true,
+     "names": true,
+     "bullet": "A·B·C 는 서로 다른 방향의 치수"
     }
    ],
    "metrics": [],
@@ -439,16 +428,15 @@
    "exp": "같은 열팽창 변위를 낮은 접합부가 받으면 높이당 변형(전단 변형률)이 커지고, 좁은 간극에는 수지가 흘러 들어가기 어려워 미충전 void가 생기기 쉽습니다. ②는 SOH와 무관하게 Cu와 Sn이 만나면 IMC가 생깁니다. ③은 간극이 너무 클 때(눌림 부족)의 문제입니다. ④는 SOH와 직접 관계가 없습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "SOH 축소안",
-     "points": [
-      "간극은 수지로 채움 (지문)",
-      "die 사이 열팽창 차이로 생기는 수평 변위",
-      "간극 높이가 줄 때 수지 충전과 접합부 변형"
-     ],
-     "ask": "예상 문제",
-     "flag": "주제: SOH 축소"
+     "n": 3,
+     "fill": "ncf",
+     "shear": true,
+     "names": true,
+     "dims": {
+      "gap": "축소"
+     }
     }
    ],
    "metrics": []
@@ -468,16 +456,14 @@
    "exp": "head-in-pillow(HIP)는 두 solder가 닿았지만 표면 산화막 때문에 하나로 합쳐지지 못해 '베개 위에 머리를 얹은' 모양으로 남는 불량입니다. ②는 인접한 두 접점이 이어진 단락입니다. ③은 층과 층이 떨어진 박리입니다. ①은 보관 중 Cu 측 계면에 생기는 확산 공극입니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "맞닿았지만 합쳐지지 않은 solder",
-     "points": [
-      "두 solder 사이 경계에 얇은 산화막이 남음",
-      "겉보기 접촉과 금속 결합의 차이",
-      "불량 이름이 단면 형상을 무엇에 빗대었는가"
+     "st": [
+      "ok",
+      "hip",
+      "ok"
      ],
-     "ask": "불량 이름",
-     "flag": "주제: 접촉 후 미결합"
+     "names": true
     }
    ],
    "metrics": [],
@@ -498,16 +484,15 @@
    "exp": "인접한 두 접점이 solder로 이어져 단락된 상태를 bridge라고 합니다. solder 과다, 과압착, 정렬 이탈이 주된 원인입니다. ①은 반대로 연결이 끊긴 상태입니다. ③은 접합부 안이나 계면이 갈라진 손상입니다. ④는 solder가 pad에 젖지 않아 붙지 않은 상태입니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "이웃 bump 두 개가 같은 전위",
-     "points": [
-      "서로 다른 신호선에 연결된 두 bump",
-      "단면: 눌려 퍼진 solder 가 두 bump 사이를 이음",
-      "전기 검사 결과와 단면 관찰을 함께 본다"
+     "st": [
+      "ok",
+      "bridge",
+      "ok",
+      "ok"
      ],
-     "ask": "불량 이름",
-     "flag": "주제: bridge"
+     "names": true
     }
    ],
    "metrics": []
@@ -527,16 +512,23 @@
    "exp": "높이가 다르면 높은 bump가 먼저 닿아 하중을 받으므로 낮은 bump는 상대 pad에 닿지 못해 open이 되고, 높은 bump는 과하게 눌려 solder가 밀려 나갑니다. ①은 편차가 양방향 불량을 만든다는 점을 놓쳤습니다. ③은 높이 편차가 조성을 바꾸지 않습니다. ④는 IMC 성장이 온도·시간으로 정해지며 높이와 직접 관계가 없습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "die 안 bump 높이 편차",
-     "points": [
-      "같은 하중·온도로 한 번에 접합",
-      "높이가 낮은 bump 와 높은 bump 가 받는 접촉",
-      "위치마다 결과가 달라지는 원인"
+     "n": 4,
+     "stage": "pre",
+     "h": [
+      1,
+      0.78,
+      1.18,
+      1
      ],
-     "ask": "편차의 영향",
-     "flag": "주제: coplanarity"
+     "names": true,
+     "tags": [
+      null,
+      "낮은 bump",
+      "높은 bump",
+      null
+     ]
     }
    ],
    "metrics": []
@@ -700,16 +692,11 @@
    "exp": "Cu pillar는 녹지 않으므로 간극 높이를 유지하고 전기 저항이 낮아 전류 경로를 맡습니다. solder는 녹아 상대 pad를 적시며 금속 결합을 만듭니다. ②와 ③은 두 금속 모두 도체이므로 절연 역할이 성립하지 않습니다. ④는 높이를 녹지 않는 pillar가 정한다는 점을 놓쳤습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "µbump 의 두 부분",
-     "points": [
-      "접합 중 녹는 부분과 녹지 않는 부분 (지문)",
-      "die 사이 간격이 무엇으로 정해지는가",
-      "녹았다 굳는 재료가 맡을 수 있는 일"
-     ],
-     "ask": "역할 분담",
-     "flag": "주제: pillar 와 solder"
+     "n": 3,
+     "zoom": 1,
+     "names": true
     }
    ],
    "metrics": []
@@ -729,16 +716,20 @@
    "exp": "녹은 solder가 금속 표면을 적시며 퍼지는 정도를 젖음성이라 하며, 접촉각이 작을수록 잘 젖습니다. ②는 전기적 성질로 퍼짐과 무관합니다. ③은 흐름에 대한 저항이고, ④는 굳은 재료의 기계적 성질입니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_wet",
     {
-     "title": "녹은 solder 와 금속 표면",
-     "points": [
-      "깨끗한 Cu: 얇게 퍼지며 접촉각이 작아짐",
-      "산화된 표면: 둥글게 뭉쳐 퍼지지 않음",
-      "접촉각이 나타내는 성질"
-     ],
-     "ask": "성질 이름",
-     "flag": "주제: 젖음성"
+     "drops": [
+      {
+       "surf": "clean",
+       "theta": 25,
+       "label": "깨끗한 Cu 표면"
+      },
+      {
+       "surf": "oxide",
+       "theta": 125,
+       "label": "산화된 Cu 표면"
+      }
+     ]
     }
    ],
    "metrics": []
@@ -758,16 +749,16 @@
    "exp": "flux 잔사의 이온 성분은 습기를 만나면 전해질처럼 작용해 금속을 부식시키고, 인접 접점 사이에 전압이 걸리면 금속 이온이 이동해 dendrite 단락을 만들 수 있습니다. ②는 잔사가 저항을 낮추지 않습니다. ③은 상온에서 solder가 녹지 않습니다. ①은 IMC 성장이 온도·시간에 의해 진행되며 잔사가 멈추게 하지 않습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "세정하지 않은 flux 잔사",
-     "points": [
-      "잔사에 활성제 유래 이온 성분이 남음 (지문)",
-      "사용 중 접합부에 걸리는 습기와 전압",
-      "장기간 누적되는 변화"
-     ],
-     "ask": "장기 위험",
-     "flag": "주제: flux 잔사"
+     "n": 3,
+     "residue": true,
+     "names": true,
+     "tags": [
+      null,
+      "세정하지 않은 잔사",
+      null
+     ]
     }
    ],
    "metrics": []
@@ -787,16 +778,15 @@
    "exp": "solder가 많으면 접합 중 눌려 옆으로 퍼지는 양도 많아지는데, 미세 pitch에서는 이웃 bump까지의 여유가 작아 bridge가 생기기 쉽습니다. ②는 융점이 조성으로 정해지며 두께와 무관합니다. ①은 미세 pitch에서도 도금은 가능합니다. ④는 solder 두께와 관계없이 Cu와 Sn이 만나면 IMC가 생깁니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "미세 pitch 의 solder cap",
-     "points": [
-      "pitch 가 줄면 이웃 bump 사이 거리도 줆 (지문)",
-      "접합 중 녹은 solder 가 움직이는 방향",
-      "cap 을 두껍게 할 때 늘어나는 녹는 부피"
-     ],
-     "ask": "어려운 이유",
-     "flag": "주제: 미세 pitch solder 양"
+     "n": 4,
+     "stage": "pre",
+     "cap": 1.8,
+     "names": true,
+     "dims": {
+      "pitch": "축소"
+     }
     }
    ],
    "metrics": []
@@ -816,16 +806,17 @@
    "exp": "수지가 간극 전체를 채우면 두 die를 하나로 묶어, 열팽창 차이로 생기는 변위와 하중을 수천 개 bump에만 집중시키지 않고 수지가 함께 나눠 받습니다. ②는 수지가 절연체이므로 저항과 무관합니다. ①은 IMC가 금속 사이 반응이라 수지가 막지 못합니다. ④는 수지의 열전도율이 낮아 오히려 방열에는 불리한 편이며 주된 목적이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "die 사이 간극 충전",
-     "points": [
-      "위아래 die 와 접합부의 열팽창계수가 다름 (지문)",
-      "간극이 비었을 때 하중을 받는 부분",
-      "수지로 채웠을 때 달라지는 응력 경로"
-     ],
-     "ask": "충전 이유",
-     "flag": "주제: 간극 충전"
+     "n": 3,
+     "fill": "none",
+     "shear": "온도 변화 → 위·아래 die 수평 변위 차이",
+     "names": true,
+     "tags": [
+      null,
+      "빈 간극",
+      null
+     ]
     }
    ],
    "metrics": []
@@ -845,16 +836,12 @@
    "exp": "HCB에는 녹아서 퍼지는 solder가 없으므로 bridge 걱정 없이 접합 pitch를 줄일 수 있고, bump 간극이 없어 적층 높이도 줄어듭니다. ②는 Cu 확산 결합을 위한 annealing이 필요합니다. ③은 반대로 nm 급 평탄도와 입자 관리가 필요해 요구 수준이 훨씬 높습니다. ④는 접합면 내부 void·정렬 검사가 오히려 까다롭습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "µbump 와 HCB",
-     "points": [
-      "접합부 구성: Cu pillar + solder vs Cu pad + 절연막",
-      "die 사이 간극의 유무",
-      "보기마다 µbump 대비 쉬워지는지 어려워지는지"
-     ],
-     "ask": "검토 이유",
-     "flag": "주제: µbump 와 HCB"
+     "n": 3,
+     "names": true,
+     "cmp": "hcb",
+     "cmpTitle": "HCB: Cu pad + 절연막을 함께 접합"
     }
    ],
    "metrics": []
@@ -874,16 +861,14 @@
    "exp": "non-wet은 solder가 상대 금속 표면을 적시지 못해 금속 결합이 생기지 않은 상태로, 전기적으로 열립니다. ②는 bridge, ①은 접합부 void, ④는 delamination에 해당합니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "non-wet 기록 접점",
-     "points": [
-      "단면: solder 가 상대 pad 위에 얹혀만 있음",
-      "용어의 wet 이 가리키는 현상",
-      "보기의 상태가 단면 관찰과 맞는가"
+     "st": [
+      "ok",
+      "nonwet",
+      "ok"
      ],
-     "ask": "용어의 뜻",
-     "flag": "주제: non-wet"
+     "names": true
     }
    ],
    "metrics": [],
@@ -904,16 +889,16 @@
    "exp": "Cu가 Sn 쪽으로 빠져나가는 속도가 반대 방향보다 빠르면 Cu 쪽에 원자 빈자리(vacancy)가 쌓여 공극이 되며, 이를 Kirkendall void라 합니다. ②는 접합 중 flux 휘발 가스가 갇혀 solder 안에 생기는 공극입니다. ③은 흡습한 패키지가 reflow 때 수증기 압력으로 갈라지는 현상입니다. ④는 solder가 굳으며 부피가 줄어 생기는 공극입니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "HTS 후 Cu / IMC 계면",
-     "points": [
-      "Ni barrier 없음 · Cu pillar / Sn 계 solder",
-      "공극 위치: Cu 와 IMC 사이 계면을 따라 줄지음",
-      "원인: 금속별 확산 속도 차이 (지문)"
+     "st": [
+      "ok",
+      "kv",
+      "ok"
      ],
-     "ask": "공극 이름",
-     "flag": "주제: 고온 보관 후 계면"
+     "names": true,
+     "zoom": 1,
+     "zoomTitle": "HTS 후 접합부 확대"
     }
    ],
    "metrics": [],
@@ -1076,16 +1061,14 @@
    "exp": "seed 금속이 전면에 있으므로 틀이 없으면 wafer 전체에 도금됩니다. photoresist 구멍이 bump의 위치와 직경을 정하고, 그 안에서만 금속이 자라 기둥 모양이 됩니다. ②는 도금 장비의 온도 제어가 맡습니다. ③은 틀 제거와 seed 식각 공정이 추가되므로 오히려 단계가 늘어납니다. ①은 전류 분포를 고르게 하는 것은 장비·shield 설계의 역할입니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_plate",
     {
-     "title": "through-mask 도금",
-     "points": [
-      "seed 는 wafer 전면에 깔려 도금 전류를 나름",
-      "PR 이 덮인 곳과 열린 구멍 중 금속이 자라는 곳",
-      "도금 후 PR 을 제거하면 남는 금속의 형상"
-     ],
-     "ask": "PR 틀의 이유",
-     "flag": "주제: through-mask 도금"
+     "steps": [
+      "seed",
+      "pr",
+      "plate",
+      "strip"
+     ]
     }
    ],
    "metrics": []
@@ -1105,16 +1088,20 @@
    "exp": "Cu 함량이 많은 Cu₃Sn은 Cu에 붙어서, Sn 함량이 많은 Cu₆Sn₅는 solder 쪽에 생깁니다. 조성이 Cu에서 Sn으로 차례로 바뀌는 순서입니다. ②는 두 상의 위치가 뒤바뀌었습니다. ③은 IMC가 solder와 Cu 사이 계면에서 생긴다는 점과 어긋납니다. ①은 Ni 층이 없는 접합부에 Ni₃Sn₄를 넣었습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "Cu–Sn 계 IMC 두 층",
-     "points": [
-      "150 °C 장시간 보관 후 단면 (지문)",
-      "두 상의 Cu : Sn 원자 비 비교",
-      "각 층이 맞닿은 쪽에서 공급되는 원소"
+     "n": 3,
+     "zoom": 1,
+     "imc": "two",
+     "layerNames": [
+      "Cu pillar",
+      "층 A",
+      "층 B",
+      "solder",
+      "",
+      "Cu pad"
      ],
-     "ask": "층 순서",
-     "flag": "주제: Cu–Sn IMC 층"
+     "zoomTitle": "150 °C 장시간 보관 후 확대"
     }
    ],
    "metrics": [],
@@ -1135,16 +1122,19 @@
    "exp": "solder에 Cu가 거의 없으면 Ni와 Sn이 반응해 Ni₃Sn₄가 생깁니다. ②와 ④는 Cu가 Sn과 직접 만날 때의 IMC 입니다(solder에 Cu가 충분히 녹아 있으면 Ni 위에도 (Cu,Ni)₆Sn₅가 생길 수 있습니다). ③은 solder 안의 Ag와 Sn이 만드는 입자로 계면 반응층이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "Ni 층 위 계면 반응",
-     "points": [
-      "solder 속 Cu 농도가 반응 상을 바꿈",
-      "반응 상대 금속이 무엇인지 먼저 확인",
-      "Ag 는 solder 안에서 입자를 만듦"
-     ],
-     "ask": "계면 IMC",
-     "flag": "주제: Ni 위 IMC"
+     "n": 3,
+     "zoom": 1,
+     "ni": true,
+     "layerNames": [
+      "Cu pillar",
+      "Ni",
+      "계면 IMC ?",
+      "SnAg solder",
+      "",
+      "Cu pad"
+     ]
     }
    ],
    "metrics": [],
@@ -1165,16 +1155,15 @@
    "exp": "HBM의 µbump pitch는 수십 µm 수준입니다. Micron HBM3E 12H 단면 실측에서 core die 사이는 23 µm이고, base die 아래 면(인터포저 쪽) bump는 JEDEC 48 × 55 µm 배열입니다. ②의 수백 µm는 기판 쪽 C4 bump나 BGA에 가까운 규모입니다. ③은 패키지 볼 규모보다도 큽니다. ①의 nm는 트랜지스터·배선 규모로, solder bump로 만들 수 없는 크기입니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "die 사이 µbump 배치",
-     "points": [
-      "패키지 기판용 C4 bump 보다 촘촘함 (지문)",
-      "die 면적 안에 수천 개 이상의 접점",
-      "die 크기(mm 급)와 접점 수로 간격을 어림"
-     ],
-     "ask": "pitch 수준",
-     "flag": "주제: µbump pitch"
+     "n": 5,
+     "names": true,
+     "dims": {
+      "pitch": "?"
+     },
+     "upper": "core die",
+     "lower": "core die"
     }
    ],
    "metrics": [],
@@ -1195,16 +1184,17 @@
    "exp": "EM은 전자가 금속 원자와 충돌하며 운동량을 넘겨주는 '전자 바람(electron wind)' 때문에 원자가 전자 흐름 방향으로 이동하는 현상입니다. ②는 자기장의 힘은 원자 이동을 일으킬 만큼 크지 않습니다. ③은 증발과 무관합니다. ①은 사용 전류에서 solder가 녹지 않으며, 녹지 않은 고체 상태에서도 EM은 진행됩니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "EM: 원자의 한 방향 이동",
-     "points": [
-      "관찰: 한쪽은 공극, 반대쪽은 원자 축적 (지문)",
-      "원자 이동 방향과 전자 흐름 방향의 관계",
-      "큰 전류를 오래 흘릴 때 누적되는 효과"
+     "st": [
+      "ok",
+      "em",
+      "ok"
      ],
-     "ask": "EM 원리",
-     "flag": "주제: electromigration"
+     "names": true,
+     "electron": {
+      "at": 1
+     }
     }
    ],
    "metrics": []
@@ -1224,16 +1214,19 @@
    "exp": "전류 밀도 j = I ÷ (π·d²/4) 이므로 같은 전류에서 j는 직경 d의 제곱에 반비례합니다. 직경을 절반으로 줄이면 j는 4배가 됩니다. ①과 ②는 줄어든다고 보아 방향이 반대입니다. ③은 단면적이 줄어든다는 점을 놓쳤습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "µbump 직경 축소안",
-     "points": [
-      "같은 전류 I (지문)",
-      "전류 밀도 j = I / 단면적",
-      "원형 단면적은 직경의 제곱에 비례"
+     "n": 2,
+     "w": [
+      1,
+      0.55
      ],
-     "ask": "j 의 변화",
-     "flag": "주제: 전류 밀도"
+     "I": true,
+     "names": true,
+     "tags": [
+      "직경 큼",
+      "직경 작음"
+     ]
     }
    ],
    "metrics": []
@@ -1253,16 +1246,16 @@
    "exp": "전류 경로가 좁은 곳에서 넓은 곳으로 꺾여 들어갈 때 모서리에 전류가 몰려 국부 전류 밀도가 높아지는 현상을 current crowding이라 하며, EM 공극이 그 지점부터 시작됩니다(국부 전류 밀도가 평균의 5–10배에 이른 사례 보고). ②는 확산 속도 차이로 공극이 생기는 현상입니다. ①은 발열이 다시 발열을 키우는 폭주 현상입니다. ④는 고주파 교류가 도체 표면으로 몰리는 현상으로 직류 EM과 무관합니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "µbump 내부 전류 분포",
-     "points": [
-      "평균 전류 밀도는 낮음 (해석 결과)",
-      "배선 → solder 로 들어가는 모서리 한 곳에서 급상승",
-      "전류 경로의 단면이 갑자기 바뀌는 곳"
+     "st": [
+      "crowd",
+      "ok"
      ],
-     "ask": "현상 이름",
-     "flag": "주제: 전류 경로"
+     "names": true,
+     "trace": {
+      "at": 0
+     }
     }
    ],
    "metrics": [],
@@ -1283,16 +1276,18 @@
    "exp": "coplanarity는 bump 꼭대기들이 같은 평면에 얼마나 고르게 놓였는지, 즉 높이 편차를 뜻합니다. 편차가 크면 낮은 bump는 open, 높은 bump는 과압축이 됩니다. ②는 직경(CD) 관리, ③은 정렬(overlay) 관리 항목입니다. ①은 도금 조성 관리 항목입니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "bump 형성 후 검사",
-     "points": [
-      "die 하나에 bump 수천 개 · 3D 광학 측정 (지문)",
-      "3D 측정이 재는 방향",
-      "보기마다 어떤 장비로 재는 값인가"
+     "n": 5,
+     "stage": "pre",
+     "h": [
+      1,
+      0.86,
+      1.12,
+      0.95,
+      1.05
      ],
-     "ask": "항목의 뜻",
-     "flag": "주제: coplanarity"
+     "names": true
     }
    ],
    "metrics": []
@@ -1312,16 +1307,22 @@
    "exp": "formic acid 증기는 가열된 금속 표면의 산화물을 환원해 금속을 드러내고, 반응 생성물이 기체로 빠져나가 세정할 잔사가 남지 않습니다. 그래서 세정액이 닿기 어려운 미세 간극에 유리합니다. ②는 융점이 solder 조성으로 정해집니다. ③은 IMC 성장이 열이력으로 정해집니다. ①은 간극이 bump 높이와 압착 조건으로 정해집니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_wet",
     {
-     "title": "fluxless 접합",
-     "points": [
-      "flux 를 바르지 않음 → 잔사가 남지 않아야 함",
-      "접합 직전·가열 중 formic acid 증기 공급 (지문)",
-      "금속 표면에 있는 막과 증기의 반응"
+     "drops": [
+      {
+       "surf": "clean",
+       "theta": 125,
+       "label": "증기 없이 가열"
+      },
+      {
+       "surf": "clean",
+       "theta": 25,
+       "label": "formic acid 증기 속 가열",
+       "vapor": "formic acid 증기"
+      }
      ],
-     "ask": "증기의 역할",
-     "flag": "주제: fluxless 접합"
+     "hideAngle": true
     }
    ],
    "metrics": []
@@ -1341,16 +1342,19 @@
    "exp": "full-IMC 접합은 위아래 계면에서 자란 IMC가 만나 solder가 남지 않고 접합부 전체가 Cu₆Sn₅·Cu₃Sn 같은 IMC로 바뀐 상태입니다. ①은 반대 극단으로 금속 결합이 없는 상태입니다. ③은 Cu pillar가 녹는 온도에 이르지 않습니다. ④는 solder가 남아 있는 상태라 full-IMC가 아닙니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "얇은 solder cap 의 열이력",
-     "points": [
-      "solder cap 이 수 µm 로 얇음 (지문)",
-      "위·아래 계면 IMC 가 자라며 solder 를 소모",
-      "반응이 끝까지 진행되면 남는 것"
+     "st": [
+      "ok",
+      "imcgrow"
      ],
-     "ask": "용어의 뜻",
-     "flag": "주제: full-IMC 접합"
+     "names": true,
+     "tags": [
+      "두꺼운 solder cap",
+      "수 µm solder cap"
+     ],
+     "zoom": 1,
+     "zoomTitle": "얇은 cap 접합부 확대 (열이력 중)"
     }
    ],
    "metrics": [],
@@ -1371,17 +1375,16 @@
    "exp": "전기 도금에는 전류가 흐를 seed 금속이 먼저 필요하고, PR 구멍이 도금 위치를 정합니다. 도금 뒤 PR을 벗기고, 드러난 seed를 식각해 bump 끼리 전기적으로 분리한 다음 reflow로 solder cap을 다듬습니다. ②와 ④는 seed 없이 도금을 먼저 합니다. ①은 PR 틀 없이 도금하고 PR이 남은 채 seed를 식각합니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_plate",
     {
-     "title": "Cu pillar bump 형성",
-     "points": [
-      "전기 도금은 전류가 흐를 바탕 금속이 필요",
-      "도금 위치는 감광막 구멍이 정함",
-      "bump 끼리는 마지막에 전기적으로 분리",
-      "solder cap 형상은 녹여서 다듬음"
-     ],
-     "ask": "공정 순서",
-     "flag": "주제: bump 공정"
+     "steps": [
+      "plate",
+      "etch",
+      "seed",
+      "reflow",
+      "pr",
+      "strip"
+     ]
     }
    ],
    "metrics": []
@@ -1401,16 +1404,16 @@
    "exp": "wafer reflow는 도금된 solder를 한 번 녹여 표면 장력으로 둥근 cap을 만들고, Cu pillar와의 계면에 얇은 IMC를 형성해 cap을 단단히 붙입니다. ②는 Cu가 이 온도에서 녹지 않습니다. ③은 PR은 reflow 전에 strip 공정으로 제거합니다. ④는 Ag가 이 온도에서 증발하지 않습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_plate",
     {
-     "title": "도금 직후 solder cap",
-     "points": [
-      "도금 직후: 원기둥 모양 (지문)",
-      "wafer 상태 reflow 후: 둥근 모양",
-      "reflow 온도에서 녹는 것과 녹지 않는 것"
+     "steps": [
+      "etch",
+      "reflow"
      ],
-     "ask": "reflow 이유",
-     "flag": "주제: wafer reflow"
+     "labels": [
+      "도금 직후 (PR·seed 제거 후)",
+      "wafer 상태 reflow 후"
+     ]
     }
    ],
    "metrics": []
@@ -1430,16 +1433,12 @@
    "exp": "직렬로 이어진 chain은 어느 한 bump만 끊어져도 전체가 open이 되고, 접합부가 열화되면 전체 저항이 오르므로 많은 bump를 저항 측정 한 번으로 감시할 수 있습니다. ②는 단면 분석이 필요합니다. ①은 X-ray나 IR 정렬 측정의 역할입니다. ④는 chain이 절연을 위한 구조가 아닙니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "daisy chain 시료",
-     "points": [
-      "위·아래 die 배선이 bump 를 번갈아 지남",
-      "수백 개 bump 가 직렬로 연결 (지문)",
-      "직렬 회로에서 접점 하나가 끊기면 측정값 변화"
-     ],
-     "ask": "구조의 목적",
-     "flag": "주제: daisy chain"
+     "n": 5,
+     "chain": true,
+     "names": true,
+     "chainLabel": "양 끝 단자 사이 저항 한 번 측정"
     }
    ],
    "metrics": []
@@ -1542,16 +1541,30 @@
    "exp": "structural bump는 회로에 연결되지 않아 전류가 흐르지 않으므로 끊어져도 전기 시험에 나타나지 않습니다. 접합 형상을 직접 보는 X-ray CT나 단면 관찰로만 확인할 수 있으며, 미세 pitch 배열은 2D 투과 영상에서 bump가 겹쳐 보여 고해상도 CT나 단면이 필요합니다. ①은 신호 경로에 속한 bump에만 해당합니다. ③은 전류가 흐르지 않는 bump에는 EM 열화가 일어나지 않습니다. ④는 structural bump가 전류를 나눠 받지 않으므로 인접 bump의 전압 강하가 변하지 않습니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_ubj",
     {
-     "title": "active · structural bump",
-     "points": [
-      "TSV와 정렬된 bump만 신호 경로에 속함",
-      "각 시험이 무엇을 측정하는지 확인",
-      "미세 pitch 배열의 관찰 해상도"
+     "st": [
+      "ok",
+      "ok",
+      "ok",
+      "open",
+      "ok"
      ],
-     "ask": "확인 방법",
-     "flag": "주제: structural bump"
+     "tsv": [
+      1,
+      0,
+      1,
+      0,
+      1
+     ],
+     "names": true,
+     "tags": [
+      "active",
+      null,
+      "active",
+      "structural · 미접합",
+      null
+     ]
     }
    ],
    "metrics": [

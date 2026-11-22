@@ -134,3 +134,5 @@
 정답 노출 차단 옵션 추가 (2026-11-22, DA 육안 점검 2 요청): `f_tsv hideLabels`(void·seam·pinch-off 이름 라벨 → "관찰 부위 (A)", 종횡비 주석 생략, 범례 중립화), `f_cmp hideLabels`(결함 이름 → "단차 A/B {nm} nm"), `f_stack hideFormula`(계산식 열 숨김; `hideResult` 도 식을 함께 숨김). 정답이 결함 이름·계산 결과면 켠다.
 
 `f_saw` (2026-11-22, DA 육안 점검 2 지적): kerf 기본값을 방식별 표 대표값으로 통일(blade·lg·dbg 40, plasma 10, deep laser 30 µm; `kerf_um` 은 `??` 처리로 0 허용). stealth 는 kerf 치수선을 그리지 않음("kerf 손실 없음"과 모순 제거). 새 옵션 `hideTable`(방식 비교표 숨김). `notes:false` 이면 비교표의 붉은 행 강조도 끔(방식·결함 단서 차단).
+
+새 템플릿 `f_ubj`·`f_plate`·`f_wet` (2026-11-22, BJ 승인): µbump 접합 단면(접합 불량·IMC·SOH·EM·daisy chain·HCB/ball 비교), through-mask 도금 공정 패널, 젖음 접촉각. params 는 STANDARDS 부록 A. 불량 이름을 그림에 쓰지 않는 것이 기본(이상 부위는 "관찰 부위 (A)"). BUMP-B 33문항의 f_note 를 이 템플릿으로 교체, 렌더 육안 확인·layout_check 3 화면 결함 0.
