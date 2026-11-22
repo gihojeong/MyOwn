@@ -122,7 +122,7 @@
      "6.4 Gb/s"
     ]
    ],
-   "src": "JEDEC JESD238 발표(2022-01): 6.4 Gb/s, 819 GB/s"
+   "src": "JEDEC JESD238 발표(2022-01): 6.4 Gb/s, 819 GB/s · DRAM_기술발전방향 §HBM 대역폭 (4.2절)"
   },
   {
    "id": "DRAM-I-0008",
@@ -584,7 +584,7 @@
      "title": "두 메모리의 접근 방식",
      "points": [
       "대역폭 = 폭 × 속도 ÷ 8",
-      "배선 길이가 짧으면 넓은 폭이 가능하다"
+      "GDDR 칩 32 bit · HBM3 스택 1,024 bit"
      ],
      "ask": "기본 방식",
      "flag": "주제: HBM 대역폭"
@@ -601,7 +601,8 @@
      "HBM3 핀 속도",
      "6.4 Gb/s"
     ]
-   ]
+   ],
+   "src": "DRAM_기술발전방향 §HBM 대역폭 (4.2절)"
   },
   {
    "id": "DRAM-B-0068",
@@ -703,7 +704,8 @@
      "셀 구조",
      "1T1C"
     ]
-   ]
+   ],
+   "src": "HBM_동작원리 §v4 구성 (Part 1 ① 셀)"
   },
   {
    "id": "DRAM-B-0072",
@@ -731,7 +733,8 @@
      "flag": "주제: refresh"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (① 셀 허용 누설 · Part 2 셀 구간 누설)"
   },
   {
    "id": "DRAM-B-0073",
@@ -765,7 +768,7 @@
    "id": "DRAM-B-0074",
    "lv": "B",
    "title": "sense amplifier의 동작",
-   "stem": "bit line은 읽기 전에 중간 전압(VDD/2 부근)으로 precharge 됩니다. word line이 켜지면 셀 전하에 따라 bit line 전압이 기준보다 수십–수백 mV 정도 오르거나 내려가고, 이 작은 차이를 sense amplifier가 처리합니다. sense amplifier가 하는 일로 옳은 것은 무엇입니까?",
+   "stem": "bit line은 읽기 전에 중간 전압(VDD/2 부근)으로 precharge 됩니다. word line이 켜지면 셀 전하에 따라 bit line 전압이 기준보다 100 mV 안팎(수십 mV 급)만 오르거나 내려가고, 이 작은 차이를 sense amplifier가 처리합니다. sense amplifier가 하는 일로 옳은 것은 무엇입니까?",
    "opts": [
     "미세한 전압 차를 전원 레벨까지 증폭하고 셀에 다시 쓴다",
     "bit line을 VDD/2로 precharge 하는 전원을 만든다",
@@ -793,7 +796,8 @@
      "precharge",
      "VDD/2"
     ]
-   ]
+   ],
+   "src": "HBM_동작원리 §v4 구성 (② 전하공유 · BLSA) · DRAM_기술발전방향 §센싱 마진 (3.3절)"
   },
   {
    "id": "DRAM-B-0075",
@@ -821,7 +825,8 @@
      "flag": "주제: 파괴적 읽기"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "DRAM_기술발전방향 §센싱 마진 (3.3절) · HBM_통합자료 §v22 구성 (3부 전하공유·감지·복원)"
   },
   {
    "id": "DRAM-B-0076",
@@ -871,7 +876,7 @@
      "title": "refresh 의 비용",
      "points": [
       "refresh 중인 bank 는 명령을 받지 못한다",
-      "점유율 = tRFC ÷ tREFI"
+      "tREFI 가 절반으로 줄었다"
      ],
      "ask": "나빠지는 지표",
      "flag": "주제: refresh 오버헤드"
@@ -883,7 +888,8 @@
      "변화",
      "tREFI 절반"
     ]
-   ]
+   ],
+   "src": "HBM_통합자료 §v26 (75쪽 t_RFC·t_REFI 겹침)"
   },
   {
    "id": "DRAM-B-0079",
@@ -967,7 +973,8 @@
      "flag": "주제: on-die ECC"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_통합자료 §v22 구성 (3부 CSL→LDL→MDL→GSA→ECC)"
   },
   {
    "id": "DRAM-B-0083",
@@ -1036,7 +1043,7 @@
      "8 Gb/s"
     ]
    ],
-   "src": "JEDEC JESD270-4 발표(2025-04)"
+   "src": "JEDEC JESD270-4 발표(2025-04) · HBM_HotChips2026 §대역폭 (BW = 버스폭 × 핀속도 / 8)"
   },
   {
    "id": "DRAM-B-0085",
@@ -1092,7 +1099,8 @@
      "flag": "주제: HBM I/O"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (⑦⑧ 인터포저 무종단)"
   },
   {
    "id": "DRAM-B-0087",
@@ -1120,7 +1128,8 @@
      "flag": "주제: I/O 전력"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §신규 근거 (활성화 1.21 / die 내 이동 2.24 / I/O 0.3 pJ/bit)"
   },
   {
    "id": "DRAM-B-0088",
@@ -1148,7 +1157,8 @@
      "flag": "주제: 대역폭"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "DRAM_기술발전방향 §HBM 대역폭 (4.2절)"
   },
   {
    "id": "DRAM-B-0094",
@@ -1201,7 +1211,7 @@
     "패키지 바깥 공기 온도를 대신 기록한다"
    ],
    "a": 2,
-   "exp": "die 온도가 오르면 retention이 짧아지고 신뢰성 여유가 줄므로, 컨트롤러는 보고된 온도로 refresh 빈도를 높이거나 접근량을 제한(throttling)합니다. ②는 시스템 냉각 제어에 함께 쓰일 수는 있으나 메모리 동작을 지키는 주된 목적이 아닙니다. ①의 용량은 온도와 무관하게 고정됩니다. ④는 die 내부 온도를 재는 센서의 목적과 다릅니다.",
+   "exp": "die 온도가 오르면 retention이 짧아지고 신뢰성 여유가 줄므로, 컨트롤러는 보고된 온도로 refresh 빈도를 높이거나 접근량을 제한(throttling)합니다. 이때 refresh 구간 판정은 셀이 있는 die 가운데 가장 뜨거운 최하단 core die 온도를 기준으로 하며, 셀이 없는 base die 온도로 판정하지 않습니다. ②는 시스템 냉각 제어에 함께 쓰일 수는 있으나 메모리 동작을 지키는 주된 목적이 아닙니다. ①의 용량은 온도와 무관하게 고정됩니다. ④는 die 내부 온도를 재는 센서의 목적과 다릅니다.",
    "k": 0,
    "fig": [
     "f_note",
@@ -1215,7 +1225,8 @@
      "flag": "주제: 온도 보고"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (Part 2 보고 체계 TEMP·CATTRIP)"
   },
   {
    "id": "DRAM-B-0100",
@@ -1243,7 +1254,8 @@
      "flag": "주제: I/O 부호화"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (Part 2 링크 구간 DBI)"
   },
   {
    "id": "DRAM-B-0101",
@@ -1271,7 +1283,8 @@
      "flag": "주제: DBI"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (Part 2 링크 구간 DBI)"
   },
   {
    "id": "DRAM-B-0108",
@@ -1320,8 +1333,8 @@
     {
      "title": "eye diagram 읽기",
      "points": [
-      "가로: 타이밍 여유",
-      "세로: 전압 여유"
+      "같은 UI 길이로 잘라 겹쳐 그렸다",
+      "열린 영역을 가로·세로 두 축으로 비교한다"
      ],
      "ask": "넓은 eye 의 의미",
      "flag": "주제: 신호 품질"
@@ -1366,7 +1379,8 @@
      "데이터",
      "8 bit"
     ]
-   ]
+   ],
+   "src": "HBM_동작원리 §v4 구성 (Part 2 링크 구간 패리티)"
   },
   {
    "id": "DRAM-B-0115",
@@ -1376,8 +1390,8 @@
    "opts": [
     "UE는 즉각 손실 대응, CE는 추세 감시·예방 조치가 필요해서",
     "CE와 UE는 발생 원인이 같아 합쳐 셀 필요가 없어서",
-    "CE는 전송 오류, UE는 셀 오류로 위치가 정해진 탓에",
-    "UE는 ECC 회로 자체의 고장을 뜻하기 때문이어서"
+    "CE는 전송 오류, UE는 셀 오류로 위치가 정해져 있어서",
+    "UE는 ECC 회로 자체의 고장을 뜻해서"
    ],
    "a": 0,
    "exp": "UE는 이미 데이터가 손상되었으므로 해당 작업 중단·재시도 같은 즉각 대응이 필요하고, CE는 정상 동작 중이지만 증가 추세가 열화 신호이므로 PPR·페이지 retire 같은 예방 조치의 근거가 됩니다. ②는 같은 원인이라도 정정 능력을 넘었는지에 따라 갈립니다. ③은 CE·UE 모두 셀과 전송 어디서든 생길 수 있습니다. ④는 UE는 오류 비트 수가 정정 능력을 넘은 경우가 대부분입니다.",
@@ -1451,7 +1465,8 @@
      "flag": "주제: scrub"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (Part 2 셀 구간 ECS)"
   },
   {
    "id": "DRAM-B-0119",
@@ -1535,7 +1550,8 @@
      "flag": "주제: 미세화"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_세미나v2 §v7 B (셀 커패시턴스 1c 5~6 fF)"
   },
   {
    "id": "DRAM-B-0124",
@@ -1613,7 +1629,7 @@
      "title": "TSV 병렬 배치",
      "points": [
       "TSV 하나의 R·L 은 정해져 있다",
-      "N 개 병렬 → 약 1/N"
+      "같은 전원 TSV 를 여러 개 둔다"
      ],
      "ask": "배치 이유",
      "flag": "주제: 전원 TSV"
@@ -1703,7 +1719,8 @@
      "flag": "주제: 컨트롤러 스케줄링"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_통합자료 §v22 구성 (3부 요청 적중 13.75 / 닫힘 33.15 / 충돌 49.4 ns)"
   },
   {
    "id": "DRAM-B-0153",
@@ -1737,7 +1754,8 @@
      "채널 수",
      "16"
     ]
-   ]
+   ],
+   "src": "HBM_통합자료 §v22 구성 (1부 32 B 조각 · 주소 → 채널)"
   },
   {
    "id": "DRAM-B-0157",
@@ -1765,7 +1783,8 @@
      "flag": "주제: memory-bound"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_시스템레벨 §추론 ① 프리필과 디코딩은 병목이 정반대"
   },
   {
    "id": "DRAM-B-0161",
@@ -1793,7 +1812,8 @@
      "flag": "주제: 기술 정보원"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "DRAM_기술발전방향 §3. 학회 Agenda 핵심 · HBM_HotChips2026 §ISSCC 2026 회로 데이터"
   },
   {
    "id": "DRAM-I-0100",
@@ -3188,7 +3208,8 @@
      "flag": "주제: 행 간 교란"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (Part 2 셀 구간 row hammer)"
   },
   {
    "id": "DRAM-B-9002",
@@ -3306,7 +3327,7 @@
     "tRCD"
    ],
    "a": 2,
-   "exp": "tRFC(refresh cycle time)는 REF 명령 하나가 여러 행을 refresh 하는 데 걸리는 시간으로, die 밀도가 클수록 길어집니다. ②의 tREFI는 REF 명령 사이의 평균 간격입니다. ①의 tREFW는 모든 행이 한 번씩 refresh 되어야 하는 전체 창(예: 64 ms)입니다. ④의 tRCD는 ACT에서 RD·WR까지의 시간입니다.",
+   "exp": "tRFC(refresh cycle time)는 REF 명령 하나가 여러 행을 refresh 하는 데 걸리는 시간으로, die 밀도가 클수록 길어집니다. ②의 tREFI는 REF 명령 사이의 평균 간격입니다. ①의 tREFW는 모든 행이 한 번씩 refresh 되어야 하는 전체 창(DDR4 기준 64 ms)입니다. ④의 tRCD는 ACT에서 RD·WR까지의 시간입니다.",
    "k": 0,
    "fig": [
     "f_note",
@@ -3320,7 +3341,8 @@
      "flag": "주제: refresh"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_통합자료 §v26 (75쪽 t_RFC·t_REFI 겹침)"
   },
   {
    "id": "DRAM-B-9006",
@@ -3425,7 +3447,8 @@
      "flag": "주제: DRAM 셀 공정"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_세미나v2 §v7 D (f_cell 6F² 매립 WL 셀)"
   },
   {
    "id": "DRAM-B-9009",
@@ -3453,7 +3476,8 @@
      "flag": "주제: 셀 capacitor"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "DRAM_기술발전방향 §커패시터 (3.2절)"
   },
   {
    "id": "DRAM-B-9010",
@@ -3502,14 +3526,15 @@
     {
      "title": "activate 이후",
      "points": [
-      "행 전체 데이터가 증폭·유지된다",
+      "행 전체 데이터가 한 곳에 유지된다",
       "같은 행 다른 열은 바로 읽는다"
      ],
      "ask": "유지하는 회로",
      "flag": "주제: row buffer"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_통합자료 §v22 구성 (3부 감지·복원 행 버퍼)"
   },
   {
    "id": "DRAM-B-9013",
@@ -3565,7 +3590,8 @@
      "flag": "주제: 속도 차 흡수"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (⑥ 직렬화·프리페치) · HBM_통합자료 §v22 구성 (2부 B-die 1:8)"
   },
   {
    "id": "DRAM-B-9015",
@@ -3621,7 +3647,8 @@
      "flag": "주제: HBM 시험"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (Part 7 테스트) · HBM_데이터여행 §10장 근거"
   },
   {
    "id": "DRAM-B-9017",
@@ -3632,10 +3659,10 @@
     "62.5 ps",
     "125 ps",
     "250 ps",
-    "800 ps"
+    "1,000 ps"
    ],
    "a": 1,
-   "exp": "UI = 1 ÷ 8 Gb/s = 1 ÷ (8e9 /s) = 0.125 ns = 125 ps 입니다. 62.5 ps는 16 Gb/s의 UI로 속도를 두 배로 잡은 값입니다. 250 ps는 4 GHz 클록의 한 주기로, DDR에서 클록 한 주기에 2 bit를 보낸다는 점을 거꾸로 적용한 값입니다. 800 ps는 1 ÷ 8 을 0.8로 잘못 계산하고 ns를 ps로 옮긴 값입니다.",
+   "exp": "UI = 1 ÷ 8 Gb/s = 1 ÷ (8e9 /s) = 0.125 ns = 125 ps 입니다. 62.5 ps는 16 Gb/s의 UI로 속도를 두 배로 잡은 값입니다. 250 ps는 4 GHz 클록의 한 주기로, DDR에서 클록 한 주기에 2 bit를 보낸다는 점을 거꾸로 적용한 값입니다. 1,000 ps는 핀 속도를 byte 단위로 바꿔(8 Gb/s ÷ 8 = 1 GB/s) 1 byte가 지나가는 시간 1 ns를 UI로 잡은 값입니다.",
    "k": 1,
    "fig": [
     "f_note",
@@ -3655,7 +3682,8 @@
      "핀 속도",
      "8 Gb/s"
     ]
-   ]
+   ],
+   "src": "HBM_동작원리 §v4 구성 (Part 2 링크 구간 156 ps = 6.4 Gb/s UI)"
   },
   {
    "id": "DRAM-B-9018",
@@ -3712,6 +3740,65 @@
     }
    ],
    "metrics": []
+  },
+  {
+   "id": "DRAM-B-9020",
+   "lv": "B",
+   "title": "core die 열 데이터 경로의 긴 공유 버스",
+   "stem": "DRAM core die에서 읽기 데이터는 열(column) 경로를 따라 나옵니다. CSL이 열린 행의 sense amplifier 가운데 일부를 고르면, 그 데이터는 먼저 mat 가까이의 짧은 국부 선으로 나오고, 이어서 bank 밖 DQ 회로와 TSV 영역까지 긴 공유 버스를 탑니다. 이 긴 공유 버스를 무엇이라 합니까?",
+   "opts": [
+    "LIO(local I/O line)",
+    "CSL(column select line)",
+    "bit line",
+    "GIO(global I/O line)"
+   ],
+   "a": 3,
+   "exp": "열 데이터 경로는 Cell → CSL → LIO → GIO → DQ → TSV 순서입니다. CSL이 고른 sense amplifier의 데이터가 LIO로 나오고, GIO가 이를 bank 밖 DQ 회로와 TSV 영역까지 길게 실어 나릅니다. GIO는 mm 급으로 길어 충방전 에너지가 커서, HBM2 분석 사례에서 die 내 이동 에너지(2.24 pJ/bit)가 I/O 에너지(0.3 pJ/bit)보다 큽니다. ①의 LIO는 GIO 앞의 짧은 국부 구간입니다. ②의 CSL은 데이터를 나르지 않고 LIO에 연결할 열을 고르는 선택 신호입니다. ③의 bit line은 셀과 sense amplifier를 잇는 구간으로 열 선택보다 앞입니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "열 데이터 경로",
+     "points": [
+      "CSL 이 sense amplifier 일부를 고른다",
+      "짧은 국부 선 → 긴 공유 버스",
+      "끝에 DQ 회로와 TSV 영역"
+     ],
+     "ask": "버스 이름",
+     "flag": "주제: 열 데이터 경로"
+    }
+   ],
+   "metrics": [],
+   "src": "HBM_동작원리 §v4 구성 (③④ 열 선택 CSL→LDL→MDL→GSA) · HBM_동작원리 §신규 근거 (pJ/bit) · HBM_통합자료 §v22 구성 (3부 글로벌 버스)"
+  },
+  {
+   "id": "DRAM-B-9021",
+   "lv": "B",
+   "title": "같은 채널 TSV를 공유하는 die의 구분",
+   "stem": "HBM에서는 한 채널의 TSV를 여러 core die가 함께 씁니다. 명령은 공유 TSV를 타고 그 채널에 붙은 die 모두에 도착하므로, bank·행·열 주소 외에 어느 die가 명령을 받을지 가리키는 주소 필드가 따로 있습니다. 이 필드는 무엇입니까?",
+   "opts": [
+    "SID(stack ID)",
+    "BA(bank address)",
+    "PC(pseudo channel) 번호",
+    "BG(bank group) 주소"
+   ],
+   "a": 0,
+   "exp": "SID는 같은 채널을 공유하는 core die 층을 구분하는 주소입니다. 명령은 공유 TSV로 해당 die 모두에 전달되지만 SID가 일치하는 die만 명령을 받아 데이터를 구동하고, 나머지 die는 출력을 끊어(Hi-Z) 공유 TSV를 비워 둡니다. ②의 BA는 선택된 die 안에서 bank를 고르는 주소입니다. ③의 pseudo channel은 한 채널의 데이터 폭을 반으로 나눈 접근 단위로 die를 고르지 않습니다. ④의 BG는 die 안의 bank 묶음을 고르는 주소입니다.",
+   "k": 0,
+   "fig": [
+    "f_note",
+    {
+     "title": "공유 TSV와 여러 die",
+     "points": [
+      "한 채널 TSV 에 여러 core die 가 붙는다",
+      "bank·행·열 주소는 die 안의 위치다"
+     ],
+     "ask": "필드 이름",
+     "flag": "주제: HBM 주소"
+    }
+   ],
+   "metrics": [],
+   "src": "HBM_통합자료 §v23 Spiral TSV 정정 · HBM_통합자료 §v25 13쪽 · HBM_동작원리 §v4 구성 (⑤⑥ 공유 TSV·SID)"
   },
   {
    "id": "DRAM-I-9001",
