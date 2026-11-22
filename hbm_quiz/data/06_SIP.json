@@ -17,11 +17,15 @@
    "exp": "두 die를 모두 올리는 전면 Si 판에 BEOL 미세 배선과 TSV를 둔 중간 기판이 silicon interposer이며 CoWoS-S가 대표 예입니다. ②는 폴리머·Cu 재배선층으로 만든 인터포저로 TSV가 없습니다. ③은 두 die가 마주 보는 좁은 구간에만 들어가는 작은 Si 조각이라 두 die를 모두 올리는 판이 아닙니다. ④는 package substrate의 코어를 유리로 바꾼 것으로 die 바로 아래의 미세 배선 중간층이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
-     "lines": 2048,
+     "title": "중간 기판 조건",
+     "points": [
+      "HBM4 데이터 신호: 스택당 2,048개",
+      "유기 substrate 배선 피치로는 수용 불가",
+      "두 die를 모두 올리고 아래로 수직 통로"
+     ],
+     "ask": "기판 이름",
      "flag": "주제: 전면 Si 중간 기판"
     }
    ],
@@ -78,7 +82,8 @@
      "bridge TSV",
      "없음"
     ]
-   ]
+   ],
+   "src": "HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "SIP-I-0001",
@@ -230,10 +235,15 @@
    "exp": "기판 매립 bridge에 TSV를 더한 구조가 EMIB-T 입니다(Intel, 2025 발표). ①은 TSV가 없는 기본형 EMIB입니다. ③은 TSMC의 구조로 bridge(LSI)를 package substrate가 아니라 RDL 인터포저 안에 묻습니다. ④는 die를 직접 위아래로 쌓는 3D 적층 기술로 기판 매립 bridge가 아닙니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "emib-t",
-     "nHBM": 2,
+     "title": "bridge 개선 내용",
+     "points": [
+      "원형: 기판 매립 bridge, 수직 통로 없음",
+      "개선: bridge 안에 TSV 추가",
+      "효과: bridge 위 영역 전원을 아래에서 공급"
+     ],
+     "ask": "이름",
      "flag": "주제: TSV 보유 bridge"
     }
    ],
@@ -249,7 +259,7 @@
      "TSV"
     ]
    ],
-   "src": "Intel Foundry EMIB-T 발표(2025)"
+   "src": "Intel Foundry EMIB-T 발표(2025) · HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "SIP-A-0043",
@@ -815,10 +825,14 @@
    "exp": "pad 위치를 재배치해 다른 곳으로 잇는 Cu·절연막 다층 배선을 RDL(redistribution layer)이라 합니다. ②는 접합부 사이를 채우는 수지입니다. ③은 기판 표면에서 납땜 영역을 정의하는 절연 보호막입니다. ①은 die 최상층의 보호 절연막으로 배선층이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "cowos-r",
-     "nHBM": 2,
+     "title": "배선층 조건",
+     "points": [
+      "Cu 배선과 절연막을 여러 층 쌓는다",
+      "die pad 위치를 다른 곳으로 옮겨 잇는다"
+     ],
+     "ask": "배선층 이름",
      "flag": "주제: RDL"
     }
    ],
@@ -836,7 +850,7 @@
     "die의 전원·신호를 아래 substrate로 내려야 해서"
    ],
    "a": 3,
-   "exp": "Si 판은 두께 방향으로 전기가 통하지 않으므로, 위쪽 die의 전원·접지와 외부로 나가는 신호를 아래 substrate로 이으려면 Si를 관통하는 TSV가 있어야 합니다. ②의 수평 열 확산은 Si 판 자체가 하는 일로 TSV의 목적이 아닙니다. ③의 정렬 마크는 표면 패턴으로 만듭니다. ①은 TSV가 Si에 구멍을 내는 구조라 강성 보강 수단이 아닙니다.",
+   "exp": "Si 판 자체는 배선이 아니고 미세 배선은 윗면 BEOL 층에만 있으므로, 위쪽 die의 전원·접지와 외부로 나가는 신호를 아래 substrate로 이으려면 Si를 관통하는 TSV가 있어야 합니다. ②의 수평 열 확산은 Si 판 자체가 하는 일로 TSV의 목적이 아닙니다. ③의 정렬 마크는 표면 패턴으로 만듭니다. ①은 TSV가 Si에 구멍을 내는 구조라 강성 보강 수단이 아닙니다.",
    "k": 0,
    "fig": [
     "f_sip",
@@ -867,7 +881,8 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: reticle 제약"
+     "flag": "주제: reticle 제약",
+     "msg": "전면 Si 판에 die와 같은 노광·식각으로 배선"
     }
    ],
    "metrics": [],
@@ -919,7 +934,8 @@
      "flag": "주제: HBM 배치"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "SIP-B-0083",
@@ -979,7 +995,7 @@
    "id": "SIP-B-0085",
    "lv": "B",
    "title": "HBM 스택과 SoC의 상면 높이 정합",
-   "stem": "HBM 스택과 SoC를 한 장의 lid로 덮고 그 사이를 TIM으로 채웁니다. HBM 스택의 상면이 SoC와 맞도록 HBM 패키지 높이 상한을 관리하는 주된 이유는 무엇입니까?",
+   "stem": "HBM 스택과 SoC를 한 장의 lid로 덮고 그 사이를 TIM으로 채웁니다. HBM 스택의 상면이 SoC와 맞도록 HBM 스택 높이 상한을 관리하는 주된 이유는 무엇입니까?",
    "opts": [
     "pick-and-place 장비의 흡착 높이를 맞추려고",
     "HBM 스택과 SoC 사이 배선 길이를 같게 하려고",
@@ -987,7 +1003,7 @@
     "HBM 스택의 저장 용량을 SoC와 맞추려고"
    ],
    "a": 2,
-   "exp": "한 장의 lid 아래에서 두 die의 높이가 다르면 낮은 쪽의 TIM이 두꺼워지거나 접촉이 떨어져 열저항이 커지고 국부 온도가 오릅니다. 그래서 HBM 패키지 높이를 SoC 높이에 맞춘 상한으로 관리합니다. ②의 배선 길이는 인터포저 위 평면 배치가 정하며 높이와 무관합니다. ①의 장비 흡착 높이는 조정 가능한 공정 변수입니다. ④의 용량은 높이와 관계없는 사양입니다.",
+   "exp": "한 장의 lid 아래에서 두 die의 높이가 다르면 낮은 쪽의 TIM이 두꺼워지거나 접촉이 떨어져 열저항이 커지고 국부 온도가 오릅니다. 그래서 HBM 스택 높이를 상한으로 관리하며, 실측 HBM3E 12H 스택(720 µm)은 최상단 die(139 µm)를 EMC와 함께 평탄화해 TIM 접촉면을 만듭니다. ②의 배선 길이는 인터포저 위 평면 배치가 정하며 높이와 무관합니다. ①의 장비 흡착 높이는 조정 가능한 공정 변수입니다. ④의 용량은 높이와 관계없는 사양입니다.",
    "k": 0,
    "fig": [
     "f_sip",
@@ -997,7 +1013,8 @@
      "flag": "주제: 상면 높이 정합"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §스택 높이 구성 · HBM_단면실측 §최상단 다이가 139 µm"
   },
   {
    "id": "SIP-B-0102",
@@ -1117,7 +1134,8 @@
      "flag": "주제: lid"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §열 모델 · HBM_단면실측 §패키지 레벨"
   },
   {
    "id": "SIP-B-0114",
@@ -1141,7 +1159,8 @@
      "flag": "주제: TIM"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §열 모델 · HBM_단면실측 §최상단 다이가 139 µm"
   },
   {
    "id": "SIP-B-0136",
@@ -1183,10 +1202,16 @@
    "exp": "RDL 인터포저는 Si 기판 없이 폴리머·Cu 층을 쌓아 만들므로 TSV가 필요 없고, 유연한 폴리머층이 SoC와 substrate 사이 CTE 차이의 완충층 역할을 해 C4 접합부 변형을 줄입니다(TSMC 설명). ①은 반대로 RDL의 최소 L/S가 약 2/2 µm로 Si interposer의 서브 µm 배선보다 굵습니다. ③은 Si interposer의 특징입니다. ④는 폴리머의 열전도율이 Si보다 훨씬 낮으므로 틀립니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "cowos-r",
-     "nHBM": 2,
+     "title": "두 인터포저 비교 관점",
+     "points": [
+      "재료: Si 판 vs 폴리머 절연막 + Cu",
+      "die 위에서 substrate로 내려가는 수직 연결",
+      "SoC–substrate CTE 차이를 받는 방식",
+      "배선 최소 L/S"
+     ],
+     "ask": "장점",
      "flag": "주제: CoWoS-R 장점"
     }
    ],
@@ -1208,10 +1233,16 @@
    "exp": "RDL은 폴리머 노광과 Cu 도금으로 만들어 최소 L/S가 약 2/2 µm이고, Si interposer는 반도체 BEOL로 서브 µm 배선을 만듭니다. 그래서 같은 폭에 지나는 선 수가 적어 층수를 늘려야 합니다. ②는 TSMC 설명과 반대로, 유연한 RDL 층이 CTE 차이를 완충해 C4 변형 에너지를 줄입니다. ③의 RDL 인터포저에는 TSV가 없습니다. ①은 Si interposer의 제약으로, RDL 인터포저는 큰 면적으로 만들기가 상대적으로 쉽습니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "cowos-r",
-     "nHBM": 2,
+     "title": "두 인터포저 비교 관점",
+     "points": [
+      "재료: Si 판 vs 폴리머 절연막 + Cu",
+      "die 위에서 substrate로 내려가는 수직 연결",
+      "SoC–substrate CTE 차이를 받는 방식",
+      "배선 최소 L/S"
+     ],
+     "ask": "불리한 점",
      "flag": "주제: CoWoS-R 한계"
     }
    ],
@@ -1233,15 +1264,20 @@
    "exp": "LSI는 SoC–HBM, SoC–SoC처럼 die 가장자리가 마주 보는 좁은 구간에 Si BEOL 미세 배선을 제공해 고밀도 die 간 연결을 맡습니다. ②의 전원 공급은 몰딩층의 TIV와 전역 RDL이 주로 맡습니다. ③의 휨 억제는 lid·stiffener의 역할입니다. ①의 열 배출은 LSI의 목적이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "cowos-l",
-     "nHBM": 4,
+     "title": "CoWoS-L 구성 요소",
+     "points": [
+      "RDL 인터포저 안에 묻은 작은 Si 조각(LSI)",
+      "몰딩층을 관통하는 via(TIV)",
+      "인터포저 전체에 깔린 RDL 배선"
+     ],
+     "ask": "LSI 역할",
      "flag": "주제: LSI"
     }
    ],
    "metrics": [],
-   "src": "TSMC ECTC 2023 CoWoS-L (LSI + global RDL + TIV)"
+   "src": "TSMC ECTC 2023 CoWoS-L (LSI + global RDL + TIV) · HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "SIP-B-0142",
@@ -1258,10 +1294,15 @@
    "exp": "기판 안 공동(cavity)에 Si bridge를 묻고 그 위에 두 die를 걸쳐 실장하는 구조가 EMIB(embedded multi-die interconnect bridge)입니다. ①은 전면 Si interposer, ②는 RDL 인터포저를 die 아래 전체에 까는 구조입니다. ④는 패키지 위에 다른 패키지를 얹는 적층 방식입니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "emib",
-     "nHBM": 2,
+     "title": "die 연결 구조 조건",
+     "points": [
+      "die 아래 인터포저가 없다",
+      "Si bridge는 package substrate 안에 매립",
+      "bridge는 두 die가 마주 보는 구간에만"
+     ],
+     "ask": "구조 이름",
      "flag": "주제: 기판 매립 bridge"
     }
    ],
@@ -1282,10 +1323,16 @@
    "exp": "CoWoS-S는 두 die를 모두 올리는 전면 Si interposer를, EMIB는 마주 보는 구간에만 작은 Si bridge를 substrate 안에 묻어 씁니다. ①은 두 구조 모두 die를 옆으로 나란히 두는 2.5D 방식이라 차이가 아닙니다. ③은 두 구조 모두 package substrate를 씁니다. ④는 두 구조 모두 미세 피치 bump로 die를 접합하며 와이어 본딩을 쓰지 않습니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "emib",
-     "nHBM": 2,
+     "title": "두 구조 비교 관점",
+     "points": [
+      "die 배치 방향(위로 / 옆으로)",
+      "Si가 놓이는 범위와 위치",
+      "package substrate 사용 여부",
+      "die 접합 방식"
+     ],
+     "ask": "가장 큰 차이",
      "flag": "주제: EMIB vs CoWoS-S"
     }
    ],
@@ -2039,7 +2086,7 @@
     "µbump → BGA ball → C4"
    ],
    "a": 0,
-   "exp": "µbump는 수십 µm, C4는 100 µm 대, BGA ball은 약 1 mm 급 pitch로 아래로 갈수록 커집니다(대표 범위). 위쪽은 die의 미세 배선에 맞추고, 아래쪽은 기판·보드의 굵은 배선과 큰 열 변형을 감당해야 하기 때문입니다. ②는 µbump와 C4의 크기를 뒤바꿨습니다. ③은 순서를 거꾸로 적었습니다. ④는 보드 접합인 BGA를 C4보다 작다고 본 것입니다.",
+   "exp": "µbump는 수십 µm(HBM 스택 바닥 48 × 55 µm, JEDEC), C4는 100 µm 대, BGA ball은 약 1 mm 급 pitch로 아래로 갈수록 커집니다(대표 범위). 위쪽은 die의 미세 배선에 맞추고, 아래쪽은 기판·보드의 굵은 배선과 큰 열 변형을 감당해야 하기 때문입니다. ②는 µbump와 C4의 크기를 뒤바꿨습니다. ③은 순서를 거꾸로 적었습니다. ④는 보드 접합인 BGA를 C4보다 작다고 본 것입니다.",
    "k": 0,
    "fig": [
     "f_sip",
@@ -2049,7 +2096,8 @@
      "flag": "주제: 접합 계층"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §µbump 피치는 계면마다 다르다"
   },
   {
    "id": "SIP-B-9003",
@@ -2079,7 +2127,8 @@
      "L/S",
      "2/2 µm"
     ]
-   ]
+   ],
+   "src": "HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "SIP-B-9004",
@@ -2103,7 +2152,8 @@
      "flag": "주제: 차폐 배선"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "SIP-B-9005",
@@ -2127,7 +2177,8 @@
      "flag": "주제: 전원 경로"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "SIP-B-9006",
@@ -2180,7 +2231,8 @@
      "flag": "주제: eye diagram"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "SIP-B-9009",
@@ -2307,7 +2359,61 @@
      "flag": "주제: TIM 계층"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_HotChips2026 §열 모델"
+  },
+  {
+   "id": "SIP-B-9014",
+   "lv": "B",
+   "title": "인터포저 채널 단축에 따른 삽입손실 감소",
+   "stem": "HBM과 호스트 사이 인터포저 채널 길이를 6.5 mm에서 1.5 mm로 줄인 설계가 발표되었습니다. 인터포저 배선의 삽입손실을 0.5 dB/mm(설정값)로 보고, dB 손실은 길이에 비례해 더해진다고 할 때 채널 하나의 삽입손실은 얼마나 줄어듭니까?",
+   "opts": [
+    "0.75 dB",
+    "2.5 dB",
+    "3.25 dB",
+    "5.0 dB"
+   ],
+   "a": 1,
+   "exp": "삽입손실은 단위 길이 손실 × 길이 이므로 6.5 mm 는 0.5 × 6.5 = 3.25 dB, 1.5 mm 는 0.5 × 1.5 = 0.75 dB 입니다. 감소량 = 3.25 − 0.75 = 2.5 dB 입니다. ① 0.75 dB는 줄인 뒤 남는 손실입니다. ③ 3.25 dB는 줄이기 전 손실입니다. ④ 5.0 dB는 삽입손실을 반사처럼 왕복 경로로 보고 2 × 0.5 × 5 mm 로 계산한 값으로, 삽입손실은 송신단에서 수신단까지 한 번 지나는 손실입니다.",
+   "k": 1,
+   "fig": [
+    "f_table",
+    {
+     "title": "채널 조건",
+     "cols": [
+      "항목",
+      "값"
+     ],
+     "rows": [
+      [
+       "채널 길이(전)",
+       "6.5 mm"
+      ],
+      [
+       "채널 길이(후)",
+       "1.5 mm"
+      ],
+      [
+       "삽입손실",
+       "0.5 dB/mm"
+      ]
+     ],
+     "flag": "조건: 채널 단축"
+    }
+   ],
+   "metrics": [
+    [
+     "↔",
+     "채널 길이",
+     "6.5 → 1.5 mm"
+    ],
+    [
+     "▽",
+     "단위 손실",
+     "0.5 dB/mm"
+    ]
+   ],
+   "src": "HBM_HotChips2026 §ECTC 2026"
   },
   {
    "id": "SIP-I-9004",
