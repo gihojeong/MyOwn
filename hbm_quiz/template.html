@@ -850,7 +850,9 @@ const { DG, LC, RC, TOP, BOT, MX, cap, ttl, lead, dimH, dimV, axes, curve, hatch
 // ========== T6. CoW 접합 (TC-NCF / MR-MUF / HCB) ==========
 function f_bond(s, p) {
   const m = p.method || "ncf", x0 = LC.x + 0.1, w = 3.45, top = TOP + 1.0;
-  const gap = Math.max(0.3, (p.gap_um || 10) * 0.038);
+  const G0 = p.gap_um || 11, P0 = p.pitch_um || (m === "hcb" ? 9 : 23); // 기본값 = Micron HBM3E 12H 실측(간극 11 · pitch 23 µm), HCB 9 µm 설정 (2026-11-21)
+  const HN = p.hideNotes === true; // 공법 식별 주석 숨김(이름·특징을 묻는 문항용)
+  const gap = Math.max(0.3, G0 * 0.038);
   R(s, x0, top, w, 0.38, MX.si, { lw: 0.9, text: "upper core die", fs: 8 });
   const jy = top + 0.38;
   R(s, x0, jy + gap, w, 0.38, MX.si, { lw: 0.9, text: "lower core die (TSV 보유)", fs: 8 });
@@ -863,8 +865,8 @@ function f_bond(s, p) {
       if (dish) R(s, px(i) - 0.12, jy, 0.24, dish, MX.bare, { lw: 0.6 });
     }
     if (p.dish === true || p.dishing === true) annotTo(s, px(3), jy + 0.03, 0, "pad dishing 으로 Cu 가 맞닿지 못해 미접합 void 가 남았다", K.pink);
-    annotTo(s, px(5) + 0.14, jy + gap * 0.5, 2, "SiCN 유전막 직접 접합", MX.ox);
-    annot(s, 1, "solder 없이 상온 접합 후 anneal 로 Cu 접합", K.mint);
+    if (!HN) { annotTo(s, px(5) + 0.14, jy + gap * 0.5, 2, "SiCN 유전막 직접 접합", MX.ox);
+    annot(s, 1, "solder 없이 상온 접합 후 anneal 로 Cu 접합", K.mint); }
   } else {
     if (m === "ncf") R(s, x0, jy, w, gap, MX.ncf, { lw: 0.8 });
     else { R(s, x0, jy, w, gap, MX.emc, { lw: 0.8 }); A(s, x0 - 0.04, jy + gap * 0.5, x0 + 0.5, jy + gap * 0.5, K.rust, 1.4); }
@@ -878,8 +880,8 @@ function f_bond(s, p) {
       if (p.filler_trap) { E(s, px(2) - 0.03, jy + gap * 0.48, 0.07, 0.07, MX.si2, { lw: 0.7 }); annotTo(s, px(2), jy + gap * 0.48, 1, "silica filler 가 joint 에 끼어 미접합", K.pink); }
       // 결함 주석 3개(void·filler trap·non-wet)가 띠를 채우면 일반 설명 라벨은 오른쪽 표 아래로 보낸다
       if (p.voids && p.filler_trap && p.nonwet) pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.92, "회색 점 = NCF 안의 silica filler", { fs: 8, fill: MX.ncf, align: "left", maxW: RC.w });
-      else annotTo(s, x0 + 0.56, jy + gap * 0.16, 3, "NCF 안의 silica filler", MX.ncf);
-    } else {
+      else if (!HN) annotTo(s, x0 + 0.56, jy + gap * 0.16, 3, "NCF 안의 silica filler", MX.ncf);
+    } else if (!HN) {
       annotTo(s, x0 + 0.1, jy + gap * 0.5, 3, "액상 EMC 주입 방향", MX.emc);
     }
     for (let k = 0; k < (p.voids || 0); k++) E(s, px(1 + k * 2) - 0.22, jy + gap * 0.22, 0.1, 0.1, MX.bare, { lw: 0.7 });
@@ -887,17 +889,17 @@ function f_bond(s, p) {
     if (p.nonwet) { R(s, px(4) - 0.135, jy + gap * 0.4, 0.27, gap * 0.3, MX.bare, { lw: 0.8 }); annotTo(s, px(4), jy + gap * 0.55, 2, "non-wet — solder 가 상대 pad 에 젖지 않아 전기적으로 열린다", K.pink); }
   }
   // HCB 는 bump 간극이 없다 → gap 치수 대신 접합 계면 표시
-  if (m === "hcb") pill(s, x0 + w / 2, jy + gap + 0.38 + 0.3, "bump 없음 · Cu–Cu / 유전막 직접 접합", { fs: 8, fill: MX.ox, nogut: true });
-  else dimV(s, x0 + w + 0.05, jy, jy + gap, "gap " + (p.gap_um || 10) + " µm", { align: "left" });
-  dimH(s, px(2), px(3), top - 0.42, "pitch " + (p.pitch_um || 40) + " µm");
+  if (m === "hcb") { if (!HN) pill(s, x0 + w / 2, jy + gap + 0.38 + 0.3, "bump 없음 · Cu–Cu / 유전막 직접 접합", { fs: 8, fill: MX.ox, nogut: true }); }
+  else dimV(s, x0 + w + 0.05, jy, jy + gap, "gap " + G0 + " µm", { align: "left" });
+  dimH(s, px(2), px(3), top - 0.42, "pitch " + P0 + " µm");
   const rows = [["항목", "TC-NCF", "MR-MUF", "HCB"],
     ["접합 매체", "NCF + solder", "solder + MUF", "Cu–Cu + SiCN"],
     ["가압·가열", "layer마다", "일괄 reflow", "상온 후 anneal"],
-    ["칩 간 간격", "≈ 7 µm", "µm 급", "0 (bump 없음)"],
+    ["칩 간 간격", "7–11 µm", "µm 급", "0 (bump 없음)"],
     ["주 결함", "void · filler", "fillet · flow void", "dishing · particle"],
     ["열 경로", "filler 의존", "EMC 유리", "계면 최소"]];
-  tableCol(s, rows, RC.x, TOP, RC.w, { ncf: 1, mrmuf: 2, hcb: 3 }[m]);
-  pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.42, p.bullet || "붉은 열이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  if (p.hideTable !== true) tableCol(s, rows, RC.x, TOP, RC.w, { ncf: 1, mrmuf: 2, hcb: 3 }[m]); // hideTable: 공법 비교표 숨김(정답 노출 방지)
+  if (p.hideTable !== true || p.bullet) pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.42, p.bullet || "붉은 열이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
 }
 

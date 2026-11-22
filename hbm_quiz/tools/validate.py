@@ -40,7 +40,7 @@ FIG = {
                    q="imc_um pillar_um solder_um temp"),
     "f_saw": dict(keys="method kerf_um haz_um chip_um notes bullet note flag", q="kerf_um",
                   enums={"method": ["blade", "lg", "stealth", "plasma", "deeplaser", "dbg"]}),
-    "f_bond": dict(keys="method pitch_um gap_um voids filler_trap nonwet dish bullet note flag", q="pitch_um gap_um",
+    "f_bond": dict(keys="method pitch_um gap_um voids filler_trap nonwet dish bullet note flag hideTable hideNotes", q="pitch_um gap_um",
                    enums={"method": ["ncf", "mrmuf", "hcb"]}),
     "f_warp": dict(keys="ref sign mag_um temp tg hideNames hideResult note flag", q="mag_um tg",
                    enums={"ref": ["bump-down", "beol-up"], "sign": [1, -1]}),
@@ -477,6 +477,9 @@ def check_item(q, code, join, issues, legacy=()):
         add("W_FIG_NAME_LEAK", "정답이 Smile/Cry 명칭인데 f_warp 가 이름을 표시 → hideNames:true")
     if name == "f_bump" and p.get("kirkendall") and re.search(r"Kirkendall", ans, re.I) and not re.search(r"Kirkendall", stem, re.I) and not (p.get("hideLabels") or hide):
         add("W_FIG_NAME_LEAK", "정답이 Kirkendall 인데 f_bump 가 결함 이름을 표시 → hideLabels:true")
+    # f_bond 는 공법 비교표·공법 식별 주석을 그린다(2026-11-21): 정답이 공법명·표 문구면 hideTable/hideNotes 검토 (정보 코드)
+    if name == "f_bond" and re.search(r"TC-?NCF|MR-?MUF|HCB|hybrid|하이브리드|SiCN|일괄 reflow|상온|filler", ans, re.I) and not re.search(r"TC-?NCF|MR-?MUF|HCB|hybrid|하이브리드", stem, re.I) and not (p.get("hideTable") and p.get("hideNotes")):
+        add("I_FIG_BOND_LEAK", "정답이 공법명·공법 특징인데 f_bond 가 비교표·식별 주석을 표시 → hideTable/hideNotes:true 검토")
     if q["k"] == 1 and name in ("f_stack", "f_therm", "f_hcb", "f_tsv") and not hide:
         need = False
         if name == "f_stack" and (CALC_Q.search(core) or re.search(r"높이|단수|장수|간극 수|판정", core)) and re.search(r"(µm|장|단|개|초과|넘)", ans):
@@ -811,6 +814,7 @@ CODE_DOC = {
     "W_FIG_K0_DEFECT": "주제도에 문항과 무관한 결함이 그려짐",
     "W_FIG_UNKNOWN_KEY": "템플릿이 읽지 않는 params 키",
     "I_FACT_WATCH": "사실 확인 필요 표현 (세대·표준 번호·수치)",
+    "I_FIG_BOND_LEAK": "f_bond 비교표·식별 주석이 공법명·특징 정답을 노출할 수 있음 — hideTable/hideNotes (DA 2026-11-21)",
     "I_TEMPLATE_JOIN": "ctx+join+qt 조립형 (지문 연관성 수동 확인 대상)",
     "I_JOSA_SPACE / I_UNIT_*": "띄어쓰기·단위 표기 — EA Phase 2 일괄 정리",
 }

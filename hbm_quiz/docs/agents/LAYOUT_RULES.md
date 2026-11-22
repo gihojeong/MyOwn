@@ -126,3 +126,5 @@
 
 `f_stack` 수치 규칙 영향 문항(템플릿만 바뀜, 데이터 무수정): `gap_um` 없음 84(k=0 80 · k>0 4: BUMP-A-9005, SIP-I-0137, PROD-I-0026, PROD-I-9012), 높이 "—" 15(hideResult 없이 `h_um` 없음: TSV-B-0078, BSP-A-9043, BSP-A-9053, BUMP-A-9005, COW-I-0112, COW-I-9011, COW-I-9031, COW-A-0133, COW-A-9017, WARP-I-0260, WARP-A-0245, WARP-B-9011, WARP-I-9023, WARP-A-9005, WARP-A-9038), 상한 pill 생략 90(k=0 83 · k>0 7: 위 4 + PROD-I-0036, PROD-I-9019, PROD-I-9020 — 지문에 775 µm 가 없는 문항). 합계 90 문항. 지문이 상한·간극을 근거로 쓰는 문항은 해당 키를 넣으면 다시 표시된다.
 
+
+`f_bond` (2026-11-21, BJ 형상 결정 반영): 기본값 gap 10 → **11 µm**, pitch 40 → **23 µm**(HCB 는 9 µm) — Micron HBM3E 12H 실측(STANDARDS 2.4). 비교표 "칩 간 간격" TC-NCF 칸 "≈ 7 µm" → "7–11 µm"(_facts F24 발표 7 µm 와 실측 11 µm 병기). 새 옵션 `hideTable`(공법 비교표 숨김)·`hideNotes`(SiCN·silica filler·EMC 주입·HCB 설명 등 공법 식별 주석 숨김; 결함 주석은 유지). 검사기 정보 코드 `I_FIG_BOND_LEAK`: 정답이 공법명·특징인데 두 옵션이 없으면 표시. 기본값 변경 영향 = gap_um·pitch_um 을 주지 않은 f_bond 문항 전부(그림 치수 라벨만 바뀜, k=1 문항은 지문 수치 검사 E 0 으로 확인). layout_check 3 화면 결함 0.
