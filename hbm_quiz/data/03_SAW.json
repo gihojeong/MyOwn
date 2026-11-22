@@ -122,7 +122,8 @@
     "f_saw",
     {
      "method": "plasma",
-     "flag": "주제: plasma dicing"
+     "flag": "주제: plasma dicing",
+     "kerf_um": 10
     }
    ],
    "metrics": [],
@@ -520,7 +521,8 @@
     "f_saw",
     {
      "method": "plasma",
-     "flag": "주제: plasma dicing"
+     "flag": "주제: plasma dicing",
+     "kerf_um": 10
     }
    ],
    "metrics": []
@@ -568,9 +570,29 @@
    "exp": "silica filler가 든 EMC는 날을 빨리 닳게 하는 연마성 재료이고 Si는 단단하고 취성이 커서 chipping을 줄이려면 미세 입자 날이 필요합니다. 한 날의 입도·결합재·이송 속도로 두 요구를 함께 맞추기 어렵습니다. ②는 경화된 열경화성 EMC가 녹아 다시 흐르지 않습니다. ①은 blade 절삭이 재료를 녹이는 공정이 아닙니다. ④는 두 재료가 물과 반응하지 않습니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_film",
     {
-     "method": "blade",
+     "layers": [
+      [
+       "EMC (silica filler 함유)",
+       2.2,
+       "BFC3B5"
+      ],
+      [
+       "base die wafer Si",
+       2.2,
+       "D9D2C7"
+      ],
+      [
+       "dicing tape",
+       0.5,
+       "CFE6D8"
+      ]
+     ],
+     "bullets": [
+      "절단선: 스택 사이 lane",
+      "blade 하나가 위에서 아래로 두 재료를 연달아 지난다"
+     ],
      "flag": "주제: molded wafer 절단"
     }
    ],
@@ -741,7 +763,8 @@
     "f_saw",
     {
      "method": "blade",
-     "flag": "주제: blade 이송 속도"
+     "flag": "주제: blade 이송 속도",
+     "hideTable": true
     }
    ],
    "metrics": []
@@ -972,9 +995,29 @@
    "exp": "한 lane을 두 날이 깊이를 나눠 자르는 기법을 step cut이라 하며, 상부막과 Si 하부에 각각 맞는 날을 써 앞면과 뒷면 chipping을 함께 줄입니다. ②의 single cut은 날 하나로 전체 두께를 한 번에 자릅니다. ③의 DBG는 half-cut 뒤 연삭으로 분리하는 순서로, 두 번째 날로 끝까지 자르지 않습니다. ④는 wafer 가장자리를 다듬는 연삭으로 개별화 기법이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_table",
     {
-     "method": "blade",
+     "title": "dual spindle 절단 구성",
+     "cols": [
+      "날",
+      "자르는 깊이 구간",
+      "날 사양"
+     ],
+     "rows": [
+      [
+       "Z1 (첫 번째)",
+       "상부막 + Si 윗부분",
+       "두께·입도 A"
+      ],
+      [
+       "Z2 (두 번째)",
+       "나머지 Si 두께",
+       "두께·입도 B"
+      ]
+     ],
+     "notes": [
+      "같은 lane 을 Z1 → Z2 순서로 따라간다"
+     ],
      "flag": "주제: blade 절단 기법"
     }
    ],
@@ -999,7 +1042,9 @@
     {
      "method": "blade",
      "flag": "주제: blade 절단 결함",
-     "notes": false
+     "notes": false,
+     "hideTable": true,
+     "bullet": "관찰: 얇은 wafer를 끝까지 자른 뒤 die 뒷면"
     }
    ],
    "metrics": []
@@ -1051,7 +1096,8 @@
     "f_saw",
     {
      "method": "plasma",
-     "flag": "주제: plasma 측벽"
+     "flag": "주제: plasma 측벽",
+     "kerf_um": 10
     }
    ],
    "metrics": []

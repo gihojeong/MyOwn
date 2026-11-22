@@ -537,3 +537,30 @@ XD 지시 중 TSV-I-0161 은 mv 대신 삭제(A-0123 과 중복), TSV-I-0189·A-
 - TSV-B-9046 의 spiral 배선 근거는 사용자 노트가 인용한 업체 ISSCC 2017 HBM2 발표(원문 미대조). HBM3 이후 제품 구현은 미확인이라 지문을 "한 업체가 발표한 HBM2 설계" 로 한정.
 - TSV 중급·고급의 Ø5 × 50 µm 형상과 초급이 달라졌음 — 다음 차수에서 맞출 것.
 - B-0090 · 0091(daisy chain)은 참고문헌 서지 목록만 있어 src 미부착.
+
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+`tools/sheets.js` 로 TSV-B 57문항 전부 렌더(5장)해 직접 보고, 고친 뒤 다시 렌더해 확인. 게이트: validate TSV E 0 / W 0, smoke figErr [] · figEmpty [].
+
+| 결함 | 건수(발견) | 고침 |
+|---|---|---|
+| E1 빈 좌표계·빈 그림 | 0 | — |
+| E2 주제 불일치 | 4 | 4 |
+| E3 정답 노출 | 9 | 9 |
+| E4 글자 겹침·잘림 | 0 | — |
+| E5 수치 불일치 | 0 | — |
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0001 · 0033 | E3 f_tsv 결함 라벨이 정답 이름(void / seam) | `hideLabels: true` → "관찰 부위 (A)" |
+| B-0002 · 0059 | E3 "aspect ratio = 깊이 / 직경" pill 이 정의(정답) | `hideLabels: true` (AR pill 생략) |
+| B-0095 | E3 범례 "barrier Ta / TaN" = 정답 | `hideLabels: true` (범례 "barrier") |
+| B-0073 · 0076 · 0107 | E3 f_cmp 라벨 "dishing …", "erosion — 고밀도 영역이 함께 내려간다" | f_cmp `hideLabels: true` (단차 A/B) |
+| B-9045 | E3 f_stack 표 산식 "top core 제외" | f_table(지문 관측: 중간 core 34 µm 뒷면 TSV 끝 있음 / 최상단 139 µm 없음) |
+| B-0058 · 0066 | E2 void 를 다루는데 정상 충전 그림 | f_tsv `fill: void, hideLabels` |
+| B-0071 | E2 slurry 입자 응집 문항에 TSV 단면 | f_note(입자 상태·관찰 대상만) |
+| B-9046 | E2 "중간 core die 는 위아래를 모두 이어야 한다" pill 이 주제와 무관 | highlight 제거, flag "같은 설계 die 적층" |
+
+- 템플릿 결함(메인 세션이 반영함): f_tsv 결함 라벨·AR 정의·barrier 재료 고정 표시 → `hideLabels` (3c8322b), f_cmp 결함명 고정 → `hideLabels`, f_stack 산식 열 → `hideFormula`.
+- 남은 위험: TSV 설계 주제(전원 TSV 수, 중앙 배치, 여분 TSV, daisy chain, thermal TSV 등 약 20문항)는 일반 TSV 단면 주제도(k=0) 그대로 — 대상(TSV)은 보이나 배치·평면 관점은 그리지 못함(평면 배치 템플릿 없음).

@@ -23,7 +23,8 @@
      "dia_um": 2.5,
      "scallop": 0,
      "fill": "void",
-     "flag": "관측: 중앙부 폐쇄 공간"
+     "flag": "관측: 중앙부 폐쇄 공간",
+     "hideLabels": true
     }
    ],
    "metrics": [
@@ -66,7 +67,8 @@
      "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
-     "flag": "주제: aspect ratio"
+     "flag": "주제: aspect ratio",
+     "hideLabels": true
     }
    ],
    "metrics": [],
@@ -407,7 +409,8 @@
      "dia_um": 2.5,
      "scallop": 0,
      "fill": "seam",
-     "flag": "SEM 단면 관측"
+     "flag": "SEM 단면 관측",
+     "hideLabels": true
     }
    ],
    "metrics": [
@@ -1139,9 +1142,10 @@
      "depth_um": 35,
      "dia_um": 2.5,
      "scallop": 0,
-     "fill": "good",
+     "fill": "void",
      "barrier": true,
-     "flag": "주제: 충전 결함"
+     "flag": "주제: 충전 결함",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -1168,7 +1172,8 @@
      "scallop": 0,
      "fill": "good",
      "barrier": true,
-     "flag": "주제: aspect ratio"
+     "flag": "주제: aspect ratio",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -1359,9 +1364,10 @@
      "depth_um": 35,
      "dia_um": 2.5,
      "scallop": 0,
-     "fill": "good",
+     "fill": "void",
      "barrier": true,
-     "flag": "주제: 비파괴 검사"
+     "flag": "주제: 내부 결함 확인",
+     "hideLabels": true
     }
    ],
    "metrics": [],
@@ -1465,13 +1471,15 @@
    "exp": "뭉친 큰 입자는 pad와 wafer 사이에서 국부적으로 큰 힘을 받아 표면을 끌며 선 모양 scratch를 남깁니다. ②의 표면 산화는 slurry 화학 조성(산화제) 문제이지 입자 응집의 결과가 아닙니다. ①은 응집으로 유효 입자 수가 줄면 제거 속도가 다소 낮아질 수는 있어도 연마가 멈추지는 않습니다. ④의 연마는 막을 깎는 공정이라 두께가 늘지 않습니다.",
    "k": 0,
    "fig": [
-    "f_tsv",
+    "f_note",
     {
-     "depth_um": 35,
-     "dia_um": 2.5,
-     "scallop": 0,
-     "fill": "good",
-     "barrier": true,
+     "title": "CMP slurry 입자 상태",
+     "points": [
+      "정상 상태: 미세 연마 입자가 고르게 분산",
+      "이상 상태: 입자가 뭉쳐 큰 덩어리가 됨",
+      "덩어리는 pad와 연마면 사이에 끼어 함께 움직인다"
+     ],
+     "ask": "연마면 결함",
      "flag": "주제: CMP 결함"
     }
    ],
@@ -1527,7 +1535,8 @@
      "erosion_nm": 30,
      "nA": 4,
      "nB": 8,
-     "flag": "주제: 과연마 영향"
+     "flag": "주제: 과연마 영향",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -1582,7 +1591,8 @@
      "erosion_nm": 40,
      "nA": 4,
      "nB": 8,
-     "flag": "주제: CMP 단차"
+     "flag": "주제: CMP 단차",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -1962,7 +1972,8 @@
      "scallop": 0,
      "fill": "good",
      "barrier": true,
-     "flag": "주제: barrier"
+     "flag": "주제: barrier",
+     "hideLabels": true
     }
    ],
    "metrics": [],
@@ -2048,7 +2059,8 @@
      "erosion_nm": 30,
      "nA": 4,
      "nB": 8,
-     "flag": "주제: CMP 제거량"
+     "flag": "주제: CMP 제거량",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -3570,10 +3582,28 @@
    "exp": "HBM은 front-to-back으로 쌓아 각 die의 뒷면 pad가 바로 위 die의 앞면 µbump를 받습니다. 최상단 die는 위에 접합할 die가 없으므로 뒷면 TSV 노출(reveal)과 pad가 필요 없고, 대신 두껍게 남겨 기계적 강도와 열 확산을 맡기며 EMC와 함께 평탄화해 TIM 접촉면을 만듭니다. ①의 최상단 die도 앞면 µbump로 아래 die 뒷면 pad와 이어져 신호·전원을 받습니다. ②는 반대로 얇게 깎으면 TSV 길이가 짧아져 저항(R = ρL/A)이 줄어듭니다. ③의 최상단 die도 셀 배열을 가진 DRAM core die로 용량에 포함됩니다.",
    "k": 0,
    "fig": [
-    "f_stack",
+    "f_table",
     {
-     "n": 12,
-     "flag": "주제: 최상단 core die"
+     "title": "HBM3E 12단 단면 분석",
+     "cols": [
+      "위치",
+      "die 두께",
+      "뒷면 TSV 끝 · pad"
+     ],
+     "rows": [
+      [
+       "중간 core die",
+       "34 µm",
+       "있음"
+      ],
+      [
+       "최상단 core die",
+       "139 µm",
+       "없음"
+      ]
+     ],
+     "hlRow": 1,
+     "flag": "관찰: 업체 제품 단면"
     }
    ],
    "metrics": [
@@ -3608,8 +3638,7 @@
     "f_stack",
     {
      "n": 8,
-     "highlight": "midcore",
-     "flag": "주제: 채널별 TSV 경로"
+     "flag": "주제: 같은 설계 die 적층"
     }
    ],
    "metrics": [

@@ -241,3 +241,28 @@ src 만 부착(내용 정확 확인): SAW-B-0011(Bosch C₄F₈/SF₆ — 플라
 - SAW-B-0003·B-0066 의 "목표 die 두께 40 µm" 는 HBM core die 가 아닌 일반 제품 설정이라 그대로 두었다.
 - 중급·고급(수정하지 않음): SAW-A-9068 "core die 50 → 30 µm", SAW-A-9096 "50 µm core die" 가 현행 core die 기준을 50 µm 로 둔다(실측 34–35 µm). 시나리오상 설정값이면 지문에 '설정값' 명시가 필요하다. SAW-I-9003·I-9027·A-0050–0052 의 die 두께 40 µm 는 일반 die 설정으로 보인다.
 - f_saw 의 고정 치수선 "kerf" 와 방식 비교표는 `notes: false` 로도 꺼지지 않는다. 용어·방식 이름이나 방식 특성을 묻는 I·A 문항에도 같은 노출이 있을 수 있다(DA 검토 요청).
+
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+SAW-B 45문항 전부 렌더(4장) 육안 점검, 고친 뒤 재렌더 확인. 게이트: validate SAW E 0 / W 0, smoke figErr [] · figEmpty [].
+
+| 결함 | 건수(발견) | 고침 |
+|---|---|---|
+| E1 | 0 | — |
+| E2 주제 불일치 | 5 | 2 |
+| E3 정답 노출 | 2 | 2 |
+| E4 | 0 | — |
+| E5 그림 안 수치 모순 | 6 | 6 (3 데이터 · 3 템플릿) |
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0011 · 0050 · 9012 | E5 plasma: 치수선 "kerf 40 µm" ↔ pill "kerf 10 µm" | `kerf_um: 10` |
+| B-0045 · 0047 · 9005 | E5 stealth: "kerf 손실 없음" 인데 "kerf 40 µm" 치수선 | 템플릿 수정(stealth 치수선 생략, e116a12) — 데이터 무수정 |
+| B-9010 | E3 정답 back-side chipping, 비교표 blade 행 "chipping 큼" 붉게 | `hideTable: true` + 관찰 조건 bullet |
+| B-0067 | E3 이송 속도·chipping 상충 문항에 blade 행 "chipping 큼" 강조 | `hideTable: true` |
+| B-0054 | E2 EMC+Si 절단 문항에 Si/low-k 만 있는 단면 | f_film(EMC / base die wafer Si / dicing tape) |
+| B-9009 | E2 두 날 step cut 문항에 한 번 자른 단면 | f_table(Z1 / Z2 절단 구간) |
+
+- 템플릿 결함(메인 세션 반영, e116a12): `kerf_um || 40` 이라 0 을 줄 수 없고 stealth 에도 치수선, plasma 기본값이 치수선 40 / pill 10 으로 불일치; `notes: false` 가 비교표 강조를 끄지 않음 → `hideTable` 추가, notes:false 면 강조 끔.
+- 남은 위험: B-9007(blade 구성) · 9008(절삭수) · 9018(dressing)은 blade 절단 단면 주제도 그대로 — 날·물·dressing 을 그리는 템플릿 없음(E2 3건 미해결). f_note 24문항은 이전 차수에서 명칭 노출을 피하려고 둔 관점 카드로, f_saw 로 바꾸면 비교표·주석이 정답을 보이므로 유지.

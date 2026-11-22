@@ -320,3 +320,30 @@ src 만 부착: B-9002(M1 §D.1.4, #600→#2000 연삭 순서), B-9026(M1 §D.1.
 - 나머지 BSP-B 문항(WSS·debonding·Ni/Au pad·seed etching·CMP 선택비·gettering 등)은 참고문헌 근거가 없어 src 미부착 — 일반 공정 지식 기준으로만 점검.
 - B-9013 PECVD "200 °C 안팎", B-9028 의 연삭 후 잔여 Si 2.0 µm / recess 5.0 µm 는 업계 통상값 설정으로 실측 근거 없음.
 - BSP 중급·고급에 50 µm 류 core die 두께가 남아 있으면 초급과 달라짐 — 다음 차수에서 맞출 것.
+
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+BSP-B 60문항 전부 렌더(5장) 육안 점검, 고친 뒤 재렌더 확인. 게이트: validate BSP E 0 / W 0, smoke figErr [] · figEmpty [].
+
+| 결함 | 건수(발견) | 고침 |
+|---|---|---|
+| E1 그림 절반이 빈 공간(carrier 적층만 있는 f_film) | 23 (E2 와 겹침) | 23 |
+| E2 주제 불일치 | 27 (위 23 포함) | 27 |
+| E3 정답 노출 | 4 | 4 |
+| E4 · E5 | 0 | — |
+| 고친 문항 | | **31** |
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0081 | E3 공정 순서 문항에 f_bs 공정 순서 목록 | f_note(출발 상태·목표·판단 관점) |
+| B-9015 · 9037 | E3 "CMP: SiN stop 으로 희생 SiO2 전량 제거" 주석 | f_bs `notes: false` |
+| B-9023 | E3 f_bond 공법 비교표(HCB 결함 dishing·particle) | f_hcb pitch 9 µm, bullet 중립 |
+| B-9019 · 9020 | E2 seed 잔사·undercut 문항에 결함 없는 단면 | f_bs `defect: residue / undercut, notes: false`("관찰 부위 (A)", undercut 글자 없음 확인) |
+| B-9030 | E2 Ni–SnAg IMC 문항에 pad 공정도 | f_film 계면 적층(Cu pillar / SnAg / IMC (?) / Ni / seed / Si) |
+| B-9035 | E2 뒷면 RDL 문항에 RDL 없는 그림 | f_film(위치 A TSV → RDL → 위치 B pad) |
+| B-0073–0079 · 0084–0088 · 9003 · 9008 · 9010–9012 · 9024 · 9026 · 9034 | E1/E2 같은 carrier 적층 그림(아래 f_table 4문항 포함 23문항) 공통, 오른쪽 절반 비어 있음 | 문항별 층(휠·chuck·dicing tape·glass carrier·손상층·잔사), 층 이름 표식, 지문 조건 bullet/roles |
+| B-0087 · 0095 · 9002 · 9009 | E2 | f_table(취급 방식 비교 / Post Fab 순서 / 휠 입자) |
+
+- 템플릿 결함(보고): f_film `flags` 가 얇은 층(≈0.4–1.0 상대두께)에서 층 이름과 겹치면 화면에서 사라짐 — 층 이름에 넣어 우회(0075 · 0076 · 0077 · 0086 · 9011). validate W_FIG_LEAK 가 숨겨진 열거값(defect:"undercut")을 노출로 오탐 → 메인 세션 수정(6d3b69d).
+- 남은 위험: f_bs 단면 계열(약 25문항)은 공정 순서 목록·"최종 절연막 = SiO2 / SiN 2층" 주석을 항상 보임. 지문이 순서를 이미 주는 문항이라 노출로 보지 않았으나, 순서 자체를 묻게 바꾸면 `labels: false` 필요. f_note 7문항(0090 · 0091 · 9022 · 9025 · 9027 · 9033 · 0081)은 관점 카드.
