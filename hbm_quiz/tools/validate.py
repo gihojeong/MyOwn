@@ -434,7 +434,11 @@ def check_item(q, code, join, issues, legacy=()):
         add("E_FIG_PARAM", "f_therm.layers ≤ 5행")
     if name == "f_stack" and isinstance(p.get("n"), int) and p.get("h_um") and p.get("limit_um"):
         pass
-    figtext = " ".join(str(x) for x in leaves(p) if isinstance(x, str))
+    # 숨김 옵션이 켜진 그림은 열거 키 값(defect·method 등)이 화면 글자로 나오지 않으므로 leak 검사에서 뺀다
+    hid = p.get("notes") is False or any(p.get(k) is True for k in ("hideLabels", "hideNotes", "hideTable", "hideNames"))
+    ENUM = {"defect", "fill", "method", "type", "tech", "ref", "highlight", "mode", "kind", "variant", "m"}
+    pv = {k: v for k, v in p.items() if not (hid and k in ENUM and isinstance(v, str))} if isinstance(p, dict) else p
+    figtext = " ".join(str(x) for x in leaves(pv) if isinstance(x, str))
     figtext += " " + " ".join(x[2] + " " + x[1] for x in q["metrics"])
     an = norm(ans)
     if len(an) >= 8 and an in norm(figtext):
