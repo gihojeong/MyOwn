@@ -136,3 +136,5 @@
 `f_saw` (2026-11-22, DA 육안 점검 2 지적): kerf 기본값을 방식별 표 대표값으로 통일(blade·lg·dbg 40, plasma 10, deep laser 30 µm; `kerf_um` 은 `??` 처리로 0 허용). stealth 는 kerf 치수선을 그리지 않음("kerf 손실 없음"과 모순 제거). 새 옵션 `hideTable`(방식 비교표 숨김). `notes:false` 이면 비교표의 붉은 행 강조도 끔(방식·결함 단서 차단).
 
 새 템플릿 `f_ubj`·`f_plate`·`f_wet` (2026-11-22, BJ 승인): µbump 접합 단면(접합 불량·IMC·SOH·EM·daisy chain·HCB/ball 비교), through-mask 도금 공정 패널, 젖음 접촉각. params 는 STANDARDS 부록 A. 불량 이름을 그림에 쓰지 않는 것이 기본(이상 부위는 "관찰 부위 (A)"). BUMP-B 33문항의 f_note 를 이 템플릿으로 교체, 렌더 육안 확인·layout_check 3 화면 결함 0.
+
+DA 육안 점검 3 지적 반영 (2026-11-22): `f_sip sideTitle`(오른쪽 단면 제목 지정)·`hidePath`(HBM–XPU 신호 경로 화살표·라벨 끔 — lid·stiffener·BGA·underfill 문항용). `f_therm` tTop 기본값 95 → (상한 − 25) °C(기본 최상단 온도가 상한보다 높게 그려지던 것). `f_ubj` 수지 충전을 배경과 구분되는 색 + 빗금으로, "수지 충전" 라벨을 간극 위쪽으로.

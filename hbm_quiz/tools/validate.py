@@ -44,7 +44,7 @@ FIG = {
                    enums={"method": ["ncf", "mrmuf", "hcb"]}),
     "f_warp": dict(keys="ref sign mag_um temp tg hideNames hideResult note flag", q="mag_um tg",
                    enums={"ref": ["bump-down", "beol-up"], "sign": [1, -1]}),
-    "f_sip": dict(keys="type nHBM lines msg bullet note flag", q="nHBM",
+    "f_sip": dict(keys="type nHBM lines msg bullet note flag sideTitle hidePath", q="nHBM",
                   enums={"type": ["cowos-s", "cowos-r", "cowos-l", "emib", "emib-t"], "nHBM": [1, 2, 3, 4, 5, 6, 7, 8]}),
     "f_therm": dict(keys="n core q_Wmm2 tTop limit layers hideResult note flag", q="n q_Wmm2 tTop limit"),
     "f_fa": dict(keys="tech depth hot fov_um dz zpeak feats note flag", q="",
