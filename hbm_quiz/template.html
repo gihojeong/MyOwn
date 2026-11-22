@@ -668,7 +668,7 @@ function f_cmp(s, p) {
     L(s, xx, g.Y(0), xx, g.Y(200), K.edge, 0.8, { dash: 1 }); pill(s, xx, g.Y(200) + 0.2, nm + " " + d + "%", { fs: 7, fill: c, h: 0.2 }); });
   curve(s, dd.map(([a, b]) => [g.X(a), g.Y(b)]), K.rust, 1.6); dd.forEach(([a, b]) => E(s, g.X(a) - 0.05, g.Y(b) - 0.05, 0.1, 0.1, K.rust, { line: null }));
   curve(s, ee.map(([a, b]) => [g.X(a), g.Y(b)]), "4D6B35", 1.6, { dash: 1 }); ee.forEach(([a, b]) => E(s, g.X(a) - 0.05, g.Y(b) - 0.05, 0.1, 0.1, "4D6B35", { line: null }));
-  legend(s, RC.x + 0.72, TOP + 4.22, [[K.rust, "dishing (배선 폭 의존)"], ["4D6B35", "erosion (영역 전체)"]], { cols: 1, cw: 3.0 });
+  legend(s, RC.x + 0.72, TOP + 4.22, [[K.rust, HL ? "단차 A" : "dishing (배선 폭 의존)"], ["4D6B35", HL ? "단차 B" : "erosion (영역 전체)"]], { cols: 1, cw: 3.0 });   // hideLabels 면 범례도 이름 숨김
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 그래프는 설명용 경향선");
 }
 
