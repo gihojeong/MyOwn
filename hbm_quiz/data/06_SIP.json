@@ -610,10 +610,28 @@
    "exp": "면적 = 26 mm × 33 mm = 858 mm² 입니다. ①은 두 변을 곱하지 않고 더한 값(26 + 33)입니다. ②는 곱하지 않고 둘레 2 × (26 + 33) = 118 을 구한 값입니다. ④는 2배 reticle의 면적으로 하나의 노광 영역이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_table",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
+     "title": "reticle field 크기",
+     "cols": [
+      "항목",
+      "값"
+     ],
+     "rows": [
+      [
+       "가로",
+       "약 26 mm"
+      ],
+      [
+       "세로",
+       "약 33 mm"
+      ],
+      [
+       "면적",
+       "?"
+      ]
+     ],
+     "hlRow": 2,
      "flag": "주제: reticle 면적"
     }
    ],
@@ -698,7 +716,8 @@
     {
      "type": "cowos-s",
      "nHBM": 4,
-     "flag": "주제: 2.5D 집적"
+     "flag": "주제: 2.5D 집적",
+     "msg": "HBM · SoC 를 한 인터포저 위에 나란히, 배선으로 수평 연결"
     }
    ],
    "metrics": []
@@ -718,10 +737,27 @@
    "exp": "온도가 ΔT만큼 변하면 두 부재는 (α_sub − α_Si) × ΔT 의 비율만큼 서로 다르게 늘어나고, 그 차이를 사이의 C4 bump가 전단 변형으로 받습니다. 차이는 중심에서 멀수록(DNP가 클수록) 커져 모서리 bump가 가장 불리합니다. ②의 배선 저항은 국부 발열 요인일 뿐 변형의 주원인이 아닙니다. ③은 bump 크기와 무관하게 CTE 차이가 있으면 변형이 생기므로 틀립니다. ①은 유기 substrate가 조립 온도에서 녹지 않으므로 틀립니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_table",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
+     "title": "C4 로 붙은 두 재료",
+     "unit": "ppm/K",
+     "cols": [
+      "재료",
+      "열팽창계수"
+     ],
+     "rows": [
+      [
+       "Si interposer",
+       "약 3"
+      ],
+      [
+       "유기 package substrate",
+       "약 15"
+      ]
+     ],
+     "notes": [
+      "둘 사이를 C4 bump 로 접합 · 온도가 오르내림"
+     ],
      "flag": "주제: C4 열 변형"
     }
    ],
@@ -757,7 +793,10 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: package substrate"
+     "flag": "주제: package substrate",
+     "msg": "대상: interposer 아래 유기 substrate",
+     "sideTitle": "단면: package substrate",
+     "hidePath": true
     }
    ],
    "metrics": []
@@ -781,7 +820,10 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: BGA"
+     "flag": "주제: BGA",
+     "msg": "아래면: 지름 수백 µm solder ball 격자",
+     "sideTitle": "단면: substrate 아래면",
+     "hidePath": true
     }
    ],
    "metrics": []
@@ -805,7 +847,8 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: CoWoS 조립 순서"
+     "flag": "주제: CoWoS 조립 순서",
+     "msg": "CoWoS = Chip-on-Wafer-on-Substrate"
     }
    ],
    "metrics": []
@@ -857,7 +900,8 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: interposer TSV"
+     "flag": "주제: interposer TSV",
+     "msg": "위: µbump 로 SoC · HBM / 아래: C4 로 substrate"
     }
    ],
    "metrics": []
@@ -907,7 +951,8 @@
     {
      "type": "cowos-l",
      "nHBM": 4,
-     "flag": "주제: 국부 bridge"
+     "flag": "주제: 국부 bridge",
+     "msg": "die 사이 미세 배선 구간에만 작은 Si bridge"
     }
    ],
    "metrics": []
@@ -931,7 +976,8 @@
     {
      "type": "cowos-s",
      "nHBM": 4,
-     "flag": "주제: HBM 배치"
+     "flag": "주제: HBM 배치",
+     "msg": "HBM 스택을 SoC 바로 옆, 같은 인터포저 위에 배치"
     }
    ],
    "metrics": [],
@@ -956,7 +1002,8 @@
     {
      "type": "cowos-l",
      "nHBM": 8,
-     "flag": "주제: HBM 탑재 수"
+     "flag": "주제: HBM 탑재 수",
+     "msg": "SoC 하나에 붙이는 HBM 스택: 4개 → 8개"
     }
    ],
    "metrics": [
@@ -986,7 +1033,10 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: C4 underfill"
+     "flag": "주제: C4 underfill",
+     "msg": "interposer–substrate 사이 C4 bump 틈에 underfill",
+     "sideTitle": "단면: C4 접합부 underfill",
+     "hidePath": true
     }
    ],
    "metrics": []
@@ -1010,7 +1060,10 @@
     {
      "type": "cowos-s",
      "nHBM": 4,
-     "flag": "주제: 상면 높이 정합"
+     "flag": "주제: 상면 높이 정합",
+     "msg": "HBM · SoC 위를 lid 한 장으로 덮고 사이를 TIM 으로",
+     "sideTitle": "단면: lid · TIM",
+     "hidePath": true
     }
    ],
    "metrics": [],
@@ -1035,7 +1088,8 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: 인터포저의 역할"
+     "flag": "주제: 인터포저의 역할",
+     "msg": "HBM · SoC 와 substrate 사이에 인터포저를 둠"
     }
    ],
    "metrics": []
@@ -1059,7 +1113,8 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: CTE 정합"
+     "flag": "주제: CTE 정합",
+     "msg": "Si die 들을 µbump 로 Si 중간 기판에 접합"
     }
    ],
    "metrics": []
@@ -1083,7 +1138,10 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: C4 와 µbump"
+     "flag": "주제: C4 와 µbump",
+     "msg": "µbump 피치 수십 µm · C4 피치 100 µm 이상",
+     "sideTitle": "단면: µbump 와 C4",
+     "hidePath": true
     }
    ],
    "metrics": []
@@ -1107,7 +1165,8 @@
     {
      "type": "cowos-s",
      "nHBM": 4,
-     "flag": "주제: shoreline"
+     "flag": "주제: shoreline",
+     "msg": "HBM PHY: SoC 가장자리 중 HBM 을 마주 보는 변"
     }
    ],
    "metrics": []
@@ -1131,7 +1190,10 @@
     {
      "type": "cowos-s",
      "nHBM": 4,
-     "flag": "주제: lid"
+     "flag": "주제: lid",
+     "msg": "대형 2.5D 패키지의 die 위에 금속 lid",
+     "sideTitle": "단면: lid",
+     "hidePath": true
     }
    ],
    "metrics": [],
@@ -1152,10 +1214,28 @@
    "exp": "두 고체 면은 거칠기와 휨 때문에 일부만 닿고 나머지는 열전도율이 매우 낮은 공기로 남습니다. TIM이 이 틈을 채워 접촉 열저항을 크게 낮춥니다. ①의 전기 연결은 TIM의 목적이 아닙니다. ③의 진동 흡수도 목적이 아닙니다. ④는 얇은 TIM 층이 die의 열팽창을 막을 수 없으므로 틀립니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_film",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
+     "layers": [
+      [
+       "lid",
+       2,
+       "C9C9C9"
+      ],
+      [
+       "TIM",
+       1,
+       "F3D2C4"
+      ],
+      [
+       "die 상면 (Si)",
+       3,
+       "D9D9D9"
+      ]
+     ],
+     "bullets": [
+      "lid 와 die 상면 사이에 TIM 을 넣음"
+     ],
      "flag": "주제: TIM"
     }
    ],
@@ -1353,10 +1433,30 @@
    "exp": "결함이 무작위로 흩어져 있으면 치명 결함이 하나도 없을 확률(수율)은 Y = exp(−D × A) 처럼 면적 A에 대해 지수적으로 줄어듭니다. 면적이 두 배이면 수율은 원래 수율의 제곱이 됩니다. ②는 면적이 커지면 배선이 오히려 길어지며 수율의 지배 인자도 아닙니다. ①의 두께는 면적과 무관하게 정합니다. ④의 해상도는 면적과 관계가 없습니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_table",
     {
-     "type": "cowos-s",
-     "nHBM": 4,
+     "title": "interposer 면적 확대",
+     "cols": [
+      "interposer",
+      "면적",
+      "결함 밀도",
+      "수율"
+     ],
+     "rows": [
+      [
+       "기존",
+       "A",
+       "D",
+       "Y"
+      ],
+      [
+       "확대",
+       "2A",
+       "D (같음)",
+       "?"
+      ]
+     ],
+     "hlRow": 1,
      "flag": "주제: 면적과 수율"
     }
    ],
@@ -1381,7 +1481,8 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: 조립 단계"
+     "flag": "주제: 조립 단계",
+     "msg": "CoW 단계 다음: 잘라 낸 CoW 모듈을 substrate 에 접합"
     }
    ],
    "metrics": []
@@ -1405,7 +1506,10 @@
     {
      "type": "cowos-s",
      "nHBM": 4,
-     "flag": "주제: stiffener"
+     "flag": "주제: stiffener",
+     "msg": "package substrate 둘레에 금속 stiffener ring 부착",
+     "sideTitle": "단면: substrate 둘레",
+     "hidePath": true
     }
    ],
    "metrics": []
@@ -1429,7 +1533,8 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: SiP 열이력"
+     "flag": "주제: SiP 열이력",
+     "msg": "HBM 스택: 출하 전 적층 접합 열이력을 이미 겪음"
     }
    ],
    "metrics": []
@@ -1449,10 +1554,29 @@
    "exp": "유리는 표면이 평탄하고 강성이 높으며 CTE를 Si에 가깝게 조정할 수 있어, 대형 기판의 휨과 치수 변화를 줄이고 더 미세한 배선을 가능하게 할 것으로 기대됩니다. ②는 유리가 취성 재료라 깨짐이 오히려 주요 과제입니다. ③의 유리 관통 via(TGV)는 가공 난도가 높습니다. ④는 유리의 열전도율(약 1 W/m·K)이 Cu보다 수백 배 낮습니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_film",
     {
-     "type": "cowos-s",
-     "nHBM": 4,
+     "layers": [
+      [
+       "build-up 배선층",
+       1.5,
+       "F3D2C4"
+      ],
+      [
+       "유리 코어 (유기 코어 대체)",
+       3,
+       "C9D7F0"
+      ],
+      [
+       "build-up 배선층",
+       1.5,
+       "F3D2C4"
+      ]
+     ],
+     "bullets": [
+      "대형 AI 패키지용 package substrate",
+      "비교 대상: 유기 코어 substrate"
+     ],
      "flag": "주제: 유리 코어 기판"
     }
    ],
@@ -2089,10 +2213,30 @@
    "exp": "µbump는 수십 µm(HBM 스택 바닥 48 × 55 µm, JEDEC), C4는 100 µm 대, BGA ball은 약 1 mm 급 pitch로 아래로 갈수록 커집니다(대표 범위). 위쪽은 die의 미세 배선에 맞추고, 아래쪽은 기판·보드의 굵은 배선과 큰 열 변형을 감당해야 하기 때문입니다. ②는 µbump와 C4의 크기를 뒤바꿨습니다. ③은 순서를 거꾸로 적었습니다. ④는 보드 접합인 BGA를 C4보다 작다고 본 것입니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_table",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
+     "title": "2.5D 패키지 접합부",
+     "cols": [
+      "잇는 곳",
+      "pitch"
+     ],
+     "rows": [
+      [
+       "substrate – 보드",
+       "?"
+      ],
+      [
+       "die – 인터포저",
+       "?"
+      ],
+      [
+       "인터포저 – substrate",
+       "?"
+      ]
+     ],
+     "notes": [
+      "각 접합부 이름은 지문 참고"
+     ],
      "flag": "주제: 접합 계층"
     }
    ],
@@ -2114,10 +2258,28 @@
    "exp": "피치 = 선폭 + 간격 = 2 + 2 = 4 µm 입니다(한 선 중심에서 가장자리까지 1 µm, 간격 2 µm, 다음 선 가장자리에서 중심까지 1 µm). ①은 선폭이나 간격 하나만 본 값입니다. ②는 중심에서 잴 때 다음 선의 반폭을 빠뜨려 1 + 2로 계산한 값입니다. ④는 중심 사이가 아니라 두 선의 바깥 가장자리 사이(2 + 2 + 2)를 잰 값입니다. 피치는 일정 폭에 지나갈 수 있는 배선 수(폭 ÷ 피치)를 정하므로 인터포저 배선 용량 계산의 출발점입니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_table",
     {
-     "type": "cowos-r",
-     "nHBM": 2,
+     "title": "배선 규칙 L/S 2/2 µm",
+     "cols": [
+      "항목",
+      "값"
+     ],
+     "rows": [
+      [
+       "선폭 L",
+       "2 µm"
+      ],
+      [
+       "선 간격 S",
+       "2 µm"
+      ],
+      [
+       "배선 피치",
+       "?"
+      ]
+     ],
+     "hlRow": 2,
      "flag": "주제: 배선 L/S"
     }
    ],
@@ -2145,10 +2307,15 @@
    "exp": "신호선이 촘촘하면 한 선의 전압 변화가 결합 용량·인덕턴스를 통해 이웃 선에 잡음(crosstalk)으로 실립니다. 사이에 접지선을 두면 전계가 접지선으로 끝나고 귀환 경로가 가까워져 결합이 크게 줄어듭니다. 대신 배선 트랙을 더 씁니다. ②의 저항은 신호선의 단면과 길이가 정합니다. ③의 열 확산은 목적이 아닙니다. ④의 정렬 마크는 별도 패턴으로 만듭니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_note",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
+     "title": "차폐 배선 배치",
+     "points": [
+      "배치: 데이터선 – GND – 데이터선 – GND …",
+      "GND 선은 신호를 나르지 않음",
+      "비교: GND 선 없이 데이터선만 촘촘히 놓은 경우"
+     ],
+     "ask": "주된 목적",
      "flag": "주제: 차폐 배선"
     }
    ],
@@ -2174,7 +2341,8 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: 전원 경로"
+     "flag": "주제: 전원 경로",
+     "msg": "전원 경로: substrate → C4 → 인터포저 → die"
     }
    ],
    "metrics": [],
@@ -2199,7 +2367,8 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: decap"
+     "flag": "주제: decap",
+     "msg": "decap: SoC 아래 인터포저 · substrate 에 배치"
     }
    ],
    "metrics": []
@@ -2219,15 +2388,26 @@
    "exp": "eye의 폭은 비트를 판정할 수 있는 시간 여유, 높이는 전압 여유를 나타냅니다. 눈이 좁고 낮아졌다는 것은 지연·반사·crosstalk·전원 잡음 등으로 판정 여유가 줄었다는 뜻입니다. ②는 저항이 줄면 오히려 눈이 커집니다. ①은 eye diagram이 측정 결과일 뿐 속도를 바꾸지 않습니다. ④는 눈이 낮아진 관측과 반대입니다.",
    "k": 0,
    "fig": [
-    "f_note",
+    "f_table",
     {
-     "title": "eye diagram 읽기",
-     "points": [
-      "eye 폭: 비트를 판정할 수 있는 시간 범위",
-      "eye 높이: 0 과 1 을 가르는 전압 범위",
-      "관측: 폭과 높이가 모두 줄었다"
+     "title": "수신단 eye diagram",
+     "cols": [
+      "항목",
+      "이전",
+      "현재"
      ],
-     "ask": "뜻하는 것",
+     "rows": [
+      [
+       "eye 폭",
+       "기준",
+       "좁아짐"
+      ],
+      [
+       "eye 높이",
+       "기준",
+       "낮아짐"
+      ]
+     ],
      "flag": "주제: eye diagram"
     }
    ],
@@ -2249,11 +2429,29 @@
    "exp": "로직 die 위에 DRAM 스택을 얹으면 로직의 열이 방열판까지 가는 길에 DRAM 스택과 여러 접합 계면을 지나야 하고, 온도 상한이 낮은 DRAM이 로직 열을 그대로 받습니다. ②는 반대로 수직 연결이라 배선이 가장 짧아집니다. ③의 인터포저 면적 문제는 오히려 줄어듭니다. ④의 가장자리 길이 제약도 수직 연결로 완화됩니다.",
    "k": 0,
    "fig": [
-    "f_stack",
+    "f_film",
     {
-     "n": 8,
-     "highlight": "base",
-     "hideResult": true,
+     "layers": [
+      [
+       "DRAM core die 스택",
+       4,
+       "E3D9F2"
+      ],
+      [
+       "로직 die",
+       2,
+       "C9D7F0"
+      ],
+      [
+       "package substrate",
+       1.5,
+       "E6DCCB"
+      ]
+     ],
+     "bullets": [
+      "2.5D: HBM 스택이 SoC 옆에 나란히",
+      "검토 구조: HBM 스택을 로직 die 바로 위에"
+     ],
      "flag": "주제: HBM-on-logic"
     }
    ],
@@ -2308,7 +2506,10 @@
     {
      "type": "cowos-s",
      "nHBM": 2,
-     "flag": "주제: C4 underfill"
+     "flag": "주제: C4 underfill",
+     "msg": "C4 접합 후 인터포저 가장자리에 액상 수지 dispense",
+     "sideTitle": "단면: C4 접합부 underfill",
+     "hidePath": true
     }
    ],
    "metrics": []
@@ -2332,7 +2533,8 @@
     {
      "type": "cowos-s",
      "nHBM": 4,
-     "flag": "주제: 인터포저 선별"
+     "flag": "주제: 인터포저 선별",
+     "msg": "CoW: 인터포저 wafer 의 각 site 에 SoC · HBM 접합"
     }
    ],
    "metrics": []
@@ -2352,10 +2554,35 @@
    "exp": "die에 가까운 첫 번째 계면(die–lid)을 TIM1, 그 바깥 계면(lid–방열판)을 TIM2라 부릅니다. ②는 순서를 뒤바꿨습니다. ③의 underfill은 bump 사이를 채우는 수지로 열 계면 재료가 아닙니다. ④의 NCF와 EMC는 접합·봉지 재료입니다. lid 없이 방열판을 die에 직접 대면 계면이 하나로 줄어듭니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_film",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
+     "layers": [
+      [
+       "시스템 방열판",
+       2,
+       "C9D7F0"
+      ],
+      [
+       "계면 재료 B",
+       1,
+       "F3D2C4"
+      ],
+      [
+       "lid",
+       1.5,
+       "C9C9C9"
+      ],
+      [
+       "계면 재료 A",
+       1,
+       "F3D2C4"
+      ],
+      [
+       "die",
+       3,
+       "D9D9D9"
+      ]
+     ],
      "flag": "주제: TIM 계층"
     }
    ],

@@ -1473,7 +1473,7 @@ function f_ubj(s, p) {
     dimV(s, xs(0) - pw0 / 2 - 0.15, top0, top0 + 0.5, "B", { align: "right" });
     if (n >= 2) dimH(s, xs(0), xs(1), yU - 0.2, "C");
   }
-  if (p.fill && p.fill !== "none" && !pre) T(s, p.fillLabel || "수지 충전", x0 + 0.08, top0 + 0.08, 1.0, 0.2, { fs: 8, color: K.muted, bold: true });
+  if (p.fill && p.fill !== "none" && !pre) pill(s, x0 + 0.08, top0 + 0.2, p.fillLabel || "수지 충전", { fs: 8, fill: K.cream, align: "left", nogut: true });   // 빗금 위라 배경 있는 pill
   // 재료 범례(names:true 일 때만 이름)
   const legY = yL + dieH + 0.85;
   if (NM) legend(s, x0 + 0.1, legY, [[MX.cu, "Cu"], [MX.sol, "solder"], [MX.imc, "IMC"]].concat(p.ni ? [[MX.ni2, "Ni"]] : []).concat(p.fill && p.fill !== "none" ? [[p.fill === "muf" ? "D9C7A8" : "E6D3B5", "수지"]] : []), { cols: 5, cw: 0.85 });

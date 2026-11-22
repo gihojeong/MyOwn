@@ -193,3 +193,30 @@ EA 보강 ③(carrier debond 휨 회복)은 I-9009·I-9031·A-9017 이 이미 �
 - 참고문헌과 _facts.md 사이 충돌: 없음.
 
 게이트: validate --domain WARP --gate E 0 / W 0 (I 4, 모두 I/A 의 FACT_WATCH), build 2427 문항, smoke figErr [] errs [], layout_check figHighQ 0 · 화면 결함 0(WARP-B 해당 없음). dist 변경은 되돌림.
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+- 점검: WARP-B 69 문항(sheets.js 6장). 이 가운데 21 문항은 13_THERM.json, 1 문항(B-0121)은 07_FA.json 에 들어 있는 WARP-B id다. 수정 뒤 6장을 모두 다시 렌더해 봤다.
+- 결함: E1 10(f_bond hideTable 로 오른쪽이 빈 그림, f_film 한 덩어리·빈 오른쪽) · E2 18(MR-MUF 일반 접합 단면 + 공법 비교표가 EMC 조성·보관·몰딩 방식·CTE·탄성률·흡습 문항에 붙음, f_stack·f_sip·f_warp 주제 불일치) · E3 22(B-0004 저온 연장선 = 정답 방법, 열 문항 f_note points 가 정답 원리를 그대로 씀: 'ΔT = P × R', '직렬 열저항의 합', '기체의 열전도율·열 흐름의 우회' 등) · E4 0 · E5 0.
+- 고친 문항 **52**. 템플릿 선택은 f_table 21 · f_film 15 · f_note 11(관점만 쓰도록 다시 씀) · f_plot 3 · f_warp(hideNames) 1 · f_therm 1 · f_sip(msg) 1. 게이트: validate --domain WARP·THERM·FA E 0 / W 0, smoke figErr [] figEmpty [], layout_check 3 화면 결함 0.
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0004 | E3 (저온 구간 연장선 = 정답) | 연장선 제거, 측정 곡선만 |
+| B-0065 · 0098 · 0147 | E1 · E2 (f_bond hideTable 빈 칸) | f_table (역할별 질량 비율 ? / 보관 단계 / 경화 온도별 ?) |
+| B-0066 · 0067 · 0104 · 0106 · 9001 · 9011 · 9012 · 9016 | E2 · E3 | f_table 지문 수치·조건만, 묻는 칸 '?' (9016 은 W_FIG_LEAK 로 f_sip 유지) |
+| B-0068 · 0133 · 9009 · 9015 | E2 | f_note 조건·비교 관점 |
+| B-0069 · 0094 · 0113 | E2 | f_film (EMC 연삭 대상 / 경화 수축 / pad·보호막 구조) |
+| B-0093 · 0100 | E2 | f_plot (수지 선팽창 Tg 표시 / reflow 프로파일) |
+| B-0132 · 9007 | E2 | f_table (성형 순서 '방식 이름 ?' / 몰딩·PMC 조건) |
+| B-9006 | f_note → 자연 그림 | f_warp beol-up ∩ + hideNames |
+| B-0105 · 9002 · 9005 · 9010 · 9014 · 9017 | E1 (오른쪽 빈 칸) | f_film bullets 에 지문 조건 |
+| B-0121 · 9004 | E3 | points 재작성 |
+| B-0064 · 0074 · 0080 · 0081 · 0097 · 0119 · 0123 · 0140 | E3 | f_film 층 구조 + 지문 조건 |
+| B-0083 · 0085 · 0112 · 0122 · 0127 | E3 | f_table '?' 칸 |
+| B-0079 · 0082 · 0086 · 0096 · 0150 · 0152 | E3 | f_note points 재작성 (0086·0096 은 f_film·f_table 이 W_FIG_LEAK) |
+| B-0084 | E3 | f_therm hideResult, tTop 60 (기본 95 °C 가 상한 85 °C 보다 높음) |
+| B-0076 | E2 | f_sip msg 'stiffener ring · lid 부착' |
+
+- 템플릿 결함(보고만): f_therm 기본 tTop 95 °C > limit 85 °C · f_warp hideNames 에 지문 없는 Tg 125 °C·변위 80 µm 기본값 · f_film 에 roles·bullets 가 없으면 오른쪽이 빈다 · f_sip 제목 '신호 경로' 고정.
+- 남은 위험: B-0070·0071·0089·0090·0091 은 주제에 맞는 f_warp·f_bond(MR-MUF) 라 유지. 비교표의 MR-MUF 열 강조는 남아 있다. B-0087·9003·9008·9013·0153 은 기존 f_note 를 유지했다(정답 비노출).

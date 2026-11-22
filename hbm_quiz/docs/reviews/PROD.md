@@ -332,3 +332,23 @@ src 만 부착: B-0001·B-0004·B-0029·B-0045·B-0124·B-9008·SIP-B-0069(HBM_H
 - **STANDARDS 2.4 의 "base die 50–100 µm"** 범위가 실측 44 µm 와 맞지 않음 — 메인 세션 정리 대상(이 작업에서는 수정하지 않음).
 - B-0034 의 spiral TSV 는 한 업체 HBM2 구현(ISSCC 2017)이며 HBM3 이후 제품별 SID 부여 방식(TSV 카운터 체인/퓨즈)은 참고문헌에서도 ⚠ 미확인 — 정답 근거로 쓰지 않고 해설 보충으로만 둠.
 - 중급·고급 형상 불일치(보고만): I-0036(간극 10 µm·gap_um 7), I-0037·I-9005(base 60 · 간극 10 · 상한 775), I-9013(core 40 · 간극 10), I-9019(base 60 · core 40 · 간극 10), I-9020(core 50 · 간극 15 → 7), I-9039(gap_um 7), I-9044(core Si 40 µm), A-9003(base 60 · 간극 10 → 7 · 상한 775), A-9005(gap_um 10), A-9018(base 60 · core 40 · 간극 10), A-9019(간극 10/11/13 · 775), A-9027(간극 7 µm), A-9028(µbump 피치 55 µm 정사각 — 스택 바닥은 48 × 55, core 사이 23), A-9041(base 60 · 간극 7 · limit 720/775), A-9042(core 30), A-9043(core 50). 실측 base 44 · core 34–35 · 간극 11 · pitch 23 µm 와 다름.
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+- 점검: PROD-B 56 문항(sheets.js 5장). 수정 뒤 5장을 다시 렌더해 봤다.
+- 결함: E1 0 · E2 23(f_stack hideResult 의 '?' 개수 표가 공정 흐름·용량·KGSD·repair·custom HBM 문항에 붙어 개수 계산 문항처럼 보임 19, f_sip 기본 reticle pill 4) · E3 15(f_note points 가 정답 원리를 씀: 'Q 는 I/O(DQ) 전원', 'ECC: 검사 bit 로 오류를 찾고 고친다', '1 byte = 8 bit', '동적 전력 ∝ C × V² × f', 'HBM2 는 8채널' 등, f_stack midcore pill) · E4 0 · E5 0.
+- 고친 문항 **38**: f_table 18 · f_stack hideFormula 7(개수는 STANDARDS 2.5 대로 표시, 묻지 않는 값) · f_note 7(재작성) · f_film 4 · f_sip msg 4. 게이트: validate --domain PROD E 0 / W 0, smoke figErr [] figEmpty [], layout_check 결함 0.
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0030 · 0034 · 0035 · 0038 · 0051 · 0057 | E2 ('?' 표, 0034·0035·0051 midcore pill) | f_stack hideFormula, highlight 없음 |
+| B-0037 · 0045 · 0050 · 0061 · 0103 · 9008 · 9015 · 9016 | E2 | f_table 지문 조건, 묻는 칸 '?' |
+| B-0040 | E2 | f_table 단계 설명(기호 가–바, 순서 섞음, 단계 이름 없음 — W_FIG_LEAK) |
+| B-0042 · 0048 · 0072 · 0112 | E2 | f_film (base wafer 위 낱개 die / carrier 연삭 / base die 능동면 아래 / 접합층 dummy) |
+| B-0049 · 0064 | E2 | f_note 조건 |
+| B-0004 · 0102 · 9001 · 9003 · 9004 · 9005 · 9006 | E3 | f_table 지문 수치, 정답 칸 '?' |
+| B-0001 · 9002 · 9012 · 9013 · 9014 · 9018 | E3 | f_note points 재작성 |
+| B-0028 · 0029 · 9009 · 9010 | E2 | f_sip msg = 지문 조건 |
+
+- 템플릿 결함(보고만): f_stack hideResult 는 '?' 개수 표가 같이 나와 개수와 무관한 문항에 쓰기 어렵다(hideFormula 로 우회) · f_sip 제목 고정.
+- 남은 위험: B-0108(높이 예산 f_stack + '전체 높이 = die 두께 합 + 간극 합' pill)은 주제에 맞아 유지했다. B-0003·0027·0031·0039·0043·0044·0058·0060·0097·0109·0111·0124·0127·0132·0133·9007·9017 은 기존 f_note 를 유지했다(정답 비노출).
