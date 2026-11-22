@@ -32,10 +32,11 @@ description: HBM 이해도 평가 문항집(hbm_quiz/) 작업 — 문항 추가�
 cd hbm_quiz
 python3 tools/validate.py --gate --out /tmp/val.md      # 차단 E 0, W 0 (공용 _auto_latest.md 덮어쓰기 피하려면 --out)
 python3 tools/build.py                                   # → dist/HBM_quiz.html
-node tools/smoke.js dist/HBM_quiz.html                   # figErr [], errs []
+node tools/smoke.js dist/HBM_quiz.html                   # figErr [], figEmpty [] (빈 좌표계 0), errs []
 node tools/layout_check.js --out /tmp/layout             # figHighQ 0, 화면 결함 0 (공용 갱신은 --publish)
 node tools/e2e.js dist/HBM_quiz.html                     # 구성 스크롤·클릭·응시·채점 흐름 (3개 화면 폭)
 ```
+- **렌더 육안 점검(DA, 필수)**: `node tools/sheets.js <outDir> <LV> dist/HBM_quiz.html <CODE>` 로 바뀐 그룹의 그림을 실제 렌더한 접촉 인화지(12문항/장)를 만들고 **모든 장을 직접 본다**. 판정 항목: ① 빈 좌표계·누락 곡선·깨진 도형 ② 문항 주제와 그림 불일치(일반 주제도가 다른 주제 문항에 붙은 경우 포함) ③ 정답 노출(표·주석·flag·치수 라벨) ④ 글자 겹침·잘림. 결함 0 이 될 때까지 고친 뒤 다시 렌더해 확인한다. 자동 검사(validate·smoke·layout_check)는 ②·③ 을 잡지 못한다(2026-11-22 사용자 지적: BUMP-B-0067 빈 IMC 그래프·주제 불일치).
 배포본은 `dist/HBM_이해도평가_v<N>.html` 로 복사해 사용자에게 보낸다.
 
 ## 4. 역할 운영 (사용자는 EA·DA 와 대화한다)

@@ -128,3 +128,5 @@
 
 
 `f_bond` (2026-11-21, BJ 형상 결정 반영): 기본값 gap 10 → **11 µm**, pitch 40 → **23 µm**(HCB 는 9 µm) — Micron HBM3E 12H 실측(STANDARDS 2.4). 비교표 "칩 간 간격" TC-NCF 칸 "≈ 7 µm" → "7–11 µm"(_facts F24 발표 7 µm 와 실측 11 µm 병기). 새 옵션 `hideTable`(공법 비교표 숨김)·`hideNotes`(SiCN·silica filler·EMC 주입·HCB 설명 등 공법 식별 주석 숨김; 결함 주석은 유지). 검사기 정보 코드 `I_FIG_BOND_LEAK`: 정답이 공법명·특징인데 두 옵션이 없으면 표시. 기본값 변경 영향 = gap_um·pitch_um 을 주지 않은 f_bond 문항 전부(그림 치수 라벨만 바뀜, k=1 문항은 지문 수치 검사 E 0 으로 확인). layout_check 3 화면 결함 0.
+
+`f_bump`·렌더 점검 (2026-11-22, 사용자 지적 BUMP-B-0067): k 가 없으면 IMC 성장 좌표계 자체를 그리지 않음(빈 좌표계 금지). `axes()`·`curve()` 가 그림별 좌표계·곡선 수를 세고 smoke 가 `figEmpty`(좌표계 > 곡선) 를 보고 — 게이트 조건 figEmpty []. 육안 점검 도구 `tools/sheets.js`(접촉 인화지) 추가, SKILL 완료 게이트에 필수로 넣음.

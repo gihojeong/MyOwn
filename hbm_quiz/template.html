@@ -537,6 +537,7 @@ function dimH(s, x1, x2, y, text, o = {}) { A(s, x1, y, x2, y, K.edge, 0.8, { bo
 function dimV(s, x, y1, y2, text, o = {}) { A(s, x, y1, x, y2, K.edge, 0.8, { both: true }); pill(s, x + (o.align === "right" ? -0.06 : 0.06), (y1 + y2) / 2 + (o.dy || 0), text, { fs: 8, h: 0.2, fill: o.fill || K.cream, align: o.align || "left", axis: "y" }); }
 // 양 축 눈금 값이 모두 찍히는 좌표계. 제목은 ylab 한 줄로만 둔다(겹침 방지).
 function axes(s, x, y, w, h, o) {
+  s._ax = (s._ax || 0) + 1; // 렌더 점검: 좌표계 수 (smoke 의 figEmpty 가 곡선 없는 좌표계를 잡는다)
   const X = (v) => x + w * (v - o.xmin) / (o.xmax - o.xmin), Y = (v) => y + h - h * (v - o.ymin) / (o.ymax - o.ymin);
   // 눈금 글자: 7pt · y 눈금은 가운데 정렬, 원점 모서리에서는 x/y 눈금이 서로 비켜 선다
   (o.yticks || []).forEach((t) => { L(s, x, Y(t), x + w, Y(t), K.lineStrong, 0.5, { dash: 1 }); const lo = t === o.ymin;
@@ -551,7 +552,7 @@ function axes(s, x, y, w, h, o) {
   return { X, Y };
 }
 const clampX = (x, w2) => Math.max(DG.x + (w2 || 0.5), Math.min(DG.x + DG.w - (w2 || 0.5), x));
-function curve(s, pts, c, lw, o = {}) { for (let i = 1; i < pts.length; i++) L(s, pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], c, lw || 1.3, o); }
+function curve(s, pts, c, lw, o = {}) { if (pts.length >= 2) s._cv = (s._cv || 0) + 1; for (let i = 1; i < pts.length; i++) L(s, pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], c, lw || 1.3, o); }
 function hatch(s, x, y, w, h, c, step) {
   step = step || 0.09;
   for (let t = 0; t < w + h; t += step) {
@@ -758,19 +759,21 @@ function f_bump(s, p) {
   dimV(s, LC.x + 2.95, soly, soly + st, "solder " + (p.solder_um || 15) + " µm", { dy: -push / 2 });
   annotTo(s, cx - pw / 2 + 0.06, imc1 + it / 2, 0, "IMC " + (p.imc_um || 2) + (gen ? " µm 계면" : (p.niBarrier ? " µm (Ni₃Sn₄ / (Cu,Ni)₆Sn₅) 계면" : " µm (Cu₆Sn₅ / Cu₃Sn) 계면")), MX.imc, true);
   legend(s, LC.x + 0.35, TOP + 3.05, [[MX.cu, "Cu"], [MX.sol, "solder"], [MX.imc, "IMC"], [MX.ni, p.niBarrier ? "Ni 적용" : "Ni 없음"]], { cols: 4, cw: 1.08 });
+  // k 가 없으면 성장 그래프 자체를 그리지 않는다(빈 좌표계 금지 — DA 2026-11-22, 사용자 지적 BUMP-B-0067)
+  if (p.k != null) {
   const TM = p.tmax || 1000, YM = p.ymax || 8, q4 = (m) => [0, 1, 2, 3, 4].map((k) => Math.round(m * k / 4 * 100) / 100);
   const g = axes(s, RC.x + 0.68, TOP + 0.95, 2.85, 2.3, {
     xmin: 0, xmax: TM, xticks: q4(TM), ymin: 0, ymax: YM, yticks: q4(YM),
     xlab: "유지 시간 (h) @ " + (p.temp || 150) + " °C", ylab: "IMC 두께 (µm) — 확산 성장",
   });
-  // k 가 없으면 곡선을 그리지 않는다 (문항에 없는 성장 속도를 그림이 만들어 내지 않도록)
-  if (p.k != null) { const pts = [];
+  const pts = [];
     for (let t = 0; t <= TM; t += TM / 50) pts.push([g.X(t), g.Y(Math.min(YM, p.k * Math.sqrt(t)))]);
-    curve(s, pts, K.rust, 1.7); }
+    curve(s, pts, K.rust, 1.7);
   pill(s, g.X(TM * 0.62), g.Y(YM * 0.91), "x = k · t^0.5", { fs: 8, fill: K.cream });
   if (p.hours) L(s, g.X(Math.min(TM, p.hours)), g.Y(0), g.X(Math.min(TM, p.hours)), g.Y(YM), K.edge, 1.0, { dash: 1 });
-  pill(s, RC.x, TOP + 3.95, p.bullet || "IMC 가 두꺼울수록 계면 파괴 확률 증가", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
-  flagOf(s, p); cap(s, p.note || (p.k != null ? "두께 방향 확대 표시 · 그래프는 확산 지배 가정의 경향선" : "두께 방향 확대 표시 · 성장 곡선은 k 가 주어질 때만 표시"));
+  }
+  if (p.k != null || p.bullet) pill(s, RC.x, TOP + 3.95, p.bullet || "IMC 가 두꺼울수록 계면 파괴 확률 증가", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || (p.k != null ? "두께 방향 확대 표시 · 그래프는 확산 지배 가정의 경향선" : "두께 방향 확대 표시"));
 }
 
 // ========== T5. Sawing / dicing 단면 ==========
@@ -1598,7 +1601,7 @@ function svgFor(q){
     s.out.push(`<foreignObject x="${o.x*100}" y="${o.y*100}" width="${o.w*100}" height="${(o.h||1.9)*100}"><div xmlns="http://www.w3.org/1999/xhtml" style="height:100%"><table class="mtable"${o.fs ? ` style="font-size:${o.fs}px"` : ""}>${html}</table></div></foreignObject>`);
   };
   const fn = F[q.fig[0]];
-  if (fn) { try { fn(s, q.fig[1]); } catch(e) { return `<svg class="stage" viewBox="50 230 860 592"><text x="80" y="300" fill="#c8372d" font-size="16">상황도 오류: ${esc(e.message)}</text></svg>`; } }
+  if (fn) { try { fn(s, q.fig[1]); window.__figStat = { ax: s._ax || 0, cv: s._cv || 0 }; } catch(e) { return `<svg class="stage" viewBox="50 230 860 592"><text x="80" y="300" fill="#c8372d" font-size="16">상황도 오류: ${esc(e.message)}</text></svg>`; } }
   return `<svg class="stage" viewBox="50 230 860 592" role="img" aria-label="${esc(q.title)} 상황도">${s.out.join("")}</svg>`;
 }
 
