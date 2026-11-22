@@ -47,3 +47,9 @@ node tools/e2e.js dist/HBM_quiz.html                     # 구성 스크롤·클
 ## 5. 주의
 - 저장소 루트 `.gitignore` 의 `data/` 규칙 때문에 `!hbm_quiz/data/` 예외가 필요하다(이미 추가됨) — 데이터 커밋 누락 확인.
 - 인라인 주석을 코드 앞에 붙일 때 같은 줄의 코드가 주석 처리되지 않게 주의(과거 구성 화면 스크롤 버그 원인).
+
+## 6. 진행 상황 공유 (Doop 캔버스)
+사용자는 문항 수정 과정을 Doop 캔버스로 함께 본다: canvas id `TzZYp-dh1w` ("HBM 이해도 평가 — 문항 수정 현황").
+- 프레임 ① 현황판(분야별 문항 수·난이도·정답 위치·검사 결과), ② 수정 로그(문항별 보기 전/후 비교 — 컴포넌트 DiffRow, LevelBadge, StatTile 사용).
+- 수정 작업을 시작하면 `set_status` 로 지금 하는 일을 알리고, 배치가 끝날 때마다 ② 에 수정한 문항의 전/후(보기·해설 원인)를 추가하고 ① 의 수치를 갱신한다(수치는 스크립트로 data 에서 계산).
+- Doop 도구 사용 전 `get_guide({topic:"doop-instructions"})`, 편집 전 `get_canvas`. 같은 agent_name("Claude (오케스트레이터)" 또는 "EA"/"DA") 유지.
