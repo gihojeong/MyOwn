@@ -38,7 +38,7 @@ FIG = {
                  enums={"defect": ["none", "undercut", "residue"], "step": list(range(8))}),
     "f_bump": dict(keys="imc_um pillar_um solder_um niBarrier kirkendall em j_kA temp k hours tmax ymax hideLabels hideResult bullet note flag",
                    q="imc_um pillar_um solder_um temp"),
-    "f_saw": dict(keys="method kerf_um haz_um chip_um notes bullet note flag", q="kerf_um",
+    "f_saw": dict(keys="method kerf_um haz_um chip_um notes hideTable bullet note flag", q="kerf_um",
                   enums={"method": ["blade", "lg", "stealth", "plasma", "deeplaser", "dbg"]}),
     "f_bond": dict(keys="method pitch_um gap_um voids filler_trap nonwet dish bullet note flag hideTable hideNotes", q="pitch_um gap_um",
                    enums={"method": ["ncf", "mrmuf", "hcb"]}),

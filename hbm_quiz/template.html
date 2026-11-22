@@ -789,7 +789,8 @@ function f_saw(s, p) {
   R(s, x0, top + 0.16, w, 0.1, MX.ox, { lw: 0.6 });
   R(s, x0, top + 0.26, w, siH, MX.si, { lw: 0.9 });
   T(s, "Si", x0 + 0.3, top + 0.26 + siH * 0.3, 1.0, 0.24, { fs: 8, bold: true, color: K.ink2, align: "center", valign: "middle" });   // 절단선(가운데)과 지시선을 피해 왼쪽 위에
-  const cx = x0 + w / 2, kerf = Math.max(0.1, (p.kerf_um || 40) * 0.0045), bot = top + 0.26 + siH;
+  const KD = { blade: 40, lg: 40, stealth: 0, plasma: 10, deeplaser: 30, dbg: 40 }, KU = p.kerf_um ?? (KD[m] ?? 40);   // 방식별 기본 kerf(표 대표값과 일치), 0 허용
+  const cx = x0 + w / 2, kerf = Math.max(0.1, KU * 0.0045), bot = top + 0.26 + siH;
   const cut = (x1, x2, y1, y2, c) => R(s, x1, y1, x2 - x1, y2 - y1, c || MX.bare, { lw: 0.8 });
   const haz = (x1, x2, y1, y2) => R(s, x1, y1, x2 - x1, y2 - y1, MX.hot, { lw: 0.5, tr: 45 });
   if (m === "blade") {
@@ -814,7 +815,7 @@ function f_saw(s, p) {
   } else if (m === "plasma") {
     cut(cx - kerf / 2, cx + kerf / 2, top + 0.26, bot);
     cut(cx - kerf / 2 - 0.04, cx + kerf / 2 + 0.04, top, top + 0.26);
-    annotTo(s, cx + kerf / 2, top + 0.85, 0, "수직 측벽 · HAZ 없음 · kerf " + (p.kerf_um || 10) + " µm", K.mint);
+    annotTo(s, cx + kerf / 2, top + 0.85, 0, "수직 측벽 · HAZ 없음 · kerf " + KU + " µm", K.mint);
     annot(s, 1, "scribe lane 금속은 Si 식각으로 안 걷힌다", K.pink);
   } else if (m === "deeplaser") {
     cut(cx - kerf / 2, cx + kerf / 2, top, bot - 0.18);
@@ -828,7 +829,7 @@ function f_saw(s, p) {
     annot(s, 1, "half-cut 후 backgrinding 으로 개별화한다", K.mint);
     annotTo(s, cx + kerf / 2 + 0.1, top + 0.4, 0, "half-cut 깊이", K.cream);
   }
-  dimH(s, cx - kerf / 2, cx + kerf / 2, top - 0.80, "kerf " + (p.kerf_um || 40) + " µm");
+  if (m !== "stealth" && KU > 0) dimH(s, cx - kerf / 2, cx + kerf / 2, top - 0.80, "kerf " + KU + " µm");   // stealth = kerf 손실 없음 → 치수선 없음
   lead(s, x0 + 0.45, top + 0.08, x0 + 0.45, top - 0.26, "low-k ILD / passivation", { fill: MX.lowk, align: "left" });
   const rows = [["방식", "kerf", "HAZ", "상부막 손상"],
     ["blade", "30–60 µm", "없음", "chipping 큼"],
@@ -838,9 +839,13 @@ function f_saw(s, p) {
     ["deep laser", "20–40 µm", "10 µm 이상", "작음"]];
   rows.push(["DBG (half-cut → BG)", "blade 폭", "없음", "blade 와 비슷"]);
   const keymap = { blade: 1, lg: 2, stealth: 3, plasma: 4, deeplaser: 5, dbg: 6 }, tH = 0.32 + rows.length * 0.52;
-  s.addTable(rows.map((r, ri) => r.map((c) => ({ text: c, options: ri === keymap[m] ? { color: K.alert } : {} }))), { x: RC.x, y: TOP, w: RC.w, h: tH, fs: 15 });
-  T(s, "표는 방식별 대표 범위 · 이 문항의 수치는 지문 기준", RC.x, TOP + tH + 0.06, RC.w, 0.2, { fs: 7, color: K.muted });
-  if (p.bullet || !NO) pill(s, RC.x, TOP + tH + 0.55, p.bullet || "붉은 행이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  // hideTable → 방식 비교표 숨김. notes:false → 표는 두되 붉은 행 강조를 끈다(방식·결함 단서 차단)
+  if (p.hideTable !== true) {
+    s.addTable(rows.map((r, ri) => r.map((c) => ({ text: c, options: !NO && ri === keymap[m] ? { color: K.alert } : {} }))), { x: RC.x, y: TOP, w: RC.w, h: tH, fs: 15 });
+    T(s, "표는 방식별 대표 범위 · 이 문항의 수치는 지문 기준", RC.x, TOP + tH + 0.06, RC.w, 0.2, { fs: 7, color: K.muted });
+  }
+  const pY = p.hideTable === true ? TOP + 0.2 : TOP + tH + 0.55;
+  if (p.bullet || !NO) pill(s, RC.x, pY, p.bullet || (p.hideTable === true ? "절단 방식별 단면 형상" : "붉은 행이 이 문항의 조건이다"), { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
 }
 

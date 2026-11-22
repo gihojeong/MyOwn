@@ -132,3 +132,5 @@
 `f_bump`·렌더 점검 (2026-11-22, 사용자 지적 BUMP-B-0067): k 가 없으면 IMC 성장 좌표계 자체를 그리지 않음(빈 좌표계 금지). `axes()`·`curve()` 가 그림별 좌표계·곡선 수를 세고 smoke 가 `figEmpty`(좌표계 > 곡선) 를 보고 — 게이트 조건 figEmpty []. 육안 점검 도구 `tools/sheets.js`(접촉 인화지) 추가, SKILL 완료 게이트에 필수로 넣음.
 
 정답 노출 차단 옵션 추가 (2026-11-22, DA 육안 점검 2 요청): `f_tsv hideLabels`(void·seam·pinch-off 이름 라벨 → "관찰 부위 (A)", 종횡비 주석 생략, 범례 중립화), `f_cmp hideLabels`(결함 이름 → "단차 A/B {nm} nm"), `f_stack hideFormula`(계산식 열 숨김; `hideResult` 도 식을 함께 숨김). 정답이 결함 이름·계산 결과면 켠다.
+
+`f_saw` (2026-11-22, DA 육안 점검 2 지적): kerf 기본값을 방식별 표 대표값으로 통일(blade·lg·dbg 40, plasma 10, deep laser 30 µm; `kerf_um` 은 `??` 처리로 0 허용). stealth 는 kerf 치수선을 그리지 않음("kerf 손실 없음"과 모순 제거). 새 옵션 `hideTable`(방식 비교표 숨김). `notes:false` 이면 비교표의 붉은 행 강조도 끔(방식·결함 단서 차단).
