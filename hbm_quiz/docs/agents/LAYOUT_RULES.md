@@ -140,3 +140,5 @@
 DA 육안 점검 3 지적 반영 (2026-11-22): `f_sip sideTitle`(오른쪽 단면 제목 지정)·`hidePath`(HBM–XPU 신호 경로 화살표·라벨 끔 — lid·stiffener·BGA·underfill 문항용). `f_therm` tTop 기본값 95 → (상한 − 25) °C(기본 최상단 온도가 상한보다 높게 그려지던 것). `f_ubj` 수지 충전을 배경과 구분되는 색 + 빗금으로, "수지 충전" 라벨을 간극 위쪽으로.
 
 `f_ubj` EM 방향 정정 (2026-11-22, DA-5 지적): 전자 화살표가 아래 → 위인데 void 가 위(전자가 나가는 anode)쪽에 그려져 물리적으로 틀렸다. 기본 전자 흐름을 위 → 아래로 바꾸고, void 는 전자가 들어오는 cathode 계면, 돌출은 anode 계면에 그린다. `electron.dir:"up"` 이면 둘 다 반대로. BUMP-B-9004 그림이 이 정정으로 바로잡힘. 상태 void·trap·dendrite·unfill, `fillet` 추가(부록 A).
+
+3D cutaway 그림 틀 (2026-11-27, BJ 품질 기준 = CVD 챔버 개념도): 템플릿 3부(fig3) `f_chamber`·`f_pkg3d`·`f_blade` 추가. 공통 헬퍼: SVG gradient 음영(`grad`·`rgrad`, figure 마다 고유 id), 원판 `disk`, 테두리 라벨 박스 `tbox`·리더선 `tag`, 흐름 화살표 `flow`, 인셋 `inset`, 라벨 결정 `labeler`(hideLabels → "부위 A…", keepLabels 예외). 라벨 박스는 pill 이 아니므로 figPost 가 옮기지 않는다 — 위치를 직접 정한다. 적용: SAW-B-9007·9008·9018, SIP-B-0074·0079·0084·0085·0107·0113·0114·0152·9011, FEOL-B-0014·9020.

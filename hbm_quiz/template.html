@@ -1654,8 +1654,282 @@ function f_note(s, p) {
 
 module.exports = { f_bond, f_warp, f_sip, f_therm, f_fa, f_rel, f_stack, f_hcb, f_plot, f_film, f_note, f_table, f_wafermap, f_ubj, f_plate, f_wet };
 MODS["./fig2.js"] = module.exports; })({ exports: {} });
+// ===== 상황도 템플릿 3부: 입체 cutaway 그림 (BJ 품질 기준 = CVD 챔버 개념도, 2026-11-27) =====
+// 공통 문법: 입체 단면(cutaway) · 금속/재료 음영(gradient) · 흐름 화살표 · 테두리 라벨 박스 + 리더선 · 결과 인셋 · 개념도 각주.
+// 라벨이 정답이면 hideLabels:true → "부위 A/B/…" 로만 표시. labels:{key:false} 로 개별 라벨 끔, labels:{key:"글자"} 로 바꿈.
+(function (module) { const require = req;
+const { K, shade, poly, L, A, R, T, E, tw, pill, OBL, oblBox } = require("./lib.js");
+const { DG, LC, RC, TOP, BOT, MX, cap } = require("./fig1.js");
+const u = (v) => Math.round(v * 1000) / 10;   // inch → SVG user unit(×100), 0.1 단위
+let GID = 0;
+// 선형 그라데이션: 방향 dir = "v"(위→아래) | "h"(왼→오른). stops = [[0,"RRGGBB"],[1,"RRGGBB"]]
+function grad(s, stops, dir) {
+  const id = "g3_" + (++GID), [x2, y2] = dir === "h" ? ["1", "0"] : ["0", "1"];
+  s.out.push(`<defs><linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map(([o, c, a]) => `<stop offset="${o}" stop-color="#${c}"${a != null ? ` stop-opacity="${a}"` : ""}/>`).join("")}</linearGradient></defs>`);
+  return `url(#${id})`;
+}
+function rgrad(s, stops) {
+  const id = "r3_" + (++GID);
+  s.out.push(`<defs><radialGradient id="${id}" cx="0.5" cy="0.5" r="0.5">${stops.map(([o, c, a]) => `<stop offset="${o}" stop-color="#${c}"${a != null ? ` stop-opacity="${a}"` : ""}/>`).join("")}</radialGradient></defs>`);
+  return `url(#${id})`;
+}
+const fillOf = (f) => (String(f).startsWith("url(") ? f : "#" + f);
+function path(s, d, fill, o = {}) {
+  s.out.push(`<path class="el" d="${d}" fill="${fill ? fillOf(fill) : "none"}"${o.op != null ? ` fill-opacity="${o.op}"` : ""} stroke="${o.line === null ? "none" : "#" + (o.line || K.edge)}" stroke-width="${((o.lw == null ? 0.9 : o.lw) * 1.25).toFixed(2)}" stroke-linejoin="round"${o.dash ? ' stroke-dasharray="5 3.5"' : ""}/>`);
+}
+function rectG(s, x, y, w, h, fill, o = {}) {
+  s.out.push(`<rect class="el" x="${u(x)}" y="${u(y)}" width="${u(w)}" height="${u(h)}" rx="${u(o.r || 0)}" fill="${fillOf(fill)}"${o.op != null ? ` fill-opacity="${o.op}"` : ""} stroke="${o.line === null ? "none" : "#" + (o.line || K.edge)}" stroke-width="${((o.lw == null ? 0.9 : o.lw) * 1.25).toFixed(2)}"${o.dash ? ' stroke-dasharray="5 3.5"' : ""}/>`);
+}
+function ellG(s, cx, cy, rx, ry, fill, o = {}) {
+  s.out.push(`<ellipse class="el" cx="${u(cx)}" cy="${u(cy)}" rx="${u(rx)}" ry="${u(ry)}" fill="${fill ? fillOf(fill) : "none"}"${o.op != null ? ` fill-opacity="${o.op}"` : ""} stroke="${o.line === null ? "none" : "#" + (o.line || K.edge)}" stroke-width="${((o.lw == null ? 0.9 : o.lw) * 1.25).toFixed(2)}"${o.dash ? ' stroke-dasharray="5 3.5"' : ""}/>`);
+}
+// 원판(디스크): 윗면 타원 + 옆면 띠. 정면 아래쪽 반만 옆면이 보인다.
+function disk(s, cx, cy, rx, ry, th, top, side, o = {}) {
+  path(s, `M${u(cx - rx)} ${u(cy)} A${u(rx)} ${u(ry)} 0 0 0 ${u(cx + rx)} ${u(cy)} L${u(cx + rx)} ${u(cy + th)} A${u(rx)} ${u(ry)} 0 0 1 ${u(cx - rx)} ${u(cy + th)} Z`, side, { lw: o.lw == null ? 0.8 : o.lw });
+  ellG(s, cx, cy, rx, ry, top, { lw: o.lw == null ? 0.8 : o.lw });
+}
+// 테두리 라벨 박스(기준 이미지의 청록 테두리 박스). align: "left"(x 가 왼쪽 끝) | "right"(x 가 오른쪽 끝)
+const TEAL = "2F7F8F";
+function tbox(s, x, y, text, o = {}) {
+  const fs = o.fs || 8, w = tw(text, fs * 1.52) * 1.08 + 0.3, h = 0.32;
+  const X = o.align === "right" ? x - w : o.align === "center" ? x - w / 2 : x;
+  R(s, X, y - h / 2, w, h, o.fill || "F3FAFB", { lw: 1.1, line: o.line || TEAL, text, fs, bold: true, color: o.color || "1F4F5A" });
+  return { x: X, y: y - h / 2, w, h };
+}
+// 부위 → 라벨 박스 리더선. 끝점에 점.
+function tag(s, ax, ay, bx, by, text, o = {}) {
+  const align = o.align || (bx < ax ? "right" : "left");
+  const fs = o.fs || 8, w = tw(text, fs * 1.52) * 1.08 + 0.3;
+  const X = align === "right" ? bx - w : align === "center" ? bx - w / 2 : bx;
+  const ex = ax < X ? X - 0.03 : ax > X + w ? X + w + 0.03 : Math.max(X, Math.min(X + w, ax));   // 부위에 가까운 박스 변에서 멈춤
+  const ey = ax >= X && ax <= X + w ? (ay < by ? by - 0.19 : by + 0.19) : by;
+  L(s, ax, ay, ex, ey, o.lc || TEAL, 0.9, { lead: 1 });
+  E(s, ax - 0.035, ay - 0.035, 0.07, 0.07, o.lc || TEAL, { line: null });
+  return tbox(s, bx, by, text, { align, fs, line: o.line, fill: o.fill });
+}
+// 흐름 화살표(가스·물·전류). 색 기본 = 청색
+function flow(s, x1, y1, x2, y2, c, w) { A(s, x1, y1, x2, y2, c || "3B82C4", w || 1.5); }
+// 인셋 상자: 둥근 테두리 + 제목. 내용은 콜백(x,y,w,h)
+function inset(s, x, y, w, h, title, draw) {
+  rectG(s, x, y, w, h, "FBF8F2", { r: 0.1, line: "8C99A6", lw: 1.0 });
+  if (title) T(s, title, x + 0.12, y + 0.06, w - 0.24, 0.22, { fs: 8, bold: true, color: K.ink, align: "center" });
+  draw(x, y + (title ? 0.32 : 0.08), w, h - (title ? 0.4 : 0.16));
+}
+// 라벨 문구 결정: hideLabels 면 "부위 A…", labels[key] === false 면 없음
+function labeler(p, defs) {
+  const HL = p.hideLabels === true, L0 = "ABCDEFGH"; let k = 0; const out = {};
+  Object.keys(defs).forEach((key) => {
+    const v = p.labels && key in p.labels ? p.labels[key] : defs[key];
+    if (v === false || v == null) return;
+    out[key] = HL && !(p.keepLabels || []).includes(key) ? "부위 " + L0[k++] : v;
+  });
+  return out;
+}
+// 막 두께 분포 형상(정규화 0..1 위치 → 상대 두께)
+function prof(kind, t) {
+  const r = Math.abs(t - 0.5) * 2;
+  return kind === "center" ? 1 - 0.55 * r * r : kind === "edge" ? 0.45 + 0.55 * r * r : kind === "slope" ? 0.45 + 0.55 * t : kind === "ring" ? 0.6 + 0.4 * Math.sin(Math.PI * r) : 0.8;
+}
+function filmOn(s, cx, cy, rx, ry, kind, hmax, color) {
+  const pts = []; const N = 30;
+  for (let i = 0; i <= N; i++) { const t = i / N, x = cx - rx + 2 * rx * t; pts.push([x, cy - hmax * prof(kind, t)]); }
+  let d = `M${u(cx - rx)} ${u(cy)} ` + pts.map(([x, y]) => `L${u(x)} ${u(y)}`).join(" ") + ` L${u(cx + rx)} ${u(cy)} A${u(rx)} ${u(ry)} 0 0 1 ${u(cx - rx)} ${u(cy)} Z`;
+  path(s, d, color || "E9B949", { lw: 0.7 });
+}
 
-const F = Object.assign({}, MODS["./fig1.js"], MODS["./fig2.js"]);
+// ========== T30. 공정 챔버 cutaway (f_chamber) — CVD·ALD·PVD·식각 ==========
+// type: cvd(샤워헤드) | ald | etch(샤워헤드 + plasma) | pvd(target + magnet)
+// plasma:true · film:"center"|"edge"|"slope"|"flat"|"ring"|"none" · inset:{title, profiles:[...], captions:[...]} · flowLabel
+function f_chamber(s, p) {
+  const t = p.type || "cvd", pvd = t === "pvd", plasma = p.plasma != null ? p.plasma : (t === "etch" || pvd);
+  const cx = 4.15, x1 = 1.75, x2 = 6.55, y1 = 3.05, y2 = 6.2, wall = 0.13;
+  const metal = grad(s, [[0, "C9D1D8"], [0.5, "9AA6B1"], [1, "7D8894"]], "h");
+  const inner = grad(s, [[0, "E4EBF1"], [1, "CBD6E0"]], "v");
+  // 가스 유입관 (위)
+  if (!pvd) { rectG(s, cx - 0.17, 2.62, 0.34, y1 - 2.62 + 0.2, metal, { lw: 0.9 }); rectG(s, cx - 0.07, 2.62, 0.14, y1 - 2.62 + 0.2, "EEF3F7", { lw: 0.5 }); }
+  // 챔버 외벽(둥근 모서리) + 내부
+  rectG(s, x1, y1, x2 - x1, y2 - y1, metal, { r: 0.42, lw: 1.0 });
+  rectG(s, x1 + wall, y1 + wall, x2 - x1 - 2 * wall, y2 - y1 - 2 * wall, inner, { r: 0.34, lw: 0.8 });
+  // 플랜지
+  [[x1 - 0.22, 3.75], [x2, 3.75]].forEach(([fx, fy]) => { rectG(s, fx, fy, 0.22, 0.16, metal, { lw: 0.8 }); rectG(s, fx, fy + 1.25, 0.22, 0.16, metal, { lw: 0.8 }); });
+  // 배기관 (오른쪽 아래)
+  const ey = 5.05;
+  rectG(s, x2 - 0.05, ey, 0.85, 0.36, metal, { lw: 0.9 }); rectG(s, x2 - 0.05, ey + 0.1, 0.85, 0.16, "EEF3F7", { lw: 0.5 });
+  flow(s, x2 + 0.55, ey + 0.18, x2 + 1.15, ey + 0.18);
+  const lab = labeler(p, pvd
+    ? { target: "target (증착 원료)", magnet: "magnet", wafer: "wafer", heater: "히터·정전척", exhaust: "배기 → 진공 펌프", plasma: "Ar plasma", wall: "챔버 벽" }
+    : { inlet: "가스 유입", shower: t === "etch" ? "샤워헤드 (상부 전극)" : "샤워헤드 (가스 분배)", wafer: "wafer", heater: "히터", exhaust: "배기", plasma: "plasma", wall: "챔버 형상" });
+  if (lab.exhaust) T(s, lab.exhaust, x2 + 1.2, ey + 0.05, 1.3, 0.22, { fs: 8, bold: true, color: K.ink2 });
+  if (!pvd) {
+    flow(s, cx, 2.66, cx, 3.25);
+    if (lab.inlet) { L(s, cx + 0.22, 2.78, cx + 0.5, 2.78, K.muted, 0.8); T(s, lab.inlet, cx + 0.55, 2.68, 1.4, 0.22, { fs: 8, bold: true, color: K.ink2 }); }
+  }
+  // 상부: 샤워헤드 또는 target
+  const sy = 3.55, srx = 1.85, sry = 0.17;
+  if (pvd) {
+    const mg = grad(s, [[0, "8A6F9E"], [1, "5E4A70"]], "v");
+    [-1.2, -0.4, 0.4, 1.2].forEach((dx) => rectG(s, cx + dx - 0.22, y1 + wall + 0.02, 0.44, 0.18, mg, { lw: 0.6 }));
+    disk(s, cx, sy, srx, sry, 0.12, grad(s, [[0, "D6C9A8"], [1, "B8A77E"]], "v"), "9C8B63");
+  } else {
+    disk(s, cx, sy, srx, sry, 0.09, grad(s, [[0, "DCE3EA"], [1, "AEB9C4"]], "v"), "8C98A4");
+    for (let i = -6; i <= 6; i++) for (let j = -1; j <= 1; j++) { const hx = cx + i * 0.26 + (j % 2 ? 0.13 : 0), hy = sy + j * 0.07; if (((hx - cx) / srx) ** 2 + ((hy - sy) / sry) ** 2 < 0.8) ellG(s, hx, hy, 0.035, 0.018, "56626E", { line: null }); }
+  }
+  // 웨이퍼 + 받침(서셉터) + 히터
+  const wy = 4.72, wrx = 1.55, wry = 0.15;
+  if (plasma) ellG(s, cx, (sy + wy) / 2 + 0.05, srx * 0.95, 0.42, rgrad(s, [[0, "C9A7F0", 0.85], [0.7, "D9C2F5", 0.45], [1, "E9DDF8", 0]]), { line: null });
+  // 흐름 화살표: 샤워헤드 → 웨이퍼 (pvd 는 원자 비행)
+  if (p.flow !== false) {
+    for (let i = -3; i <= 3; i++) {
+      const fx = cx + i * 0.48;
+      if (pvd) flow(s, fx, sy + 0.25, fx + i * 0.07, wy - 0.25, "7A5C9E", 1.1);
+      else flow(s, fx, sy + 0.24, fx, wy - 0.28, "3B82C4", 1.3);
+    }
+  }
+  const ped = grad(s, [[0, "A7B2BC"], [1, "6F7B86"]], "v");
+  rectG(s, cx - 0.16, 5.3, 0.32, y2 - 5.3 + 0.35, ped, { lw: 0.8 });                  // 축
+  const hy0 = 5.05, hgt = 0.36;
+  rectG(s, cx - 1.85, hy0, 3.7, hgt, grad(s, [[0, "F2B36A"], [1, "D98A3D"]], "v"), { lw: 0.9 });   // 히터 블록
+  for (let i = 0; i < 10; i++) { const hx = cx - 1.65 + i * 0.36; path(s, `M${u(hx)} ${u(hy0 + 0.29)} q${u(0.05)} ${u(-0.06)} 0 ${u(-0.11)} q${u(-0.05)} ${u(-0.06)} 0 ${u(-0.11)}`, null, { line: "B5571C", lw: 0.7 }); }
+  disk(s, cx, 4.92, 2.0, 0.2, 0.12, grad(s, [[0, "BAC4CD"], [1, "8E9AA5"]], "v"), "7E8A95");   // 서셉터
+  disk(s, cx, wy, wrx, wry, 0.06, "C7CDD4", "9AA3AC");                                       // wafer
+  if ((p.film || "center") !== "none") filmOn(s, cx, wy, wrx, wry, p.film || "center", 0.17, "E9B949");
+  // 라벨 박스
+  if (lab.shower || lab.target) tag(s, cx - srx + 0.25, sy, 0.75, 3.2, lab.shower || lab.target, { align: "left" });
+  if (lab.magnet) tag(s, cx + 1.2, y1 + 0.2, 7.05, 2.85, lab.magnet, { align: "left" });
+  if (lab.wall) tag(s, x2 - 0.15, 3.6, 7.0, 3.35, lab.wall, { align: "left" });
+  if (lab.plasma && plasma) tag(s, cx + 1.3, 4.2, 7.0, 4.1, lab.plasma, { align: "left" });
+  if (lab.wafer) tag(s, cx - 1.1, wy - 0.05, 0.75, 4.35, lab.wafer, { align: "left" });
+  if (lab.heater) tag(s, cx - 1.5, hy0 + 0.2, 0.75, 5.55, lab.heater, { align: "left" });
+  // 결과 인셋
+  if (p.inset) {
+    const ins = p.inset, pr = ins.profiles || ["center", "edge", "slope"];
+    inset(s, 5.35, 6.45, 3.55, 1.38, ins.title || "가능한 두께 분포", (ix, iy, iw, ih) => {
+      const n = pr.length, cw = iw / n;
+      pr.forEach((k, i) => { const mx = ix + cw * (i + 0.5), my = iy + 0.45;
+        disk(s, mx, my, cw * 0.36, 0.06, 0.07, "C7CDD4", "9AA3AC", { lw: 0.6 });
+        if (k !== "none") filmOn(s, mx, my, cw * 0.36, 0.06, k, 0.13, "E9B949");
+        const c = (ins.captions || [])[i]; if (c) T(s, c, mx - cw / 2, my + 0.2, cw, 0.2, { fs: 7, align: "center", color: K.ink2 }); });
+    });
+  }
+  if (p.bullet) T(s, p.bullet, 0.75, 6.62, 4.4, 0.4, { fs: 9, bold: true, color: "9A6A12" });
+  cap(s, p.note || "개념도 · 막 두께 과장 표시 · 측정 데이터 아님");
+}
+
+// ========== T31. 2.5D 패키지 cutaway (f_pkg3d) — lid·TIM·C4·underfill·interposer·HBM·SoC ==========
+// parts: lid·tim·stiffener·bga·ufC4·ufMu (true/false) · nHBM(좌우 각 1–2) · highlight: 부위 키 (붉은 점선 강조)
+// labels / hideLabels 는 공통 규칙. heat:true → SoC 에서 lid 로 열 흐름 화살표
+function f_pkg3d(s, p) {
+  const pt = Object.assign({ lid: true, tim: true, stiffener: false, bga: true, ufC4: true, ufMu: true }, p.parts || {});
+  const x0 = 2.3, W = 4.7, D = 1.0;                                   // 앞면 폭, 깊이(인치, 사선 투영)
+  const P = OBL(x0, 6.5, 1, 1);                                       // z 위로 + (인치)
+  const zS = 0, hS = 0.42, zC = hS, hC = 0.2, zI = zC + hC, hI = 0.22, zM = zI + hI, hM = 0.1, zD = zM + hM;
+  const hHBM = 1.25, hSoC = 1.2, zT = zD + hHBM, hT = 0.07, zL = zT + hT, hL = 0.16;
+  const col = { sub: "9DBF8E", c4: "D9C7A8", int: "C8CFD8", hbm: "D8CCEB", soc: "B9CFEA", lid: "B7C0C9", tim: "E7A1A1" };
+  const box = (x, z, w, h, c, o = {}) => oblBox(s, P, x, 0, z, w, D * (o.d || 1), h, c, Object.assign({ lw: 0.8 }, o));
+  // BGA
+  if (pt.bga) for (let i = 0; i < 10; i++) { const [bx, by] = P(0.22 + i * 0.475, 0, 0); ellG(s, bx, by + 0.11, 0.13, 0.12, "C9CED6", { lw: 0.6 }); }
+  box(0, zS, W, hS, col.sub);
+  // C4 층: underfill + bump
+  const iw = 3.7, ix = (W - iw) / 2;
+  if (pt.ufC4) box(ix - 0.15, zC, iw + 0.3, hC, col.c4, { d: 0.95 });
+  for (let i = 0; i < 12; i++) { const [bx, by] = P(ix + 0.2 + i * (iw - 0.4) / 11, 0, zC + hC / 2); ellG(s, bx, by, 0.09, 0.085, "C3C9D1", { lw: 0.6 }); }
+  // interposer + TSV
+  box(ix, zI, iw, hI, col.int, { d: 0.9 });
+  for (let i = 0; i < 12; i++) { const [tx, ty] = P(ix + 0.2 + i * (iw - 0.4) / 11, 0, zI); L(s, tx, ty, tx, ty - hI, "B07A3A", 1.1); }
+  // µbump 층 + die
+  const hw = 0.8, sw = 1.35, sx = ix + (iw - sw) / 2, hx = [ix + 0.15, ix + iw - 0.15 - hw];
+  if (pt.ufMu) { box(hx[0], zM, hw, hM, col.c4, { d: 0.8 }); box(sx, zM, sw, hM, col.c4, { d: 0.8 }); box(hx[1], zM, hw, hM, col.c4, { d: 0.8 }); }
+  box(sx, zD, sw, hSoC, col.soc, { d: 0.8, text: p.socName || "SoC", fs: 8 });
+  hx.forEach((x) => { box(x, zD, hw, hHBM, col.hbm, { d: 0.8 });
+    for (let k = 1; k < 9; k++) { const [a1, b1] = P(x, 0, zD + hHBM * k / 9), [a2] = P(x + hw, 0, zD + hHBM * k / 9); L(s, a1, b1, a2, b1, "9F8BC0", 0.5); }
+    const [tx, ty] = P(x + hw / 2, 0, zD + hHBM * 0.5); pill(s, tx, ty, "HBM", { fs: 7, fill: "F4EEFB", nogut: true, h: 0.18 }); });
+  // TIM + lid / stiffener
+  const zTs = zD + hSoC;                                             // SoC 윗면
+  if (pt.tim) { box(sx, zTs, sw, zT - zTs, col.tim, { d: 0.8 }); hx.forEach((x) => box(x, zT - 0.01, hw, hT * 0.6, col.tim, { d: 0.8 })); }
+  if (pt.lid) {
+    box(0.15, zL, W - 0.3, hL, col.lid, { d: 0.95 });
+    box(0.15, zS + hS, 0.22, zL - zS - hS, col.lid, { d: 0.95 }); box(W - 0.37, zS + hS, 0.22, zL - zS - hS, col.lid, { d: 0.95 });
+  } else if (pt.stiffener) { box(0.15, zS + hS, 0.3, 0.55, col.lid, { d: 0.95 }); box(W - 0.45, zS + hS, 0.3, 0.55, col.lid, { d: 0.95 }); }
+  if (p.heat) { const [a, b] = P(sx + sw / 2, 0, zTs - 0.3), [c, d] = P(sx + sw / 2, 0, zL + hL + 0.45); A(s, a, b, c, d, K.rust, 2.0); }
+  // 강조
+  const KEYP = { lid: [0.15, zL, W - 0.3, hL], tim: [sx, zTs, sw, zT - zTs], c4: [ix - 0.15, zC, iw + 0.3, hC], mu: [sx, zM, sw, hM], int: [ix, zI, iw, hI], sub: [0, zS, W, hS], soc: [sx, zD, sw, hSoC], hbm: [hx[0], zD, hw, hHBM] };
+  if (p.highlight && KEYP[p.highlight]) { const [x, z, w, h] = KEYP[p.highlight], [a, b] = P(x, 0, z + h), [c, d] = P(x + w, 0, z); rectG(s, a - 0.05, b - 0.05, c - a + 0.1, d - b + 0.1, "FFFFFF", { op: 0, line: "C8372D", lw: 1.4, dash: 1 }); }
+  // 라벨 박스 (왼쪽·오른쪽 열)
+  const lab = labeler(p, { lid: pt.lid ? "lid (금속 덮개)" : (pt.stiffener ? "stiffener" : false), tim: pt.tim ? "TIM" : false, hbm: "HBM stack", soc: false, mu: "µbump + underfill", int: "Si interposer (TSV)", c4: "C4 bump" + (pt.ufC4 ? " + underfill" : ""), sub: "package substrate", bga: pt.bga ? "BGA ball" : false });
+  const at = (x, z) => P(x, 0, z);
+  const L_ = [], R_ = [];
+  if (lab.lid) R_.push([pt.lid ? at(W - 0.4, zL + hL / 2) : at(W - 0.3, zS + hS + 0.45), lab.lid]);
+  if (lab.tim) R_.push([at(sx + sw - 0.2, zTs + 0.03), lab.tim]);
+  if (lab.hbm) L_.push([at(hx[0] + 0.05, zD + hHBM * 0.8), lab.hbm]);
+  if (lab.mu) L_.push([at(hx[0] + hw * 0.6, zM + hM / 2), lab.mu]);
+  if (lab.int) R_.push([at(ix + iw - 0.5, zI + hI / 2), lab.int]);
+  if (lab.c4) R_.push([at(ix + iw - 0.75, zC + hC / 2), lab.c4]);
+  if (lab.sub) L_.push([at(0.15, zS + hS / 2), lab.sub]);
+  if (lab.bga) L_.push([at(0.22, -0.08), lab.bga]);
+  // 박스는 부위 높이 근처에 두되 0.46 in 이상 띄운다(리더선이 그림을 가로지르지 않게)
+  const spread = (arr, x, align) => { arr.sort((a, b) => a[0][1] - b[0][1]); let prev = 2.5; const ys = arr.map(([[, ay]]) => (prev = Math.max(ay, prev + 0.46)));
+    const over = Math.max(0, ys[ys.length - 1] - 7.2); arr.forEach(([[ax, ay], t], i) => tag(s, ax, ay, x, Math.max(2.95, ys[i] - over), t, { align })); };
+  spread(L_, 0.62, "left"); spread(R_, 8.95, "right");
+  if (p.bullet) T(s, p.bullet, 0.75, 7.55, 7.9, 0.3, { fs: 9, bold: true, color: "9A6A12" });
+  cap(s, p.note || "개념도 · 두께 방향 확대 · 비례 아님");
+}
+
+// ========== T32. blade dicing cutaway (f_blade) — blade·flange·절삭수·dressing ==========
+// parts: cooler(blade 냉각 노즐)·shower(세정 노즐)·dress(dressing board)·tape · inset:"grit"(blade 끝 확대: diamond + bond) · feed:true
+function f_blade(s, p) {
+  const pt = Object.assign({ cooler: true, shower: true, dress: false, tape: true }, p.parts || {});
+  const bx = 3.6, br = 1.35;                                // blade 중심 x·반지름(측면에서 본 원판)
+  // 척 테이블 + 테이프 + wafer (사선 슬래브)
+  const P = OBL(0.75, 6.35, 1, 1);
+  oblBox(s, P, 0, 0, 0, 6.0, 1.0, 0.35, "A9B3BD", { lw: 0.8, text: "chuck table", fs: 8 });
+  if (pt.tape) oblBox(s, P, 0.1, 0, 0.35, 5.8, 0.95, 0.06, "CFE6C8", { lw: 0.6 });
+  const wz = 0.35 + (pt.tape ? 0.06 : 0);
+  oblBox(s, P, 0.4, 0, wz, 4.0, 0.9, 0.12, "C7CDD4", { lw: 0.7 });
+  if (pt.dress) oblBox(s, P, 4.7, 0, wz, 1.1, 0.9, 0.18, "8F8577", { lw: 0.7 });
+  const [, wyTop] = P(0, 0, wz + 0.12), by = wyTop + 0.1 - br;   // blade 아래 끝이 wafer 를 지나 tape 까지
+  // 절단 홈 (blade 아래)
+  rectG(s, bx - 0.05, wyTop - 0.02, 0.1, 0.14, "F7F3EA", { lw: 0.5 });
+  // blade: hub + flange + 얇은 날(원 테두리)
+  const bl = grad(s, [[0, "E8ECEF"], [1, "AEB7BF"]], "v");
+  ellG(s, bx, by, br, br, bl, { lw: 1.0 });
+  ellG(s, bx, by, br - 0.1, br - 0.1, "D7DDE2", { lw: 0.5 });
+  ellG(s, bx, by, br * 0.62, br * 0.62, grad(s, [[0, "B4BDC6"], [1, "7F8A95"]], "v"), { lw: 0.9 });   // flange
+  ellG(s, bx, by, 0.24, 0.24, "5E6873", { lw: 0.8 });                                                     // spindle
+  path(s, `M${u(bx - br - 0.15)} ${u(by + 0.35)} A${u(br + 0.15)} ${u(br + 0.15)} 0 0 1 ${u(bx - 0.35)} ${u(by - br - 0.1)}`, null, { line: K.rust, lw: 1.3 });
+  A(s, bx - 0.45, by - br - 0.08, bx - 0.25, by - br - 0.13, K.rust, 1.3);
+  oblBox(s, P, 0.4, 0, wz, 4.0, 0.9, 0.12, "C7CDD4", { lw: 0.7, noTop: true, noSide: true });   // wafer 앞면을 blade 위에 다시: 날이 홈 속에 들어감
+  rectG(s, bx - 0.05, wyTop - 0.005, 0.1, 0.13, "EDE7DA", { lw: 0.4 });
+  // 냉각·세정수
+  const cyc = wyTop - 0.12;
+  if (pt.cooler) [[-1, 0.55], [1, 0.55]].forEach(([sg]) => { const nx = bx + sg * 0.75; rectG(s, nx - 0.35 * (sg > 0 ? 0 : 1), cyc - 0.45, 0.35, 0.12, "8AA4BC", { lw: 0.6 }); flow(s, nx, cyc - 0.33, bx + sg * 0.12, cyc + 0.02, "3B82C4", 1.2); });
+  if (pt.shower) { rectG(s, bx + br + 0.25, by - br + 0.2, 0.14, 0.7, "8AA4BC", { lw: 0.6 }); for (let k = 0; k < 3; k++) flow(s, bx + br + 0.32, by - br + 0.95 + k * 0.05, bx + br * 0.55 + k * 0.15, wyTop - 0.18, "3B82C4", 1.0); }
+  if (p.feed) { const [fx, fy] = P(0.6, 0, -0.18); A(s, fx + 2.6, fy + 0.02, fx + 1.4, fy + 0.02, K.edge, 1.4); T(s, p.feedLabel || "table 이송", fx + 1.4, fy + 0.06, 1.4, 0.2, { fs: 8, bold: true, color: K.ink2 }); }
+  const lab = labeler(p, { blade: "dicing blade", flange: "flange", cooler: pt.cooler ? "blade 냉각 노즐" : false, shower: pt.shower ? "세정 노즐" : false, wafer: "wafer", tape: pt.tape ? "dicing tape" : false, dress: pt.dress ? "dressing board" : false });
+  if (lab.blade) tag(s, bx - br * 0.72, by - br * 0.72, 0.65, 2.9, lab.blade, { align: "left" });
+  if (lab.flange) tag(s, bx - br * 0.45, by + 0.1, 0.65, 3.6, lab.flange, { align: "left" });
+  if (lab.cooler) tag(s, bx - 0.95, cyc - 0.4, 0.65, 4.4, lab.cooler, { align: "left" });
+  if (lab.shower) tag(s, bx + br + 0.32, by - br + 0.3, 6.1, 2.9, lab.shower, { align: "left" });
+  const [wx, wy] = P(1.0, 0, wz + 0.06), [tx2, ty2] = P(5.5, 0, 0.38), [dx, dy] = P(5.2, 0, wz + 0.1);
+  if (lab.wafer) tag(s, wx, wy, 0.65, 5.4, lab.wafer, { align: "left" });
+  if (lab.tape) tag(s, tx2, ty2, 8.95, 6.3, lab.tape, { align: "right" });
+  if (lab.dress) tag(s, dx, dy, 8.95, 5.65, lab.dress, { align: "right" });
+  if (p.inset === "grit") inset(s, 6.15, 3.1, 2.75, 2.2, p.insetTitle || "blade 끝 확대", (ix, iy, iw, ih0) => {
+    const ih = ih0 - 0.42;
+    rectG(s, ix + 0.2, iy + 0.05, iw - 0.4, ih - 0.1, "C9BFAE", { lw: 0.7 });
+    const pts = [[0.12, 0.2], [0.33, 0.12], [0.55, 0.3], [0.78, 0.15], [0.92, 0.42], [0.25, 0.55], [0.47, 0.7], [0.7, 0.62], [0.12, 0.85], [0.88, 0.85], [0.6, 0.9], [0.38, 0.38]];
+    pts.forEach(([a, b]) => { const gx = ix + 0.2 + a * (iw - 0.4), gy = iy + 0.05 + b * (ih - 0.1); poly(s, [[gx, gy - 0.09], [gx + 0.08, gy], [gx, gy + 0.09], [gx - 0.08, gy]], "EAF4FA", { lw: 0.6 }); });
+    const lb = p.hideLabels ? ["입자 X", "기지 Y"] : ["diamond 입자", "bond (결합재)"];
+    tbox(s, ix + 0.2, iy + ih + 0.16, lb[0], { fs: 7, fill: "EAF4FA", align: "left" }); tbox(s, ix + iw - 0.2, iy + ih + 0.16, lb[1], { fs: 7, fill: "E4DCCD", align: "right" });   // pill 은 후처리에서 움직이므로 고정 박스
+  });
+  if (p.bullet) T(s, p.bullet, 0.75, 7.1, 7.9, 0.3, { fs: 9, bold: true, color: "9A6A12" });
+  cap(s, p.note || "개념도 · 측면에서 본 blade · 비례 아님");
+}
+
+module.exports = { f_chamber, f_pkg3d, f_blade };
+MODS["./fig3.js"] = module.exports; })({ exports: {} });
+
+
+const F = Object.assign({}, MODS["./fig1.js"], MODS["./fig2.js"], MODS["./fig3.js"]);
 /* 동기식 raw-DEFLATE 해제기 (문항 데이터 내장 압축용).
    브라우저 기능에 의존하지 않고 top-level 동기 코드로 동작한다. */
 function INFLATE_RAW(src, outLen) {

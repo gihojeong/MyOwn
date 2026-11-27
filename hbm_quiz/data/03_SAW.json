@@ -949,10 +949,20 @@
    "exp": "dicing blade는 미세한 다이아몬드 입자를 전착 Ni(또는 수지·금속) 결합재로 붙잡은 얇은 고리이며, 결합재가 닳으면서 새 입자가 드러나 절삭이 계속됩니다. ①의 고속도강 날은 금속 가공용으로 Si 같은 취성 경질 재료를 자르지 못합니다. ③의 SiC 숫돌은 다이아몬드보다 빨리 닳아 수십 µm 두께의 날 형상을 유지하지 못하므로 Si dicing blade에 쓰지 않습니다. ④의 톱니 날은 취성 재료에 큰 chipping을 남깁니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_blade",
     {
-     "method": "blade",
-     "flag": "주제: dicing blade"
+     "inset": "grit",
+     "hideLabels": true,
+     "keepLabels": [
+      "blade",
+      "flange",
+      "cooler",
+      "shower",
+      "wafer",
+      "tape",
+      "dress"
+     ],
+     "insetTitle": "날 끝 단면 확대"
     }
    ],
    "metrics": []
@@ -972,10 +982,13 @@
    "exp": "절삭 부위에 뿌리는 물은 마찰열로 날과 wafer가 과열되는 것을 막고, 깎여 나온 Si 부스러기를 즉시 씻어 내 표면 오염과 날 막힘을 줄입니다. CO₂를 녹이는 것은 비저항을 낮춰 정전기 방전을 막기 위해서입니다. ②는 물이 Si를 의미 있게 산화시키지 않습니다. ③은 tape 경화가 자외선으로 이루어집니다. ④는 입자가 결합재 마모로 새로 드러날 뿐 물이 붙여 주지 않습니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_blade",
     {
-     "method": "blade",
-     "flag": "주제: 절삭수"
+     "labels": {
+      "cooler": "노즐 (DI water)",
+      "shower": "노즐 (DI water)"
+     },
+     "feed": true
     }
    ],
    "metrics": []
@@ -1242,10 +1255,13 @@
    "exp": "dressing은 막히거나 닳아 매끈해진(glazing) 날 표면의 결합재를 연마판으로 조금 깎아, 날카로운 새 다이아몬드 입자를 드러내 절삭력을 회복시킵니다. 그 결과 절삭 부하와 chipping이 다시 줄어듭니다. ②는 dressing이 날을 오히려 조금 소모시키며 두께를 늘리지 않습니다. ③의 회전 속도는 spindle 설정값으로 dressing과 무관합니다. ④는 dressing이 무엇을 입히는 공정이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_saw",
+    "f_blade",
     {
-     "method": "blade",
-     "flag": "주제: blade 관리"
+     "parts": {
+      "dress": true
+     },
+     "inset": "grit",
+     "insetTitle": "날 끝 확대 (많은 lane 절단 후)"
     }
    ],
    "metrics": []

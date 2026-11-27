@@ -737,28 +737,9 @@
    "exp": "온도가 ΔT만큼 변하면 두 부재는 (α_sub − α_Si) × ΔT 의 비율만큼 서로 다르게 늘어나고, 그 차이를 사이의 C4 bump가 전단 변형으로 받습니다. 차이는 중심에서 멀수록(DNP가 클수록) 커져 모서리 bump가 가장 불리합니다. ②의 배선 저항은 국부 발열 요인일 뿐 변형의 주원인이 아닙니다. ③은 bump 크기와 무관하게 CTE 차이가 있으면 변형이 생기므로 틀립니다. ①은 유기 substrate가 조립 온도에서 녹지 않으므로 틀립니다.",
    "k": 0,
    "fig": [
-    "f_table",
+    "f_pkg3d",
     {
-     "title": "C4 로 붙은 두 재료",
-     "unit": "ppm/K",
-     "cols": [
-      "재료",
-      "열팽창계수"
-     ],
-     "rows": [
-      [
-       "Si interposer",
-       "약 3"
-      ],
-      [
-       "유기 package substrate",
-       "약 15"
-      ]
-     ],
-     "notes": [
-      "둘 사이를 C4 bump 로 접합 · 온도가 오르내림"
-     ],
-     "flag": "주제: C4 열 변형"
+     "highlight": "c4"
     }
    ],
    "metrics": [
@@ -896,12 +877,9 @@
    "exp": "Si 판 자체는 배선이 아니고 미세 배선은 윗면 BEOL 층에만 있으므로, 위쪽 die의 전원·접지와 외부로 나가는 신호를 아래 substrate로 이으려면 Si를 관통하는 TSV가 있어야 합니다. ②의 수평 열 확산은 Si 판 자체가 하는 일로 TSV의 목적이 아닙니다. ③의 정렬 마크는 표면 패턴으로 만듭니다. ①은 TSV가 Si에 구멍을 내는 구조라 강성 보강 수단이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_pkg3d",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
-     "flag": "주제: interposer TSV",
-     "msg": "위: µbump 로 SoC · HBM / 아래: C4 로 substrate"
+     "highlight": "int"
     }
    ],
    "metrics": []
@@ -1029,14 +1007,9 @@
    "exp": "경화된 underfill은 인터포저와 substrate를 하나로 묶어, CTE 차이로 생기는 전단 변형을 bump 몇 개가 아니라 접합면 전체가 나눠 받게 합니다. 그 결과 모서리 C4의 변형률이 줄어 열 사이클 피로 수명이 늘어납니다. ②는 underfill이 절연체이므로 틀립니다. ③의 열 전달은 열전도율이 낮은 수지의 주 목적이 아닙니다. ①은 underfill을 접합 reflow 이후에 채우므로 정렬 유지 수단이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_pkg3d",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
-     "flag": "주제: C4 underfill",
-     "msg": "interposer–substrate 사이 C4 bump 틈에 underfill",
-     "sideTitle": "단면: C4 접합부 underfill",
-     "hidePath": true
+     "highlight": "c4"
     }
    ],
    "metrics": []
@@ -1056,14 +1029,9 @@
    "exp": "한 장의 lid 아래에서 두 die의 높이가 다르면 낮은 쪽의 TIM이 두꺼워지거나 접촉이 떨어져 열저항이 커지고 국부 온도가 오릅니다. 그래서 HBM 스택 높이를 상한으로 관리하며, 실측 HBM3E 12H 스택(720 µm)은 최상단 die(139 µm)를 EMC와 함께 평탄화해 TIM 접촉면을 만듭니다. ②의 배선 길이는 인터포저 위 평면 배치가 정하며 높이와 무관합니다. ①의 장비 흡착 높이는 조정 가능한 공정 변수입니다. ④의 용량은 높이와 관계없는 사양입니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_pkg3d",
     {
-     "type": "cowos-s",
-     "nHBM": 4,
-     "flag": "주제: 상면 높이 정합",
-     "msg": "HBM · SoC 위를 lid 한 장으로 덮고 사이를 TIM 으로",
-     "sideTitle": "단면: lid · TIM",
-     "hidePath": true
+     "highlight": "tim"
     }
    ],
    "metrics": [],
@@ -1134,14 +1102,9 @@
    "exp": "C4 아래의 유기 substrate는 배선·pad 피치가 인터포저보다 훨씬 굵고, Si interposer와의 CTE 차이가 커서 접합부가 큰 전단 변형을 받습니다. 그래서 solder 체적이 큰 C4로 변형을 흡수하고 전원 전류도 나눠 받습니다. ②는 반대로 C4 하나가 µbump보다 많은 전류를 나르는 경우가 많습니다. ③은 C4가 Si와 유기 substrate라는 이종 재료를 잇는 접합이라 틀립니다. ①의 C4는 solder reflow로 접합합니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_pkg3d",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
-     "flag": "주제: C4 와 µbump",
-     "msg": "µbump 피치 수십 µm · C4 피치 100 µm 이상",
-     "sideTitle": "단면: µbump 와 C4",
-     "hidePath": true
+     "highlight": "c4"
     }
    ],
    "metrics": []
@@ -1186,14 +1149,9 @@
    "exp": "lid는 die 위 TIM을 통해 받은 열을 넓은 면적으로 퍼뜨려 방열판으로 넘기는 heat spreader이고, 강성이 큰 금속이라 substrate 휨을 억제하는 보강 역할도 합니다. ②는 lid가 die 회로와 연결되지 않으므로 틀립니다. ③은 lid 접착부가 기밀 밀봉이 아니며 습기 차단이 목적이 아닙니다. ④는 높이 산포를 lid로 누르면 die에 응력이 걸리며, 산포는 TIM 두께로 흡수합니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_pkg3d",
     {
-     "type": "cowos-s",
-     "nHBM": 4,
-     "flag": "주제: lid",
-     "msg": "대형 2.5D 패키지의 die 위에 금속 lid",
-     "sideTitle": "단면: lid",
-     "hidePath": true
+     "highlight": "lid"
     }
    ],
    "metrics": [],
@@ -1214,29 +1172,9 @@
    "exp": "두 고체 면은 거칠기와 휨 때문에 일부만 닿고 나머지는 열전도율이 매우 낮은 공기로 남습니다. TIM이 이 틈을 채워 접촉 열저항을 크게 낮춥니다. ①의 전기 연결은 TIM의 목적이 아닙니다. ③의 진동 흡수도 목적이 아닙니다. ④는 얇은 TIM 층이 die의 열팽창을 막을 수 없으므로 틀립니다.",
    "k": 0,
    "fig": [
-    "f_film",
+    "f_pkg3d",
     {
-     "layers": [
-      [
-       "lid",
-       2,
-       "C9C9C9"
-      ],
-      [
-       "TIM",
-       1,
-       "F3D2C4"
-      ],
-      [
-       "die 상면 (Si)",
-       3,
-       "D9D9D9"
-      ]
-     ],
-     "bullets": [
-      "lid 와 die 상면 사이에 TIM 을 넣음"
-     ],
-     "flag": "주제: TIM"
+     "highlight": "tim"
     }
    ],
    "metrics": [],
@@ -1502,14 +1440,13 @@
    "exp": "CTE가 큰 유기 substrate 위에 Si가 많이 올라간 대형 패키지는 온도에 따라 크게 휩니다. 강성이 큰 stiffener가 substrate를 붙잡아 휨을 줄이면 C4 접합과 BGA 실장의 non-wet·bridge 위험이 줄어듭니다. ①의 차폐는 부수 효과일 뿐 목적이 아닙니다. ③은 ring이 die와 닿지 않아 열 경로가 아닙니다. ④는 ring이 전기 배선이 아닙니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_pkg3d",
     {
-     "type": "cowos-s",
-     "nHBM": 4,
-     "flag": "주제: stiffener",
-     "msg": "package substrate 둘레에 금속 stiffener ring 부착",
-     "sideTitle": "단면: substrate 둘레",
-     "hidePath": true
+     "parts": {
+      "lid": false,
+      "stiffener": true,
+      "tim": false
+     }
     }
    ],
    "metrics": []
@@ -2502,14 +2439,9 @@
    "exp": "접합 뒤 가장자리에서 수지를 흘려 모세관 힘으로 채우는 방식이 CUF입니다. ①과 ②는 접합 전에 필름이나 페이스트를 먼저 놓고 열압착으로 함께 접합하는 방식입니다. ③은 몰딩 공정에서 봉지재가 간극까지 한 번에 채우는 방식입니다.",
    "k": 0,
    "fig": [
-    "f_sip",
+    "f_pkg3d",
     {
-     "type": "cowos-s",
-     "nHBM": 2,
-     "flag": "주제: C4 underfill",
-     "msg": "C4 접합 후 인터포저 가장자리에 액상 수지 dispense",
-     "sideTitle": "단면: C4 접합부 underfill",
-     "hidePath": true
+     "highlight": "c4"
     }
    ],
    "metrics": []
