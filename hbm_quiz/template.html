@@ -1919,7 +1919,7 @@ function f_blade(s, p) {
     const pts = [[0.12, 0.2], [0.33, 0.12], [0.55, 0.3], [0.78, 0.15], [0.92, 0.42], [0.25, 0.55], [0.47, 0.7], [0.7, 0.62], [0.12, 0.85], [0.88, 0.85], [0.6, 0.9], [0.38, 0.38]];
     pts.forEach(([a, b]) => { const gx = ix + 0.2 + a * (iw - 0.4), gy = iy + 0.05 + b * (ih - 0.1); poly(s, [[gx, gy - 0.09], [gx + 0.08, gy], [gx, gy + 0.09], [gx - 0.08, gy]], "EAF4FA", { lw: 0.6 }); });
     const lb = p.hideLabels ? ["입자 X", "기지 Y"] : ["diamond 입자", "bond (결합재)"];
-    tbox(s, ix + 0.2, iy + ih + 0.16, lb[0], { fs: 7, fill: "EAF4FA", align: "left" }); tbox(s, ix + iw - 0.2, iy + ih + 0.16, lb[1], { fs: 7, fill: "E4DCCD", align: "right" });   // pill 은 후처리에서 움직이므로 고정 박스
+    tbox(s, ix + 0.08, iy + ih + 0.16, lb[0], { fs: 6, fill: "EAF4FA", align: "left" }); tbox(s, ix + iw - 0.08, iy + ih + 0.16, lb[1], { fs: 6, fill: "E4DCCD", align: "right" });   // pill 은 후처리에서 움직이므로 고정 박스
   });
   if (p.bullet) T(s, p.bullet, 0.75, 7.1, 7.9, 0.3, { fs: 9, bold: true, color: "9A6A12" });
   cap(s, p.note || "개념도 · 측면에서 본 blade · 비례 아님");
