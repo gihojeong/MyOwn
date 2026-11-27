@@ -1852,7 +1852,7 @@ function f_pkg3d(s, p) {
   } else if (pt.stiffener) { box(0.15, zS + hS, 0.3, 0.55, col.lid, { d: 0.95 }); box(W - 0.45, zS + hS, 0.3, 0.55, col.lid, { d: 0.95 }); }
   if (p.heat) { const [a, b] = P(sx + sw / 2, 0, zTs - 0.3), [c, d] = P(sx + sw / 2, 0, zL + hL + 0.45); A(s, a, b, c, d, K.rust, 2.0); }
   // 강조
-  const KEYP = { lid: [0.15, zL, W - 0.3, hL], tim: [sx, zTs, sw, zT - zTs], c4: [ix - 0.15, zC, iw + 0.3, hC], mu: [sx, zM, sw, hM], int: [ix, zI, iw, hI], sub: [0, zS, W, hS], soc: [sx, zD, sw, hSoC], hbm: [hx[0], zD, hw, hHBM] };
+  const KEYP = { lid: [0.15, zL, W - 0.3, hL], tim: [sx, zTs, sw, zT - zTs], c4: [ix - 0.15, zC, iw + 0.3, hC], mu: [hx[0], zM, hw, hM], int: [ix, zI, iw, hI], sub: [0, zS, W, hS], soc: [sx, zD, sw, hSoC], hbm: [hx[0], zD, hw, hHBM] };
   if (p.highlight && KEYP[p.highlight]) { const [x, z, w, h] = KEYP[p.highlight], [a, b] = P(x, 0, z + h), [c, d] = P(x + w, 0, z); rectG(s, a - 0.05, b - 0.05, c - a + 0.1, d - b + 0.1, "FFFFFF", { op: 0, line: "C8372D", lw: 1.4, dash: 1 }); }
   // 라벨 박스 (왼쪽·오른쪽 열)
   const lab = labeler(p, { lid: pt.lid ? "lid (금속 덮개)" : (pt.stiffener ? "stiffener" : false), tim: pt.tim ? "TIM" : false, hbm: "HBM stack", soc: false, mu: "µbump + underfill", int: "Si interposer (TSV)", c4: "C4 bump" + (pt.ufC4 ? " + underfill" : ""), sub: "package substrate", bga: pt.bga ? "BGA ball" : false });
