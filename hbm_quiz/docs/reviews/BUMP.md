@@ -208,3 +208,82 @@
 결과: BUMP 135 → 129 (B 40 / I 51 / A 38). validate --gate E 0 · W 0.
 
 남은 우려: XD 개념 공백 Sn whisker 는 우선순위 낮음·지시 "보강 없음" 에 따라 미출제.
+
+## µbump pitch 기준 반영 (2026-11-21)
+BJ 지정(STANDARDS 2.4): core die 사이 µbump pitch 25 µm, base die 아래 면 55 µm(JEDEC). 현행 pitch 를 40 µm 로 두던 문항을 25 µm 기준으로 재설계하고 값은 스크립트로 재계산.
+- BUMP-I-9002: 25 → 20 µm, 면적당 bump 수 (25/20)² = 1.56배 (오답 0.64 역비 · 1.25 한 방향 · 1.95 세제곱)
+- BUMP-A-9023: 25 → 16 µm, s = 0.64 → EM 수명 s⁴ = 0.17배, full-IMC s² = 0.41배
+
+## 형상 기준 Micron HBM3E 12H 실측으로 통일 (2026-11-21, BJ 결정)
+core die 사이 µbump pitch 23 µm, 접합 간극 11 µm(NCP), base die 아래 면 JEDEC 48 × 55 µm. 같은 날 위 절에서 쓴 25 µm·6.5–7.5 µm 값을 이 기준으로 다시 고치고 계산을 재수행(작업 스크립트 scratchpad work/pitch).
+- BUMP-I-9002 23 → 18 µm: 1.63배(0.61·1.28·2.09) / BUMP-A-9023 23 → 15 µm: EM 0.18배·IMC 0.43배
+
+## 참고문헌 대조 업데이트 (2026-11-21, 초급)
+
+기준: 브리프 '초급 나머지 분야용 참고문헌' + 추가 규칙 4(형상 = Micron HBM3E 12H 실측: core die 사이 µbump pitch 23 µm, NCP 접합 간극 11 µm, base die 아래 면 JEDEC 48 × 55 µm, µbump 지름 약 10–11.6 µm). 근거: M1 §C(X-ray FA 사례), M4 §E-7·E-8(µbump IMC·EM 사례), HBM_단면실측. 초급 40문항은 개념 문항이고 계산 문항이 없음.
+
+| 검토 | 수정(내용) | 그림 params | 추가 | 삭제 | src 부착 |
+|---|---|---|---|---|---|
+| 40 | 6 (치수 4 · 해설 보강 2) | 36 (k=0 `f_bump` 전부) | 1 | 0 | 14 (신규 1 포함) |
+
+그림 params 일괄: `f_bump` k=0 주제도의 `pillar 25 µm · solder 12 µm`(합 37 µm 이상)은 실측 core die 사이 간극 11 µm와 맞지 않아, pillar + solder + 위아래 IMC 합이 11 µm가 되게 설정값으로 바꿈. 기본 `6 / 3 / IMC 1`, 보관 후 IMC 성장 문항(B-0021·0047·9001·9015) `5 / 2 / 2`, full-IMC(B-9011) `6 / 2 / 1.5`, Ni barrier(B-0017) `5 / 3 / 1`. pillar·solder 분해 자체는 실측값이 아닌 그림 설정값(실측은 접합층 전체 11 µm와 지름만 있음). LAYOUT_RULES §4 의 `pillar_um` 권장 범위 10–60 보다 작지만 그림 높이는 하한에서 고정되어 겹침 없음(layout_check figAnyQ 0).
+
+### 정정
+
+| id | 무엇이 틀렸나 | 고친 내용 | 근거 |
+|---|---|---|---|
+| BUMP-B-9003 | 해설 "µbump pitch 대략 25–55 µm" (폐기된 25 µm 기준, 계면 구분 없음) | core die 사이 23 µm(실측), base die 아래 면 48 × 55 µm(JEDEC)로 계면별 명시 | HBM_단면실측 §스택 높이 구성 · §5 |
+| BUMP-B-0015 | 지문 "수십 µm pitch" 가 B-9003 정답(수십 µm) 단서 | "미세 pitch" 로 바꿈 | — |
+| BUMP-B-0001 | pillar 25 µm · solder 15 µm 가 HBM 간극 11 µm 와 다른데 설정값 표시 없음 | "시험용 시료 설정값" 명시(IMC 7 µm 성장을 담으려면 solder 두께가 필요해 수치는 유지) | HBM_단면실측 §스택 높이 구성 |
+| BUMP-B-0002 | pillar 30 µm · solder 12 µm 설정값 표시 없음 | "시험용 시료 설정값" 명시 | 같음 |
+| BUMP-B-0022 | SOH 정의만 있고 실측 크기 없음 | 해설에 실측 core die 사이 SOH(NCP 접합층) 11 µm 추가 | HBM_단면실측 §스택 높이 구성 |
+| BUMP-B-9007 | current crowding 크기 감각 없음 | 해설에 국부 전류 밀도 평균의 5–10배 사례 추가 | M1 §C.4 · M4 §E-8 |
+
+나머지 34문항은 사실 오류 없음(SnAg 공정 221 °C·SnBi 139·SnPb 183 °C, Cu₃Sn이 Cu 쪽, Kirkendall void가 Cu₃Sn/Cu 계면, Ni 위 Ni₃Sn₄, HiP 산화막 미융합, non-wet 원통형 cap, HTSL JESD22-A103 등 참고문헌과 일치).
+
+### 신규 문항
+
+| id | 주제 | 근거 |
+|---|---|---|
+| BUMP-B-9017 | 신호가 흐르지 않는 structural bump의 미접합은 전기 시험에 안 잡혀 X-ray CT·단면으로만 확인 | HBM_단면실측 §7 · M1 §C.4 |
+
+정답 위치: B 41문항 ①10 ②11 ③10 ④10.
+
+### 충돌 · 남은 위험
+- 참고문헌과 _facts.md 의 충돌은 없음. 단 _facts.md X-F3 는 "solder µbump pitch 25–55 µm(STANDARDS 2.4)" 로 적혀 있어 현 STANDARDS(23 µm, 48 × 55 µm)와 다름 — 메인 세션 갱신 대상.
+- `f_bump` pillar/solder 분해(6/3 µm 등)는 실측이 아닌 설정값. 실측 단면에서 pillar·cap 두께가 확인되면 맞출 것.
+- 중급·고급(보고만, 수정 안 함): BUMP-I·A 의 `f_bump` 주제도 다수가 pillar 25 µm · solder 12 µm(간극 11 µm 와 불일치). BUMP-A-9022·9028·9030 은 pitch 30 µm 를 '설정값' 표시 없이 사용.
+- B-9014(daisy chain)·B-9009(formic acid)·B-9004(electron wind)는 참고문헌에 직접 근거가 없어 src 미부착.
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+- 점검: BUMP-B 41 문항 전부를 `tools/sheets.js` 접촉 인화지(4장)로 렌더해 직접 봄. 수정 후 4장 모두 다시 렌더해 확인.
+- 결함(중복 계상): **E1 36** (k 없는 `f_bump` — 작은 단면 한 개 + 오른쪽 절반 빈 공간) · **E2 30** (같은 접합 단면이 도금·flux·reflow·HCB·젖음·EM 등 다른 주제 문항에 붙음, BUMP-B-0067 포함) · **E3 5** · E4 0 · **E5 1**.
+- 고친 문항 **38**, 그대로 둔 문항 3 (B-9002 · B-9012 · B-9017 — 기존 `f_note`, 결함 없음).
+- 게이트: `validate --domain BUMP` E 0 / W 0 · build · smoke figErr [] · figEmpty [] · layout_check 3 화면 결함 0.
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0001 | E3 (그래프의 "x = k · t^0.5" 가 정답 '제곱근 비례' 그대로) | `f_plot` — 지문 측정값 250 h 3.5 µm · 1000 h 7 µm 두 점만(식·경향선 없음) |
+| B-0002 | E5 (지문에 없는 k = 0.1 성장 곡선) · E2 | `f_table` — Cu 직접 / Ni 삽입 두 조건 비교(IMC 1.2 µm, pillar 감소 작음 = 지문 관찰) |
+| B-0015 · B-0036 | E1 · E3 (단면 라벨 'Cu pillar'·solder 가 정답 구성) | `f_note` (녹는/녹지 않는 부분, 간극 유지, 접합재 관점) |
+| B-0017 | E1 · E2 | `f_film` — solder / UBM 층 3·2·1 / pad / die (층 이름·역할 숨김) |
+| B-9016 | E1 · E2 | `f_film` — Cu pillar / Cu seed / Ti / pad / die |
+| B-0020 | E1 · E3 (IMC 라벨이 계면을 가리킴 = 정답 위치) | `f_note` |
+| B-9001 | E1 · E3 (IMC 라벨 "Cu₆Sn₅ / Cu₃Sn" 순서) | `f_note` (원자 비·공급 원소 관점) |
+| B-0021 · B-9011 | E1 | `f_note` |
+| B-0033 | E1 · E2 | `f_plot` reflow 예시 프로파일 + 융점 221 °C 점선 (지문 조건 bullet) |
+| B-0057 | E1 · E2 | `f_plot` 같은 최고 온도 · 느린/빠른 냉각 두 프로파일 |
+| B-0067 (사용자 지적) | E1 · E2 (IMC 단면 ↔ through-mask 도금) | `f_note` (seed · PR 구멍 · PR 제거 후 형상 관점) |
+| B-0016 · 0018 · 0019 · 0022 · 0023 · 0024 · 0025 · 0026 · 0032 · 0037 · 0039 · 0042 · 0044 · 0045 · 0046 · 0047 · 9003 · 9004 · 9005 · 9007 · 9008 · 9009 · 9013 · 9014 · 9015 | E1 · E2 | `f_note` — points 는 지문 조건·관찰 대상과 비교 관점만(정답 문장 없음, validate W_FIG_LEAK 0) |
+
+- 중간 시도: B-0018·0023·0042·0044 를 `f_bond`(hideTable·hideNotes)로 바꿨으나 단면이 작고 오른쪽 열이 비어(E1) `f_note` 로 다시 바꿈. B-0036·B-9015 는 첫 points 가 W_FIG_LEAK(정답 어휘 노출)에 걸려 고쳐 씀.
+- 템플릿 결함(보고만 — 메인 세션):
+  1. `tools/sheets.js` 가 렌더 150 ms 뒤 캡처하는데 `.stage .el` 의 rise 애니메이션(0.42 s + 요소당 4 ms 지연)이 끝나지 않아 요소가 많은 그림은 반투명으로 찍힘(B-9015·0033·0057 등). `newPage({ …, reducedMotion: 'reduce' })` 권장. 이번 점검은 그 옵션만 바꾼 사본(scratch)으로 렌더함.
+  2. `f_bump` 는 k 가 없으면 오른쪽 절반이 비고, `f_bond` 는 `hideTable` 이면 오른쪽 열이 bullet 하나만 남아 비어 보임(배치가 다시 흐르지 않음).
+  3. smoke `figEmpty` 는 점 1개짜리 `f_plot` series 를 빈 곡선으로 셈(B-0001 첫 시도) — 점만 찍는 series 를 쓸 수 없음.
+- 남은 위험: 초급 BUMP 그림의 대부분(35/41)이 이제 `f_note` 개념 카드다(주제에 맞는 도식 템플릿 — 도금 단면·젖음 접촉각·bridge/HIP 단면·daisy chain 회로 — 이 없음). points 의 정답 노출 판단은 DA 육안 + W_FIG_LEAK 기준이며 EA 검토 전. 범위 밖: BUMP-I 35 · BUMP-A 5 문항이 여전히 k 없는 `f_bump`(E1·E2 가능성 높음).
+
+## 새 그림 템플릿으로 관점 카드 교체 (2026-11-22, DA)
+
+BJ 승인으로 µbump 전용 템플릿 3종(f_ubj 접합 단면, f_plate through-mask 도금, f_wet 접촉각)을 만들고 BUMP-B f_note 35문항 중 33문항을 실제 그림으로 바꿨다(0032 융점, 9015 시험 조건 카드는 유지). 불량 이름·재료명이 정답인 문항은 이름을 숨겼다(0015 층 A–C, 9001 층 A·B, 9002 "계면 IMC ?", 불량은 "관찰 부위 (A)"). 순서 문항 9012 는 패널을 섞어 배치. 렌더 시트 4장 육안 확인, validate E 0 / W 0, smoke figErr·figEmpty [], layout_check 3 화면 결함 0.

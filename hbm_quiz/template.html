@@ -537,6 +537,7 @@ function dimH(s, x1, x2, y, text, o = {}) { A(s, x1, y, x2, y, K.edge, 0.8, { bo
 function dimV(s, x, y1, y2, text, o = {}) { A(s, x, y1, x, y2, K.edge, 0.8, { both: true }); pill(s, x + (o.align === "right" ? -0.06 : 0.06), (y1 + y2) / 2 + (o.dy || 0), text, { fs: 8, h: 0.2, fill: o.fill || K.cream, align: o.align || "left", axis: "y" }); }
 // 양 축 눈금 값이 모두 찍히는 좌표계. 제목은 ylab 한 줄로만 둔다(겹침 방지).
 function axes(s, x, y, w, h, o) {
+  s._ax = (s._ax || 0) + 1; // 렌더 점검: 좌표계 수 (smoke 의 figEmpty 가 곡선 없는 좌표계를 잡는다)
   const X = (v) => x + w * (v - o.xmin) / (o.xmax - o.xmin), Y = (v) => y + h - h * (v - o.ymin) / (o.ymax - o.ymin);
   // 눈금 글자: 7pt · y 눈금은 가운데 정렬, 원점 모서리에서는 x/y 눈금이 서로 비켜 선다
   (o.yticks || []).forEach((t) => { L(s, x, Y(t), x + w, Y(t), K.lineStrong, 0.5, { dash: 1 }); const lo = t === o.ymin;
@@ -551,7 +552,7 @@ function axes(s, x, y, w, h, o) {
   return { X, Y };
 }
 const clampX = (x, w2) => Math.max(DG.x + (w2 || 0.5), Math.min(DG.x + DG.w - (w2 || 0.5), x));
-function curve(s, pts, c, lw, o = {}) { for (let i = 1; i < pts.length; i++) L(s, pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], c, lw || 1.3, o); }
+function curve(s, pts, c, lw, o = {}) { if (pts.length >= 1) s._cv = (s._cv || 0) + 1; /* 점 1개 series 도 데이터로 센다 */ for (let i = 1; i < pts.length; i++) L(s, pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], c, lw || 1.3, o); }
 function hatch(s, x, y, w, h, c, step) {
   step = step || 0.09;
   for (let t = 0; t < w + h; t += step) {
@@ -591,6 +592,7 @@ const annot = annot0, annotTo = annotTo0;
 
 // ========== T1. TSV 단면 ==========
 function f_tsv(s, p) {
+  const HL = p.hideLabels === true; // 결함 이름·barrier 재료·AR 정의 숨김(정답 노출 방지, DA 2026-11-22)
   const cx = LC.x + 1.5, top = TOP + 0.78, dep = 2.55, wt = 0.6, wb = wt * (p.taper == null ? 0.82 : p.taper);
   R(s, LC.x, top - 0.26, 3.0, 0.26, MX.lowk, { lw: 0.8, text: "BEOL / low-k ILD", fs: 8 });
   R(s, LC.x, top, 3.0, dep + 0.52, MX.si, { lw: 0.9 });
@@ -605,14 +607,14 @@ function f_tsv(s, p) {
   poly(s, off(0.055), p.barrier === false ? MX.ox : MX.ti, { lw: 0.5 });
   const fill = p.fill || "good", inner = off(0.075);
   poly(s, inner, MX.cu, { lw: 0.5 });
-  if (fill === "void") { E(s, cx - 0.11, top + dep * 0.44, 0.22, 0.5, MX.bare, { lw: 0.9 }); annotTo(s, cx + 0.1, top + dep * 0.5, 0, "void — 충전이 중앙에서 닫혀 빈 공간이 남았다", K.pink); }
-  else if (fill === "seam") { L(s, cx, top + 0.2, cx, top + dep - 0.1, K.edge, 0.9, { dash: 1 }); annotTo(s, cx, top + 1.1, 0, "seam — 양 측벽 성장면이 중심에서 만났다", K.pink); }
-  else if (fill === "pinch") { poly(s, [[cx - 0.1, top + 0.1], [cx + 0.1, top + 0.1], [cx + 0.03, top + 0.95], [cx - 0.03, top + 0.95]], MX.bare, { lw: 0.8 }); annotTo(s, cx, top + 0.55, 0, "pinch-off — 입구가 먼저 닫혔다", K.pink); }
+  if (fill === "void") { E(s, cx - 0.11, top + dep * 0.44, 0.22, 0.5, MX.bare, { lw: 0.9 }); annotTo(s, cx + 0.1, top + dep * 0.5, 0, HL ? "관찰 부위 (A)" : "void — 충전이 중앙에서 닫혀 빈 공간이 남았다", K.pink); }
+  else if (fill === "seam") { L(s, cx, top + 0.2, cx, top + dep - 0.1, K.edge, 0.9, { dash: 1 }); annotTo(s, cx, top + 1.1, 0, HL ? "관찰 부위 (A)" : "seam — 양 측벽 성장면이 중심에서 만났다", K.pink); }
+  else if (fill === "pinch") { poly(s, [[cx - 0.1, top + 0.1], [cx + 0.1, top + 0.1], [cx + 0.03, top + 0.95], [cx - 0.03, top + 0.95]], MX.bare, { lw: 0.8 }); annotTo(s, cx, top + 0.55, 0, HL ? "관찰 부위 (A)" : "pinch-off — 입구가 먼저 닫혔다", K.pink); }
   if (p.overburden !== false) R(s, cx - wt / 2 - 0.1, top - 0.26 - 0.14, wt + 0.2, 0.14, MX.cu, { lw: 0.8 });
   dimH(s, cx - wt / 2, cx + wt / 2, top - 0.5, "Ø " + (p.dia_um || 5) + " µm");
   dimV(s, LC.x + 3.12, top, top + dep, (p.depth_um || 60) + " µm");
   const ar = p.ar != null ? p.ar : Math.round((p.depth_um || 60) / (p.dia_um || 5) * 10) / 10;
-  annot(s, 1, "aspect ratio = 깊이 / 직경 = " + (p.hideResult ? "?" : ar) + " : 1", K.orange);
+  if (!HL) annot(s, 1, "aspect ratio = 깊이 / 직경 = " + (p.hideResult ? "?" : ar) + " : 1", K.orange);
   // 우측: 측벽 확대 + 범례
   ttl(s, "측벽 확대 (Bosch 주기)", RC.x, TOP, 2.6);
   const ix = RC.x + 0.1, iy = TOP + 0.26;
@@ -628,12 +630,13 @@ function f_tsv(s, p) {
   } else pill(s, RC.x + 1.35, iy + 0.5, "scallop 없음", { fs: 8, fill: K.mint, align: "left", maxW: 2.4 });
   pill(s, RC.x + 1.35, iy + 0.95, p.scallop ? "측벽 거칠기 → liner 피복 불균일" : "매끈한 측벽", { fs: 8, fill: K.violet, align: "left", maxW: 2.4 });
   ttl(s, "막 구성", RC.x, iy + 1.95, 2.4);
-  legend(s, RC.x, iy + 2.24, [[MX.ox, "liner SiO2"], [p.barrier === false ? MX.bare : MX.ti, p.barrier === false ? "barrier 없음 (Cu 확산 위험)" : "barrier Ta / TaN"], [MX.cu, "Cu (electroplated)"], [MX.bare, "void / 미충전"]], { cols: 1, cw: 3.6 });
+  legend(s, RC.x, iy + 2.24, [[MX.ox, "liner SiO2"], [p.barrier === false ? MX.bare : MX.ti, p.barrier === false ? "barrier 없음 (Cu 확산 위험)" : (HL ? "barrier" : "barrier Ta / TaN")], [MX.cu, "Cu (electroplated)"], [MX.bare, HL ? "빈 공간" : "void / 미충전"]], { cols: 1, cw: 3.6 });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
 }
 
 // ========== T2. CMP dishing / erosion ==========
 function f_cmp(s, p) {
+  const HL = p.hideLabels === true; // dishing/erosion 이름 숨김 → 단차 A/B (DA 2026-11-22)
   const x0 = LC.x + 0.15, y0 = TOP + 0.42;
   ttl(s, "상면: pattern density 가 다른 두 영역", LC.x, TOP - 0.02, 4.3);
   R(s, x0, y0, 1.5, 1.3, MX.si, { lw: 0.9 });
@@ -653,8 +656,8 @@ function f_cmp(s, p) {
   }
   curve(s, prof, K.rust, 1.6);
   L(s, x0, cy, x0 + 3.0, cy, K.edge, 0.7, { dash: 1 });
-  annotTo(s, x0 + 0.9, cy + 0.12, 0, "dishing " + (p.dish_nm || 90) + " nm — 넓은 Cu 가 국부로 파인다", K.pink);
-  annotTo(s, x0 + 2.5, cy + 0.2, 1, "erosion " + (p.erosion_nm || 40) + " nm — 고밀도 영역이 함께 내려간다", K.pink);
+  annotTo(s, x0 + 0.9, cy + 0.12, 0, HL ? "단차 A " + (p.dish_nm || 90) + " nm" : "dishing " + (p.dish_nm || 90) + " nm — 넓은 Cu 가 국부로 파인다", K.pink);
+  annotTo(s, x0 + 2.5, cy + 0.2, 1, HL ? "단차 B " + (p.erosion_nm || 40) + " nm" : "erosion " + (p.erosion_nm || 40) + " nm — 고밀도 영역이 함께 내려간다", K.pink);
   const g = axes(s, RC.x + 0.72, TOP + 0.75, 2.8, 2.9, {
     xmin: 0, xmax: 80, xticks: [0, 20, 40, 60, 80], ymin: 0, ymax: 200, yticks: [0, 50, 100, 150, 200],
     xlab: "pattern density (%)", ylab: "표면 단차 (nm)",
@@ -665,7 +668,7 @@ function f_cmp(s, p) {
     L(s, xx, g.Y(0), xx, g.Y(200), K.edge, 0.8, { dash: 1 }); pill(s, xx, g.Y(200) + 0.2, nm + " " + d + "%", { fs: 7, fill: c, h: 0.2 }); });
   curve(s, dd.map(([a, b]) => [g.X(a), g.Y(b)]), K.rust, 1.6); dd.forEach(([a, b]) => E(s, g.X(a) - 0.05, g.Y(b) - 0.05, 0.1, 0.1, K.rust, { line: null }));
   curve(s, ee.map(([a, b]) => [g.X(a), g.Y(b)]), "4D6B35", 1.6, { dash: 1 }); ee.forEach(([a, b]) => E(s, g.X(a) - 0.05, g.Y(b) - 0.05, 0.1, 0.1, "4D6B35", { line: null }));
-  legend(s, RC.x + 0.72, TOP + 4.22, [[K.rust, "dishing (배선 폭 의존)"], ["4D6B35", "erosion (영역 전체)"]], { cols: 1, cw: 3.0 });
+  legend(s, RC.x + 0.72, TOP + 4.22, [[K.rust, HL ? "단차 A" : "dishing (배선 폭 의존)"], ["4D6B35", HL ? "단차 B" : "erosion (영역 전체)"]], { cols: 1, cw: 3.0 });   // hideLabels 면 범례도 이름 숨김
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 그래프는 설명용 경향선");
 }
 
@@ -758,19 +761,21 @@ function f_bump(s, p) {
   dimV(s, LC.x + 2.95, soly, soly + st, "solder " + (p.solder_um || 15) + " µm", { dy: -push / 2 });
   annotTo(s, cx - pw / 2 + 0.06, imc1 + it / 2, 0, "IMC " + (p.imc_um || 2) + (gen ? " µm 계면" : (p.niBarrier ? " µm (Ni₃Sn₄ / (Cu,Ni)₆Sn₅) 계면" : " µm (Cu₆Sn₅ / Cu₃Sn) 계면")), MX.imc, true);
   legend(s, LC.x + 0.35, TOP + 3.05, [[MX.cu, "Cu"], [MX.sol, "solder"], [MX.imc, "IMC"], [MX.ni, p.niBarrier ? "Ni 적용" : "Ni 없음"]], { cols: 4, cw: 1.08 });
+  // k 가 없으면 성장 그래프 자체를 그리지 않는다(빈 좌표계 금지 — DA 2026-11-22, 사용자 지적 BUMP-B-0067)
+  if (p.k != null) {
   const TM = p.tmax || 1000, YM = p.ymax || 8, q4 = (m) => [0, 1, 2, 3, 4].map((k) => Math.round(m * k / 4 * 100) / 100);
   const g = axes(s, RC.x + 0.68, TOP + 0.95, 2.85, 2.3, {
     xmin: 0, xmax: TM, xticks: q4(TM), ymin: 0, ymax: YM, yticks: q4(YM),
     xlab: "유지 시간 (h) @ " + (p.temp || 150) + " °C", ylab: "IMC 두께 (µm) — 확산 성장",
   });
-  // k 가 없으면 곡선을 그리지 않는다 (문항에 없는 성장 속도를 그림이 만들어 내지 않도록)
-  if (p.k != null) { const pts = [];
+  const pts = [];
     for (let t = 0; t <= TM; t += TM / 50) pts.push([g.X(t), g.Y(Math.min(YM, p.k * Math.sqrt(t)))]);
-    curve(s, pts, K.rust, 1.7); }
+    curve(s, pts, K.rust, 1.7);
   pill(s, g.X(TM * 0.62), g.Y(YM * 0.91), "x = k · t^0.5", { fs: 8, fill: K.cream });
   if (p.hours) L(s, g.X(Math.min(TM, p.hours)), g.Y(0), g.X(Math.min(TM, p.hours)), g.Y(YM), K.edge, 1.0, { dash: 1 });
-  pill(s, RC.x, TOP + 3.95, p.bullet || "IMC 가 두꺼울수록 계면 파괴 확률 증가", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
-  flagOf(s, p); cap(s, p.note || (p.k != null ? "두께 방향 확대 표시 · 그래프는 확산 지배 가정의 경향선" : "두께 방향 확대 표시 · 성장 곡선은 k 가 주어질 때만 표시"));
+  }
+  if (p.k != null || p.bullet) pill(s, RC.x, TOP + 3.95, p.bullet || "IMC 가 두꺼울수록 계면 파괴 확률 증가", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  flagOf(s, p); cap(s, p.note || (p.k != null ? "두께 방향 확대 표시 · 그래프는 확산 지배 가정의 경향선" : "두께 방향 확대 표시"));
 }
 
 // ========== T5. Sawing / dicing 단면 ==========
@@ -784,7 +789,8 @@ function f_saw(s, p) {
   R(s, x0, top + 0.16, w, 0.1, MX.ox, { lw: 0.6 });
   R(s, x0, top + 0.26, w, siH, MX.si, { lw: 0.9 });
   T(s, "Si", x0 + 0.3, top + 0.26 + siH * 0.3, 1.0, 0.24, { fs: 8, bold: true, color: K.ink2, align: "center", valign: "middle" });   // 절단선(가운데)과 지시선을 피해 왼쪽 위에
-  const cx = x0 + w / 2, kerf = Math.max(0.1, (p.kerf_um || 40) * 0.0045), bot = top + 0.26 + siH;
+  const KD = { blade: 40, lg: 40, stealth: 0, plasma: 10, deeplaser: 30, dbg: 40 }, KU = p.kerf_um ?? (KD[m] ?? 40);   // 방식별 기본 kerf(표 대표값과 일치), 0 허용
+  const cx = x0 + w / 2, kerf = Math.max(0.1, KU * 0.0045), bot = top + 0.26 + siH;
   const cut = (x1, x2, y1, y2, c) => R(s, x1, y1, x2 - x1, y2 - y1, c || MX.bare, { lw: 0.8 });
   const haz = (x1, x2, y1, y2) => R(s, x1, y1, x2 - x1, y2 - y1, MX.hot, { lw: 0.5, tr: 45 });
   if (m === "blade") {
@@ -809,7 +815,7 @@ function f_saw(s, p) {
   } else if (m === "plasma") {
     cut(cx - kerf / 2, cx + kerf / 2, top + 0.26, bot);
     cut(cx - kerf / 2 - 0.04, cx + kerf / 2 + 0.04, top, top + 0.26);
-    annotTo(s, cx + kerf / 2, top + 0.85, 0, "수직 측벽 · HAZ 없음 · kerf " + (p.kerf_um || 10) + " µm", K.mint);
+    annotTo(s, cx + kerf / 2, top + 0.85, 0, "수직 측벽 · HAZ 없음 · kerf " + KU + " µm", K.mint);
     annot(s, 1, "scribe lane 금속은 Si 식각으로 안 걷힌다", K.pink);
   } else if (m === "deeplaser") {
     cut(cx - kerf / 2, cx + kerf / 2, top, bot - 0.18);
@@ -823,7 +829,7 @@ function f_saw(s, p) {
     annot(s, 1, "half-cut 후 backgrinding 으로 개별화한다", K.mint);
     annotTo(s, cx + kerf / 2 + 0.1, top + 0.4, 0, "half-cut 깊이", K.cream);
   }
-  dimH(s, cx - kerf / 2, cx + kerf / 2, top - 0.80, "kerf " + (p.kerf_um || 40) + " µm");
+  if (m !== "stealth" && KU > 0) dimH(s, cx - kerf / 2, cx + kerf / 2, top - 0.80, "kerf " + KU + " µm");   // stealth = kerf 손실 없음 → 치수선 없음
   lead(s, x0 + 0.45, top + 0.08, x0 + 0.45, top - 0.26, "low-k ILD / passivation", { fill: MX.lowk, align: "left" });
   const rows = [["방식", "kerf", "HAZ", "상부막 손상"],
     ["blade", "30–60 µm", "없음", "chipping 큼"],
@@ -833,9 +839,13 @@ function f_saw(s, p) {
     ["deep laser", "20–40 µm", "10 µm 이상", "작음"]];
   rows.push(["DBG (half-cut → BG)", "blade 폭", "없음", "blade 와 비슷"]);
   const keymap = { blade: 1, lg: 2, stealth: 3, plasma: 4, deeplaser: 5, dbg: 6 }, tH = 0.32 + rows.length * 0.52;
-  s.addTable(rows.map((r, ri) => r.map((c) => ({ text: c, options: ri === keymap[m] ? { color: K.alert } : {} }))), { x: RC.x, y: TOP, w: RC.w, h: tH, fs: 15 });
-  T(s, "표는 방식별 대표 범위 · 이 문항의 수치는 지문 기준", RC.x, TOP + tH + 0.06, RC.w, 0.2, { fs: 7, color: K.muted });
-  if (p.bullet || !NO) pill(s, RC.x, TOP + tH + 0.55, p.bullet || "붉은 행이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  // hideTable → 방식 비교표 숨김. notes:false → 표는 두되 붉은 행 강조를 끈다(방식·결함 단서 차단)
+  if (p.hideTable !== true) {
+    s.addTable(rows.map((r, ri) => r.map((c) => ({ text: c, options: !NO && ri === keymap[m] ? { color: K.alert } : {} }))), { x: RC.x, y: TOP, w: RC.w, h: tH, fs: 15 });
+    T(s, "표는 방식별 대표 범위 · 이 문항의 수치는 지문 기준", RC.x, TOP + tH + 0.06, RC.w, 0.2, { fs: 7, color: K.muted });
+  }
+  const pY = p.hideTable === true ? TOP + 0.2 : TOP + tH + 0.55;
+  if (p.bullet || !NO) pill(s, RC.x, pY, p.bullet || (p.hideTable === true ? "절단 방식별 단면 형상" : "붉은 행이 이 문항의 조건이다"), { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
 }
 
@@ -850,7 +860,9 @@ const { DG, LC, RC, TOP, BOT, MX, cap, ttl, lead, dimH, dimV, axes, curve, hatch
 // ========== T6. CoW 접합 (TC-NCF / MR-MUF / HCB) ==========
 function f_bond(s, p) {
   const m = p.method || "ncf", x0 = LC.x + 0.1, w = 3.45, top = TOP + 1.0;
-  const gap = Math.max(0.3, (p.gap_um || 10) * 0.038);
+  const G0 = p.gap_um || 11, P0 = p.pitch_um || (m === "hcb" ? 9 : 23); // 기본값 = Micron HBM3E 12H 실측(간극 11 · pitch 23 µm), HCB 9 µm 설정 (2026-11-21)
+  const HN = p.hideNotes === true; // 공법 식별 주석 숨김(이름·특징을 묻는 문항용)
+  const gap = Math.max(0.3, G0 * 0.038);
   R(s, x0, top, w, 0.38, MX.si, { lw: 0.9, text: "upper core die", fs: 8 });
   const jy = top + 0.38;
   R(s, x0, jy + gap, w, 0.38, MX.si, { lw: 0.9, text: "lower core die (TSV 보유)", fs: 8 });
@@ -863,8 +875,8 @@ function f_bond(s, p) {
       if (dish) R(s, px(i) - 0.12, jy, 0.24, dish, MX.bare, { lw: 0.6 });
     }
     if (p.dish === true || p.dishing === true) annotTo(s, px(3), jy + 0.03, 0, "pad dishing 으로 Cu 가 맞닿지 못해 미접합 void 가 남았다", K.pink);
-    annotTo(s, px(5) + 0.14, jy + gap * 0.5, 2, "SiCN 유전막 직접 접합", MX.ox);
-    annot(s, 1, "solder 없이 상온 접합 후 anneal 로 Cu 접합", K.mint);
+    if (!HN) { annotTo(s, px(5) + 0.14, jy + gap * 0.5, 2, "SiCN 유전막 직접 접합", MX.ox);
+    annot(s, 1, "solder 없이 상온 접합 후 anneal 로 Cu 접합", K.mint); }
   } else {
     if (m === "ncf") R(s, x0, jy, w, gap, MX.ncf, { lw: 0.8 });
     else { R(s, x0, jy, w, gap, MX.emc, { lw: 0.8 }); A(s, x0 - 0.04, jy + gap * 0.5, x0 + 0.5, jy + gap * 0.5, K.rust, 1.4); }
@@ -878,8 +890,8 @@ function f_bond(s, p) {
       if (p.filler_trap) { E(s, px(2) - 0.03, jy + gap * 0.48, 0.07, 0.07, MX.si2, { lw: 0.7 }); annotTo(s, px(2), jy + gap * 0.48, 1, "silica filler 가 joint 에 끼어 미접합", K.pink); }
       // 결함 주석 3개(void·filler trap·non-wet)가 띠를 채우면 일반 설명 라벨은 오른쪽 표 아래로 보낸다
       if (p.voids && p.filler_trap && p.nonwet) pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.92, "회색 점 = NCF 안의 silica filler", { fs: 8, fill: MX.ncf, align: "left", maxW: RC.w });
-      else annotTo(s, x0 + 0.56, jy + gap * 0.16, 3, "NCF 안의 silica filler", MX.ncf);
-    } else {
+      else if (!HN) annotTo(s, x0 + 0.56, jy + gap * 0.16, 3, "NCF 안의 silica filler", MX.ncf);
+    } else if (!HN) {
       annotTo(s, x0 + 0.1, jy + gap * 0.5, 3, "액상 EMC 주입 방향", MX.emc);
     }
     for (let k = 0; k < (p.voids || 0); k++) E(s, px(1 + k * 2) - 0.22, jy + gap * 0.22, 0.1, 0.1, MX.bare, { lw: 0.7 });
@@ -887,17 +899,17 @@ function f_bond(s, p) {
     if (p.nonwet) { R(s, px(4) - 0.135, jy + gap * 0.4, 0.27, gap * 0.3, MX.bare, { lw: 0.8 }); annotTo(s, px(4), jy + gap * 0.55, 2, "non-wet — solder 가 상대 pad 에 젖지 않아 전기적으로 열린다", K.pink); }
   }
   // HCB 는 bump 간극이 없다 → gap 치수 대신 접합 계면 표시
-  if (m === "hcb") pill(s, x0 + w / 2, jy + gap + 0.38 + 0.3, "bump 없음 · Cu–Cu / 유전막 직접 접합", { fs: 8, fill: MX.ox, nogut: true });
-  else dimV(s, x0 + w + 0.05, jy, jy + gap, "gap " + (p.gap_um || 10) + " µm", { align: "left" });
-  dimH(s, px(2), px(3), top - 0.42, "pitch " + (p.pitch_um || 40) + " µm");
+  if (m === "hcb") { if (!HN) pill(s, x0 + w / 2, jy + gap + 0.38 + 0.3, "bump 없음 · Cu–Cu / 유전막 직접 접합", { fs: 8, fill: MX.ox, nogut: true }); }
+  else dimV(s, x0 + w + 0.05, jy, jy + gap, "gap " + G0 + " µm", { align: "left" });
+  dimH(s, px(2), px(3), top - 0.42, "pitch " + P0 + " µm");
   const rows = [["항목", "TC-NCF", "MR-MUF", "HCB"],
     ["접합 매체", "NCF + solder", "solder + MUF", "Cu–Cu + SiCN"],
     ["가압·가열", "layer마다", "일괄 reflow", "상온 후 anneal"],
-    ["칩 간 간격", "≈ 7 µm", "µm 급", "0 (bump 없음)"],
+    ["칩 간 간격", "7–11 µm", "µm 급", "0 (bump 없음)"],
     ["주 결함", "void · filler", "fillet · flow void", "dishing · particle"],
     ["열 경로", "filler 의존", "EMC 유리", "계면 최소"]];
-  tableCol(s, rows, RC.x, TOP, RC.w, { ncf: 1, mrmuf: 2, hcb: 3 }[m]);
-  pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.42, p.bullet || "붉은 열이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
+  if (p.hideTable !== true) tableCol(s, rows, RC.x, TOP, RC.w, { ncf: 1, mrmuf: 2, hcb: 3 }[m]); // hideTable: 공법 비교표 숨김(정답 노출 방지)
+  if (p.hideTable !== true || p.bullet) pill(s, RC.x, TOP + 0.32 + 6 * 0.60 + 0.42, p.bullet || "붉은 열이 이 문항의 조건이다", { fs: 8, fill: K.violet, align: "left", maxW: RC.w });
   flagOf(s, p); cap(s, p.note || "두께 방향 확대 표시 · 평면 치수 비례 아님");
 }
 
@@ -970,7 +982,7 @@ function f_sip(s, p) {
   a = P(45, 51, zt); annotTo(s, a[0], a[1], 0, midName, midCol);
   a = P(12, 56, 1.8); annotTo(s, a[0], a[1], 1, "package substrate", M.sub);
   // 우측 단면 개념도
-  ttl(s, "단면 개념도: 신호 경로", RC.x, TOP - 0.04, 3.4);
+  ttl(s, p.sideTitle || "단면 개념도: 신호 경로", RC.x, TOP - 0.04, 3.4);   // sideTitle: 문항 주제에 맞춘 제목
   // 두께 방향을 키운 단면(uz 0.16): 층 이름이 자기 면 안에 들어가고, 수직 연결선은 글자를 피해 칩 아래 양 끝에 둔다
   const Q = OBL(RC.x + 0.12, TOP + 2.95, 0.097, 0.16), emibT = t.indexOf("emib") === 0;
   oblBox(s, Q, 0, 0, 0, 33, 5, 2.2, M.sub, { lw: 0.7, text: emibT ? "" : "substrate", fs: 8 });
@@ -986,9 +998,10 @@ function f_sip(s, p) {
   const zz = emibT ? 2.2 : (t === "cowos-s" ? 3.7 : 3.3);
   oblBox(s, Q, 3, 0, zz, 10, 5, 4.6, M.dram, { lw: 0.7, text: "HBM", fs: 8 });
   oblBox(s, Q, 19, 0, zz, 11, 5, 4.6, M.xpu, { lw: 0.8, text: "XPU", fs: 8 });
-  const b1 = Q(13, 0, zz + 1), b2 = Q(19, 0, zz + 1); A(s, b1[0], b1[1], b2[0], b2[1], K.rust, 1.3, { both: true });
+  // hidePath: HBM–XPU 신호 경로 화살표·라벨 끔(lid·stiffener·BGA·underfill 등 신호 경로와 무관한 문항용)
+  const b1 = Q(13, 0, zz + 1), b2 = Q(19, 0, zz + 1); if (p.hidePath !== true) A(s, b1[0], b1[1], b2[0], b2[1], K.rust, 1.3, { both: true });
   const qq = Q(16, 0, zz + 6.2);
-  pill(s, qq[0], qq[1], (t.indexOf("emib") === 0 ? "bridge 경유 " : "interposer 경유 ") + ((p.lines || p.io) ? Number(p.lines || p.io).toLocaleString() + "선" : "HBM I/O 배선"), { fs: 8, fill: K.cream });
+  if (p.hidePath !== true) pill(s, qq[0], qq[1], (t.indexOf("emib") === 0 ? "bridge 경유 " : "interposer 경유 ") + ((p.lines || p.io) ? Number(p.lines || p.io).toLocaleString() + "선" : "HBM I/O 배선"), { fs: 8, fill: K.cream });
   // 사실 근거: _facts F34 (CoWoS-S stitching ≈ 3.3× reticle), F37 (RDL 적층 via · CoWoS-L TIV · EMIB 전원은 기판 via)
   const msg = p.msg ? [p.msg, K.violet]
     : t === "emib" ? ["bridge 는 신호 전용 · 전원은 기판 via 로 바로 내려간다", K.violet]
@@ -1013,7 +1026,7 @@ function f_therm(s, p) {
   const avail = 4.1, dieH = Math.min(0.2, (avail - 0.3) / n * 0.7), gap = Math.min(0.1, (avail - 0.3) / n * 0.3);
   const x0 = LC.x + 0.25, top = TOP + 0.62, tt = [];
   ttl(s, "적층 방향 온도 — core " + (n - 1) + " + base 1", LC.x, TOP - 0.04, 4.3);
-  const tMin = p.tTop || 95, tMax = tMin + dT * (n - 1);
+  const tMin = p.tTop || ((p.limit || 85) - 25), tMax = tMin + dT * (n - 1);
   for (let i = 0; i < n; i++) {
     const Ti = tMin + dT * i; tt.push(Ti);
     const yy = top + i * (dieH + gap);
@@ -1161,11 +1174,12 @@ function f_stack(s, p) {
   else if (p.highlight === "gap") annot(s, 1, hid ? "접합 간극은 어디에 몇 개 생기는가" : "접합 간극 수 = core die 수", MX.ncf);
   else if (p.highlight === "base") annot(s, 1, "base die 가 외부 인터페이스를 담당한다", M.base);
   else if (p.highlight === "height") annot(s, 1, "전체 높이 = die 두께 합 + 간극 합", K.violet);
+  const HF = hid || p.hideFormula === true; // hideResult 면 산식 칸도 숨김(산식이 곧 정답, DA 2026-11-22)
   const rows = [["항목", "수량", "산식"],
-    ["die 총 장수", hid ? "?" : (n + 1) + "장", "core " + n + " + base 1"],
-    ["접합 간극", hid ? "?" : n + "개", "= core 수 (base–core1 포함)"],
-    ["backside pad 보유 die", hid ? "?" : n + "장", "base + core, top core 제외"],
-    ["스택 높이", hid ? "?" : (p.h_um != null ? p.h_um + " µm" : "—"), "base + N × (core + 간극)"]];
+    ["die 총 장수", hid ? "?" : (n + 1) + "장", HF ? "?" : "core " + n + " + base 1"],
+    ["접합 간극", hid ? "?" : n + "개", HF ? "?" : "= core 수 (base–core1 포함)"],
+    ["backside pad 보유 die", hid ? "?" : n + "장", HF ? "?" : "base + core, top core 제외"],
+    ["스택 높이", hid ? "?" : (p.h_um != null ? p.h_um + " µm" : "—"), HF ? "?" : "base + N × (core + 간극)"]];
   table(s, rows, RC.x, TOP, RC.w, null);
   const hasLim = p.limit_um != null;
   if (hasLim) pill(s, RC.x, TOP + 0.32 + rows.length * 0.60 + 0.32, "높이 상한 (설계 조건) " + p.limit_um + " µm", { fs: 8, fill: hid || p.h_um == null ? K.cream : (p.h_um > p.limit_um ? K.pink : K.mint), align: "left", maxW: RC.w });
@@ -1339,6 +1353,283 @@ function f_wafermap(s, p) {
 
 // ── 그림이 필요 없는 주제: 핵심 개념 카드 ──────────────────────────────
 // p:{title, points:[문장...], ask, flag}
+// ========== T20. µbump 접합 단면 (f_ubj) — 접합 상태·불량·IMC·SOH·EM (DA 2026-11-22) ==========
+// 이름(불량명·재료명)은 기본적으로 쓰지 않는다. 이상 부위는 "관찰 부위 (A)" 식 기호로만 표시.
+// names:true 일 때만 재료 이름(Cu pillar·solder·IMC·pad)을 보인다. 단면 두께 방향은 과장 표시.
+function f_ubj(s, p) {
+  const n = Math.max(1, Math.min(6, p.n || (p.st ? p.st.length : 3)));
+  const st = (p.st || []).slice(0, n); while (st.length < n) st.push("ok");
+  const pre = p.stage === "pre", NM = p.names === true, zoomOn = p.zoom != null, rightUsed = zoomOn || p.cmp;
+  const x0 = LC.x + 0.05, W0 = rightUsed ? 4.3 : 8.2, dz = 0.42;
+  const P = OBL(0, 0, 1, 1);  // 깊이 방향 투영(정면 단면 + 다이 윗면/옆면 살짝)
+  const FW = !rightUsed, dieH = FW ? 0.55 : 0.46, gH = (pre ? 1.55 : 1.15) * (FW ? 1.3 : 1), yU = TOP + 0.55, yL = yU + dieH + gH;
+  const die = (y, txt) => { oblBox(s, OBL(x0, y + dieH, 1, 1), 0, 0, 0, W0 - 0.35, dz, dieH, MX.si, p.tsv ? {} : { text: txt, fs: 8 }); if (p.tsv) T(s, txt, x0 + 0.08, y + dieH / 2 - 0.1, 1.2, 0.2, { fs: 8, bold: true, color: K.ink }); };
+  const sp = (W0 - 0.35) / n, xs = (i) => x0 + sp * (i + 0.5);
+  const ws = p.w || [], hs = p.h || [];
+  const pw0 = Math.min(FW ? 0.85 : 0.62, sp * 0.42);
+  // 간극 충전 수지 (뒤쪽에 먼저)
+  if (!pre && p.fill && p.fill !== "none") { R(s, x0, yU + dieH, W0 - 0.35, gH, p.fill === "muf" ? "D9C7A8" : "E6D3B5", { line: null, tr: 0 }); hatch(s, x0, yU + dieH, W0 - 0.35, gH, "C9B48E", 0.14); }
+  die(yU, p.upper || "upper die"); die(yL, p.lower || "lower die");
+  if (!pre && p.fillet && p.fill && p.fill !== "none") {   // 가장자리로 밀려 나와 위 die 옆면을 타고 오른 수지(fillet)
+    const xr = x0 + W0 - 0.35, yt = yU + dieH * 0.3, rc = p.fill === "muf" ? "D9C7A8" : "E6D3B5";
+    poly(s, [[xr, yL], [xr + 0.5, yL], [xr + 0.22, yU + dieH], [xr + 0.12, yt], [xr, yt]], rc, { lw: 0.6 });
+    if (p.filletTag !== null) lead(s, xr + 0.3, yU + dieH + 0.3, xr + 0.05, yU - 0.25, p.filletTag || "관찰 부위 (A)", { fill: K.cream, align: "right", nogut: true });
+  }
+  const tags = p.tags || [], letters = "ABCDEF"; let li = 0; const marks = [];
+  const tagOf = (i) => tags[i] != null ? tags[i] : (st[i] !== "ok" && p.autoTag !== false ? "관찰 부위 (" + letters[li++] + ")" : null);
+  const solderPoly = (cx, y1, y2, half, bulge) => {
+    const pts = []; for (let k = 0; k <= 10; k++) { const t = k / 10, b = Math.sin(Math.PI * t) * bulge; pts.push([cx - half - b, y1 + (y2 - y1) * t]); }
+    for (let k = 10; k >= 0; k--) { const t = k / 10, b = Math.sin(Math.PI * t) * bulge; pts.push([cx + half + b, y1 + (y2 - y1) * t]); }
+    return pts;
+  };
+  const top0 = yU + dieH, bot0 = yL;
+  for (let i = 0; i < n; i++) {
+    const cx = xs(i), pw = pw0 * (ws[i] || 1), hk = hs[i] || 1, s_ = st[i];
+    // TSV (선택): bump 위·아래 die 를 관통하는 Cu 기둥
+    if (p.tsv && p.tsv[i]) { R(s, cx - 0.05, yU + 0.02, 0.1, dieH - 0.02, MX.cu, { lw: 0.6 }); R(s, cx - 0.05, yL, 0.1, dieH - 0.02, MX.cu, { lw: 0.6 }); }
+    // unfill: 수지 충전 안에서 이 bump 주변만 비어 있음
+    if (s_ === "unfill" && !pre) { R(s, cx - pw / 2 - 0.32, top0, pw + 0.64, bot0 - top0, MX.bare, { lw: 0.6, dash: 1 }); marks.push([i, cx + pw / 2 + 0.2, (top0 + bot0) / 2]); }
+    // 아래 die pad
+    const padH = 0.08; R(s, cx - pw / 2 - 0.05, bot0 - padH, pw + 0.1, padH, MX.cu2, { lw: 0.6 });
+    const pillH = (pre ? 0.55 : 0.5) * (FW ? 1.3 : 1) * hk, pyb = top0 + pillH;
+    R(s, cx - pw / 2, top0, pw, pillH, MX.cu, { lw: 0.8 });
+    if (p.ni) R(s, cx - pw / 2, pyb, pw, 0.06, MX.ni2, { lw: 0.6 });
+    const yS = pyb + (p.ni ? 0.06 : 0);
+    if (pre) {   // 접합 전: 둥근 solder cap
+      const ch = 0.26 * (FW ? 1.3 : 1) * (p.cap || 1);
+      R(s, cx - pw / 2, yS, pw, ch * 0.55, MX.sol, { lw: 0.7 });
+      E(s, cx - pw / 2, yS + ch * 0.05, pw, ch, MX.sol, { lw: 0.7 });
+      R(s, cx - pw / 2 + 0.01, yS, pw - 0.02, ch * 0.5, MX.sol, { line: null });
+      if (p.residue) E(s, cx - pw / 2 - 0.12, bot0 - 0.1, 0.18, 0.1, "B99A6B", { lw: 0.5 });
+    } else {
+      const itop = s_ === "imcthick" || s_ === "imcgrow" ? 0.16 : s_ === "fullimc" ? 0 : 0.045;
+      const ibot = itop, yE = bot0 - padH;
+      const showImc = p.imc !== "none";
+      if (s_ === "nonwet") {
+        E(s, cx - pw / 2 - 0.02, yS - 0.04, pw + 0.04, (yE - yS) * 0.62, MX.sol, { lw: 0.7 });
+        if (showImc) R(s, cx - pw / 2, yS, pw, 0.04, MX.imc, { lw: 0.5 });
+        marks.push([i, cx, yS + (yE - yS) * 0.66]);
+      } else if (s_ === "hip") {
+        const mid = yS + (yE - yS) * 0.5;
+        E(s, cx - pw / 2 - 0.04, yS - 0.04, pw + 0.08, mid - yS + 0.07, MX.sol, { lw: 0.7 });
+        E(s, cx - pw / 2 - 0.06, mid - 0.03, pw + 0.12, yE - mid + 0.05, MX.sol, { lw: 0.7 });
+        L(s, cx - pw / 2 + 0.02, mid + 0.015, cx + pw / 2 - 0.02, mid + 0.015, K.edge, 1.6);
+        marks.push([i, cx + pw / 2, mid]);
+      } else if (s_ === "open") {
+        R(s, cx - pw / 2, yS, pw, (yE - yS) * 0.45, MX.sol, { lw: 0.7 });
+        marks.push([i, cx, yS + (yE - yS) * 0.7]);
+      } else if (s_ === "trap") {
+        const yT = yE - 0.14;
+        poly(s, solderPoly(cx, yS, yT, pw / 2, 0.03), MX.sol, { lw: 0.7 });
+        if (showImc) R(s, cx - pw / 2, yS, pw, itop, MX.imc, { lw: 0.5 });
+        R(s, cx - pw / 2 - 0.02, yT, pw + 0.04, yE - yT, (p.fill === "muf" ? "D9C7A8" : "E6D3B5"), { lw: 0.5 });
+        for (let k = 0; k < 6; k++) E(s, cx - pw / 2 + 0.01 + k * (pw - 0.08) / 5, yT + 0.025 + (k % 2) * 0.03, 0.08, 0.07, "F7F3EA", { lw: 0.5 });
+        marks.push([i, cx + pw / 2, yT + 0.04]);
+      } else if (s_ === "fullimc") {
+        R(s, cx - pw / 2, yS, pw, yE - yS, MX.imc, { lw: 0.7 });
+        marks.push([i, cx, (yS + yE) / 2]);
+      } else {
+        const bulge = s_ === "squeeze" ? 0.16 : s_ === "bridge" ? 0.0 : 0.035;
+        poly(s, solderPoly(cx, yS, yE, pw / 2, bulge), MX.sol, { lw: 0.7 });
+        if (showImc) { R(s, cx - pw / 2, yS, pw, itop, MX.imc, { lw: 0.5 }); R(s, cx - pw / 2 - 0.02, yE - ibot, pw + 0.04, ibot, MX.imc, { lw: 0.5 }); }
+        if (s_ === "void") { [[0.3, 0.33, 0.3], [0.68, 0.55, 0.22], [0.38, 0.74, 0.16]].forEach(([fx, fy, rf]) => { const r = pw * rf; E(s, cx - pw / 2 + pw * fx - r / 2, yS + (yE - yS) * fy - r / 2, r, r, MX.bare, { lw: 0.8 }); }); marks.push([i, cx - pw / 2 + pw * 0.28, yS + (yE - yS) * 0.35]); }
+        if (s_ === "dendrite" && i < n - 1) {
+          // 이웃 bump 사이 아래 die 표면을 따라 자란 가지 모양 석출물 (bridge 와 달리 얇고 갈라짐)
+          const x1 = cx + pw / 2 + 0.04, x2 = xs(i + 1) - pw0 / 2 - 0.08, yb = bot0 - 0.015, seg = (x2 - x1) / 6;
+          L(s, x1, yb, x2, yb, "6B6158", 1.8);
+          for (let k = 1; k < 6; k++) { const bx = x1 + seg * k, hh = 0.14 + 0.08 * (k % 2); L(s, bx, yb, bx - 0.07, yb - hh, "6B6158", 1.2); L(s, bx, yb, bx + 0.08, yb - hh * 0.75, "6B6158", 1.2); L(s, bx - 0.035, yb - hh / 2, bx - 0.1, yb - hh * 0.6, "6B6158", 0.9); }
+          marks.push([i, (x1 + x2) / 2, yb - 0.06]);
+        }
+        if (s_ === "kv") { for (let k = 0; k < 5; k++) E(s, cx - pw / 2 + 0.04 + k * (pw - 0.1) / 4, yS - 0.03, 0.05, 0.04, MX.bare, { lw: 0.5 }); marks.push([i, cx - pw / 2 + 0.04, yS - 0.01]); }
+        if (s_ === "em") {
+          // EM: 전자가 들어오는 쪽(cathode) 계면에 void, 나가는 쪽(anode)에 돌출(hillock). 기본 전자 흐름 = 위 → 아래(electron.dir "up" 이면 반대)
+          const up = !!(p.electron && p.electron.dir === "up");
+          const yv = up ? yE - ibot - 0.1 : yS + itop + 0.02, yh = up ? yS + itop : yE - ibot;
+          for (let k = 0; k < 3; k++) E(s, cx - pw / 2 + 0.03 + k * 0.1, yv, 0.1, 0.08, MX.bare, { lw: 0.6 });
+          poly(s, up ? [[cx + pw / 2 - 0.02, yh], [cx + pw / 2 + 0.16, yh + 0.04], [cx + pw / 2 - 0.02, yh + 0.12]]
+                     : [[cx + pw / 2 - 0.02, yh - 0.12], [cx + pw / 2 + 0.16, yh - 0.04], [cx + pw / 2 - 0.02, yh]], MX.sol, { lw: 0.6 });
+          marks.push([i, cx - pw / 2 + 0.06, yv + 0.04]);
+        }
+        if (s_ === "crowd") {
+          E(s, cx - pw / 2 - 0.03, yS + itop - 0.03, 0.24, 0.18, MX.hot, { line: null, tr: 10 }); E(s, cx - pw / 2 + 0.01, yS + itop, 0.1, 0.08, K.alert, { line: null, tr: 20 });
+          marks.push([i, cx - pw / 2 + 0.05, yS + itop + 0.04]);
+        }
+        if (s_ === "squeeze") marks.push([i, cx + pw / 2 + 0.12, (yS + yE) / 2]);
+        if (s_ === "imcthick" || s_ === "imcgrow") marks.push([i, cx + pw / 2, yS + itop / 2]);
+        if (s_ === "bridge" && i < n - 1) {
+          const nx = xs(i + 1), m = (yS + yE) / 2 + 0.05;
+          poly(s, [[cx + pw / 2 - 0.01, m - 0.16], [nx - pw / 2 + 0.01, m - 0.12], [nx - pw / 2 + 0.01, m + 0.16], [cx + pw / 2 - 0.01, m + 0.2]], MX.sol, { lw: 0.7 });
+          marks.push([i, (cx + nx) / 2, m]);
+        }
+      }
+      if (p.residue) { E(s, cx - pw / 2 - 0.17, yE - 0.1, 0.2, 0.1, "B99A6B", { lw: 0.5 }); E(s, cx + pw / 2 - 0.03, yE - 0.1, 0.2, 0.1, "B99A6B", { lw: 0.5 }); }
+    }
+    const tg = tagOf(i);
+    if (tg) {
+      const mk = marks.find((m) => m[0] === i) || [i, cx, (top0 + bot0) / 2];
+      lead(s, mk[1], mk[2], mk[1] + 0.02, yL + dieH + 0.25 + (i % 2) * 0.27, tg, { fill: K.cream, align: "left", nogut: FW });
+    }
+  }
+  // 전류(선택): 같은 전류 I 를 bump 마다 화살표로
+  if (p.I) for (let i = 0; i < n; i++) { const cx = xs(i); A(s, cx, yU - 0.18, cx, yU + 0.02, K.rust, 1.4); if (i === 0) T(s, "I", cx + 0.06, yU - 0.26, 0.2, 0.2, { fs: 9, bold: true, color: K.rust }); }
+  if (p.electron) { const cx = xs(p.electron.at || 0) + pw0 / 2 + 0.22; if (p.electron.dir === "up") A(s, cx, yL - 0.05, cx, top0 + 0.08, K.rust, 1.5); else A(s, cx, top0 + 0.08, cx, yL - 0.05, K.rust, 1.5); T(s, "e⁻", cx + 0.05, (top0 + yL) / 2 - 0.1, 0.3, 0.2, { fs: 9, bold: true, color: K.rust }); }
+  if (p.trace) { const cx = xs(p.trace.at || 0); L(s, x0 + 0.05, top0 - 0.06, cx - pw0 / 2 + 0.02, top0 - 0.06, K.rust, 2.4); A(s, x0 + 0.1, top0 - 0.16, x0 + 0.5, top0 - 0.16, K.rust, 1.2); T(s, "배선", x0 + 0.08, top0 - 0.38, 0.6, 0.2, { fs: 8, color: K.rust, bold: true }); }
+  // daisy chain: 위·아래 die 배선이 bump 를 번갈아 잇는다 + 양 끝 측정 단자
+  if (p.chain) {
+    for (let i = 0; i < n - 1; i++) {
+      const y = i % 2 === 0 ? top0 - 0.05 : bot0 + 0.05;
+      L(s, xs(i), y, xs(i + 1), y, K.rust, 2.4);
+    }
+    L(s, xs(0), bot0 + 0.05, xs(0), yL + dieH + 0.25, K.rust, 1.2); L(s, xs(n - 1), bot0 + 0.05, xs(n - 1), yL + dieH + 0.25, K.rust, 1.2);
+    L(s, xs(0), yL + dieH + 0.25, xs(n - 1), yL + dieH + 0.25, K.rust, 1.0);   // 선을 먼저, 측정 pill 을 위에
+    pill(s, (xs(0) + xs(n - 1)) / 2, yL + dieH + 0.25, p.chainLabel || "양 끝 단자 사이 저항 측정 (Ω)", { fs: 8, fill: K.orange, nogut: true });
+  }
+  // 열팽창 차이로 생기는 수평 변위(선택)
+  if (p.shear) {
+    A(s, x0 + 0.6, yU - 0.15, x0 + 1.4, yU - 0.15, K.rust, 1.5); A(s, x0 + 1.4, yL + dieH + 0.18, x0 + 0.6, yL + dieH + 0.18, K.rust, 1.5);
+    T(s, p.shear === true ? "위·아래 die 수평 변위 차이" : p.shear, x0 + 1.5, yU - 0.27, 5.0, 0.22, { fs: 8, bold: true, color: K.rust });
+  }
+  // 치수(선택): dims.pitch / gap / pillar — 값 문자열을 그대로 표시("?" 가능). cand:true 는 후보 치수 A·B·C
+  const d = p.dims || {};
+  if (n >= 2 && d.pitch) dimH(s, xs(0), xs(1), yU - 0.2, "pitch " + d.pitch);
+  if (d.gap) dimV(s, x0 + W0 - 0.2, top0, bot0, "간극 " + d.gap, { align: FW ? "right" : "left" });
+  if (d.dia) dimH(s, xs(0) - pw0 / 2, xs(0) + pw0 / 2, yL + dieH + 0.2, d.dia);
+  if (p.cand) {
+    dimV(s, x0 + W0 - 0.2, top0, bot0, "A", { align: FW ? "right" : "left" });
+    dimV(s, xs(0) - pw0 / 2 - 0.15, top0, top0 + 0.5, "B", { align: "right" });
+    if (n >= 2) dimH(s, xs(0), xs(1), yU - 0.2, "C");
+  }
+  if (p.fill && p.fill !== "none" && !pre) pill(s, n >= 2 ? (xs(0) + xs(1)) / 2 - 0.4 : x0 + 0.08, top0 + 0.2, p.fillLabel || "수지 충전", { fs: 8, fill: K.cream, align: "left", nogut: true });   // 빗금 위라 배경 있는 pill
+  // 재료 범례(names:true 일 때만 이름)
+  const legY = yL + dieH + 0.85;
+  if (NM) legend(s, x0 + 0.1, legY, [[MX.cu, "Cu"], [MX.sol, "solder"], [MX.imc, "IMC"]].concat(p.ni ? [[MX.ni2, "Ni"]] : []).concat(p.fill && p.fill !== "none" ? [[p.fill === "muf" ? "D9C7A8" : "E6D3B5", "수지"]] : []), { cols: 5, cw: 0.85 });
+  // ── 오른쪽 칸: 한 접합부 확대(zoom) 또는 비교 단면(cmp)
+  if (zoomOn) ubZoom(s, p, st[p.zoom] || "ok");
+  else if (p.cmp) ubCmp(s, p);
+  if (p.bullet) pill(s, rightUsed ? RC.x : LC.x, rightUsed ? TOP + 3.75 : yL + dieH + 1.2, p.bullet, { fs: 8, fill: K.violet, align: "left", maxW: rightUsed ? RC.w : 8.0, nogut: !rightUsed });
+  flagOf(s, p); cap(s, p.note || "단면 · 두께 방향 확대 표시 (비례 아님)");
+}
+// 확대 단면: 층 순서를 위에서 아래로. hideNames 면 층 이름을 "층 A/B/…" 로
+function ubZoom(s, p, s_) {
+  const HN = p.names !== true, x = RC.x + 0.55, w = 1.35;
+  let y = TOP + 0.25;
+  ttl(s, p.zoomTitle || "접합부 한 곳 확대", RC.x, TOP - 0.04, 3.6);
+  const imc = p.imc || "one", lay = [];
+  lay.push(["Cu pillar", MX.cu, 0.7]);
+  if (p.ni) lay.push(["Ni", MX.ni2, 0.16]);
+  if (imc === "two") { lay.push(["Cu₃Sn", "B08A4E", 0.12]); lay.push(["Cu₆Sn₅", MX.imc, 0.2]); }
+  else if (imc !== "none") lay.push(["IMC", MX.imc, s_ === "imcthick" || s_ === "imcgrow" ? 0.3 : 0.12]);
+  if (s_ === "fullimc") lay.push(["IMC", MX.imc, 0.5]);
+  else lay.push(["solder", MX.sol, s_ === "imcgrow" ? 0.2 : 0.62]);
+  if (imc !== "none" && s_ !== "fullimc") lay.push(["IMC", MX.imc, s_ === "imcthick" || s_ === "imcgrow" ? 0.3 : 0.12]);
+  lay.push(["Cu pad", MX.cu2, 0.22]);
+  R(s, x - 0.35, y, w + 0.7, 0.28, MX.si, { lw: 0.8, text: "upper die", fs: 8 }); y += 0.28;
+  const L0 = "ABCDEFG"; let k = 0;
+  const named = p.layerNames || null;
+  lay.forEach(([nm, c, h], i) => {
+    R(s, x, y, w, h, c, { lw: 0.7 });
+    if (s_ === "kv" && nm === "Cu pillar") for (let j = 0; j < 6; j++) E(s, x + 0.06 + j * 0.22, y + h - 0.05, 0.08, 0.06, MX.bare, { lw: 0.5 });
+    const label = named ? named[i] : (HN ? "층 " + L0[k++] : nm);
+    if (label) lead(s, x + w - 0.05, y + h / 2, x + w + 0.35, y + h / 2, label, { fill: K.cream, align: "left" });
+    y += h;
+  });
+  R(s, x - 0.35, y, w + 0.7, 0.28, MX.si, { lw: 0.8, text: "lower die", fs: 8 });
+}
+// 비교 단면: ball(같은 높이의 solder ball 접합) · hcb(Cu–Cu hybrid 접합)
+function ubCmp(s, p) {
+  const x = RC.x + 0.15, w = 3.3, y = TOP + 0.55;
+  ttl(s, p.cmpTitle || (p.cmp === "ball" ? "같은 높이를 solder ball 로 만든 경우" : "solder 없이 Cu 끼리 붙인 경우"), RC.x, TOP - 0.04, 3.7);
+  if (p.cmp === "ball") {
+    R(s, x, y, w, 0.46, MX.si, { lw: 0.9, text: "upper die", fs: 8 });
+    R(s, x, y + 1.61, w, 0.46, MX.si, { lw: 0.9, text: "lower die", fs: 8 });
+    for (let i = 0; i < 2; i++) { const cx = x + 0.9 + i * 1.5; E(s, cx - 0.62, y + 0.44, 1.24, 1.19, MX.sol, { lw: 0.8 }); }
+  } else {
+    R(s, x, y, w, 0.5, MX.si, { lw: 0.9, text: "upper die", fs: 8 });
+    R(s, x, y + 0.5, w, 0.3, MX.ox, { lw: 0.7 }); R(s, x, y + 0.8, w, 0.3, MX.ox, { lw: 0.7 });
+    for (let i = 0; i < 4; i++) { const cx = x + 0.45 + i * 0.8; R(s, cx - 0.15, y + 0.5, 0.3, 0.3, MX.cu, { lw: 0.7 }); R(s, cx - 0.15, y + 0.8, 0.3, 0.3, MX.cu, { lw: 0.7 }); }
+    R(s, x, y + 1.1, w, 0.5, MX.si, { lw: 0.9, text: "lower die", fs: 8 });
+    L(s, x, y + 0.8, x + w, y + 0.8, K.alert, 1.0, { dash: 1 });
+    T(s, "접합면", x + w - 0.7, y + 0.62, 0.7, 0.18, { fs: 7, color: K.alert, bold: true });
+  }
+}
+
+// ========== T21. through-mask 도금 공정 단면 (f_plate) ==========
+// steps: seed · pr · plate · strip · etch · reflow 중 고른 순서대로 패널을 그린다(순서 문항은 섞어서 준다).
+// hideNames:true 면 패널 이름을 (가)(나)… 로. labels 로 직접 지정 가능.
+function f_plate(s, p) {
+  const steps = (p.steps || ["seed", "pr", "plate", "strip", "etch", "reflow"]).slice(0, 6);
+  const NAMES = { seed: "seed 증착", pr: "PR 패터닝", plate: "전해 도금", strip: "PR 제거", etch: "seed 식각", reflow: "reflow" };
+  const KO = ["(가)", "(나)", "(다)", "(라)", "(마)", "(바)"];
+  const nc = steps.length <= 3 ? steps.length : 3, nr = Math.ceil(steps.length / 3);
+  const pw = (DG.w - 0.3) / nc - 0.18, ph = nr > 1 ? 1.62 : 2.2;
+  const has = (st, k) => { const o = ["seed", "pr", "plate", "strip", "etch", "reflow"]; return o.indexOf(st) >= o.indexOf(k); };
+  steps.forEach((stp, i) => {
+    const px = DG.x + 0.15 + (i % nc) * (pw + 0.18), py = TOP + 0.25 + Math.floor(i / nc) * (ph + 0.42);
+    R(s, px, py, pw, ph, K.cream, { lw: 0.6, line: K.lineStrong, round: 0.06 });
+    const bx = px + 0.18, bw = pw - 0.36, base = py + ph - 0.32;
+    R(s, bx, base, bw, 0.22, MX.si, { lw: 0.7 });                                // wafer
+    R(s, bx, base - 0.06, bw, 0.06, MX.ox, { lw: 0.5 });                        // passivation
+    const op = [bx + bw * 0.28, bx + bw * 0.72], ow = Math.min(0.42, bw * 0.2);
+    op.forEach((cx) => R(s, cx - ow / 2 - 0.04, base - 0.06, ow + 0.08, 0.06, MX.pad, { lw: 0.5 })); // pad 개구
+    const seedOn = stp !== "etch" && stp !== "reflow";
+    const ySeed = base - 0.1;
+    if (seedOn) R(s, bx, ySeed, bw, 0.04, MX.ti, { lw: 0.4 });
+    else op.forEach((cx) => R(s, cx - ow / 2, ySeed, ow, 0.04, MX.ti, { lw: 0.4 }));
+    const prH = Math.min(0.9, ph - 0.75), yPR = ySeed - prH;
+    if (stp === "pr" || stp === "plate") {
+      const segs = [[bx, op[0] - ow / 2], [op[0] + ow / 2, op[1] - ow / 2], [op[1] + ow / 2, bx + bw]];
+      segs.forEach(([a, b]) => R(s, a, yPR, b - a, prH, MX.lowk, { lw: 0.6, tr: 5 }));
+    }
+    if (has(stp, "plate")) op.forEach((cx) => {
+      const cuH = prH * 0.62, snH = prH * 0.26;
+      R(s, cx - ow / 2, ySeed - cuH, ow, cuH, MX.cu, { lw: 0.6 });
+      if (stp === "reflow") E(s, cx - ow / 2, ySeed - cuH - snH * 1.5, ow, snH * 1.9, MX.sol, { lw: 0.6 });
+      else R(s, cx - ow / 2, ySeed - cuH - snH, ow, snH, MX.sol, { lw: 0.6 });
+    });
+    if (stp === "plate") { op.forEach((cx) => A(s, cx, py + 0.12, cx, yPR - 0.04, K.rust, 1.2)); }
+    if (stp === "seed") A(s, bx + bw / 2, py + 0.15, bx + bw / 2, ySeed - 0.05, K.muted, 1.1, { dash: 1 });
+    const lab = (p.labels && p.labels[i]) || (p.hideNames ? KO[i] : NAMES[stp] || stp);
+    T(s, lab, px, py + ph + 0.02, pw, 0.22, { fs: 8.5, bold: true, align: "center", color: K.ink2 });
+  });
+  if (p.legend !== false) legend(s, DG.x + 0.2, TOP + 0.25 + nr * (ph + 0.42) + 0.05, [[MX.ti, "seed"], [MX.lowk, "PR"], [MX.cu, "Cu"], [MX.sol, "solder"], [MX.pad, "pad"], [MX.ox, "passivation"]], { cols: 6, cw: 1.3 });
+  if (p.bullet) pill(s, DG.x + 0.2, ANY + 0.45, p.bullet, { fs: 8, fill: K.violet, align: "left", nogut: true, maxW: 8.0 });
+  flagOf(s, p); cap(s, p.note || "단면 · 두께 방향 확대 표시 (비례 아님)");
+}
+
+// ========== T22. 녹은 solder 의 젖음 — 접촉각 (f_wet) ==========
+// drops: [{surf:"clean"|"oxide", theta:도, label, vapor:true}] · hideAngle:true 면 각도 값을 "θ" 로만
+function f_wet(s, p) {
+  const drops = (p.drops || [{ surf: "clean", theta: 30 }, { surf: "oxide", theta: 120 }]).slice(0, 3);
+  const n = drops.length, cw = (DG.w - 0.3) / n;
+  drops.forEach((d, i) => {
+    const x = DG.x + 0.15 + i * cw, bw = cw - 0.35, by = TOP + 2.2;
+    const P = OBL(x + 0.1, by + 0.35, 1, 1);
+    oblBox(s, P, 0, 0, 0, bw - 0.3, 0.55, 0.35, MX.cu2, {});
+    if (d.surf === "oxide") oblBox(s, OBL(x + 0.1, by, 1, 1), 0, 0, 0, bw - 0.3, 0.55, 0.06, "8A6E5A", { lw: 0.5 });
+    const th = Math.max(10, Math.min(160, d.theta || 40)) * Math.PI / 180;
+    const cx = x + 0.1 + (bw - 0.3) / 2 + 0.12, y0 = by - (d.surf === "oxide" ? 0.06 : 0);
+    const Vol = 0.45;   // 같은 부피로 그리기 위해 반지름 조정
+    const capA = (R0, t) => R0 * R0 * (t - Math.sin(t) * Math.cos(t));
+    const Rr = Math.sqrt(Vol / Math.max(0.05, capA(1, th)));
+    const a = Rr * Math.sin(th), ccy = y0 + Rr * Math.cos(th);
+    const pts = [];
+    for (let k = 0; k <= 40; k++) { const ang = -th + 2 * th * k / 40; pts.push([cx + Rr * Math.sin(ang), ccy - Rr * Math.cos(ang)]); }
+    poly(s, pts, MX.sol, { lw: 0.9 });
+    // 접촉각 표시: 오른쪽 접촉점에서 기판선과 방울 접선 사이 (방울 안쪽에서 잰다)
+    const ex = cx + a;
+    L(s, ex - 0.6, y0, ex, y0, K.alert, 1.1);
+    L(s, ex, y0, ex - 0.6 * Math.cos(th), y0 - 0.6 * Math.sin(th), K.alert, 1.1);
+    const tl = p.hideAngle ? "θ" : "θ ≈ " + Math.round(d.theta) + "°";
+    pill(s, ex + 0.5 + (th > Math.PI / 2 ? 0.35 : 0), y0 - 0.5, tl, { fs: 8, fill: K.cream, nogut: true, h: 0.2 });
+    if (d.vapor) for (let k = 0; k < 3; k++) A(s, x + 0.4 + k * 0.6, TOP + 0.2, x + 0.4 + k * 0.6, TOP + 0.75, K.blue2, 1.2, { dash: 1 });
+    if (d.vapor) T(s, typeof d.vapor === "string" ? d.vapor : "증기 공급", x + 0.3, TOP - 0.05, bw, 0.2, { fs: 8, bold: true, color: K.ink2 });
+    const lab = d.label || (d.surf === "oxide" ? "산화막이 있는 표면" : "깨끗한 표면");
+    T(s, lab, x, by + 0.95, bw, 0.22, { fs: 8.5, bold: true, align: "center", color: K.ink2 });
+  });
+  if (p.bullet) pill(s, DG.x + 0.2, ANY + 0.2, p.bullet, { fs: 8, fill: K.violet, align: "left", nogut: true, maxW: 8.0 });
+  flagOf(s, p); cap(s, p.note || "녹은 solder 방울 단면 · 같은 부피로 그림");
+}
+
 function f_note(s, p) {
   const pts = (p.points || []).slice(0, 4);
   const W = DG.w - 0.30, X = DG.x + 0.15;
@@ -1361,10 +1652,284 @@ function f_note(s, p) {
 }
 
 
-module.exports = { f_bond, f_warp, f_sip, f_therm, f_fa, f_rel, f_stack, f_hcb, f_plot, f_film, f_note, f_table, f_wafermap };
+module.exports = { f_bond, f_warp, f_sip, f_therm, f_fa, f_rel, f_stack, f_hcb, f_plot, f_film, f_note, f_table, f_wafermap, f_ubj, f_plate, f_wet };
 MODS["./fig2.js"] = module.exports; })({ exports: {} });
+// ===== 상황도 템플릿 3부: 입체 cutaway 그림 (BJ 품질 기준 = CVD 챔버 개념도, 2026-11-27) =====
+// 공통 문법: 입체 단면(cutaway) · 금속/재료 음영(gradient) · 흐름 화살표 · 테두리 라벨 박스 + 리더선 · 결과 인셋 · 개념도 각주.
+// 라벨이 정답이면 hideLabels:true → "부위 A/B/…" 로만 표시. labels:{key:false} 로 개별 라벨 끔, labels:{key:"글자"} 로 바꿈.
+(function (module) { const require = req;
+const { K, shade, poly, L, A, R, T, E, tw, pill, OBL, oblBox } = require("./lib.js");
+const { DG, LC, RC, TOP, BOT, MX, cap } = require("./fig1.js");
+const u = (v) => Math.round(v * 1000) / 10;   // inch → SVG user unit(×100), 0.1 단위
+let GID = 0;
+// 선형 그라데이션: 방향 dir = "v"(위→아래) | "h"(왼→오른). stops = [[0,"RRGGBB"],[1,"RRGGBB"]]
+function grad(s, stops, dir) {
+  const id = "g3_" + (++GID), [x2, y2] = dir === "h" ? ["1", "0"] : ["0", "1"];
+  s.out.push(`<defs><linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map(([o, c, a]) => `<stop offset="${o}" stop-color="#${c}"${a != null ? ` stop-opacity="${a}"` : ""}/>`).join("")}</linearGradient></defs>`);
+  return `url(#${id})`;
+}
+function rgrad(s, stops) {
+  const id = "r3_" + (++GID);
+  s.out.push(`<defs><radialGradient id="${id}" cx="0.5" cy="0.5" r="0.5">${stops.map(([o, c, a]) => `<stop offset="${o}" stop-color="#${c}"${a != null ? ` stop-opacity="${a}"` : ""}/>`).join("")}</radialGradient></defs>`);
+  return `url(#${id})`;
+}
+const fillOf = (f) => (String(f).startsWith("url(") ? f : "#" + f);
+function path(s, d, fill, o = {}) {
+  s.out.push(`<path class="el" d="${d}" fill="${fill ? fillOf(fill) : "none"}"${o.op != null ? ` fill-opacity="${o.op}"` : ""} stroke="${o.line === null ? "none" : "#" + (o.line || K.edge)}" stroke-width="${((o.lw == null ? 0.9 : o.lw) * 1.25).toFixed(2)}" stroke-linejoin="round"${o.dash ? ' stroke-dasharray="5 3.5"' : ""}/>`);
+}
+function rectG(s, x, y, w, h, fill, o = {}) {
+  s.out.push(`<rect class="el" x="${u(x)}" y="${u(y)}" width="${u(w)}" height="${u(h)}" rx="${u(o.r || 0)}" fill="${fillOf(fill)}"${o.op != null ? ` fill-opacity="${o.op}"` : ""} stroke="${o.line === null ? "none" : "#" + (o.line || K.edge)}" stroke-width="${((o.lw == null ? 0.9 : o.lw) * 1.25).toFixed(2)}"${o.dash ? ' stroke-dasharray="5 3.5"' : ""}/>`);
+}
+function ellG(s, cx, cy, rx, ry, fill, o = {}) {
+  s.out.push(`<ellipse class="el" cx="${u(cx)}" cy="${u(cy)}" rx="${u(rx)}" ry="${u(ry)}" fill="${fill ? fillOf(fill) : "none"}"${o.op != null ? ` fill-opacity="${o.op}"` : ""} stroke="${o.line === null ? "none" : "#" + (o.line || K.edge)}" stroke-width="${((o.lw == null ? 0.9 : o.lw) * 1.25).toFixed(2)}"${o.dash ? ' stroke-dasharray="5 3.5"' : ""}/>`);
+}
+// 원판(디스크): 윗면 타원 + 옆면 띠. 정면 아래쪽 반만 옆면이 보인다.
+function disk(s, cx, cy, rx, ry, th, top, side, o = {}) {
+  path(s, `M${u(cx - rx)} ${u(cy)} A${u(rx)} ${u(ry)} 0 0 0 ${u(cx + rx)} ${u(cy)} L${u(cx + rx)} ${u(cy + th)} A${u(rx)} ${u(ry)} 0 0 1 ${u(cx - rx)} ${u(cy + th)} Z`, side, { lw: o.lw == null ? 0.8 : o.lw });
+  ellG(s, cx, cy, rx, ry, top, { lw: o.lw == null ? 0.8 : o.lw });
+}
+// 테두리 라벨 박스(기준 이미지의 청록 테두리 박스). align: "left"(x 가 왼쪽 끝) | "right"(x 가 오른쪽 끝)
+const TEAL = "2F7F8F";
+function tbox(s, x, y, text, o = {}) {
+  const fs = o.fs || 8, w = tw(text, fs * 1.52) * 1.08 + 0.3, h = 0.32;
+  const X = o.align === "right" ? x - w : o.align === "center" ? x - w / 2 : x;
+  R(s, X, y - h / 2, w, h, o.fill || "F3FAFB", { lw: 1.1, line: o.line || TEAL, text, fs, bold: true, color: o.color || "1F4F5A" });
+  return { x: X, y: y - h / 2, w, h };
+}
+// 부위 → 라벨 박스 리더선. 끝점에 점.
+function tag(s, ax, ay, bx, by, text, o = {}) {
+  const align = o.align || (bx < ax ? "right" : "left");
+  const fs = o.fs || 8, w = tw(text, fs * 1.52) * 1.08 + 0.3;
+  const X = align === "right" ? bx - w : align === "center" ? bx - w / 2 : bx;
+  const ex = ax < X ? X - 0.03 : ax > X + w ? X + w + 0.03 : Math.max(X, Math.min(X + w, ax));   // 부위에 가까운 박스 변에서 멈춤
+  const ey = ax >= X && ax <= X + w ? (ay < by ? by - 0.19 : by + 0.19) : by;
+  L(s, ax, ay, ex, ey, o.lc || TEAL, 0.9, { lead: 1 });
+  E(s, ax - 0.035, ay - 0.035, 0.07, 0.07, o.lc || TEAL, { line: null });
+  return tbox(s, bx, by, text, { align, fs, line: o.line, fill: o.fill });
+}
+// 흐름 화살표(가스·물·전류). 색 기본 = 청색
+function flow(s, x1, y1, x2, y2, c, w) { A(s, x1, y1, x2, y2, c || "3B82C4", w || 1.5); }
+// 인셋 상자: 둥근 테두리 + 제목. 내용은 콜백(x,y,w,h)
+function inset(s, x, y, w, h, title, draw) {
+  rectG(s, x, y, w, h, "FBF8F2", { r: 0.1, line: "8C99A6", lw: 1.0 });
+  if (title) T(s, title, x + 0.12, y + 0.06, w - 0.24, 0.22, { fs: 8, bold: true, color: K.ink, align: "center" });
+  draw(x, y + (title ? 0.32 : 0.08), w, h - (title ? 0.4 : 0.16));
+}
+// 라벨 문구 결정: hideLabels 면 "부위 A…", labels[key] === false 면 없음
+function labeler(p, defs) {
+  const HL = p.hideLabels === true, L0 = "ABCDEFGH"; let k = 0; const out = {};
+  Object.keys(defs).forEach((key) => {
+    const v = p.labels && key in p.labels ? p.labels[key] : defs[key];
+    if (v === false || v == null) return;
+    out[key] = HL && !(p.keepLabels || []).includes(key) ? "부위 " + L0[k++] : v;
+  });
+  return out;
+}
+// 막 두께 분포 형상(정규화 0..1 위치 → 상대 두께)
+function prof(kind, t) {
+  const r = Math.abs(t - 0.5) * 2;
+  return kind === "center" ? 1 - 0.55 * r * r : kind === "edge" ? 0.45 + 0.55 * r * r : kind === "slope" ? 0.45 + 0.55 * t : kind === "ring" ? 0.6 + 0.4 * Math.sin(Math.PI * r) : 0.8;
+}
+function filmOn(s, cx, cy, rx, ry, kind, hmax, color) {
+  const pts = []; const N = 30;
+  for (let i = 0; i <= N; i++) { const t = i / N, x = cx - rx + 2 * rx * t; pts.push([x, cy - hmax * prof(kind, t)]); }
+  let d = `M${u(cx - rx)} ${u(cy)} ` + pts.map(([x, y]) => `L${u(x)} ${u(y)}`).join(" ") + ` L${u(cx + rx)} ${u(cy)} A${u(rx)} ${u(ry)} 0 0 1 ${u(cx - rx)} ${u(cy)} Z`;
+  path(s, d, color || "E9B949", { lw: 0.7 });
+}
 
-const F = Object.assign({}, MODS["./fig1.js"], MODS["./fig2.js"]);
+// ========== T30. 공정 챔버 cutaway (f_chamber) — CVD·ALD·PVD·식각 ==========
+// type: cvd(샤워헤드) | ald | etch(샤워헤드 + plasma) | pvd(target + magnet)
+// plasma:true · film:"center"|"edge"|"slope"|"flat"|"ring"|"none" · inset:{title, profiles:[...], captions:[...]} · flowLabel
+function f_chamber(s, p) {
+  const t = p.type || "cvd", pvd = t === "pvd", plasma = p.plasma != null ? p.plasma : (t === "etch" || pvd);
+  const cx = 4.15, x1 = 1.75, x2 = 6.55, y1 = 3.05, y2 = 6.2, wall = 0.13;
+  const metal = grad(s, [[0, "C9D1D8"], [0.5, "9AA6B1"], [1, "7D8894"]], "h");
+  const inner = grad(s, [[0, "E4EBF1"], [1, "CBD6E0"]], "v");
+  // 가스 유입관 (위)
+  if (!pvd) { rectG(s, cx - 0.17, 2.62, 0.34, y1 - 2.62 + 0.2, metal, { lw: 0.9 }); rectG(s, cx - 0.07, 2.62, 0.14, y1 - 2.62 + 0.2, "EEF3F7", { lw: 0.5 }); }
+  // 챔버 외벽(둥근 모서리) + 내부
+  rectG(s, x1, y1, x2 - x1, y2 - y1, metal, { r: 0.42, lw: 1.0 });
+  rectG(s, x1 + wall, y1 + wall, x2 - x1 - 2 * wall, y2 - y1 - 2 * wall, inner, { r: 0.34, lw: 0.8 });
+  // 플랜지
+  [[x1 - 0.22, 3.75], [x2, 3.75]].forEach(([fx, fy]) => { rectG(s, fx, fy, 0.22, 0.16, metal, { lw: 0.8 }); rectG(s, fx, fy + 1.25, 0.22, 0.16, metal, { lw: 0.8 }); });
+  // 배기관 (오른쪽 아래)
+  const ey = 5.05;
+  rectG(s, x2 - 0.05, ey, 0.85, 0.36, metal, { lw: 0.9 }); rectG(s, x2 - 0.05, ey + 0.1, 0.85, 0.16, "EEF3F7", { lw: 0.5 });
+  flow(s, x2 + 0.55, ey + 0.18, x2 + 1.15, ey + 0.18);
+  const lab = labeler(p, pvd
+    ? { target: "target (증착 원료)", magnet: "magnet", wafer: "wafer", heater: "히터·정전척", exhaust: "배기 → 진공 펌프", plasma: "Ar plasma", wall: "챔버 벽" }
+    : { inlet: "가스 유입", shower: t === "etch" ? "샤워헤드 (상부 전극)" : "샤워헤드 (가스 분배)", wafer: "wafer", heater: "히터", exhaust: "배기", plasma: "plasma", wall: "챔버 형상" });
+  if (lab.exhaust) T(s, lab.exhaust, x2 + 1.2, ey + 0.05, 1.3, 0.22, { fs: 8, bold: true, color: K.ink2 });
+  if (!pvd) {
+    flow(s, cx, 2.66, cx, 3.25);
+    if (lab.inlet) { L(s, cx + 0.22, 2.78, cx + 0.5, 2.78, K.muted, 0.8); T(s, lab.inlet, cx + 0.55, 2.68, 1.4, 0.22, { fs: 8, bold: true, color: K.ink2 }); }
+  }
+  // 상부: 샤워헤드 또는 target
+  const sy = 3.55, srx = 1.85, sry = 0.17;
+  if (pvd) {
+    const mg = grad(s, [[0, "8A6F9E"], [1, "5E4A70"]], "v");
+    [-1.2, -0.4, 0.4, 1.2].forEach((dx) => rectG(s, cx + dx - 0.22, y1 + wall + 0.02, 0.44, 0.18, mg, { lw: 0.6 }));
+    disk(s, cx, sy, srx, sry, 0.12, grad(s, [[0, "D6C9A8"], [1, "B8A77E"]], "v"), "9C8B63");
+  } else {
+    disk(s, cx, sy, srx, sry, 0.09, grad(s, [[0, "DCE3EA"], [1, "AEB9C4"]], "v"), "8C98A4");
+    for (let i = -6; i <= 6; i++) for (let j = -1; j <= 1; j++) { const hx = cx + i * 0.26 + (j % 2 ? 0.13 : 0), hy = sy + j * 0.07; if (((hx - cx) / srx) ** 2 + ((hy - sy) / sry) ** 2 < 0.8) ellG(s, hx, hy, 0.035, 0.018, "56626E", { line: null }); }
+  }
+  // 웨이퍼 + 받침(서셉터) + 히터
+  const wy = 4.72, wrx = 1.55, wry = 0.15;
+  if (plasma) ellG(s, cx, (sy + wy) / 2 + 0.05, srx * 0.95, 0.42, rgrad(s, [[0, "C9A7F0", 0.85], [0.7, "D9C2F5", 0.45], [1, "E9DDF8", 0]]), { line: null });
+  // 흐름 화살표: 샤워헤드 → 웨이퍼 (pvd 는 원자 비행)
+  if (p.flow !== false) {
+    for (let i = -3; i <= 3; i++) {
+      const fx = cx + i * 0.48;
+      if (pvd) flow(s, fx, sy + 0.25, fx + i * 0.07, wy - 0.25, "7A5C9E", 1.1);
+      else flow(s, fx, sy + 0.24, fx, wy - 0.28, "3B82C4", 1.3);
+    }
+  }
+  const ped = grad(s, [[0, "A7B2BC"], [1, "6F7B86"]], "v");
+  rectG(s, cx - 0.16, 5.3, 0.32, y2 - 5.3 + 0.35, ped, { lw: 0.8 });                  // 축
+  const hy0 = 5.05, hgt = 0.36;
+  rectG(s, cx - 1.85, hy0, 3.7, hgt, grad(s, [[0, "F2B36A"], [1, "D98A3D"]], "v"), { lw: 0.9 });   // 히터 블록
+  for (let i = 0; i < 10; i++) { const hx = cx - 1.65 + i * 0.36; path(s, `M${u(hx)} ${u(hy0 + 0.29)} q${u(0.05)} ${u(-0.06)} 0 ${u(-0.11)} q${u(-0.05)} ${u(-0.06)} 0 ${u(-0.11)}`, null, { line: "B5571C", lw: 0.7 }); }
+  disk(s, cx, 4.92, 2.0, 0.2, 0.12, grad(s, [[0, "BAC4CD"], [1, "8E9AA5"]], "v"), "7E8A95");   // 서셉터
+  disk(s, cx, wy, wrx, wry, 0.06, "C7CDD4", "9AA3AC");                                       // wafer
+  if ((p.film || "center") !== "none") filmOn(s, cx, wy, wrx, wry, p.film || "center", 0.17, "E9B949");
+  // 라벨 박스
+  if (lab.shower || lab.target) tag(s, cx - srx + 0.25, sy, 0.75, 3.2, lab.shower || lab.target, { align: "left" });
+  if (lab.magnet) tag(s, cx + 1.2, y1 + 0.2, 7.05, 2.85, lab.magnet, { align: "left" });
+  if (lab.wall) tag(s, x2 - 0.15, 3.6, 7.0, 3.35, lab.wall, { align: "left" });
+  if (lab.plasma && plasma) tag(s, cx + 1.3, 4.2, 7.0, 4.1, lab.plasma, { align: "left" });
+  if (lab.wafer) tag(s, cx - 1.1, wy - 0.05, 0.75, 4.35, lab.wafer, { align: "left" });
+  if (lab.heater) tag(s, cx - 1.5, hy0 + 0.2, 0.75, 5.55, lab.heater, { align: "left" });
+  // 결과 인셋
+  if (p.inset) {
+    const ins = p.inset, pr = ins.profiles || ["center", "edge", "slope"];
+    inset(s, 5.35, 6.45, 3.55, 1.38, ins.title || "가능한 두께 분포", (ix, iy, iw, ih) => {
+      const n = pr.length, cw = iw / n;
+      pr.forEach((k, i) => { const mx = ix + cw * (i + 0.5), my = iy + 0.45;
+        disk(s, mx, my, cw * 0.36, 0.06, 0.07, "C7CDD4", "9AA3AC", { lw: 0.6 });
+        if (k !== "none") filmOn(s, mx, my, cw * 0.36, 0.06, k, 0.13, "E9B949");
+        const c = (ins.captions || [])[i]; if (c) T(s, c, mx - cw / 2, my + 0.2, cw, 0.2, { fs: 7, align: "center", color: K.ink2 }); });
+    });
+  }
+  if (p.bullet) T(s, p.bullet, 0.75, 6.62, 4.4, 0.4, { fs: 9, bold: true, color: "9A6A12" });
+  cap(s, p.note || "개념도 · 막 두께 과장 표시 · 측정 데이터 아님");
+}
+
+// ========== T31. 2.5D 패키지 cutaway (f_pkg3d) — lid·TIM·C4·underfill·interposer·HBM·SoC ==========
+// parts: lid·tim·stiffener·bga·ufC4·ufMu (true/false) · nHBM(좌우 각 1–2) · highlight: 부위 키 (붉은 점선 강조)
+// labels / hideLabels 는 공통 규칙. heat:true → SoC 에서 lid 로 열 흐름 화살표
+function f_pkg3d(s, p) {
+  const pt = Object.assign({ lid: true, tim: true, stiffener: false, bga: true, ufC4: true, ufMu: true }, p.parts || {});
+  const x0 = 2.3, W = 4.7, D = 1.0;                                   // 앞면 폭, 깊이(인치, 사선 투영)
+  const P = OBL(x0, 6.5, 1, 1);                                       // z 위로 + (인치)
+  const zS = 0, hS = 0.42, zC = hS, hC = 0.2, zI = zC + hC, hI = 0.22, zM = zI + hI, hM = 0.1, zD = zM + hM;
+  const hHBM = 1.25, hSoC = 1.2, zT = zD + hHBM, hT = 0.07, zL = zT + hT, hL = 0.16;
+  const col = { sub: "9DBF8E", c4: "D9C7A8", int: "C8CFD8", hbm: "D8CCEB", soc: "B9CFEA", lid: "B7C0C9", tim: "E7A1A1" };
+  const box = (x, z, w, h, c, o = {}) => oblBox(s, P, x, 0, z, w, D * (o.d || 1), h, c, Object.assign({ lw: 0.8 }, o));
+  // BGA
+  if (pt.bga) for (let i = 0; i < 10; i++) { const [bx, by] = P(0.22 + i * 0.475, 0, 0); ellG(s, bx, by + 0.11, 0.13, 0.12, "C9CED6", { lw: 0.6 }); }
+  box(0, zS, W, hS, col.sub);
+  // C4 층: underfill + bump
+  const iw = 3.7, ix = (W - iw) / 2;
+  if (pt.ufC4) box(ix - 0.15, zC, iw + 0.3, hC, col.c4, { d: 0.95 });
+  for (let i = 0; i < 12; i++) { const [bx, by] = P(ix + 0.2 + i * (iw - 0.4) / 11, 0, zC + hC / 2); ellG(s, bx, by, 0.09, 0.085, "C3C9D1", { lw: 0.6 }); }
+  // interposer + TSV
+  box(ix, zI, iw, hI, col.int, { d: 0.9 });
+  for (let i = 0; i < 12; i++) { const [tx, ty] = P(ix + 0.2 + i * (iw - 0.4) / 11, 0, zI); L(s, tx, ty, tx, ty - hI, "B07A3A", 1.1); }
+  // µbump 층 + die
+  const hw = 0.8, sw = 1.35, sx = ix + (iw - sw) / 2, hx = [ix + 0.15, ix + iw - 0.15 - hw];
+  if (pt.ufMu) { box(hx[0], zM, hw, hM, col.c4, { d: 0.8 }); box(sx, zM, sw, hM, col.c4, { d: 0.8 }); box(hx[1], zM, hw, hM, col.c4, { d: 0.8 }); }
+  box(sx, zD, sw, hSoC, col.soc, { d: 0.8, text: p.socName || "SoC", fs: 8 });
+  hx.forEach((x) => { box(x, zD, hw, hHBM, col.hbm, { d: 0.8 });
+    for (let k = 1; k < 9; k++) { const [a1, b1] = P(x, 0, zD + hHBM * k / 9), [a2] = P(x + hw, 0, zD + hHBM * k / 9); L(s, a1, b1, a2, b1, "9F8BC0", 0.5); }
+    const [tx, ty] = P(x + hw / 2, 0, zD + hHBM * 0.5); pill(s, tx, ty, "HBM", { fs: 7, fill: "F4EEFB", nogut: true, h: 0.18 }); });
+  // TIM + lid / stiffener
+  const zTs = zD + hSoC;                                             // SoC 윗면
+  if (pt.tim) { box(sx, zTs, sw, zT - zTs, col.tim, { d: 0.8 }); hx.forEach((x) => box(x, zT - 0.01, hw, hT * 0.6, col.tim, { d: 0.8 })); }
+  if (pt.lid) {
+    box(0.15, zL, W - 0.3, hL, col.lid, { d: 0.95 });
+    box(0.15, zS + hS, 0.22, zL - zS - hS, col.lid, { d: 0.95 }); box(W - 0.37, zS + hS, 0.22, zL - zS - hS, col.lid, { d: 0.95 });
+  } else if (pt.stiffener) { box(0.15, zS + hS, 0.3, 0.55, col.lid, { d: 0.95 }); box(W - 0.45, zS + hS, 0.3, 0.55, col.lid, { d: 0.95 }); }
+  if (p.heat) { const [a, b] = P(sx + sw / 2, 0, zTs - 0.3), [c, d] = P(sx + sw / 2, 0, zL + hL + 0.45); A(s, a, b, c, d, K.rust, 2.0); }
+  // 강조
+  const KEYP = { lid: [0.15, zL, W - 0.3, hL], tim: [sx, zTs, sw, zT - zTs], c4: [ix - 0.15, zC, iw + 0.3, hC], mu: [hx[0], zM, hw, hM], int: [ix, zI, iw, hI], sub: [0, zS, W, hS], soc: [sx, zD, sw, hSoC], hbm: [hx[0], zD, hw, hHBM] };
+  if (p.highlight && KEYP[p.highlight]) { const [x, z, w, h] = KEYP[p.highlight], [a, b] = P(x, 0, z + h), [c, d] = P(x + w, 0, z); rectG(s, a - 0.05, b - 0.05, c - a + 0.1, d - b + 0.1, "FFFFFF", { op: 0, line: "C8372D", lw: 1.4, dash: 1 }); }
+  // 라벨 박스 (왼쪽·오른쪽 열)
+  const lab = labeler(p, { lid: pt.lid ? "lid (금속 덮개)" : (pt.stiffener ? "stiffener" : false), tim: pt.tim ? "TIM" : false, hbm: "HBM stack", soc: false, mu: "µbump + underfill", int: "Si interposer (TSV)", c4: "C4 bump" + (pt.ufC4 ? " + underfill" : ""), sub: "package substrate", bga: pt.bga ? "BGA ball" : false });
+  const at = (x, z) => P(x, 0, z);
+  const L_ = [], R_ = [];
+  if (lab.lid) R_.push([pt.lid ? at(W - 0.4, zL + hL / 2) : at(W - 0.3, zS + hS + 0.45), lab.lid]);
+  if (lab.tim) R_.push([at(sx + sw - 0.2, zTs + 0.03), lab.tim]);
+  if (lab.hbm) L_.push([at(hx[0] + 0.05, zD + hHBM * 0.8), lab.hbm]);
+  if (lab.mu) L_.push([at(hx[0] + hw * 0.6, zM + hM / 2), lab.mu]);
+  if (lab.int) R_.push([at(ix + iw - 0.5, zI + hI / 2), lab.int]);
+  if (lab.c4) R_.push([at(ix + iw - 0.75, zC + hC / 2), lab.c4]);
+  if (lab.sub) L_.push([at(0.15, zS + hS / 2), lab.sub]);
+  if (lab.bga) L_.push([at(0.22, -0.08), lab.bga]);
+  // 박스는 부위 높이 근처에 두되 0.46 in 이상 띄운다(리더선이 그림을 가로지르지 않게)
+  const spread = (arr, x, align) => { arr.sort((a, b) => a[0][1] - b[0][1]); let prev = 2.5; const ys = arr.map(([[, ay]]) => (prev = Math.max(ay, prev + 0.46)));
+    const over = Math.max(0, ys[ys.length - 1] - 7.2); arr.forEach(([[ax, ay], t], i) => tag(s, ax, ay, x, Math.max(2.95, ys[i] - over), t, { align })); };
+  spread(L_, 0.62, "left"); spread(R_, 8.95, "right");
+  if (p.bullet) T(s, p.bullet, 0.75, 7.55, 7.9, 0.3, { fs: 9, bold: true, color: "9A6A12" });
+  cap(s, p.note || "개념도 · 두께 방향 확대 · 비례 아님");
+}
+
+// ========== T32. blade dicing cutaway (f_blade) — blade·flange·절삭수·dressing ==========
+// parts: cooler(blade 냉각 노즐)·shower(세정 노즐)·dress(dressing board)·tape · inset:"grit"(blade 끝 확대: diamond + bond) · feed:true
+function f_blade(s, p) {
+  const pt = Object.assign({ cooler: true, shower: true, dress: false, tape: true }, p.parts || {});
+  const bx = 3.6, br = 1.35;                                // blade 중심 x·반지름(측면에서 본 원판)
+  // 척 테이블 + 테이프 + wafer (사선 슬래브)
+  const P = OBL(0.75, 6.35, 1, 1);
+  oblBox(s, P, 0, 0, 0, 6.0, 1.0, 0.35, "A9B3BD", { lw: 0.8, text: "chuck table", fs: 8 });
+  if (pt.tape) oblBox(s, P, 0.1, 0, 0.35, 5.8, 0.95, 0.06, "CFE6C8", { lw: 0.6 });
+  const wz = 0.35 + (pt.tape ? 0.06 : 0);
+  oblBox(s, P, 0.4, 0, wz, 4.0, 0.9, 0.12, "C7CDD4", { lw: 0.7 });
+  if (pt.dress) oblBox(s, P, 4.7, 0, wz, 1.1, 0.9, 0.18, "8F8577", { lw: 0.7 });
+  const [, wyTop] = P(0, 0, wz + 0.12), by = wyTop + 0.1 - br;   // blade 아래 끝이 wafer 를 지나 tape 까지
+  // 절단 홈 (blade 아래)
+  rectG(s, bx - 0.05, wyTop - 0.02, 0.1, 0.14, "F7F3EA", { lw: 0.5 });
+  // blade: hub + flange + 얇은 날(원 테두리)
+  const bl = grad(s, [[0, "E8ECEF"], [1, "AEB7BF"]], "v");
+  ellG(s, bx, by, br, br, bl, { lw: 1.0 });
+  ellG(s, bx, by, br - 0.1, br - 0.1, "D7DDE2", { lw: 0.5 });
+  ellG(s, bx, by, br * 0.62, br * 0.62, grad(s, [[0, "B4BDC6"], [1, "7F8A95"]], "v"), { lw: 0.9 });   // flange
+  ellG(s, bx, by, 0.24, 0.24, "5E6873", { lw: 0.8 });                                                     // spindle
+  path(s, `M${u(bx - br - 0.15)} ${u(by + 0.35)} A${u(br + 0.15)} ${u(br + 0.15)} 0 0 1 ${u(bx - 0.35)} ${u(by - br - 0.1)}`, null, { line: K.rust, lw: 1.3 });
+  A(s, bx - 0.45, by - br - 0.08, bx - 0.25, by - br - 0.13, K.rust, 1.3);
+  oblBox(s, P, 0.4, 0, wz, 4.0, 0.9, 0.12, "C7CDD4", { lw: 0.7, noTop: true, noSide: true });   // wafer 앞면을 blade 위에 다시: 날이 홈 속에 들어감
+  rectG(s, bx - 0.05, wyTop - 0.005, 0.1, 0.13, "EDE7DA", { lw: 0.4 });
+  // 냉각·세정수
+  const cyc = wyTop - 0.12;
+  if (pt.cooler) [[-1, 0.55], [1, 0.55]].forEach(([sg]) => { const nx = bx + sg * 0.75; rectG(s, nx - 0.35 * (sg > 0 ? 0 : 1), cyc - 0.45, 0.35, 0.12, "8AA4BC", { lw: 0.6 }); flow(s, nx, cyc - 0.33, bx + sg * 0.12, cyc + 0.02, "3B82C4", 1.2); });
+  if (pt.shower) { rectG(s, bx + br + 0.25, by - br + 0.2, 0.14, 0.7, "8AA4BC", { lw: 0.6 }); for (let k = 0; k < 3; k++) flow(s, bx + br + 0.32, by - br + 0.95 + k * 0.05, bx + br * 0.55 + k * 0.15, wyTop - 0.18, "3B82C4", 1.0); }
+  if (p.feed) { const [fx, fy] = P(0.6, 0, -0.18); A(s, fx + 2.6, fy + 0.02, fx + 1.4, fy + 0.02, K.edge, 1.4); T(s, p.feedLabel || "table 이송", fx + 1.4, fy + 0.06, 1.4, 0.2, { fs: 8, bold: true, color: K.ink2 }); }
+  const lab = labeler(p, { blade: "dicing blade", flange: "flange", cooler: pt.cooler ? "blade 냉각 노즐" : false, shower: pt.shower ? "세정 노즐" : false, wafer: "wafer", tape: pt.tape ? "dicing tape" : false, dress: pt.dress ? "dressing board" : false });
+  if (lab.blade) tag(s, bx - br * 0.72, by - br * 0.72, 0.65, 2.9, lab.blade, { align: "left" });
+  if (lab.flange) tag(s, bx - br * 0.45, by + 0.1, 0.65, 3.6, lab.flange, { align: "left" });
+  if (lab.cooler) tag(s, bx - 0.95, cyc - 0.4, 0.65, 4.4, lab.cooler, { align: "left" });
+  if (lab.shower) tag(s, bx + br + 0.32, by - br + 0.3, 6.1, 2.9, lab.shower, { align: "left" });
+  const [wx, wy] = P(1.0, 0, wz + 0.06), [tx2, ty2] = P(5.5, 0, 0.38), [dx, dy] = P(5.2, 0, wz + 0.1);
+  if (lab.wafer) tag(s, wx, wy, 0.65, 5.4, lab.wafer, { align: "left" });
+  if (lab.tape) tag(s, tx2, ty2, 8.95, 6.3, lab.tape, { align: "right" });
+  if (lab.dress) tag(s, dx, dy, 8.95, 5.65, lab.dress, { align: "right" });
+  if (p.inset === "grit") inset(s, 6.15, 3.1, 2.75, 2.2, p.insetTitle || "blade 끝 확대", (ix, iy, iw, ih0) => {
+    const ih = ih0 - 0.42;
+    rectG(s, ix + 0.2, iy + 0.05, iw - 0.4, ih - 0.1, "C9BFAE", { lw: 0.7 });
+    const pts = [[0.12, 0.2], [0.33, 0.12], [0.55, 0.3], [0.78, 0.15], [0.92, 0.42], [0.25, 0.55], [0.47, 0.7], [0.7, 0.62], [0.12, 0.85], [0.88, 0.85], [0.6, 0.9], [0.38, 0.38]];
+    pts.forEach(([a, b]) => { const gx = ix + 0.2 + a * (iw - 0.4), gy = iy + 0.05 + b * (ih - 0.1); poly(s, [[gx, gy - 0.09], [gx + 0.08, gy], [gx, gy + 0.09], [gx - 0.08, gy]], "EAF4FA", { lw: 0.6 }); });
+    const lb = p.hideLabels ? ["입자 X", "기지 Y"] : ["diamond 입자", "bond (결합재)"];
+    tbox(s, ix + 0.08, iy + ih + 0.16, lb[0], { fs: 6, fill: "EAF4FA", align: "left" }); tbox(s, ix + iw - 0.08, iy + ih + 0.16, lb[1], { fs: 6, fill: "E4DCCD", align: "right" });   // pill 은 후처리에서 움직이므로 고정 박스
+  });
+  if (p.bullet) T(s, p.bullet, 0.75, 7.1, 7.9, 0.3, { fs: 9, bold: true, color: "9A6A12" });
+  cap(s, p.note || "개념도 · 측면에서 본 blade · 비례 아님");
+}
+
+module.exports = { f_chamber, f_pkg3d, f_blade };
+MODS["./fig3.js"] = module.exports; })({ exports: {} });
+
+
+const F = Object.assign({}, MODS["./fig1.js"], MODS["./fig2.js"], MODS["./fig3.js"]);
 /* 동기식 raw-DEFLATE 해제기 (문항 데이터 내장 압축용).
    브라우저 기능에 의존하지 않고 top-level 동기 코드로 동작한다. */
 function INFLATE_RAW(src, outLen) {
@@ -1596,7 +2161,7 @@ function svgFor(q){
     s.out.push(`<foreignObject x="${o.x*100}" y="${o.y*100}" width="${o.w*100}" height="${(o.h||1.9)*100}"><div xmlns="http://www.w3.org/1999/xhtml" style="height:100%"><table class="mtable"${o.fs ? ` style="font-size:${o.fs}px"` : ""}>${html}</table></div></foreignObject>`);
   };
   const fn = F[q.fig[0]];
-  if (fn) { try { fn(s, q.fig[1]); } catch(e) { return `<svg class="stage" viewBox="50 230 860 592"><text x="80" y="300" fill="#c8372d" font-size="16">상황도 오류: ${esc(e.message)}</text></svg>`; } }
+  if (fn) { try { fn(s, q.fig[1]); window.__figStat = { ax: s._ax || 0, cv: s._cv || 0 }; } catch(e) { return `<svg class="stage" viewBox="50 230 860 592"><text x="80" y="300" fill="#c8372d" font-size="16">상황도 오류: ${esc(e.message)}</text></svg>`; } }
   return `<svg class="stage" viewBox="50 230 860 592" role="img" aria-label="${esc(q.title)} 상황도">${s.out.join("")}</svg>`;
 }
 

@@ -309,3 +309,57 @@
 - SIP-A-9046 의 "이 설계의 LSI 에는 TSV 가 없다" 는 문항 가정이다. CoWoS-L LSI 의 TSV 유무를 TSMC 공식 자료로 확인하지 못해 사실로 쓰지 않았다.
 - SIP-A-9044 의 TDR 분해능: 전이부 간 왕복 시간 차가 13–23 ps 로 고속 TDR(수 ps–10 ps 급 상승 시간) 전제가 필요. 지문의 '시험 채널' 설정으로 처리.
 - PROD-A-9032(PHY 폭 10 mm → 변당 3개)는 CONVENTIONS_W3 C3 에 맞춰 PROD 배치에서 간격·돌출을 명시해야 함.
+
+## 참고문헌 대조 업데이트 (2026-11-21, 초급 B)
+기준: 브리프 추가 규칙 3·4·5(Micron HBM3E 12H 실측 — core die 사이 pitch 23 µm, 간극 11 µm(NCP), base die 아래 면 48 × 55 µm, 스택 720 µm, CoWoS-L interposer). 참고문헌 중 SIP 근거는 HBM_HotChips2026 §ECTC 2026(인터포저 채널·L/S·접지 배치·EMIB-T·LSI)·§열 모델(TIM1/리드/TIM2), HBM_단면실측 §패키지 레벨·§스택 높이 구성. SIP B 문항에는 core die 사이 pitch·간극 수치가 없어 형상 재계산 대상은 없었고, 주 작업은 그림 정답 노출 정리와 src 부착.
+
+| 검토 | 수정 | 추가 | 삭제 | src 부착 |
+|---|---|---|---|---|
+| 48 | 12 (그림 9 · 내용 3) | 1 | 0 | 14 (신규 포함, B-0010·B-0140 은 덧붙임) |
+
+정정
+| id | 무엇이 틀렸나 | 고친 내용 | 근거 절 |
+|---|---|---|---|
+| B-0001 | 정답 "silicon interposer" 를 f_sip 라벨("Si interposer (전면, TSV 보유)")이 그대로 표시 | 그림 → f_note(조건만) | (그림 점검) |
+| B-0010 | 정답 "EMIB-T" 를 f_sip 라벨("EMIB-T bridge (TSV 보유)")이 표시 | 그림 → f_note | (그림 점검) · HBM_HotChips2026 §ECTC 2026 |
+| B-0142 | 정답 "EMIB" 를 f_sip 라벨("EMIB bridge (기판 매립, 신호만)")이 표시 | 그림 → f_note | (그림 점검) |
+| B-0078 | 정답 "RDL" 을 f_sip cowos-r 라벨("organic RDL interposer", "RDL (유기)")이 표시 | 그림 → f_note | (그림 점검) |
+| B-0137·B-0138 | f_sip cowos-r 라벨 "TSV 없음"·요점 pill "한계는 배선 피치" 가 두 문항의 정답(TSV 없음·폴리머 완충 / L/S 굵음)을 노출 | 그림 → 비교 관점만 적은 f_note | (그림 점검) |
+| B-0140 | f_sip cowos-l 라벨 "LSI bridge (국부 미세배선)"·pill 이 LSI 역할(정답)을 표시, "수직 경로는 TIV" 로 오답 소거 | 그림 → 구성 요소만 적은 f_note | (그림 점검) · HBM_HotChips2026 §ECTC 2026 |
+| B-0144 | f_sip emib 라벨이 EMIB 구조(마주 보는 구간에만 bridge)를 표시해 정답 노출 | 그림 → 비교 관점 f_note | (그림 점검) |
+| B-0080 | f_sip cowos-s 기본 pill "stitching 으로 약 3.3× reticle 까지" 가 정답(reticle) 단서 | `msg` 로 "전면 Si 판에 die와 같은 노광·식각으로 배선" | (그림 점검) |
+| B-0079 | 해설 "Si 판은 두께 방향으로 전기가 통하지 않으므로" — Si 는 반도체(고저항 기판)라 부정확 | "Si 판 자체는 배선이 아니고 미세 배선은 윗면 BEOL 층에만 있으므로" | — |
+| B-0085 | 지문 "HBM 패키지 높이 상한" — 관리 대상은 스택 높이 | "HBM 스택 높이 상한", 해설에 실측 720 µm 스택·최상단 die 139 µm 를 EMC와 평탄화해 TIM 접촉면을 만든다는 근거 추가 | HBM_단면실측 §스택 높이 구성 · §최상단 다이가 139 µm |
+| B-9002 | µbump pitch "수십 µm" 만 제시 | "(HBM 스택 바닥 48 × 55 µm, JEDEC)" 보강 | HBM_단면실측 §µbump 피치는 계면마다 다르다 |
+
+src 만 부착: B-0002·B-0082·B-9003·B-9004·B-9005·B-9007(HBM_HotChips2026 §ECTC 2026 — EMIB-T TSV 로 IR drop 감소, 인터포저 채널 6.5 → 1.5 mm, 2/2 µm L/S, 2신호/1접지 스태거, eye % UI), B-0113·B-0114·B-9013(HBM_HotChips2026 §열 모델 — TIM1 · Cu 리드 · TIM2 체인, B-0113 은 + HBM_단면실측 §패키지 레벨, B-0114 는 + §최상단 다이가 139 µm).
+
+신규
+| id | 주제 | 근거 절 |
+|---|---|---|
+| B-9014 | 인터포저 채널 6.5 → 1.5 mm 단축, 0.5 dB/mm(설정값)에서 삽입손실 감소 2.5 dB(오답 0.75 남는 값 · 3.25 원래 값 · 5.0 왕복으로 계산), k=1 f_table | HBM_HotChips2026 §ECTC 2026 (Marvell 커스텀 HBM) |
+
+충돌·남은 사항
+- **스택 높이 상한**: 참고문헌(HBM_단면실측 §적층의 벽)은 "JEDEC 상한 775 µm" 로 쓰지만, _facts F12·F13·STANDARDS 2.2 각주는 775 µm 를 JEDEC 확정값으로 쓰지 못하게 한다(HBM3/3E 720 µm 도 보도 [R]). B-0085 는 JEDEC 수치를 넣지 않고 실측 720 µm 만 인용. 브리프의 "JEDEC 상한 775 µm" 표기도 같은 이유로 쓰지 않음.
+- f_sip 에는 이름 숨김 옵션이 없어(중간층 라벨 고정) 구조명을 묻는 문항은 f_note 로 우회. B-0004(CoWoS-L)·B-0136(CoWoS-R)은 라벨이 지문 묘사(RDL·LSI)만 반복하고 이름은 표시하지 않아 유지. DA 가 f_sip 에 `hideNames`(중간층·EMIB 라벨·요점 pill 일반화)를 두면 이들 문항을 단면 그림으로 되돌릴 수 있음.
+- 중급·고급 형상 불일치(보고만): I-0016(base die 60 · core 40 · 간극 10 µm, 상한 775 µm), A-0013(base 60 · core 30 · 간극 9 µm), A-0043(base 60 · 최상단 mold 50 · TC-NCF 간극 10 µm), A-9037(HBM 스택 760 ± 15 µm — 실측 720 µm), A-9039(µbump pitch 55 µm 정사각 — 스택 바닥은 48 × 55 µm). 실측 base die 44 µm, 간극 11 µm, 최상단 die 139 µm 와 다름.
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+- 점검: SIP-B 50 문항(sheets.js 5장). SIP-B-0165 는 04_COW.json, SIP-B-9001·0069 는 08_PROD.json 에 들어 있다. 수정 뒤 5장을 다시 렌더해 봤다.
+- 결함: E1 0 · E2 31(f_sip 기본 요점 pill 'stitching 으로 약 3.3× reticle' 이 lid·BGA·C4·TIM·조립 단계 등과 무관한 21 문항에 그대로 나옴, 계산·비교 문항 10 에 일반 단면) · E3 3(B-0081 pill '미세배선 구간만 LSI bridge' = 정답, B-0165 비교표 'flow void' 강조, B-9007 eye 폭·높이 정의 = 정답) · E4 0 · E5 0.
+- 고친 문항 **36**: f_sip `msg` 를 지문 조건으로 21, f_table 9(B-0023·0074·0150·9002·9003·9007·0069 등), f_film 4(0114·0159·9009·9013), f_ubj 1(0165), f_stack hideResult 1(9001). 게이트: validate --domain SIP·COW·PROD E 0 / W 0, smoke figErr [] figEmpty [], layout_check 결함 0.
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0165 | E3 (비교표 flow void 강조) | f_ubj fill muf, pitch 23 · 간극 11 µm |
+| B-0023 · 9003 · 9002 | E2 | f_table 지문 치수, 결과 '?' (9002 는 W_FIG_LEAK 때문에 접합부 이름을 빼고 순서를 섞음) |
+| B-0074 · 0150 · 0069 · 9007 | E2 · E3 | f_table (CTE 3 vs 15 / 면적 2A 수율 ? / 8-Hi·12-Hi / eye 폭·높이 변화) |
+| B-0114 · 9013 · 0159 · 9009 | E2 | f_film (lid–TIM–die / 계면 재료 A·B / 유리 코어 / DRAM on logic) |
+| B-0067 · 0075 · 0076 · 0077 · 0079 · 0081 · 0082 · 0083 · 0084 · 0085 · 0102 · 0103 · 0107 · 0112 · 0113 · 0151 · 0152 · 0154 · 9005 · 9006 · 9011 · 9012 | E2 (0081 E3) | f_sip msg = 지문 조건 |
+| B-9001 | f_note → 자연 그림 | f_stack n 8 hideResult |
+| B-9004 | 보강 | f_note points 재작성 |
+
+- 템플릿 결함(보고만): f_sip 제목 '단면 개념도: 신호 경로'·'interposer 경유 HBM I/O 배선' 라벨 고정(msg 로 pill 만 바꿀 수 있음) · f_ubj fill muf 의 수지 색이 배경과 비슷하고 '수지 충전' 라벨이 lower die 윗선과 겹침.
+- 남은 위험: f_note 13 문항(0001·0002·0010·0078·0137·0138·0140·0142·0144·9010 등)은 정답을 드러내지 않아 유지했다. f_sip 에 이름 숨김이 없어 구조명을 묻는 문항은 계속 f_note 로 둔다.
+- 후속(395f64d 반영): f_sip `sideTitle`·`hidePath` 를 B-0075·0076·0084·0085·0107·0113·0152·9011 에 넣었다. 같은 옵션을 WARP-B-0076·PROD-B-0028 에도 넣었다. f_ubj 수지 충전 표시가 개선되어 B-0165 를 다시 렌더해 봤고, 수지는 진한 빗금으로 보이고 라벨이 겹치지 않는다. 남은 템플릿 결함은 f_warp hideNames 기본값과 f_film 오른쪽 빈 칸이며, 둘 다 우회해 둔 상태다.

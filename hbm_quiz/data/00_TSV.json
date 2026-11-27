@@ -6,7 +6,7 @@
    "id": "TSV-B-0001",
    "lv": "B",
    "title": "Cu 전해도금 후 단면에서 관측된 중앙 빈 공간",
-   "stem": "두께 50 µm의 core die에 직경 5 µm의 blind TSV를 만들고 liner SiO₂, Ta/TaN barrier, Cu seed를 차례로 형성한 뒤 Cu를 전해도금했습니다. SEM 단면에서 via 상부와 하부는 측벽까지 Cu로 채워져 있었으나, 깊이 중앙 부근에 위아래 어느 쪽과도 연결되지 않고 Cu로 완전히 둘러싸인 타원형 빈 공간이 하나 관측되었습니다. 그림에 표시된 결함의 이름으로 가장 적절한 것은 무엇입니까?",
+   "stem": "core die용 wafer에 직경 2.5 µm · 깊이 35 µm의 blind TSV를 만들고 liner SiO₂, Ta/TaN barrier, Cu seed를 차례로 형성한 뒤 Cu를 전해도금했습니다. SEM 단면에서 via 상부와 하부는 측벽까지 Cu로 채워져 있었으나, 깊이 중앙 부근에 위아래 어느 쪽과도 연결되지 않고 Cu로 완전히 둘러싸인 타원형 빈 공간이 하나 관측되었습니다. 그림에 표시된 결함의 이름으로 가장 적절한 것은 무엇입니까?",
    "opts": [
     "dishing",
     "void",
@@ -19,36 +19,38 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "void",
-     "flag": "관측: 중앙부 폐쇄 공간"
+     "flag": "관측: 중앙부 폐쇄 공간",
+     "hideLabels": true
     }
    ],
    "metrics": [
     [
      "Ø",
      "via 직경",
-     "5 µm"
+     "2.5 µm"
     ],
     [
      "↕",
      "via 깊이",
-     "50 µm"
+     "35 µm"
     ],
     [
      "◯",
      "결함 형태",
      "Cu 로 둘러싸임"
     ]
-   ]
+   ],
+   "src": "M1 §C.5"
   },
   {
    "id": "TSV-B-0002",
    "lv": "B",
    "title": "TSV aspect ratio의 정의",
-   "stem": "TSV 공정 조건을 비교할 때 가장 먼저 보는 지표가 aspect ratio입니다. 이 값이 클수록 liner·barrier·seed의 측벽 피복과 Cu 충전이 어려워집니다. 그림은 직경 5 µm, 깊이 50 µm의 via 단면입니다. TSV의 aspect ratio 정의로 옳은 것은 무엇입니까?",
+   "stem": "TSV 공정 조건을 비교할 때 가장 먼저 보는 지표가 aspect ratio입니다. 이 값이 클수록 liner·barrier·seed의 측벽 피복과 Cu 충전이 어려워집니다. 그림은 직경 2.5 µm, 깊이 35 µm의 via 단면입니다. TSV의 aspect ratio 정의로 옳은 것은 무엇입니까?",
    "opts": [
     "via 깊이 × via 직경",
     "via 직경 ÷ via 깊이",
@@ -56,19 +58,21 @@
     "via 깊이 − via 직경"
    ],
    "a": 2,
-   "exp": "aspect ratio는 via 깊이를 직경으로 나눈 값으로, 그림의 via는 50 ÷ 5 = 10, 즉 10 : 1입니다. 직경 ÷ 깊이는 역수(0.1)로 클수록 쉬워지는 값이 되어 난이도 지표로 쓰지 않습니다. 곱과 차는 차원이 µm² 또는 µm로 남아 서로 다른 크기의 via를 비교할 수 없으므로 비율 지표가 아닙니다.",
+   "exp": "aspect ratio는 via 깊이를 직경으로 나눈 값으로, 그림의 via는 35 ÷ 2.5 = 14, 즉 14 : 1입니다. 직경 ÷ 깊이는 역수(약 0.07)로 클수록 쉬워지는 값이 되어 난이도 지표로 쓰지 않습니다. 곱과 차는 차원이 µm² 또는 µm로 남아 서로 다른 크기의 via를 비교할 수 없으므로 비율 지표가 아닙니다.",
    "k": 1,
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
-     "flag": "주제: aspect ratio"
+     "flag": "주제: aspect ratio",
+     "hideLabels": true
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §TSV 종횡비는 통용값보다 높다"
   },
   {
    "id": "TSV-I-0001",
@@ -310,83 +314,85 @@
    "id": "TSV-B-0003",
    "lv": "B",
    "title": "공정 조건표의 TSV 치수로 구한 aspect ratio",
-   "stem": "신규 품종의 공정 조건표에 TSV 직경 5 µm, 식각 깊이 55 µm가 적혀 있습니다. 설비 담당자는 '깊이가 55 µm이니 aspect ratio도 55 수준'이라고 말했습니다. 그림은 이 조건의 via 단면입니다. 이 TSV의 aspect ratio로 옳은 것은 무엇입니까?",
+   "stem": "신규 품종의 공정 조건표에 TSV 직경 2.5 µm, 식각 깊이 35 µm가 적혀 있습니다. 설비 담당자는 '깊이가 35 µm이니 aspect ratio도 35 수준'이라고 말했습니다. 그림은 이 조건의 via 단면입니다. 이 TSV의 aspect ratio로 옳은 것은 무엇입니까?",
    "opts": [
-    "5.5 : 1",
-    "11 : 1",
-    "50 : 1",
-    "55 : 1"
+    "7 : 1",
+    "14 : 1",
+    "32.5 : 1",
+    "35 : 1"
    ],
    "a": 1,
-   "exp": "aspect ratio = 깊이 ÷ 직경 = 55 ÷ 5 = 11 이므로 11 : 1입니다. 55 : 1은 깊이 값을 그대로 읽은 담당자의 오류이고, 50 : 1은 깊이에서 직경을 뺀 값(55 − 5)입니다. 5.5 : 1은 직경 5 µm를 반지름으로 오인해 지름 10 µm로 나눈 값(55 ÷ 10)입니다.",
+   "exp": "aspect ratio = 깊이 ÷ 직경 = 35 ÷ 2.5 = 14 이므로 14 : 1입니다. ④의 35 : 1은 깊이 값을 그대로 읽은 담당자의 오류이고, ③의 32.5 : 1은 깊이에서 직경을 뺀 값(35 − 2.5)입니다. ①의 7 : 1은 직경 2.5 µm를 반지름으로 오인해 지름 5 µm로 나눈 값(35 ÷ 5)입니다.",
    "k": 1,
    "fig": [
     "f_tsv",
     {
-     "depth_um": 55,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "hideResult": true,
-     "flag": "조건 Ø5 × 55 µm"
+     "flag": "조건 Ø2.5 × 35 µm"
     }
    ],
    "metrics": [
     [
      "Ø",
      "via 직경",
-     "5 µm"
+     "2.5 µm"
     ],
     [
      "↕",
      "식각 깊이",
-     "55 µm"
+     "35 µm"
     ]
-   ]
+   ],
+   "src": "HBM_단면실측 §TSV 종횡비는 통용값보다 높다"
   },
   {
    "id": "TSV-B-0004",
    "lv": "B",
    "title": "직경만 줄인 TSV의 aspect ratio 변화",
-   "stem": "깊이 50 µm는 그대로 두고 TSV 직경을 5 µm에서 4 µm로 줄이는 안이 검토되고 있습니다. 직경을 줄이면 같은 면적에 via를 더 많이 넣을 수 있습니다. 그림은 변경안의 단면입니다. 이 변경이 aspect ratio와 Cu 충전 난이도에 주는 영향으로 옳은 것은 무엇입니까?",
+   "stem": "깊이 35 µm는 그대로 두고 TSV 직경을 2.5 µm에서 2.0 µm로 줄이는 안이 검토되고 있습니다. 직경을 줄이면 같은 면적에 via를 더 많이 넣을 수 있습니다. 그림은 변경안의 단면입니다. 이 변경이 aspect ratio와 Cu 충전 난이도에 주는 영향으로 옳은 것은 무엇입니까?",
    "opts": [
-    "10 : 1에서 12.5 : 1로 커져 충전이 어려워진다",
-    "10 : 1에서 8 : 1로 작아져 충전이 쉬워진다",
+    "14 : 1에서 17.5 : 1로 커져 충전이 어려워진다",
+    "14 : 1에서 11.2 : 1로 작아져 충전이 쉬워진다",
     "깊이가 같으므로 aspect ratio는 변하지 않는다",
-    "10 : 1에서 12.5 : 1로 커져 충전이 쉬워진다"
+    "14 : 1에서 17.5 : 1로 커져 충전이 쉬워진다"
    ],
    "a": 0,
-   "exp": "aspect ratio = 깊이 ÷ 직경 이므로 50 ÷ 5 = 10 에서 50 ÷ 4 = 12.5 로 커집니다. 좁고 깊을수록 via 바닥까지 첨가제와 Cu 이온 공급이 어려워져 충전 난이도가 올라갑니다. 8 : 1은 직경 ÷ 깊이를 뒤집어 계산한 경우의 방향이고, '변하지 않는다'는 깊이만 보고 판단한 오류이며, '커져 쉬워진다'는 값은 맞지만 난이도 방향을 거꾸로 본 것입니다.",
+   "exp": "aspect ratio = 깊이 ÷ 직경 이므로 35 ÷ 2.5 = 14 에서 35 ÷ 2.0 = 17.5 로 커집니다. 좁고 깊을수록 via 바닥까지 첨가제와 Cu 이온 공급이 어려워져 충전 난이도가 올라갑니다. 11.2 : 1은 aspect ratio가 직경에 비례한다고 보아 14 × 2.0 ÷ 2.5 = 11.2 로 계산한 값이고, '변하지 않는다'는 깊이만 보고 판단한 오류이며, '커져 쉬워진다'는 값은 맞지만 난이도 방향을 거꾸로 본 것입니다.",
    "k": 1,
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 4,
+     "depth_um": 35,
+     "dia_um": 2.0,
      "scallop": 0,
      "fill": "good",
      "hideResult": true,
-     "flag": "변경안 Ø4 × 50 µm"
+     "flag": "변경안 Ø2.0 × 35 µm"
     }
    ],
    "metrics": [
     [
      "Ø",
      "직경",
-     "5 → 4 µm"
+     "2.5 → 2.0 µm"
     ],
     [
      "↕",
      "깊이",
-     "50 µm 고정"
+     "35 µm 고정"
     ]
-   ]
+   ],
+   "src": "HBM_단면실측 §TSV 종횡비는 통용값보다 높다"
   },
   {
    "id": "TSV-B-0033",
    "lv": "B",
    "title": "via 중심선을 따라 남은 선 모양 경계",
-   "stem": "직경 5 µm · 깊이 50 µm의 blind TSV를 첨가제 조건이 맞지 않은 상태에서 도금했더니, Cu가 바닥보다 측벽에서 고르게 자라 들어왔습니다. SEM 단면에서 via 중심선을 따라 위아래로 이어진 가는 선 모양 경계가 확인되었고, 부피를 가진 빈 공간은 보이지 않았습니다. 그림에 표시된 이 결함의 이름으로 가장 적절한 것은 무엇입니까?",
+   "stem": "직경 2.5 µm · 깊이 35 µm의 blind TSV를 첨가제 조건이 맞지 않은 상태에서 도금했더니, Cu가 바닥보다 측벽에서 고르게 자라 들어왔습니다. SEM 단면에서 via 중심선을 따라 위아래로 이어진 가는 선 모양 경계가 확인되었고, 부피를 가진 빈 공간은 보이지 않았습니다. 그림에 표시된 이 결함의 이름으로 가장 적절한 것은 무엇입니까?",
    "opts": [
     "dishing",
     "pinch-off",
@@ -399,30 +405,32 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "seam",
-     "flag": "SEM 단면 관측"
+     "flag": "SEM 단면 관측",
+     "hideLabels": true
     }
    ],
    "metrics": [
     [
      "Ø",
      "via 직경",
-     "5 µm"
+     "2.5 µm"
     ],
     [
      "↕",
      "via 깊이",
-     "50 µm"
+     "35 µm"
     ],
     [
      "◉",
      "관측",
      "중심선 경계"
     ]
-   ]
+   ],
+   "src": "M1 §C.5"
   },
   {
    "id": "TSV-I-0003",
@@ -995,8 +1003,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1022,8 +1030,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1049,8 +1057,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1076,15 +1084,16 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
      "flag": "주제: barrier"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M4 §E-6"
   },
   {
    "id": "TSV-B-0057",
@@ -1103,8 +1112,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1130,12 +1139,13 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
-     "fill": "good",
+     "fill": "void",
      "barrier": true,
-     "flag": "주제: 충전 결함"
+     "flag": "주제: 충전 결함",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -1157,12 +1167,13 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
-     "flag": "주제: aspect ratio"
+     "flag": "주제: aspect ratio",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -1184,15 +1195,16 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
      "flag": "주제: keep-out zone"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M2 §Case 9"
   },
   {
    "id": "TSV-B-0061",
@@ -1211,8 +1223,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1238,8 +1250,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1265,8 +1277,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1293,15 +1305,16 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
      "flag": "주제: 도금 후 anneal"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M4 §E-6"
   },
   {
    "id": "TSV-B-0065",
@@ -1320,15 +1333,16 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
      "flag": "주제: Cu pumping"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M4 §E-6"
   },
   {
    "id": "TSV-B-0066",
@@ -1347,15 +1361,17 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
-     "fill": "good",
+     "fill": "void",
      "barrier": true,
-     "flag": "주제: 비파괴 검사"
+     "flag": "주제: 내부 결함 확인",
+     "hideLabels": true
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M1 §C.5 · M1 §B.5"
   },
   {
    "id": "TSV-B-0068",
@@ -1374,8 +1390,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1401,8 +1417,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1429,8 +1445,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1455,13 +1471,15 @@
    "exp": "뭉친 큰 입자는 pad와 wafer 사이에서 국부적으로 큰 힘을 받아 표면을 끌며 선 모양 scratch를 남깁니다. ②의 표면 산화는 slurry 화학 조성(산화제) 문제이지 입자 응집의 결과가 아닙니다. ①은 응집으로 유효 입자 수가 줄면 제거 속도가 다소 낮아질 수는 있어도 연마가 멈추지는 않습니다. ④의 연마는 막을 깎는 공정이라 두께가 늘지 않습니다.",
    "k": 0,
    "fig": [
-    "f_tsv",
+    "f_note",
     {
-     "depth_um": 50,
-     "dia_um": 5,
-     "scallop": 0,
-     "fill": "good",
-     "barrier": true,
+     "title": "CMP slurry 입자 상태",
+     "points": [
+      "정상 상태: 미세 연마 입자가 고르게 분산",
+      "이상 상태: 입자가 뭉쳐 큰 덩어리가 됨",
+      "덩어리는 pad와 연마면 사이에 끼어 함께 움직인다"
+     ],
+     "ask": "연마면 결함",
      "flag": "주제: CMP 결함"
     }
    ],
@@ -1484,8 +1502,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1517,7 +1535,8 @@
      "erosion_nm": 30,
      "nA": 4,
      "nB": 8,
-     "flag": "주제: 과연마 영향"
+     "flag": "주제: 과연마 영향",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -1539,8 +1558,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1572,7 +1591,8 @@
      "erosion_nm": 40,
      "nA": 4,
      "nB": 8,
-     "flag": "주제: CMP 단차"
+     "flag": "주제: CMP 단차",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -1618,8 +1638,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1645,8 +1665,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1672,8 +1692,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1699,15 +1719,16 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
      "flag": "주제: 여분 TSV"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_데이터여행 §10장 근거 · HBM_동작원리 §신규 근거"
   },
   {
    "id": "TSV-B-0084",
@@ -1726,8 +1747,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1753,8 +1774,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1780,15 +1801,16 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
      "flag": "주제: TSV 단면적"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §TSV 전기값"
   },
   {
    "id": "TSV-B-0088",
@@ -1807,8 +1829,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1834,8 +1856,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1861,8 +1883,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1888,8 +1910,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -1915,8 +1937,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 1,
      "fill": "good",
      "barrier": true,
@@ -1925,7 +1947,8 @@
      "flag": "주제: Bosch scallop"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "플라즈마_공정모듈 §확보한 수치 근거"
   },
   {
    "id": "TSV-B-0095",
@@ -1944,18 +1967,20 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
-     "flag": "주제: barrier"
+     "flag": "주제: barrier",
+     "hideLabels": true
     }
    ],
    "metrics": [],
    "vx": [
     "W_OPT_LONGEST"
-   ]
+   ],
+   "src": "M4 §E-6"
   },
   {
    "id": "TSV-B-0099",
@@ -1974,8 +1999,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -2001,8 +2026,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -2034,7 +2059,8 @@
      "erosion_nm": 30,
      "nA": 4,
      "nB": 8,
-     "flag": "주제: CMP 제거량"
+     "flag": "주제: CMP 제거량",
+     "hideLabels": true
     }
    ],
    "metrics": []
@@ -2056,15 +2082,16 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
      "flag": "주제: barrier 두께"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M4 §E-6"
   },
   {
    "id": "TSV-I-0122",
@@ -3269,8 +3296,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 1,
      "fill": "good",
      "barrier": true,
@@ -3279,7 +3306,8 @@
      "flag": "주제: Bosch 공정"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "플라즈마_공정모듈 §확보한 수치 근거"
   },
   {
    "id": "TSV-B-9002",
@@ -3293,13 +3321,13 @@
     "Cl⁻ 이온 단독"
    ],
    "a": 0,
-   "exp": "SPS 같은 황 함유 가속제는 억제제의 작용을 밀어내고 Cu 석출을 빠르게 하며, via 바닥에 상대적으로 높은 농도로 남아 바닥부터 채워 올라가게 합니다. ②의 억제제는 Cl⁻ 와 함께 입구·field 표면에 흡착해 석출을 늦추는 쪽입니다. ③의 평탄제는 돌출부와 물질 전달이 빠른 곳의 성장을 눌러 표면을 평탄하게 합니다. ④의 Cl⁻ 는 억제제 흡착을 돕는 보조 이온으로 단독으로는 바닥 성장을 빠르게 하지 않습니다.",
+   "exp": "가속제·억제제·평탄제를 쓰는 일반적인 도금액에서 SPS 같은 황 함유 가속제는 억제제의 작용을 밀어내고 Cu 석출을 빠르게 하며, via 바닥에 상대적으로 높은 농도로 남아 바닥부터 채워 올라가게 합니다. ②의 억제제는 Cl⁻ 와 함께 입구·field 표면에 흡착해 석출을 늦추는 쪽입니다. ③의 평탄제는 돌출부와 물질 전달이 빠른 곳의 성장을 눌러 표면을 평탄하게 합니다. ④의 Cl⁻ 는 억제제 흡착을 돕는 보조 이온으로 단독으로는 바닥 성장을 빠르게 하지 않습니다.",
    "k": 0,
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -3325,8 +3353,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -3353,8 +3381,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -3367,45 +3395,46 @@
    "id": "TSV-B-9005",
    "lv": "B",
    "title": "liner를 고려한 TSV Cu 직경",
-   "stem": "직경 5.0 µm · 깊이 50 µm로 식각한 via 측벽에 두께 0.2 µm의 SiO₂ liner를 고르게 올렸습니다. barrier·seed 두께는 무시합니다. liner 안쪽에 채워지는 Cu 기둥의 직경은 얼마입니까?",
+   "stem": "직경 3.0 µm · 깊이 35 µm로 식각한 via 측벽에 두께 0.2 µm의 SiO₂ liner를 고르게 올렸습니다. barrier·seed 두께는 무시합니다. liner 안쪽에 채워지는 Cu 기둥의 직경은 얼마입니까?",
    "opts": [
-    "4.6 µm",
-    "4.8 µm",
-    "5.0 µm",
-    "5.4 µm"
+    "2.6 µm",
+    "2.8 µm",
+    "3.0 µm",
+    "3.4 µm"
    ],
    "a": 0,
-   "exp": "liner는 via 양쪽 측벽에 붙으므로 Cu 직경 = 5.0 − 2 × 0.2 = 4.6 µm 입니다. ②의 4.8 µm는 한쪽 측벽만 뺀 값입니다. ③은 liner 두께를 무시한 값이고, ④의 5.4 µm는 liner 두께를 더한 값으로 방향이 반대입니다.",
+   "exp": "liner는 via 양쪽 측벽에 붙으므로 Cu 직경 = 3.0 − 2 × 0.2 = 2.6 µm 입니다. ②의 2.8 µm는 한쪽 측벽만 뺀 값입니다. ③은 liner 두께를 무시한 값이고, ④의 3.4 µm는 liner 두께를 더한 값으로 방향이 반대입니다.",
    "k": 1,
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 3.0,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
-     "flag": "조건 Ø5.0 µm"
+     "flag": "조건 Ø3.0 µm"
     }
    ],
    "metrics": [
     [
      "Ø",
      "식각 직경",
-     "5.0 µm"
+     "3.0 µm"
     ],
     [
      "t",
      "liner",
      "0.2 µm"
     ]
-   ]
+   ],
+   "src": "HBM_단면실측 §TSV 라이너 두께"
   },
   {
    "id": "TSV-B-9006",
    "lv": "B",
    "title": "열처리 후 TSV Cu가 위로 솟는 현상",
-   "stem": "TSV를 Cu로 채우고 CMP로 평탄화한 뒤 400 °C 열처리를 했더니, TSV 상단의 Cu가 주변 표면보다 수십 nm 솟아올랐습니다. 이 현상을 부르는 이름으로 옳은 것은 무엇입니까?",
+   "stem": "TSV를 Cu로 채우고 CMP로 평탄화한 뒤 400 °C 열처리를 했더니, TSV 상단의 Cu가 주변 표면보다 수백 nm 솟아올랐습니다. 이 현상을 부르는 이름으로 옳은 것은 무엇입니까?",
    "opts": [
     "scallop",
     "dishing",
@@ -3418,21 +3447,22 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
      "flag": "주제: 열처리 후 형상"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "M4 §E-6 · M1 §C.5"
   },
   {
    "id": "TSV-B-9007",
    "lv": "B",
    "title": "TSV 직경을 키울 때 keep-out zone의 변화",
-   "stem": "다른 조건은 그대로 두고 TSV 직경만 5 µm에서 10 µm로 키우는 안이 나왔습니다. TSV 둘레의 keep-out zone(KOZ)은 어떻게 변합니까?",
+   "stem": "다른 조건은 그대로 두고 TSV 직경만 2.5 µm에서 5 µm로 키우는 안이 나왔습니다. TSV 둘레의 keep-out zone(KOZ)은 어떻게 변합니까?",
    "opts": [
     "Cu 부피와 관계없이 KOZ는 일정하다",
     "Cu 부피가 커져 응력 영향 범위와 KOZ가 넓어진다",
@@ -3445,8 +3475,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -3472,21 +3502,22 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
      "flag": "주제: TSV 커패시턴스"
     }
    ],
-   "metrics": []
+   "metrics": [],
+   "src": "HBM_단면실측 §TSV 전기값"
   },
   {
    "id": "TSV-B-9009",
    "lv": "B",
    "title": "thermal(dummy) TSV의 정의",
-   "stem": "base die의 발열이 큰 영역 아래에 전기 신호를 전달하지 않는 TSV를 촘촘히 배치하는 설계가 있습니다. 이런 TSV를 부르는 이름과 목적으로 옳은 것은 무엇입니까?",
+   "stem": "base die의 발열이 큰 영역 바로 위, 열이 위로 빠져나가는 경로의 core die에 전기 신호를 전달하지 않는 TSV를 촘촘히 배치하는 설계가 있습니다. 이런 TSV를 부르는 이름과 목적으로 옳은 것은 무엇입니까?",
    "opts": [
     "test TSV — 공정 평가용 저항을 재려고",
     "redundant TSV — 불량 신호 경로를 대체하려고",
@@ -3499,8 +3530,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -3526,8 +3557,8 @@
    "fig": [
     "f_tsv",
     {
-     "depth_um": 50,
-     "dia_um": 5,
+     "depth_um": 35,
+     "dia_um": 2.5,
      "scallop": 0,
      "fill": "good",
      "barrier": true,
@@ -3535,6 +3566,89 @@
     }
    ],
    "metrics": []
+  },
+  {
+   "id": "TSV-B-9045",
+   "lv": "B",
+   "title": "최상단 core die의 뒷면 TSV 접속 생략",
+   "stem": "한 업체 HBM3E 12단 제품의 단면 분석에서 중간 core die는 34 µm로 얇게 연삭되어 TSV가 뒷면까지 드러나 있지만, 최상단 core die는 139 µm로 두껍고 뒷면에 TSV 끝이나 backside pad가 없습니다. 최상단 core die에 뒷면 TSV 노출과 pad 형성이 필요 없는 이유로 옳은 것은 무엇입니까?",
+   "opts": [
+    "최상단 die는 아래 die와 µbump로 연결되지 않아서",
+    "뒷면을 얇게 깎으면 TSV 저항이 너무 커져서",
+    "최상단 die는 셀 배열이 없는 dummy die라서",
+    "위에 접합할 die가 없어 뒷면 접속이 필요 없어서"
+   ],
+   "a": 3,
+   "exp": "HBM은 front-to-back으로 쌓아 각 die의 뒷면 pad가 바로 위 die의 앞면 µbump를 받습니다. 최상단 die는 위에 접합할 die가 없으므로 뒷면 TSV 노출(reveal)과 pad가 필요 없고, 대신 두껍게 남겨 기계적 강도와 열 확산을 맡기며 EMC와 함께 평탄화해 TIM 접촉면을 만듭니다. ①의 최상단 die도 앞면 µbump로 아래 die 뒷면 pad와 이어져 신호·전원을 받습니다. ②는 반대로 얇게 깎으면 TSV 길이가 짧아져 저항(R = ρL/A)이 줄어듭니다. ③의 최상단 die도 셀 배열을 가진 DRAM core die로 용량에 포함됩니다.",
+   "k": 0,
+   "fig": [
+    "f_table",
+    {
+     "title": "HBM3E 12단 단면 분석",
+     "cols": [
+      "위치",
+      "die 두께",
+      "뒷면 TSV 끝 · pad"
+     ],
+     "rows": [
+      [
+       "중간 core die",
+       "34 µm",
+       "있음"
+      ],
+      [
+       "최상단 core die",
+       "139 µm",
+       "없음"
+      ]
+     ],
+     "hlRow": 1,
+     "flag": "관찰: 업체 제품 단면"
+    }
+   ],
+   "metrics": [
+    [
+     "↕",
+     "중간 core die",
+     "34 µm"
+    ],
+    [
+     "↕",
+     "최상단 die",
+     "139 µm"
+    ]
+   ],
+   "src": "HBM_단면실측 §최상단 다이가 139 µm · HBM_세미나자료_v2 §A. 실측값"
+  },
+  {
+   "id": "TSV-B-9046",
+   "lv": "B",
+   "title": "같은 core die가 층마다 다른 채널을 맡는 배선",
+   "stem": "한 업체가 발표한 HBM2 설계는 같은 설계의 core die를 여러 장 쌓으면서도, 층마다 서로 다른 채널 그룹의 TSV가 그 층의 채널 회로에 연결되도록 TSV 경로를 꾸몄습니다. 이를 가능하게 하는 TSV 배선 방식으로 옳은 것은 무엇입니까?",
+   "opts": [
+    "층마다 TSV 위치를 바꾼 서로 다른 마스크의 die를 쌓는다",
+    "die 안에서 TSV 자리를 한 칸씩 옮겨 위 die로 잇는다",
+    "모든 층의 회로를 모든 채널 TSV에 똑같이 병렬 연결한다",
+    "base die에서 층마다 길이가 다른 TSV를 따로 뽑아 올린다"
+   ],
+   "a": 1,
+   "exp": "각 die 안에서 아래쪽 자리로 들어온 TSV 경로를 재배선해 한 칸 옆 자리로 위 die에 넘기면, 같은 die를 쌓아도 채널 그룹이 층마다 한 칸씩 회전하며(spiral) 회로가 붙은 고정 자리에 층마다 다른 채널 그룹이 도착합니다. ①은 지문의 '같은 설계의 die' 조건과 맞지 않고 die 종류가 층 수만큼 늘어납니다. ③처럼 모든 층을 모든 채널에 병렬로 붙이면 채널이 층별로 나뉘지 않습니다. ④의 TSV는 각 die를 하나씩 관통할 뿐 여러 die를 한 번에 꿰는 긴 TSV는 만들지 않습니다.",
+   "k": 0,
+   "fig": [
+    "f_stack",
+    {
+     "n": 8,
+     "flag": "주제: 같은 설계 die 적층"
+    }
+   ],
+   "metrics": [
+    [
+     "▤",
+     "적층 die",
+     "같은 설계"
+    ]
+   ],
+   "src": "HBM_통합자료 §v23 Spiral TSV 정정 · HBM_통합자료 §v25"
   },
   {
    "id": "TSV-I-9005",

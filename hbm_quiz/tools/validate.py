@@ -31,31 +31,40 @@ WAIVABLE_E = {"E_K1_FIG_NUM", "E_FAMILY_OVER", "E_CALC_NO_WORK", "E_STYLE_PLAIN"
 # ───────────────────────── 그림 템플릿 스키마 ─────────────────────────
 # keys: template.html 이 읽는 params. q: 그림에 수치로 그려지는 키(k=1 이면 지문과 일치해야 함)
 FIG = {
-    "f_tsv": dict(keys="ar depth_um dia_um fill scallop scallopPitch scallopDepth barrier overburden taper hideResult note flag",
+    "f_tsv": dict(keys="ar depth_um dia_um fill scallop scallopPitch scallopDepth barrier overburden taper hideResult note flag hideLabels",
                   q="ar depth_um dia_um", enums={"fill": ["good", "void", "seam", "pinch"]}),
-    "f_cmp": dict(keys="nA nB densA densB dish_nm erosion_nm note flag", q="densA densB dish_nm erosion_nm"),
+    "f_cmp": dict(keys="nA nB densA densB dish_nm erosion_nm note flag hideLabels", q="densA densB dish_nm erosion_nm"),
     "f_bs": dict(keys="step defect ox1 sin ox2 ni_um notes note flag", q="ox1 sin ox2",
                  enums={"defect": ["none", "undercut", "residue"], "step": list(range(8))}),
     "f_bump": dict(keys="imc_um pillar_um solder_um niBarrier kirkendall em j_kA temp k hours tmax ymax hideLabels hideResult bullet note flag",
                    q="imc_um pillar_um solder_um temp"),
-    "f_saw": dict(keys="method kerf_um haz_um chip_um notes bullet note flag", q="kerf_um",
+    "f_saw": dict(keys="method kerf_um haz_um chip_um notes hideTable bullet note flag", q="kerf_um",
                   enums={"method": ["blade", "lg", "stealth", "plasma", "deeplaser", "dbg"]}),
-    "f_bond": dict(keys="method pitch_um gap_um voids filler_trap nonwet dish bullet note flag", q="pitch_um gap_um",
+    "f_bond": dict(keys="method pitch_um gap_um voids filler_trap nonwet dish bullet note flag hideTable hideNotes", q="pitch_um gap_um",
                    enums={"method": ["ncf", "mrmuf", "hcb"]}),
     "f_warp": dict(keys="ref sign mag_um temp tg hideNames hideResult note flag", q="mag_um tg",
                    enums={"ref": ["bump-down", "beol-up"], "sign": [1, -1]}),
-    "f_sip": dict(keys="type nHBM lines msg bullet note flag", q="nHBM",
+    "f_sip": dict(keys="type nHBM lines msg bullet note flag sideTitle hidePath", q="nHBM",
                   enums={"type": ["cowos-s", "cowos-r", "cowos-l", "emib", "emib-t"], "nHBM": [1, 2, 3, 4, 5, 6, 7, 8]}),
     "f_therm": dict(keys="n core q_Wmm2 tTop limit layers hideResult note flag", q="n q_Wmm2 tTop limit"),
     "f_fa": dict(keys="tech depth hot fov_um dz zpeak feats note flag", q="",
                  enums={"tech": ["lit", "obirch", "eotpr", "xrm"]}),
     "f_rel": dict(keys="seq cur fails crit hint xlab xmax ymax tcCycles bullet note flag", q="crit"),
-    "f_stack": dict(keys="n highlight gap_um h_um limit_um hideResult bullet note flag", q="n gap_um h_um limit_um",
+    "f_stack": dict(keys="n highlight gap_um h_um limit_um hideResult bullet note flag hideFormula", q="n gap_um h_um limit_um",
                     enums={"highlight": [None, "height", "midcore", "base", "gap", "topcore"]}),
     "f_hcb": dict(keys="pitch_um tol_nm off_nm dish_nm hideResult bullet note flag", q="pitch_um tol_nm off_nm dish_nm"),
     "f_plot": dict(keys="title x y series marks bullets note flag", q=""),
     "f_film": dict(keys="layers roles bullets flags note flag", q=""),
     "f_note": dict(keys="title points ask flag", q=""),
+    "f_chamber": dict(keys="type plasma film flow inset labels hideLabels keepLabels bullet note flag", q="",
+                      enums={"type": [None, "cvd", "ald", "etch", "pvd"], "film": [None, "center", "edge", "slope", "flat", "ring", "none"]}),
+    "f_pkg3d": dict(keys="parts highlight heat socName labels hideLabels keepLabels bullet note flag", q="",
+                    enums={"highlight": [None, "lid", "tim", "c4", "mu", "int", "sub", "soc", "hbm"]}),
+    "f_blade": dict(keys="parts inset insetTitle feed feedLabel labels hideLabels keepLabels bullet note flag", q=""),
+    "f_ubj": dict(keys="n st stage fillet filletTag names zoom zoomTitle layerNames imc ni fill fillLabel w h cap tags autoTag tsv chain chainLabel shear I electron trace dims cand residue cmp cmpTitle upper lower bullet note flag", q="",
+                  enums={"stage": [None, "pre", "post"], "imc": [None, "one", "two", "none"], "fill": [None, "none", "ncf", "muf"], "cmp": [None, "ball", "hcb"]}),
+    "f_plate": dict(keys="steps labels hideNames legend bullet note flag", q=""),
+    "f_wet": dict(keys="drops hideAngle bullet note flag", q=""),
     "f_table": dict(keys="title unit cols rows hl hlRow hlCol notes note flag", q=""),
     "f_wafermap": dict(keys="title grid values pattern scale bin marks bullets seed note flag", q="",
                        enums={"pattern": ["edge", "center", "ring", "notch", "random", "quadrant"]}),
@@ -434,7 +443,11 @@ def check_item(q, code, join, issues, legacy=()):
         add("E_FIG_PARAM", "f_therm.layers ≤ 5행")
     if name == "f_stack" and isinstance(p.get("n"), int) and p.get("h_um") and p.get("limit_um"):
         pass
-    figtext = " ".join(str(x) for x in leaves(p) if isinstance(x, str))
+    # 숨김 옵션이 켜진 그림은 열거 키 값(defect·method 등)이 화면 글자로 나오지 않으므로 leak 검사에서 뺀다
+    hid = p.get("notes") is False or any(p.get(k) is True for k in ("hideLabels", "hideNotes", "hideTable", "hideNames"))
+    ENUM = {"defect", "fill", "method", "type", "tech", "ref", "highlight", "mode", "kind", "variant", "m"}
+    pv = {k: v for k, v in p.items() if not (hid and k in ENUM and isinstance(v, str))} if isinstance(p, dict) else p
+    figtext = " ".join(str(x) for x in leaves(pv) if isinstance(x, str))
     figtext += " " + " ".join(x[2] + " " + x[1] for x in q["metrics"])
     an = norm(ans)
     if len(an) >= 8 and an in norm(figtext):
@@ -477,6 +490,9 @@ def check_item(q, code, join, issues, legacy=()):
         add("W_FIG_NAME_LEAK", "정답이 Smile/Cry 명칭인데 f_warp 가 이름을 표시 → hideNames:true")
     if name == "f_bump" and p.get("kirkendall") and re.search(r"Kirkendall", ans, re.I) and not re.search(r"Kirkendall", stem, re.I) and not (p.get("hideLabels") or hide):
         add("W_FIG_NAME_LEAK", "정답이 Kirkendall 인데 f_bump 가 결함 이름을 표시 → hideLabels:true")
+    # f_bond 는 공법 비교표·공법 식별 주석을 그린다(2026-11-21): 정답이 공법명·표 문구면 hideTable/hideNotes 검토 (정보 코드)
+    if name == "f_bond" and re.search(r"TC-?NCF|MR-?MUF|HCB|hybrid|하이브리드|SiCN|일괄 reflow|상온|filler", ans, re.I) and not re.search(r"TC-?NCF|MR-?MUF|HCB|hybrid|하이브리드", stem, re.I) and not (p.get("hideTable") and p.get("hideNotes")):
+        add("I_FIG_BOND_LEAK", "정답이 공법명·공법 특징인데 f_bond 가 비교표·식별 주석을 표시 → hideTable/hideNotes:true 검토")
     if q["k"] == 1 and name in ("f_stack", "f_therm", "f_hcb", "f_tsv") and not hide:
         need = False
         if name == "f_stack" and (CALC_Q.search(core) or re.search(r"높이|단수|장수|간극 수|판정", core)) and re.search(r"(µm|장|단|개|초과|넘)", ans):
@@ -811,6 +827,7 @@ CODE_DOC = {
     "W_FIG_K0_DEFECT": "주제도에 문항과 무관한 결함이 그려짐",
     "W_FIG_UNKNOWN_KEY": "템플릿이 읽지 않는 params 키",
     "I_FACT_WATCH": "사실 확인 필요 표현 (세대·표준 번호·수치)",
+    "I_FIG_BOND_LEAK": "f_bond 비교표·식별 주석이 공법명·특징 정답을 노출할 수 있음 — hideTable/hideNotes (DA 2026-11-21)",
     "I_TEMPLATE_JOIN": "ctx+join+qt 조립형 (지문 연관성 수동 확인 대상)",
     "I_JOSA_SPACE / I_UNIT_*": "띄어쓰기·단위 표기 — EA Phase 2 일괄 정리",
 }

@@ -126,3 +126,19 @@
 
 `f_stack` 수치 규칙 영향 문항(템플릿만 바뀜, 데이터 무수정): `gap_um` 없음 84(k=0 80 · k>0 4: BUMP-A-9005, SIP-I-0137, PROD-I-0026, PROD-I-9012), 높이 "—" 15(hideResult 없이 `h_um` 없음: TSV-B-0078, BSP-A-9043, BSP-A-9053, BUMP-A-9005, COW-I-0112, COW-I-9011, COW-I-9031, COW-A-0133, COW-A-9017, WARP-I-0260, WARP-A-0245, WARP-B-9011, WARP-I-9023, WARP-A-9005, WARP-A-9038), 상한 pill 생략 90(k=0 83 · k>0 7: 위 4 + PROD-I-0036, PROD-I-9019, PROD-I-9020 — 지문에 775 µm 가 없는 문항). 합계 90 문항. 지문이 상한·간극을 근거로 쓰는 문항은 해당 키를 넣으면 다시 표시된다.
 
+
+`f_bond` (2026-11-21, BJ 형상 결정 반영): 기본값 gap 10 → **11 µm**, pitch 40 → **23 µm**(HCB 는 9 µm) — Micron HBM3E 12H 실측(STANDARDS 2.4). 비교표 "칩 간 간격" TC-NCF 칸 "≈ 7 µm" → "7–11 µm"(_facts F24 발표 7 µm 와 실측 11 µm 병기). 새 옵션 `hideTable`(공법 비교표 숨김)·`hideNotes`(SiCN·silica filler·EMC 주입·HCB 설명 등 공법 식별 주석 숨김; 결함 주석은 유지). 검사기 정보 코드 `I_FIG_BOND_LEAK`: 정답이 공법명·특징인데 두 옵션이 없으면 표시. 기본값 변경 영향 = gap_um·pitch_um 을 주지 않은 f_bond 문항 전부(그림 치수 라벨만 바뀜, k=1 문항은 지문 수치 검사 E 0 으로 확인). layout_check 3 화면 결함 0.
+
+`f_bump`·렌더 점검 (2026-11-22, 사용자 지적 BUMP-B-0067): k 가 없으면 IMC 성장 좌표계 자체를 그리지 않음(빈 좌표계 금지). `axes()`·`curve()` 가 그림별 좌표계·곡선 수를 세고 smoke 가 `figEmpty`(좌표계 > 곡선) 를 보고 — 게이트 조건 figEmpty []. 육안 점검 도구 `tools/sheets.js`(접촉 인화지) 추가, SKILL 완료 게이트에 필수로 넣음.
+
+정답 노출 차단 옵션 추가 (2026-11-22, DA 육안 점검 2 요청): `f_tsv hideLabels`(void·seam·pinch-off 이름 라벨 → "관찰 부위 (A)", 종횡비 주석 생략, 범례 중립화), `f_cmp hideLabels`(결함 이름 → "단차 A/B {nm} nm"), `f_stack hideFormula`(계산식 열 숨김; `hideResult` 도 식을 함께 숨김). 정답이 결함 이름·계산 결과면 켠다.
+
+`f_saw` (2026-11-22, DA 육안 점검 2 지적): kerf 기본값을 방식별 표 대표값으로 통일(blade·lg·dbg 40, plasma 10, deep laser 30 µm; `kerf_um` 은 `??` 처리로 0 허용). stealth 는 kerf 치수선을 그리지 않음("kerf 손실 없음"과 모순 제거). 새 옵션 `hideTable`(방식 비교표 숨김). `notes:false` 이면 비교표의 붉은 행 강조도 끔(방식·결함 단서 차단).
+
+새 템플릿 `f_ubj`·`f_plate`·`f_wet` (2026-11-22, BJ 승인): µbump 접합 단면(접합 불량·IMC·SOH·EM·daisy chain·HCB/ball 비교), through-mask 도금 공정 패널, 젖음 접촉각. params 는 STANDARDS 부록 A. 불량 이름을 그림에 쓰지 않는 것이 기본(이상 부위는 "관찰 부위 (A)"). BUMP-B 33문항의 f_note 를 이 템플릿으로 교체, 렌더 육안 확인·layout_check 3 화면 결함 0.
+
+DA 육안 점검 3 지적 반영 (2026-11-22): `f_sip sideTitle`(오른쪽 단면 제목 지정)·`hidePath`(HBM–XPU 신호 경로 화살표·라벨 끔 — lid·stiffener·BGA·underfill 문항용). `f_therm` tTop 기본값 95 → (상한 − 25) °C(기본 최상단 온도가 상한보다 높게 그려지던 것). `f_ubj` 수지 충전을 배경과 구분되는 색 + 빗금으로, "수지 충전" 라벨을 간극 위쪽으로.
+
+`f_ubj` EM 방향 정정 (2026-11-22, DA-5 지적): 전자 화살표가 아래 → 위인데 void 가 위(전자가 나가는 anode)쪽에 그려져 물리적으로 틀렸다. 기본 전자 흐름을 위 → 아래로 바꾸고, void 는 전자가 들어오는 cathode 계면, 돌출은 anode 계면에 그린다. `electron.dir:"up"` 이면 둘 다 반대로. BUMP-B-9004 그림이 이 정정으로 바로잡힘. 상태 void·trap·dendrite·unfill, `fillet` 추가(부록 A).
+
+3D cutaway 그림 틀 (2026-11-27, BJ 품질 기준 = CVD 챔버 개념도): 템플릿 3부(fig3) `f_chamber`·`f_pkg3d`·`f_blade` 추가. 공통 헬퍼: SVG gradient 음영(`grad`·`rgrad`, figure 마다 고유 id), 원판 `disk`, 테두리 라벨 박스 `tbox`·리더선 `tag`, 흐름 화살표 `flow`, 인셋 `inset`, 라벨 결정 `labeler`(hideLabels → "부위 A…", keepLabels 예외). 라벨 박스는 pill 이 아니므로 figPost 가 옮기지 않는다 — 위치를 직접 정한다. 적용: SAW-B-9007·9008·9018, SIP-B-0074·0079·0084·0085·0107·0113·0114·0152·9011, FEOL-B-0014·9020.

@@ -203,3 +203,66 @@
 
 EA ②(tape/UV·needle 3변수 데이터형)는 기존 A-9023(UV × ejector 조합 표)과 겹쳐, 같은 주제를 물리 모형(두께 스케일링)으로 묻는 A-9096 으로 대체.
 수량: B 46 → 45 · I 58 → 59 · A 43 → 46 · 계 147 → 150. 게이트 E 0 / W 0, build·smoke 오류 없음.
+
+## 참고문헌 대조 업데이트 (2026-11-21, 초급 B)
+
+참고문헌(M1–M5, HBM 노트) 중 dicing·개별화를 직접 다루는 절은 없다. 이번 작업은 정확성 점검(기준서 2.4 형상, 사용자 지정 Micron HBM3E 12H 실측, 그림 정답 노출)이 중심이고, src 는 근거 절이 실제로 있는 문항에만 붙였다. 피치·간극 값(23 µm, 48 × 55 µm, 11 µm)을 쓰는 B 문항은 없다.
+
+| 항목 | 수 |
+|---|---|
+| 검토 | 45 |
+| 수정(지문·그림) | 13 |
+| 추가 | 0 |
+| 삭제 | 0 |
+| src 부착 | 7 |
+
+### 정정
+
+| id | 무엇이 틀렸나 | 고친 내용 | 근거 절 |
+|---|---|---|---|
+| SAW-B-9014 | core die 두께 40 µm (실측 34–35 µm 와 차이) | 35 µm 로 수정 | HBM_단면실측 §스택 높이 구성 |
+| SAW-B-0048 | "목표 두께 30–50 µm 의 얇은 core die" 에 DBG 를 쓰는 것처럼 읽힘(TSV core die 는 carrier 위에서 연삭) | "HBM core die 수준(35 µm 안팎)의 얇은 die" 로 일반화 | HBM_단면실측 §스택 높이 구성 |
+| SAW-B-0003 | f_saw dbg 비교표가 정답 행 "DBG (half-cut → BG)" 를 강조 | f_note(판단 관점) 로 교체 | — |
+| SAW-B-0039 | f_saw 가 치수선 라벨 "kerf 40 µm" 을 항상 표시 → 정답 용어 노출, 지문 blade 25 µm 와도 불일치 | f_note 로 교체 | — |
+| SAW-B-9019 | 같은 kerf 40 µm 치수선이 blade 20 µm 지문과 모순(2배로 보임) | f_note 로 교체 | — |
+| SAW-B-9011 | f_saw lg 주석 "HAZ 5 µm"·비교표 HAZ 열이 정답 용어 노출 | f_note 로 교체 | — |
+| SAW-B-0035 | blade 그림 주석 "top chipping"·표 "chipping 큼" 이 정답 노출 | f_note 로 교체 | — |
+| SAW-B-0001 · 0038 · 0049 | 비교표의 "상부막 손상 작음 / chipping 큼 / kerf 5–15 µm·손상 없음" 이 정답 보기 내용을 그대로 보여 줌 | f_note 로 교체 | — |
+| SAW-B-0046 | stealth 주석 "tape expansion 으로 분리" 가 정답 노출 | f_note 로 교체 | — |
+| SAW-B-0047 · 9010 | stealth "kerf 손실 없음", blade "back-side chipping" 주석 노출 | `notes: false` | — |
+
+src 만 부착(내용 정확 확인): SAW-B-0011(Bosch C₄F₈/SF₆ — 플라즈마_공정모듈 §확보한 수치 근거), B-0036(EMC·top die planarize — HBM_단면실측 §최상단 다이가 139 µm), B-0054(EMC silica filler — HBM_단면실측 §EMC 조성), B-0044(base die 로직화로 low-k crack 편입 — HBM_HotChips2026 §FA/분석기술 교육체계 연결 · DRAM_기술발전방향 §분석기술 교육체계 연결), B-9004(Weibull 형상계수 해석 — M5 §9.1).
+
+### 신규 문항
+없음. 참고문헌에 SAW 초급 원리(방식·결함·tape·blade)를 새로 받칠 절이 없어 추가하지 않았다.
+
+### 충돌 · 보고만(수정 안 함)
+- 참고문헌과 저장소 기준의 충돌: 없음.
+- SAW-B-0003·B-0066 의 "목표 die 두께 40 µm" 는 HBM core die 가 아닌 일반 제품 설정이라 그대로 두었다.
+- 중급·고급(수정하지 않음): SAW-A-9068 "core die 50 → 30 µm", SAW-A-9096 "50 µm core die" 가 현행 core die 기준을 50 µm 로 둔다(실측 34–35 µm). 시나리오상 설정값이면 지문에 '설정값' 명시가 필요하다. SAW-I-9003·I-9027·A-0050–0052 의 die 두께 40 µm 는 일반 die 설정으로 보인다.
+- f_saw 의 고정 치수선 "kerf" 와 방식 비교표는 `notes: false` 로도 꺼지지 않는다. 용어·방식 이름이나 방식 특성을 묻는 I·A 문항에도 같은 노출이 있을 수 있다(DA 검토 요청).
+
+
+## DA 렌더 육안 점검 (2026-11-22, 초급)
+
+SAW-B 45문항 전부 렌더(4장) 육안 점검, 고친 뒤 재렌더 확인. 게이트: validate SAW E 0 / W 0, smoke figErr [] · figEmpty [].
+
+| 결함 | 건수(발견) | 고침 |
+|---|---|---|
+| E1 | 0 | — |
+| E2 주제 불일치 | 5 | 2 |
+| E3 정답 노출 | 2 | 2 |
+| E4 | 0 | — |
+| E5 그림 안 수치 모순 | 6 | 6 (3 데이터 · 3 템플릿) |
+
+| id | 결함 | 조치 |
+|---|---|---|
+| B-0011 · 0050 · 9012 | E5 plasma: 치수선 "kerf 40 µm" ↔ pill "kerf 10 µm" | `kerf_um: 10` |
+| B-0045 · 0047 · 9005 | E5 stealth: "kerf 손실 없음" 인데 "kerf 40 µm" 치수선 | 템플릿 수정(stealth 치수선 생략, e116a12) — 데이터 무수정 |
+| B-9010 | E3 정답 back-side chipping, 비교표 blade 행 "chipping 큼" 붉게 | `hideTable: true` + 관찰 조건 bullet |
+| B-0067 | E3 이송 속도·chipping 상충 문항에 blade 행 "chipping 큼" 강조 | `hideTable: true` |
+| B-0054 | E2 EMC+Si 절단 문항에 Si/low-k 만 있는 단면 | f_film(EMC / base die wafer Si / dicing tape) |
+| B-9009 | E2 두 날 step cut 문항에 한 번 자른 단면 | f_table(Z1 / Z2 절단 구간) |
+
+- 템플릿 결함(메인 세션 반영, e116a12): `kerf_um || 40` 이라 0 을 줄 수 없고 stealth 에도 치수선, plasma 기본값이 치수선 40 / pill 10 으로 불일치; `notes: false` 가 비교표 강조를 끄지 않음 → `hideTable` 추가, notes:false 면 강조 끔.
+- 남은 위험: B-9007(blade 구성) · 9008(절삭수) · 9018(dressing)은 blade 절단 단면 주제도 그대로 — 날·물·dressing 을 그리는 템플릿 없음(E2 3건 미해결). f_note 24문항은 이전 차수에서 명칭 노출을 피하려고 둔 관점 카드로, f_saw 로 바꾸면 비교표·주석이 정답을 보이므로 유지.
